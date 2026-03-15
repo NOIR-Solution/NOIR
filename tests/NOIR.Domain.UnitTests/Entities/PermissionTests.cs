@@ -20,15 +20,15 @@ public class PermissionTests
             sortOrder: 10);
 
         // Assert
-        permission.Resource.Should().Be("orders");
-        permission.Action.Should().Be("read");
-        permission.Scope.Should().Be("own");
-        permission.DisplayName.Should().Be("Read Orders");
-        permission.Description.Should().Be("Allows reading own orders");
-        permission.Category.Should().Be("Order Management");
-        permission.IsSystem.Should().BeTrue();
-        permission.SortOrder.Should().Be(10);
-        permission.Id.Should().NotBe(Guid.Empty);
+        permission.Resource.ShouldBe("orders");
+        permission.Action.ShouldBe("read");
+        permission.Scope.ShouldBe("own");
+        permission.DisplayName.ShouldBe("Read Orders");
+        permission.Description.ShouldBe("Allows reading own orders");
+        permission.Category.ShouldBe("Order Management");
+        permission.IsSystem.ShouldBeTrue();
+        permission.SortOrder.ShouldBe(10);
+        permission.Id.ShouldNotBe(Guid.Empty);
     }
 
     [Fact]
@@ -41,14 +41,14 @@ public class PermissionTests
             displayName: "Create Users");
 
         // Assert
-        permission.Resource.Should().Be("users");
-        permission.Action.Should().Be("create");
-        permission.Scope.Should().BeNull();
-        permission.DisplayName.Should().Be("Create Users");
-        permission.Description.Should().BeNull();
-        permission.Category.Should().BeNull();
-        permission.IsSystem.Should().BeFalse();
-        permission.SortOrder.Should().Be(0);
+        permission.Resource.ShouldBe("users");
+        permission.Action.ShouldBe("create");
+        permission.Scope.ShouldBeNull();
+        permission.DisplayName.ShouldBe("Create Users");
+        permission.Description.ShouldBeNull();
+        permission.Category.ShouldBeNull();
+        permission.IsSystem.ShouldBeFalse();
+        permission.SortOrder.ShouldBe(0);
     }
 
     [Fact]
@@ -62,9 +62,9 @@ public class PermissionTests
             scope: "OWN");
 
         // Assert
-        permission.Resource.Should().Be("orders");
-        permission.Action.Should().Be("read");
-        permission.Scope.Should().Be("own");
+        permission.Resource.ShouldBe("orders");
+        permission.Action.ShouldBe("read");
+        permission.Scope.ShouldBe("own");
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class PermissionTests
         var name = permission.Name;
 
         // Assert
-        name.Should().Be("users:delete");
+        name.ShouldBe("users:delete");
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class PermissionTests
         var name = permission.Name;
 
         // Assert
-        name.Should().Be("orders:read:own");
+        name.ShouldBe("orders:read:own");
     }
 
     [Fact]
@@ -120,13 +120,13 @@ public class PermissionTests
             sortOrder: 99);
 
         // Assert
-        permission.DisplayName.Should().Be("Updated Name");
-        permission.Description.Should().Be("Updated Description");
-        permission.Category.Should().Be("Updated Category");
-        permission.SortOrder.Should().Be(99);
+        permission.DisplayName.ShouldBe("Updated Name");
+        permission.Description.ShouldBe("Updated Description");
+        permission.Category.ShouldBe("Updated Category");
+        permission.SortOrder.ShouldBe(99);
         // Resource and Action should remain unchanged
-        permission.Resource.Should().Be("orders");
-        permission.Action.Should().Be("read");
+        permission.Resource.ShouldBe("orders");
+        permission.Action.ShouldBe("read");
     }
 
     [Fact]
@@ -139,8 +139,8 @@ public class PermissionTests
             displayName: "Create Users");
 
         // Assert
-        permission.RolePermissions.Should().NotBeNull();
-        permission.RolePermissions.Should().BeEmpty();
+        permission.RolePermissions.ShouldNotBeNull();
+        permission.RolePermissions.ShouldBeEmpty();
     }
 }
 
@@ -160,8 +160,8 @@ public class RolePermissionTests
         var rolePermission = RolePermission.Create(roleId, permissionId);
 
         // Assert
-        rolePermission.RoleId.Should().Be(roleId);
-        rolePermission.PermissionId.Should().Be(permissionId);
+        rolePermission.RoleId.ShouldBe(roleId);
+        rolePermission.PermissionId.ShouldBe(permissionId);
     }
 
     [Fact]
@@ -175,9 +175,9 @@ public class RolePermissionTests
         var userPermission = RolePermission.Create("user", permissionId);
 
         // Assert
-        adminPermission.RoleId.Should().Be("admin");
-        userPermission.RoleId.Should().Be("user");
-        adminPermission.PermissionId.Should().Be(permissionId);
-        userPermission.PermissionId.Should().Be(permissionId);
+        adminPermission.RoleId.ShouldBe("admin");
+        userPermission.RoleId.ShouldBe("user");
+        adminPermission.PermissionId.ShouldBe(permissionId);
+        userPermission.PermissionId.ShouldBe(permissionId);
     }
 }

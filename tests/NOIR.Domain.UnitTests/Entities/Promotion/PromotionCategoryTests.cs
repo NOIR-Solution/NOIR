@@ -24,10 +24,10 @@ public class PromotionCategoryTests
         var pc = new PromotionCategory(id, promotionId, categoryId, TestTenantId);
 
         // Assert
-        pc.Id.Should().Be(id);
-        pc.PromotionId.Should().Be(promotionId);
-        pc.CategoryId.Should().Be(categoryId);
-        pc.TenantId.Should().Be(TestTenantId);
+        pc.Id.ShouldBe(id);
+        pc.PromotionId.ShouldBe(promotionId);
+        pc.CategoryId.ShouldBe(categoryId);
+        pc.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class PromotionCategoryTests
         var pc = new PromotionCategory(id, promotionId, categoryId, null);
 
         // Assert
-        pc.TenantId.Should().BeNull();
+        pc.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -57,8 +57,8 @@ public class PromotionCategoryTests
         var pc = new PromotionCategory(id, promotionId, categoryId, TestTenantId);
 
         // Assert
-        pc.Id.Should().Be(id);
-        pc.PromotionId.Should().NotBe(pc.CategoryId);
+        pc.Id.ShouldBe(id);
+        pc.PromotionId.ShouldNotBe(pc.CategoryId);
     }
 
     [Fact]
@@ -75,9 +75,9 @@ public class PromotionCategoryTests
         var pc2 = new PromotionCategory(Guid.NewGuid(), promo2, cat2, TestTenantId);
 
         // Assert
-        pc1.PromotionId.Should().NotBe(pc2.PromotionId);
-        pc1.CategoryId.Should().NotBe(pc2.CategoryId);
-        pc1.Id.Should().NotBe(pc2.Id);
+        pc1.PromotionId.ShouldNotBe(pc2.PromotionId);
+        pc1.CategoryId.ShouldNotBe(pc2.CategoryId);
+        pc1.Id.ShouldNotBe(pc2.Id);
     }
 
     #endregion
@@ -99,10 +99,10 @@ public class PromotionCategoryTests
         promotion.AddCategory(categoryId);
 
         // Assert
-        promotion.Categories.Should().HaveCount(1);
+        promotion.Categories.Count().ShouldBe(1);
         var pc = promotion.Categories.First();
-        pc.PromotionId.Should().Be(promotion.Id);
-        pc.CategoryId.Should().Be(categoryId);
+        pc.PromotionId.ShouldBe(promotion.Id);
+        pc.CategoryId.ShouldBe(categoryId);
     }
 
     [Fact]
@@ -123,8 +123,8 @@ public class PromotionCategoryTests
         promotion.RemoveCategory(catId1);
 
         // Assert
-        promotion.Categories.Should().HaveCount(1);
-        promotion.Categories.First().CategoryId.Should().Be(catId2);
+        promotion.Categories.Count().ShouldBe(1);
+        promotion.Categories.First().CategoryId.ShouldBe(catId2);
     }
 
     #endregion

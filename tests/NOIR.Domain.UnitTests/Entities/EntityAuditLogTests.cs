@@ -21,12 +21,12 @@ public class EntityAuditLogTests
         var log = EntityAuditLog.Create(correlationId, entityType, entityId, operation, null, null);
 
         // Assert
-        log.Should().NotBeNull();
-        log.Id.Should().NotBe(Guid.Empty);
-        log.CorrelationId.Should().Be(correlationId);
-        log.EntityType.Should().Be(entityType);
-        log.EntityId.Should().Be(entityId);
-        log.Operation.Should().Be("Added");
+        log.ShouldNotBeNull();
+        log.Id.ShouldNotBe(Guid.Empty);
+        log.CorrelationId.ShouldBe(correlationId);
+        log.EntityType.ShouldBe(entityType);
+        log.EntityId.ShouldBe(entityId);
+        log.Operation.ShouldBe("Added");
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class EntityAuditLogTests
         var log2 = EntityAuditLog.Create("corr-2", "Customer", "2", EntityAuditOperation.Added, null, null);
 
         // Assert
-        log1.Id.Should().NotBe(log2.Id);
+        log1.Id.ShouldNotBe(log2.Id);
     }
 
     [Fact]
@@ -51,7 +51,9 @@ public class EntityAuditLogTests
 
         // Assert
         var afterCreate = DateTimeOffset.UtcNow;
-        log.Timestamp.Should().BeOnOrAfter(beforeCreate).And.BeOnOrBefore(afterCreate);
+        log.Timestamp.ShouldBeGreaterThanOrEqualTo(beforeCreate);
+
+        log.Timestamp.ShouldBeLessThanOrEqualTo(afterCreate);
     }
 
     [Fact]
@@ -64,7 +66,7 @@ public class EntityAuditLogTests
         var log = EntityAuditLog.Create("corr-123", "Customer", "1", EntityAuditOperation.Modified, diff, null);
 
         // Assert
-        log.EntityDiff.Should().Be(diff);
+        log.EntityDiff.ShouldBe(diff);
     }
 
     [Fact]
@@ -77,7 +79,7 @@ public class EntityAuditLogTests
         var log = EntityAuditLog.Create("corr-123", "Customer", "1", EntityAuditOperation.Added, null, tenantId);
 
         // Assert
-        log.TenantId.Should().Be(tenantId);
+        log.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -90,7 +92,7 @@ public class EntityAuditLogTests
         var log = EntityAuditLog.Create("corr-123", "Customer", "1", EntityAuditOperation.Added, null, null, handlerLogId);
 
         // Assert
-        log.HandlerAuditLogId.Should().Be(handlerLogId);
+        log.HandlerAuditLogId.ShouldBe(handlerLogId);
     }
 
     [Fact]
@@ -100,7 +102,7 @@ public class EntityAuditLogTests
         var log = EntityAuditLog.Create("corr-123", "Customer", "1", EntityAuditOperation.Added, null, null);
 
         // Assert
-        log.Version.Should().Be(1);
+        log.Version.ShouldBe(1);
     }
 
     [Fact]
@@ -110,8 +112,8 @@ public class EntityAuditLogTests
         var log = EntityAuditLog.Create("corr-123", "Customer", "1", EntityAuditOperation.Added, null, null);
 
         // Assert
-        log.IsArchived.Should().BeFalse();
-        log.ArchivedAt.Should().BeNull();
+        log.IsArchived.ShouldBeFalse();
+        log.ArchivedAt.ShouldBeNull();
     }
 
     #endregion
@@ -128,7 +130,7 @@ public class EntityAuditLogTests
         var log = EntityAuditLog.Create("corr-123", "Customer", "1", operation, null, null);
 
         // Assert
-        log.Operation.Should().Be(expected);
+        log.Operation.ShouldBe(expected);
     }
 
     #endregion
@@ -145,7 +147,7 @@ public class EntityAuditLogTests
         var act = () => EntityAuditLog.Create(correlationId!, "Customer", "1", EntityAuditOperation.Added, null, null);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -158,7 +160,7 @@ public class EntityAuditLogTests
         var act = () => EntityAuditLog.Create("corr-123", entityType!, "1", EntityAuditOperation.Added, null, null);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -171,7 +173,7 @@ public class EntityAuditLogTests
         var act = () => EntityAuditLog.Create("corr-123", "Customer", entityId!, EntityAuditOperation.Added, null, null);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -184,8 +186,8 @@ public class EntityAuditLogTests
         var act = () => EntityAuditLog.Create("corr-123", "Customer", "1", invalidOperation, null, null);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("*Invalid operation type*");
+        Should.Throw<ArgumentException>(act)
+            .Message.ShouldContain("Invalid operation type");
     }
 
     #endregion
@@ -199,7 +201,7 @@ public class EntityAuditLogTests
         var log = EntityAuditLog.Create("corr-123", "Customer", "1", EntityAuditOperation.Added, null, null);
 
         // Assert
-        log.HandlerAuditLog.Should().BeNull();
+        log.HandlerAuditLog.ShouldBeNull();
     }
 
     #endregion
@@ -218,7 +220,7 @@ public class EntityAuditLogTests
         var log = EntityAuditLog.Create("corr-123", entityType, "1", EntityAuditOperation.Added, null, null);
 
         // Assert
-        log.EntityType.Should().Be(entityType);
+        log.EntityType.ShouldBe(entityType);
     }
 
     #endregion

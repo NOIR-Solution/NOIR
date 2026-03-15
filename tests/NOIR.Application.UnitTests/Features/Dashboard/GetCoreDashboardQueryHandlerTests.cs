@@ -73,10 +73,10 @@ public class GetCoreDashboardQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(expected);
-        result.Value.QuickActions.PendingOrders.Should().Be(5);
-        result.Value.RecentActivity.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(expected);
+        result.Value.QuickActions.PendingOrders.ShouldBe(5);
+        result.Value.RecentActivity.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -97,9 +97,9 @@ public class GetCoreDashboardQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SystemHealth.Should().NotBeNull();
-        result.Value.SystemHealth!.ApiHealthy.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SystemHealth.ShouldNotBeNull();
+        result.Value.SystemHealth!.ApiHealthy.ShouldBe(true);
     }
 
     [Fact]

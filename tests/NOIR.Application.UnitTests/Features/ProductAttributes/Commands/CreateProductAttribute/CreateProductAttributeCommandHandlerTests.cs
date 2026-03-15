@@ -73,12 +73,12 @@ public class CreateProductAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Code.Should().Be("screen_size");
-        result.Value.Name.Should().Be("Screen Size");
-        result.Value.Type.Should().Be("Number");
-        result.Value.IsFilterable.Should().BeTrue();
-        result.Value.Unit.Should().Be("inch");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Code.ShouldBe("screen_size");
+        result.Value.Name.ShouldBe("Screen Size");
+        result.Value.Type.ShouldBe("Number");
+        result.Value.IsFilterable.ShouldBe(true);
+        result.Value.Unit.ShouldBe("inch");
         _attributeRepositoryMock.Verify(x => x.AddAsync(It.IsAny<ProductAttribute>(), It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -123,8 +123,8 @@ public class CreateProductAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Type.Should().Be(type);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Type.ShouldBe(type);
     }
 
     [Fact]
@@ -156,8 +156,8 @@ public class CreateProductAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsGlobal.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsGlobal.ShouldBe(true);
     }
 
     #endregion
@@ -177,8 +177,8 @@ public class CreateProductAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Attribute.InvalidValueForType);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Attribute.InvalidValueForType);
         _attributeRepositoryMock.Verify(x => x.AddAsync(It.IsAny<ProductAttribute>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -203,8 +203,8 @@ public class CreateProductAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Attribute.DuplicateCode);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Attribute.DuplicateCode);
         _attributeRepositoryMock.Verify(x => x.AddAsync(It.IsAny<ProductAttribute>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -276,8 +276,8 @@ public class CreateProductAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Code.Should().Be("screen_size");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Code.ShouldBe("screen_size");
     }
 
     #endregion

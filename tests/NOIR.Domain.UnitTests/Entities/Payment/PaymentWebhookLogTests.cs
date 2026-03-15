@@ -43,13 +43,13 @@ public class PaymentWebhookLogTests
             TestGatewayId, TestProvider, TestEventType, TestRequestBody, TestTenantId);
 
         // Assert
-        log.Should().NotBeNull();
-        log.Id.Should().NotBe(Guid.Empty);
-        log.PaymentGatewayId.Should().Be(TestGatewayId);
-        log.Provider.Should().Be(TestProvider);
-        log.EventType.Should().Be(TestEventType);
-        log.RequestBody.Should().Be(TestRequestBody);
-        log.TenantId.Should().Be(TestTenantId);
+        log.ShouldNotBeNull();
+        log.Id.ShouldNotBe(Guid.Empty);
+        log.PaymentGatewayId.ShouldBe(TestGatewayId);
+        log.Provider.ShouldBe(TestProvider);
+        log.EventType.ShouldBe(TestEventType);
+        log.RequestBody.ShouldBe(TestRequestBody);
+        log.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class PaymentWebhookLogTests
         var log = CreateTestWebhookLog();
 
         // Assert
-        log.ProcessingStatus.Should().Be(WebhookProcessingStatus.Received);
+        log.ProcessingStatus.ShouldBe(WebhookProcessingStatus.Received);
     }
 
     [Fact]
@@ -69,12 +69,12 @@ public class PaymentWebhookLogTests
         var log = CreateTestWebhookLog();
 
         // Assert
-        log.GatewayEventId.Should().BeNull();
-        log.RequestHeaders.Should().BeNull();
-        log.SignatureValue.Should().BeNull();
-        log.ProcessingError.Should().BeNull();
-        log.PaymentTransactionId.Should().BeNull();
-        log.IpAddress.Should().BeNull();
+        log.GatewayEventId.ShouldBeNull();
+        log.RequestHeaders.ShouldBeNull();
+        log.SignatureValue.ShouldBeNull();
+        log.ProcessingError.ShouldBeNull();
+        log.PaymentTransactionId.ShouldBeNull();
+        log.IpAddress.ShouldBeNull();
     }
 
     [Fact]
@@ -84,8 +84,8 @@ public class PaymentWebhookLogTests
         var log = CreateTestWebhookLog();
 
         // Assert
-        log.SignatureValid.Should().BeFalse();
-        log.RetryCount.Should().Be(0);
+        log.SignatureValid.ShouldBeFalse();
+        log.RetryCount.ShouldBe(0);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class PaymentWebhookLogTests
         var log = CreateTestWebhookLog(tenantId: null);
 
         // Assert
-        log.TenantId.Should().BeNull();
+        log.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class PaymentWebhookLogTests
         var log2 = CreateTestWebhookLog(eventType: "payment.failed");
 
         // Assert
-        log1.Id.Should().NotBe(log2.Id);
+        log1.Id.ShouldNotBe(log2.Id);
     }
 
     [Fact]
@@ -117,8 +117,8 @@ public class PaymentWebhookLogTests
         var zalopayLog = CreateTestWebhookLog(provider: "zalopay");
 
         // Assert
-        momoLog.Provider.Should().Be("momo");
-        zalopayLog.Provider.Should().Be("zalopay");
+        momoLog.Provider.ShouldBe("momo");
+        zalopayLog.Provider.ShouldBe("zalopay");
     }
 
     [Theory]
@@ -133,7 +133,7 @@ public class PaymentWebhookLogTests
         var log = CreateTestWebhookLog(eventType: eventType);
 
         // Assert
-        log.EventType.Should().Be(eventType);
+        log.EventType.ShouldBe(eventType);
     }
 
     #endregion
@@ -153,9 +153,9 @@ public class PaymentWebhookLogTests
             "203.0.113.50");
 
         // Assert
-        log.RequestHeaders.Should().Be("{\"Content-Type\":\"application/json\",\"X-Signature\":\"abc123\"}");
-        log.SignatureValue.Should().Be("abc123");
-        log.IpAddress.Should().Be("203.0.113.50");
+        log.RequestHeaders.ShouldBe("{\"Content-Type\":\"application/json\",\"X-Signature\":\"abc123\"}");
+        log.SignatureValue.ShouldBe("abc123");
+        log.IpAddress.ShouldBe("203.0.113.50");
     }
 
     [Fact]
@@ -168,9 +168,9 @@ public class PaymentWebhookLogTests
         log.SetRequestDetails(null, null, null);
 
         // Assert
-        log.RequestHeaders.Should().BeNull();
-        log.SignatureValue.Should().BeNull();
-        log.IpAddress.Should().BeNull();
+        log.RequestHeaders.ShouldBeNull();
+        log.SignatureValue.ShouldBeNull();
+        log.IpAddress.ShouldBeNull();
     }
 
     [Fact]
@@ -184,9 +184,9 @@ public class PaymentWebhookLogTests
         log.SetRequestDetails("{\"new\":true}", "new-sig", "2.2.2.2");
 
         // Assert
-        log.RequestHeaders.Should().Be("{\"new\":true}");
-        log.SignatureValue.Should().Be("new-sig");
-        log.IpAddress.Should().Be("2.2.2.2");
+        log.RequestHeaders.ShouldBe("{\"new\":true}");
+        log.SignatureValue.ShouldBe("new-sig");
+        log.IpAddress.ShouldBe("2.2.2.2");
     }
 
     #endregion
@@ -203,7 +203,7 @@ public class PaymentWebhookLogTests
         log.SetGatewayEventId("evt_vnpay_abc123");
 
         // Assert
-        log.GatewayEventId.Should().Be("evt_vnpay_abc123");
+        log.GatewayEventId.ShouldBe("evt_vnpay_abc123");
     }
 
     [Fact]
@@ -217,7 +217,7 @@ public class PaymentWebhookLogTests
         log.SetGatewayEventId("second-event-id");
 
         // Assert
-        log.GatewayEventId.Should().Be("second-event-id");
+        log.GatewayEventId.ShouldBe("second-event-id");
     }
 
     #endregion
@@ -234,7 +234,7 @@ public class PaymentWebhookLogTests
         log.MarkSignatureValid(true);
 
         // Assert
-        log.SignatureValid.Should().BeTrue();
+        log.SignatureValid.ShouldBeTrue();
     }
 
     [Fact]
@@ -247,7 +247,7 @@ public class PaymentWebhookLogTests
         log.MarkSignatureValid(false);
 
         // Assert
-        log.SignatureValid.Should().BeFalse();
+        log.SignatureValid.ShouldBeFalse();
     }
 
     [Fact]
@@ -261,7 +261,7 @@ public class PaymentWebhookLogTests
         log.MarkSignatureValid(false);
 
         // Assert
-        log.SignatureValid.Should().BeFalse();
+        log.SignatureValid.ShouldBeFalse();
     }
 
     #endregion
@@ -278,7 +278,7 @@ public class PaymentWebhookLogTests
         log.MarkAsProcessing();
 
         // Assert
-        log.ProcessingStatus.Should().Be(WebhookProcessingStatus.Processing);
+        log.ProcessingStatus.ShouldBe(WebhookProcessingStatus.Processing);
     }
 
     [Fact]
@@ -292,7 +292,7 @@ public class PaymentWebhookLogTests
         log.MarkAsProcessed();
 
         // Assert
-        log.ProcessingStatus.Should().Be(WebhookProcessingStatus.Processed);
+        log.ProcessingStatus.ShouldBe(WebhookProcessingStatus.Processed);
     }
 
     [Fact]
@@ -307,8 +307,8 @@ public class PaymentWebhookLogTests
         log.MarkAsProcessed(transactionId);
 
         // Assert
-        log.ProcessingStatus.Should().Be(WebhookProcessingStatus.Processed);
-        log.PaymentTransactionId.Should().Be(transactionId);
+        log.ProcessingStatus.ShouldBe(WebhookProcessingStatus.Processed);
+        log.PaymentTransactionId.ShouldBe(transactionId);
     }
 
     [Fact]
@@ -322,7 +322,7 @@ public class PaymentWebhookLogTests
         log.MarkAsProcessed();
 
         // Assert
-        log.PaymentTransactionId.Should().BeNull();
+        log.PaymentTransactionId.ShouldBeNull();
     }
 
     [Fact]
@@ -336,7 +336,7 @@ public class PaymentWebhookLogTests
         log.MarkAsFailed("Invalid signature");
 
         // Assert
-        log.ProcessingStatus.Should().Be(WebhookProcessingStatus.Failed);
+        log.ProcessingStatus.ShouldBe(WebhookProcessingStatus.Failed);
     }
 
     [Fact]
@@ -350,7 +350,7 @@ public class PaymentWebhookLogTests
         log.MarkAsFailed("Transaction not found");
 
         // Assert
-        log.ProcessingError.Should().Be("Transaction not found");
+        log.ProcessingError.ShouldBe("Transaction not found");
     }
 
     [Fact]
@@ -358,13 +358,13 @@ public class PaymentWebhookLogTests
     {
         // Arrange
         var log = CreateTestWebhookLog();
-        log.RetryCount.Should().Be(0);
+        log.RetryCount.ShouldBe(0);
 
         // Act
         log.MarkAsFailed("First failure");
 
         // Assert
-        log.RetryCount.Should().Be(1);
+        log.RetryCount.ShouldBe(1);
     }
 
     [Fact]
@@ -379,8 +379,8 @@ public class PaymentWebhookLogTests
         log.MarkAsFailed("Failure 3");
 
         // Assert
-        log.RetryCount.Should().Be(3);
-        log.ProcessingError.Should().Be("Failure 3");
+        log.RetryCount.ShouldBe(3);
+        log.ProcessingError.ShouldBe("Failure 3");
     }
 
     [Fact]
@@ -394,7 +394,7 @@ public class PaymentWebhookLogTests
         log.MarkAsFailed("Second error");
 
         // Assert
-        log.ProcessingError.Should().Be("Second error");
+        log.ProcessingError.ShouldBe("Second error");
     }
 
     [Fact]
@@ -407,7 +407,7 @@ public class PaymentWebhookLogTests
         log.MarkAsSkipped("Duplicate event");
 
         // Assert
-        log.ProcessingStatus.Should().Be(WebhookProcessingStatus.Skipped);
+        log.ProcessingStatus.ShouldBe(WebhookProcessingStatus.Skipped);
     }
 
     [Fact]
@@ -420,7 +420,7 @@ public class PaymentWebhookLogTests
         log.MarkAsSkipped("Event already processed");
 
         // Assert
-        log.ProcessingError.Should().Be("Event already processed");
+        log.ProcessingError.ShouldBe("Event already processed");
     }
 
     [Fact]
@@ -433,7 +433,7 @@ public class PaymentWebhookLogTests
         log.MarkAsSkipped("Irrelevant event type");
 
         // Assert
-        log.RetryCount.Should().Be(0);
+        log.RetryCount.ShouldBe(0);
     }
 
     #endregion
@@ -462,19 +462,19 @@ public class PaymentWebhookLogTests
         log.MarkAsProcessed(transactionId);
 
         // Assert
-        log.PaymentGatewayId.Should().Be(gatewayId);
-        log.Provider.Should().Be("vnpay");
-        log.EventType.Should().Be("payment.success");
-        log.RequestBody.Should().Be("{\"vnp_ResponseCode\":\"00\"}");
-        log.RequestHeaders.Should().Be("{\"Content-Type\":\"application/json\"}");
-        log.SignatureValue.Should().Be("sig-abc123");
-        log.IpAddress.Should().Be("203.0.113.100");
-        log.GatewayEventId.Should().Be("evt_vnpay_001");
-        log.SignatureValid.Should().BeTrue();
-        log.ProcessingStatus.Should().Be(WebhookProcessingStatus.Processed);
-        log.PaymentTransactionId.Should().Be(transactionId);
-        log.ProcessingError.Should().BeNull();
-        log.RetryCount.Should().Be(0);
+        log.PaymentGatewayId.ShouldBe(gatewayId);
+        log.Provider.ShouldBe("vnpay");
+        log.EventType.ShouldBe("payment.success");
+        log.RequestBody.ShouldBe("{\"vnp_ResponseCode\":\"00\"}");
+        log.RequestHeaders.ShouldBe("{\"Content-Type\":\"application/json\"}");
+        log.SignatureValue.ShouldBe("sig-abc123");
+        log.IpAddress.ShouldBe("203.0.113.100");
+        log.GatewayEventId.ShouldBe("evt_vnpay_001");
+        log.SignatureValid.ShouldBeTrue();
+        log.ProcessingStatus.ShouldBe(WebhookProcessingStatus.Processed);
+        log.PaymentTransactionId.ShouldBe(transactionId);
+        log.ProcessingError.ShouldBeNull();
+        log.RetryCount.ShouldBe(0);
     }
 
     [Fact]
@@ -489,17 +489,17 @@ public class PaymentWebhookLogTests
         log.MarkAsFailed("Database connection error");
 
         // Assert first failure
-        log.ProcessingStatus.Should().Be(WebhookProcessingStatus.Failed);
-        log.RetryCount.Should().Be(1);
-        log.ProcessingError.Should().Be("Database connection error");
+        log.ProcessingStatus.ShouldBe(WebhookProcessingStatus.Failed);
+        log.RetryCount.ShouldBe(1);
+        log.ProcessingError.ShouldBe("Database connection error");
 
         // Act - retry and fail again
         log.MarkAsProcessing();
         log.MarkAsFailed("Deadlock detected");
 
         // Assert second failure
-        log.RetryCount.Should().Be(2);
-        log.ProcessingError.Should().Be("Deadlock detected");
+        log.RetryCount.ShouldBe(2);
+        log.ProcessingError.ShouldBe("Deadlock detected");
 
         // Act - retry and succeed
         log.MarkAsProcessing();
@@ -507,9 +507,9 @@ public class PaymentWebhookLogTests
         log.MarkAsProcessed(transactionId);
 
         // Assert final success
-        log.ProcessingStatus.Should().Be(WebhookProcessingStatus.Processed);
-        log.PaymentTransactionId.Should().Be(transactionId);
-        log.RetryCount.Should().Be(2);
+        log.ProcessingStatus.ShouldBe(WebhookProcessingStatus.Processed);
+        log.PaymentTransactionId.ShouldBe(transactionId);
+        log.RetryCount.ShouldBe(2);
     }
 
     [Fact]
@@ -524,10 +524,10 @@ public class PaymentWebhookLogTests
         log.MarkAsSkipped("Invalid signature - possible forgery");
 
         // Assert
-        log.SignatureValid.Should().BeFalse();
-        log.ProcessingStatus.Should().Be(WebhookProcessingStatus.Skipped);
-        log.ProcessingError.Should().Be("Invalid signature - possible forgery");
-        log.RetryCount.Should().Be(0);
+        log.SignatureValid.ShouldBeFalse();
+        log.ProcessingStatus.ShouldBe(WebhookProcessingStatus.Skipped);
+        log.ProcessingError.ShouldBe("Invalid signature - possible forgery");
+        log.RetryCount.ShouldBe(0);
     }
 
     [Fact]
@@ -542,8 +542,8 @@ public class PaymentWebhookLogTests
         log.MarkAsSkipped("Duplicate event: evt_already_processed");
 
         // Assert
-        log.ProcessingStatus.Should().Be(WebhookProcessingStatus.Skipped);
-        log.ProcessingError.Should().Contain("Duplicate event");
+        log.ProcessingStatus.ShouldBe(WebhookProcessingStatus.Skipped);
+        log.ProcessingError.ShouldContain("Duplicate event");
     }
 
     #endregion

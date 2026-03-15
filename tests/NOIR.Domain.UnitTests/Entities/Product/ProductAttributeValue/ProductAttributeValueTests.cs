@@ -40,13 +40,13 @@ public class ProductAttributeValueTests
         var attrValue = CreateTestValue();
 
         // Assert
-        attrValue.Should().NotBeNull();
-        attrValue.Id.Should().NotBe(Guid.Empty);
-        attrValue.AttributeId.Should().Be(TestAttributeId);
-        attrValue.Value.Should().Be("red");
-        attrValue.DisplayValue.Should().Be("Red");
-        attrValue.SortOrder.Should().Be(0);
-        attrValue.TenantId.Should().Be(TestTenantId);
+        attrValue.ShouldNotBeNull();
+        attrValue.Id.ShouldNotBe(Guid.Empty);
+        attrValue.AttributeId.ShouldBe(TestAttributeId);
+        attrValue.Value.ShouldBe("red");
+        attrValue.DisplayValue.ShouldBe("Red");
+        attrValue.SortOrder.ShouldBe(0);
+        attrValue.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -56,11 +56,11 @@ public class ProductAttributeValueTests
         var attrValue = CreateTestValue();
 
         // Assert
-        attrValue.IsActive.Should().BeTrue();
-        attrValue.ProductCount.Should().Be(0);
-        attrValue.ColorCode.Should().BeNull();
-        attrValue.SwatchUrl.Should().BeNull();
-        attrValue.IconUrl.Should().BeNull();
+        attrValue.IsActive.ShouldBeTrue();
+        attrValue.ProductCount.ShouldBe(0);
+        attrValue.ColorCode.ShouldBeNull();
+        attrValue.SwatchUrl.ShouldBeNull();
+        attrValue.IconUrl.ShouldBeNull();
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class ProductAttributeValueTests
             TestAttributeId, "Sky Blue", "Sky Blue", 0);
 
         // Assert
-        attrValue.Value.Should().Be("sky_blue");
+        attrValue.Value.ShouldBe("sky_blue");
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class ProductAttributeValueTests
             TestAttributeId, "RED", "Red", 0);
 
         // Assert
-        attrValue.Value.Should().Be("red");
+        attrValue.Value.ShouldBe("red");
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public class ProductAttributeValueTests
         var attrValue = CreateTestValue(sortOrder: 5);
 
         // Assert
-        attrValue.SortOrder.Should().Be(5);
+        attrValue.SortOrder.ShouldBe(5);
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public class ProductAttributeValueTests
         var attrValue = CreateTestValue(tenantId: null);
 
         // Assert
-        attrValue.TenantId.Should().BeNull();
+        attrValue.TenantId.ShouldBeNull();
     }
 
     #endregion
@@ -119,8 +119,8 @@ public class ProductAttributeValueTests
         attrValue.UpdateValue("blue", "Blue");
 
         // Assert
-        attrValue.Value.Should().Be("blue");
-        attrValue.DisplayValue.Should().Be("Blue");
+        attrValue.Value.ShouldBe("blue");
+        attrValue.DisplayValue.ShouldBe("Blue");
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class ProductAttributeValueTests
         attrValue.UpdateValue("Dark Blue", "Dark Blue");
 
         // Assert
-        attrValue.Value.Should().Be("dark_blue");
+        attrValue.Value.ShouldBe("dark_blue");
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class ProductAttributeValueTests
         attrValue.UpdateValue("GREEN", "Green");
 
         // Assert
-        attrValue.Value.Should().Be("green");
+        attrValue.Value.ShouldBe("green");
     }
 
     #endregion
@@ -163,9 +163,9 @@ public class ProductAttributeValueTests
         attrValue.SetVisualDisplay("#FF0000", "https://swatch.png", "https://icon.svg");
 
         // Assert
-        attrValue.ColorCode.Should().Be("#FF0000");
-        attrValue.SwatchUrl.Should().Be("https://swatch.png");
-        attrValue.IconUrl.Should().Be("https://icon.svg");
+        attrValue.ColorCode.ShouldBe("#FF0000");
+        attrValue.SwatchUrl.ShouldBe("https://swatch.png");
+        attrValue.IconUrl.ShouldBe("https://icon.svg");
     }
 
     [Fact]
@@ -179,9 +179,9 @@ public class ProductAttributeValueTests
         attrValue.SetVisualDisplay(null, null, null);
 
         // Assert
-        attrValue.ColorCode.Should().BeNull();
-        attrValue.SwatchUrl.Should().BeNull();
-        attrValue.IconUrl.Should().BeNull();
+        attrValue.ColorCode.ShouldBeNull();
+        attrValue.SwatchUrl.ShouldBeNull();
+        attrValue.IconUrl.ShouldBeNull();
     }
 
     #endregion
@@ -198,7 +198,7 @@ public class ProductAttributeValueTests
         attrValue.SetSortOrder(10);
 
         // Assert
-        attrValue.SortOrder.Should().Be(10);
+        attrValue.SortOrder.ShouldBe(10);
     }
 
     #endregion
@@ -215,7 +215,7 @@ public class ProductAttributeValueTests
         attrValue.SetActive(false);
 
         // Assert
-        attrValue.IsActive.Should().BeFalse();
+        attrValue.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -229,7 +229,7 @@ public class ProductAttributeValueTests
         attrValue.SetActive(true);
 
         // Assert
-        attrValue.IsActive.Should().BeTrue();
+        attrValue.IsActive.ShouldBeTrue();
     }
 
     #endregion
@@ -246,7 +246,7 @@ public class ProductAttributeValueTests
         attrValue.UpdateProductCount(25);
 
         // Assert
-        attrValue.ProductCount.Should().Be(25);
+        attrValue.ProductCount.ShouldBe(25);
     }
 
     [Fact]
@@ -260,7 +260,7 @@ public class ProductAttributeValueTests
         attrValue.IncrementProductCount();
 
         // Assert
-        attrValue.ProductCount.Should().Be(2);
+        attrValue.ProductCount.ShouldBe(2);
     }
 
     [Fact]
@@ -274,7 +274,7 @@ public class ProductAttributeValueTests
         attrValue.DecrementProductCount();
 
         // Assert
-        attrValue.ProductCount.Should().Be(2);
+        attrValue.ProductCount.ShouldBe(2);
     }
 
     [Fact]
@@ -282,13 +282,13 @@ public class ProductAttributeValueTests
     {
         // Arrange
         var attrValue = CreateTestValue();
-        attrValue.ProductCount.Should().Be(0);
+        attrValue.ProductCount.ShouldBe(0);
 
         // Act
         attrValue.DecrementProductCount();
 
         // Assert
-        attrValue.ProductCount.Should().Be(0);
+        attrValue.ProductCount.ShouldBe(0);
     }
 
     #endregion

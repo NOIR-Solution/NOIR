@@ -150,12 +150,12 @@ public class CreateInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ReceiptNumber.Should().StartWith("RCV-");
-        result.Value.ReceiptNumber.Should().EndWith("-0001");
-        result.Value.Type.Should().Be(InventoryReceiptType.StockIn);
-        result.Value.Status.Should().Be(InventoryReceiptStatus.Draft);
-        result.Value.Notes.Should().Be("Supplier delivery");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ReceiptNumber.ShouldStartWith("RCV-");
+        result.Value.ReceiptNumber.ShouldEndWith("-0001");
+        result.Value.Type.ShouldBe(InventoryReceiptType.StockIn);
+        result.Value.Status.ShouldBe(InventoryReceiptStatus.Draft);
+        result.Value.Notes.ShouldBe("Supplier delivery");
 
         _receiptRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<InventoryReceipt>(), It.IsAny<CancellationToken>()),
@@ -182,9 +182,9 @@ public class CreateInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ReceiptNumber.Should().StartWith("SHP-");
-        result.Value.Type.Should().Be(InventoryReceiptType.StockOut);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ReceiptNumber.ShouldStartWith("SHP-");
+        result.Value.Type.ShouldBe(InventoryReceiptType.StockOut);
     }
 
     [Fact]
@@ -204,8 +204,8 @@ public class CreateInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -241,8 +241,8 @@ public class CreateInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ReceiptNumber.Should().EndWith("-0006");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ReceiptNumber.ShouldEndWith("-0006");
     }
 
     [Fact]
@@ -262,8 +262,8 @@ public class CreateInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Notes.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Notes.ShouldBeNull();
     }
 
     #endregion
@@ -293,8 +293,8 @@ public class CreateInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be("NOIR-INVENTORY-005");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe("NOIR-INVENTORY-005");
 
         _receiptRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<InventoryReceipt>(), It.IsAny<CancellationToken>()),
@@ -328,8 +328,8 @@ public class CreateInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be("NOIR-INVENTORY-006");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe("NOIR-INVENTORY-006");
 
         _receiptRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<InventoryReceipt>(), It.IsAny<CancellationToken>()),

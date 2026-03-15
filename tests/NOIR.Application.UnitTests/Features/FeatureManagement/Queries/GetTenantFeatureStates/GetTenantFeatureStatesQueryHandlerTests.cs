@@ -69,11 +69,11 @@ public class GetTenantFeatureStatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value.Modules[0];
-        dto.IsAvailable.Should().BeTrue(); // Default: true
-        dto.IsEnabled.Should().BeTrue(); // Uses DefaultEnabled from module
-        dto.IsEffective.Should().BeTrue(); // Available && Enabled
+        dto.IsAvailable.ShouldBe(true); // Default: true
+        dto.IsEnabled.ShouldBe(true); // Uses DefaultEnabled from module
+        dto.IsEffective.ShouldBe(true); // Available && Enabled
     }
 
     [Fact]
@@ -91,9 +91,9 @@ public class GetTenantFeatureStatesQueryHandlerTests
 
         // Assert
         var dto = result.Value.Modules[0];
-        dto.IsAvailable.Should().BeTrue();
-        dto.IsEnabled.Should().BeFalse();
-        dto.IsEffective.Should().BeFalse();
+        dto.IsAvailable.ShouldBe(true);
+        dto.IsEnabled.ShouldBe(false);
+        dto.IsEffective.ShouldBe(false);
     }
 
     #endregion
@@ -119,9 +119,9 @@ public class GetTenantFeatureStatesQueryHandlerTests
 
         // Assert
         var dto = result.Value.Modules[0];
-        dto.IsAvailable.Should().BeFalse(); // From DB
-        dto.IsEnabled.Should().BeTrue(); // From DB
-        dto.IsEffective.Should().BeFalse(); // Not available
+        dto.IsAvailable.ShouldBe(false); // From DB
+        dto.IsEnabled.ShouldBe(true); // From DB
+        dto.IsEffective.ShouldBe(false); // Not available
     }
 
     [Fact]
@@ -147,7 +147,7 @@ public class GetTenantFeatureStatesQueryHandlerTests
 
         // Assert
         var featureDto = result.Value.Modules[0].Features[0];
-        featureDto.IsEnabled.Should().BeFalse(); // From DB
+        featureDto.IsEnabled.ShouldBe(false); // From DB
     }
 
     #endregion
@@ -169,7 +169,7 @@ public class GetTenantFeatureStatesQueryHandlerTests
 
         // Assert
         var dto = result.Value.Modules[0];
-        dto.IsEffective.Should().BeTrue(); // Core modules always effective
+        dto.IsEffective.ShouldBe(true); // Core modules always effective
     }
 
     #endregion
@@ -198,10 +198,10 @@ public class GetTenantFeatureStatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.Value.Modules.Should().HaveCount(3);
-        result.Value.Modules[0].IsEffective.Should().BeTrue(); // Auth: core
-        result.Value.Modules[1].IsEffective.Should().BeTrue(); // Ecommerce: available & enabled
-        result.Value.Modules[2].IsEffective.Should().BeFalse(); // Content: default disabled
+        result.Value.Modules.Count().ShouldBe(3);
+        result.Value.Modules[0].IsEffective.ShouldBe(true); // Auth: core
+        result.Value.Modules[1].IsEffective.ShouldBe(true); // Ecommerce: available & enabled
+        result.Value.Modules[2].IsEffective.ShouldBe(false); // Content: default disabled
     }
 
     [Fact]
@@ -226,7 +226,7 @@ public class GetTenantFeatureStatesQueryHandlerTests
 
         // Assert
         var dto = result.Value.Modules[0];
-        dto.IsAvailable.Should().BeFalse(); // Uses test-tenant's state, not other-tenant's
+        dto.IsAvailable.ShouldBe(false); // Uses test-tenant's state, not other-tenant's
     }
 
     #endregion
@@ -255,7 +255,7 @@ public class GetTenantFeatureStatesQueryHandlerTests
 
         // Assert
         var featureDto = result.Value.Modules[0].Features[0];
-        featureDto.IsEffective.Should().BeFalse(); // Parent module not effective
+        featureDto.IsEffective.ShouldBe(false); // Parent module not effective
     }
 
     #endregion

@@ -80,9 +80,9 @@ public class RenameMediaFileCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
-        mediaFile.OriginalFileName.Should().Be("new-name.jpg");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
+        mediaFile.OriginalFileName.ShouldBe("new-name.jpg");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -112,8 +112,8 @@ public class RenameMediaFileCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        mediaFile.OriginalFileName.Should().Be(newFileName);
+        result.IsSuccess.ShouldBe(true);
+        mediaFile.OriginalFileName.ShouldBe(newFileName);
     }
 
     #endregion
@@ -136,8 +136,8 @@ public class RenameMediaFileCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be("NOIR-MEDIA-003");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe("NOIR-MEDIA-003");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),

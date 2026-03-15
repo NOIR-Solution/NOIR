@@ -125,11 +125,11 @@ public class ConfirmCodCollectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Status.Should().Be(PaymentStatus.CodCollected);
-        result.Value.CodCollectorName.Should().Be(TestDisplayName);
-        result.Value.CodCollectedAt.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Status.ShouldBe(PaymentStatus.CodCollected);
+        result.Value.CodCollectorName.ShouldBe(TestDisplayName);
+        result.Value.CodCollectedAt.ShouldNotBeNull();
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         _paymentHubContextMock.Verify(x => x.SendCodCollectionUpdateAsync(
@@ -164,9 +164,9 @@ public class ConfirmCodCollectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Collector name should use the display name from ICurrentUser, not the raw UserId
-        result.Value.CodCollectorName.Should().Be("John Doe");
+        result.Value.CodCollectorName.ShouldBe("John Doe");
     }
 
     [Fact]
@@ -192,9 +192,9 @@ public class ConfirmCodCollectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Should fall back to email when display name is null
-        result.Value.CodCollectorName.Should().Be("collector@test.com");
+        result.Value.CodCollectorName.ShouldBe("collector@test.com");
     }
 
     #endregion
@@ -215,9 +215,9 @@ public class ConfirmCodCollectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.TransactionNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.TransactionNotFound);
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         _paymentHubContextMock.Verify(x => x.SendCodCollectionUpdateAsync(
@@ -245,10 +245,10 @@ public class ConfirmCodCollectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.NotCodPayment);
-        result.Error.Message.Should().Contain("not a COD payment");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.NotCodPayment);
+        result.Error.Message.ShouldContain("not a COD payment");
     }
 
     [Fact]
@@ -276,10 +276,10 @@ public class ConfirmCodCollectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.InvalidStatusTransition);
-        result.Error.Message.Should().Contain("COD pending");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.InvalidStatusTransition);
+        result.Error.Message.ShouldContain("COD pending");
     }
 
     [Fact]
@@ -297,9 +297,9 @@ public class ConfirmCodCollectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.InvalidRequesterId);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.InvalidRequesterId);
     }
 
     [Fact]
@@ -317,9 +317,9 @@ public class ConfirmCodCollectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.InvalidRequesterId);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.InvalidRequesterId);
     }
 
     #endregion
@@ -347,7 +347,7 @@ public class ConfirmCodCollectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         // Hub notification should not be sent when tenantId is null
         _paymentHubContextMock.Verify(x => x.SendCodCollectionUpdateAsync(

@@ -23,11 +23,11 @@ public class HttpRequestAuditLogTests
             tenantId: null, ipAddress: null, userAgent: null);
 
         // Assert
-        log.Should().NotBeNull();
-        log.Id.Should().NotBe(Guid.Empty);
-        log.CorrelationId.Should().Be(correlationId);
-        log.HttpMethod.Should().Be(httpMethod);
-        log.Url.Should().Be(url);
+        log.ShouldNotBeNull();
+        log.Id.ShouldNotBe(Guid.Empty);
+        log.CorrelationId.ShouldBe(correlationId);
+        log.HttpMethod.ShouldBe(httpMethod);
+        log.Url.ShouldBe(url);
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class HttpRequestAuditLogTests
         var log2 = HttpRequestAuditLog.Create("corr-2", "GET", "/api/2", null, null, null, null, null, null);
 
         // Assert
-        log1.Id.Should().NotBe(log2.Id);
+        log1.Id.ShouldNotBe(log2.Id);
     }
 
     [Fact]
@@ -52,7 +52,9 @@ public class HttpRequestAuditLogTests
 
         // Assert
         var afterCreate = DateTimeOffset.UtcNow;
-        log.StartTime.Should().BeOnOrAfter(beforeCreate).And.BeOnOrBefore(afterCreate);
+        log.StartTime.ShouldBeGreaterThanOrEqualTo(beforeCreate);
+
+        log.StartTime.ShouldBeLessThanOrEqualTo(afterCreate);
     }
 
     [Fact]
@@ -76,12 +78,12 @@ public class HttpRequestAuditLogTests
             tenantId, ipAddress, userAgent);
 
         // Assert
-        log.QueryString.Should().Be(queryString);
-        log.UserId.Should().Be(userId);
-        log.UserEmail.Should().Be(userEmail);
-        log.TenantId.Should().Be(tenantId);
-        log.IpAddress.Should().Be(ipAddress);
-        log.UserAgent.Should().Be(userAgent);
+        log.QueryString.ShouldBe(queryString);
+        log.UserId.ShouldBe(userId);
+        log.UserEmail.ShouldBe(userEmail);
+        log.TenantId.ShouldBe(tenantId);
+        log.IpAddress.ShouldBe(ipAddress);
+        log.UserAgent.ShouldBe(userAgent);
     }
 
     [Fact]
@@ -91,8 +93,8 @@ public class HttpRequestAuditLogTests
         var log = HttpRequestAuditLog.Create("corr-123", "GET", "/api/test", null, null, null, null, null, null);
 
         // Assert
-        log.IsArchived.Should().BeFalse();
-        log.ArchivedAt.Should().BeNull();
+        log.IsArchived.ShouldBeFalse();
+        log.ArchivedAt.ShouldBeNull();
     }
 
     [Fact]
@@ -102,10 +104,10 @@ public class HttpRequestAuditLogTests
         var log = HttpRequestAuditLog.Create("corr-123", "GET", "/api/test", null, null, null, null, null, null);
 
         // Assert
-        log.ResponseStatusCode.Should().BeNull();
-        log.ResponseBody.Should().BeNull();
-        log.EndTime.Should().BeNull();
-        log.DurationMs.Should().BeNull();
+        log.ResponseStatusCode.ShouldBeNull();
+        log.ResponseBody.ShouldBeNull();
+        log.EndTime.ShouldBeNull();
+        log.DurationMs.ShouldBeNull();
     }
 
     [Fact]
@@ -115,8 +117,8 @@ public class HttpRequestAuditLogTests
         var log = HttpRequestAuditLog.Create("corr-123", "GET", "/api/test", null, null, null, null, null, null);
 
         // Assert
-        log.HandlerAuditLogs.Should().NotBeNull();
-        log.HandlerAuditLogs.Should().BeEmpty();
+        log.HandlerAuditLogs.ShouldNotBeNull();
+        log.HandlerAuditLogs.ShouldBeEmpty();
     }
 
     #endregion
@@ -137,7 +139,7 @@ public class HttpRequestAuditLogTests
         var log = HttpRequestAuditLog.Create("corr-123", httpMethod, "/api/test", null, null, null, null, null, null);
 
         // Assert
-        log.HttpMethod.Should().Be(httpMethod);
+        log.HttpMethod.ShouldBe(httpMethod);
     }
 
     #endregion
@@ -154,7 +156,7 @@ public class HttpRequestAuditLogTests
         log.Complete(statusCode: 200);
 
         // Assert
-        log.ResponseStatusCode.Should().Be(200);
+        log.ResponseStatusCode.ShouldBe(200);
     }
 
     [Fact]
@@ -168,8 +170,8 @@ public class HttpRequestAuditLogTests
         log.Complete(statusCode: 200);
 
         // Assert
-        log.EndTime.Should().NotBeNull();
-        log.EndTime.Should().BeOnOrAfter(afterCreate);
+        log.EndTime.ShouldNotBeNull();
+        log.EndTime!.Value.ShouldBeGreaterThanOrEqualTo(afterCreate);
     }
 
     [Fact]
@@ -183,9 +185,9 @@ public class HttpRequestAuditLogTests
         log.Complete(statusCode: 200);
 
         // Assert
-        log.DurationMs.Should().NotBeNull();
-        log.DurationMs!.Value.Should().BeGreaterThanOrEqualTo(40); // Allow some tolerance
-        log.DurationMs.Should().BeLessThan(500); // Should not be too long
+        log.DurationMs.ShouldNotBeNull();
+        log.DurationMs!.Value.ShouldBeGreaterThanOrEqualTo(40); // Allow some tolerance
+        log.DurationMs!.Value.ShouldBeLessThan(500); // Should not be too long
     }
 
     [Fact]
@@ -199,7 +201,7 @@ public class HttpRequestAuditLogTests
         log.Complete(statusCode: 200, responseBody: responseBody);
 
         // Assert
-        log.ResponseBody.Should().Be(responseBody);
+        log.ResponseBody.ShouldBe(responseBody);
     }
 
     [Theory]
@@ -220,7 +222,7 @@ public class HttpRequestAuditLogTests
         log.Complete(statusCode: statusCode);
 
         // Assert
-        log.ResponseStatusCode.Should().Be(statusCode);
+        log.ResponseStatusCode.ShouldBe(statusCode);
     }
 
     [Fact]
@@ -237,9 +239,9 @@ public class HttpRequestAuditLogTests
         log.Complete(statusCode: 500, responseBody: "second");
 
         // Assert
-        log.ResponseStatusCode.Should().Be(500);
-        log.ResponseBody.Should().Be("second");
-        log.EndTime.Should().BeOnOrAfter(firstEndTime!.Value);
+        log.ResponseStatusCode.ShouldBe(500);
+        log.ResponseBody.ShouldBe("second");
+        log.EndTime!.Value.ShouldBeGreaterThanOrEqualTo(firstEndTime!.Value);
     }
 
     #endregion
@@ -256,7 +258,7 @@ public class HttpRequestAuditLogTests
         var act = () => HttpRequestAuditLog.Create(correlationId!, "GET", "/api/test", null, null, null, null, null, null);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -269,7 +271,7 @@ public class HttpRequestAuditLogTests
         var act = () => HttpRequestAuditLog.Create("corr-123", httpMethod!, "/api/test", null, null, null, null, null, null);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -282,7 +284,7 @@ public class HttpRequestAuditLogTests
         var act = () => HttpRequestAuditLog.Create("corr-123", "GET", url!, null, null, null, null, null, null);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     #endregion
@@ -301,7 +303,7 @@ public class HttpRequestAuditLogTests
         var log = HttpRequestAuditLog.Create("corr-123", "GET", url, null, null, null, null, null, null);
 
         // Assert
-        log.Url.Should().Be(url);
+        log.Url.ShouldBe(url);
     }
 
     #endregion
@@ -320,7 +322,7 @@ public class HttpRequestAuditLogTests
         var log = HttpRequestAuditLog.Create("corr-123", "GET", "/api/test", null, null, null, null, ipAddress, null);
 
         // Assert
-        log.IpAddress.Should().Be(ipAddress);
+        log.IpAddress.ShouldBe(ipAddress);
     }
 
     #endregion
@@ -338,7 +340,7 @@ public class HttpRequestAuditLogTests
         var log = HttpRequestAuditLog.Create("corr-123", "GET", "/api/test", null, null, null, null, null, userAgent);
 
         // Assert
-        log.UserAgent.Should().Be(userAgent);
+        log.UserAgent.ShouldBe(userAgent);
     }
 
     #endregion
@@ -352,7 +354,7 @@ public class HttpRequestAuditLogTests
         var log = HttpRequestAuditLog.Create("corr-123", "GET", "/api/test", null, null, null, "tenant-abc", null, null);
 
         // Assert
-        log.TenantId.Should().Be("tenant-abc");
+        log.TenantId.ShouldBe("tenant-abc");
     }
 
     [Fact]
@@ -362,7 +364,7 @@ public class HttpRequestAuditLogTests
         var log = HttpRequestAuditLog.Create("corr-123", "GET", "/api/test", null, null, null, null, null, null);
 
         // Assert
-        log.TenantId.Should().BeNull();
+        log.TenantId.ShouldBeNull();
     }
 
     #endregion

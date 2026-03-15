@@ -111,8 +111,8 @@ public class CancelShippingOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        order.Status.Should().Be(ShippingStatus.Cancelled);
+        result.IsSuccess.ShouldBe(true);
+        order.Status.ShouldBe(ShippingStatus.Cancelled);
 
         // Provider should not be called for Draft orders
         _providerFactoryMock.Verify(x => x.GetProvider(It.IsAny<ShippingProviderCode>()), Times.Once);
@@ -151,8 +151,8 @@ public class CancelShippingOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        order.Status.Should().Be(ShippingStatus.Cancelled);
+        result.IsSuccess.ShouldBe(true);
+        order.Status.ShouldBe(ShippingStatus.Cancelled);
 
         _shippingProviderMock.Verify(x => x.CancelOrderAsync(TestTrackingNumber, It.IsAny<ShippingProvider>(), It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -190,8 +190,8 @@ public class CancelShippingOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert - Should still succeed locally even if provider fails
-        result.IsSuccess.Should().BeTrue();
-        order.Status.Should().Be(ShippingStatus.Cancelled);
+        result.IsSuccess.ShouldBe(true);
+        order.Status.ShouldBe(ShippingStatus.Cancelled);
     }
 
     #endregion
@@ -212,9 +212,9 @@ public class CancelShippingOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain("NONEXISTENT123");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Message.ShouldContain("NONEXISTENT123");
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -237,9 +237,9 @@ public class CancelShippingOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Conflict);
-        result.Error.Message.Should().Contain(status.ToString());
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Conflict);
+        result.Error.Message.ShouldContain(status.ToString());
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -263,9 +263,9 @@ public class CancelShippingOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain("Provider configuration not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Message.ShouldContain("Provider configuration not found");
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -303,8 +303,8 @@ public class CancelShippingOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        order.Status.Should().Be(ShippingStatus.Cancelled);
+        result.IsSuccess.ShouldBe(true);
+        order.Status.ShouldBe(ShippingStatus.Cancelled);
     }
 
     [Fact]
@@ -340,8 +340,8 @@ public class CancelShippingOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        order.Notes.Should().Contain(cancellationReason);
+        result.IsSuccess.ShouldBe(true);
+        order.Notes.ShouldContain(cancellationReason);
     }
 
     #endregion

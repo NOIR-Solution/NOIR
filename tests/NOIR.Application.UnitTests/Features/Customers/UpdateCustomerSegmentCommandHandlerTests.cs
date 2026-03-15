@@ -62,8 +62,8 @@ public class UpdateCustomerSegmentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Segment.Should().Be(segment);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Segment.ShouldBe(segment);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -91,8 +91,8 @@ public class UpdateCustomerSegmentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Segment.Should().Be(CustomerSegment.VIP);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Segment.ShouldBe(CustomerSegment.VIP);
     }
 
     #endregion
@@ -115,8 +115,8 @@ public class UpdateCustomerSegmentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CUSTOMER-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CUSTOMER-002");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),

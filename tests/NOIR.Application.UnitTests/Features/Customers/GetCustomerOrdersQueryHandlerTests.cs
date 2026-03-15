@@ -57,8 +57,8 @@ public class GetCustomerOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TotalCount.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TotalCount.ShouldBe(3);
     }
 
     [Fact]
@@ -89,9 +89,9 @@ public class GetCustomerOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
     }
 
     #endregion
@@ -114,8 +114,8 @@ public class GetCustomerOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CUSTOMER-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CUSTOMER-002");
 
         // Should not query orders if customer doesn't exist
         _orderRepositoryMock.Verify(
@@ -202,11 +202,11 @@ public class GetCustomerOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PageIndex.Should().Be(2); // 0-based internal index
-        result.Value.PageNumber.Should().Be(3);
-        result.Value.TotalCount.Should().Be(50);
-        result.Value.TotalPages.Should().Be(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PageIndex.ShouldBe(2); // 0-based internal index
+        result.Value.PageNumber.ShouldBe(3);
+        result.Value.TotalCount.ShouldBe(50);
+        result.Value.TotalPages.ShouldBe(5);
     }
 
     #endregion

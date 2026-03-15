@@ -64,10 +64,10 @@ public class PermissionEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.GetAsync("/api/permissions");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<IReadOnlyList<PermissionDto>>();
-        result.Should().NotBeNull();
-        result.Should().NotBeEmpty();
+        result.ShouldNotBeNull();
+        result.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class PermissionEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await _client.GetAsync("/api/permissions");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class PermissionEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await userClient.GetAsync("/api/permissions");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -104,14 +104,14 @@ public class PermissionEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.GetAsync("/api/permissions");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<IReadOnlyList<PermissionDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
 
         // Verify some expected permissions exist
-        result.Should().Contain(p => p.Name == Permissions.UsersRead);
-        result.Should().Contain(p => p.Name == Permissions.RolesRead);
-        result.Should().Contain(p => p.Name == Permissions.TenantsRead);
+        result.ShouldContain(p => p.Name == Permissions.UsersRead);
+        result.ShouldContain(p => p.Name == Permissions.RolesRead);
+        result.ShouldContain(p => p.Name == Permissions.TenantsRead);
     }
 
     [Fact]
@@ -124,16 +124,16 @@ public class PermissionEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.GetAsync("/api/permissions");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<IReadOnlyList<PermissionDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
 
         var firstPermission = result!.First();
-        firstPermission.Id.Should().NotBeNullOrEmpty();
-        firstPermission.Name.Should().NotBeNullOrEmpty();
-        firstPermission.Resource.Should().NotBeNullOrEmpty();
-        firstPermission.Action.Should().NotBeNullOrEmpty();
-        firstPermission.DisplayName.Should().NotBeNullOrEmpty();
+        firstPermission.Id.ShouldNotBeNullOrEmpty();
+        firstPermission.Name.ShouldNotBeNullOrEmpty();
+        firstPermission.Resource.ShouldNotBeNullOrEmpty();
+        firstPermission.Action.ShouldNotBeNullOrEmpty();
+        firstPermission.DisplayName.ShouldNotBeNullOrEmpty();
     }
 
     #endregion
@@ -150,9 +150,9 @@ public class PermissionEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.GetAsync("/api/permission-templates");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<IReadOnlyList<PermissionTemplateDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -162,7 +162,7 @@ public class PermissionEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await _client.GetAsync("/api/permission-templates");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -176,7 +176,7 @@ public class PermissionEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await userClient.GetAsync("/api/permission-templates");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -189,17 +189,17 @@ public class PermissionEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.GetAsync("/api/permission-templates");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<IReadOnlyList<PermissionTemplateDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
 
         // If there are templates, they should have required fields
         if (result!.Count > 0)
         {
             var firstTemplate = result.First();
-            firstTemplate.Id.Should().NotBeEmpty();
-            firstTemplate.Name.Should().NotBeNullOrEmpty();
-            firstTemplate.Permissions.Should().NotBeNull();
+            firstTemplate.Id.ShouldNotBe(Guid.Empty);
+            firstTemplate.Name.ShouldNotBeNullOrEmpty();
+            firstTemplate.Permissions.ShouldNotBeNull();
         }
     }
 
@@ -218,8 +218,8 @@ public class PermissionEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var templatesResponse = await adminClient.GetAsync("/api/permission-templates");
 
         // Assert - Both should succeed for admin
-        permissionsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        templatesResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        permissionsResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
+        templatesResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -234,8 +234,8 @@ public class PermissionEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var templatesResponse = await userClient.GetAsync("/api/permission-templates");
 
         // Assert - Both should be forbidden for regular users
-        permissionsResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-        templatesResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        permissionsResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        templatesResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion

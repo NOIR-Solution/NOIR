@@ -154,8 +154,8 @@ public class AssignPermissionToRoleCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Permission cannot be empty.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Permission cannot be empty.");
     }
 
     [Fact]
@@ -170,8 +170,8 @@ public class AssignPermissionToRoleCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Permission cannot be empty.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Permission cannot be empty.");
     }
 
     [Fact]
@@ -186,8 +186,8 @@ public class AssignPermissionToRoleCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Permission 'invalid:permission' is not a valid permission.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Permission 'invalid:permission' is not a valid permission.");
     }
 
     [Fact]
@@ -202,8 +202,8 @@ public class AssignPermissionToRoleCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Permission 'invalid:permission' is not a valid permission.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Permission 'invalid:permission' is not a valid permission.");
     }
 
     [Theory]

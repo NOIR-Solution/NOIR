@@ -35,12 +35,12 @@ public class ReviewMediaTests
         var media = review.AddMedia("https://example.com/image.jpg", ReviewMediaType.Image, 0);
 
         // Assert
-        media.Should().NotBeNull();
-        media.Id.Should().NotBe(Guid.Empty);
-        media.ReviewId.Should().Be(review.Id);
-        media.MediaUrl.Should().Be("https://example.com/image.jpg");
-        media.MediaType.Should().Be(ReviewMediaType.Image);
-        media.DisplayOrder.Should().Be(0);
+        media.ShouldNotBeNull();
+        media.Id.ShouldNotBe(Guid.Empty);
+        media.ReviewId.ShouldBe(review.Id);
+        media.MediaUrl.ShouldBe("https://example.com/image.jpg");
+        media.MediaType.ShouldBe(ReviewMediaType.Image);
+        media.DisplayOrder.ShouldBe(0);
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class ReviewMediaTests
         var media = review.AddMedia("https://example.com/video.mp4", ReviewMediaType.Video, 0);
 
         // Assert
-        media.MediaType.Should().Be(ReviewMediaType.Video);
+        media.MediaType.ShouldBe(ReviewMediaType.Video);
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public class ReviewMediaTests
         var media = review.AddMedia("https://example.com/img.jpg", ReviewMediaType.Image, 0);
 
         // Assert
-        media.TenantId.Should().Be("custom-tenant");
+        media.TenantId.ShouldBe("custom-tenant");
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class ReviewMediaTests
         var media = review.AddMedia("https://example.com/img.jpg", ReviewMediaType.Image, 0);
 
         // Assert
-        media.TenantId.Should().BeNull();
+        media.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -93,7 +93,7 @@ public class ReviewMediaTests
         var media2 = review.AddMedia("https://example.com/2.jpg", ReviewMediaType.Image, 1);
 
         // Assert
-        media1.Id.Should().NotBe(media2.Id);
+        media1.Id.ShouldNotBe(media2.Id);
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class ReviewMediaTests
         var media = review.AddMedia("https://example.com/img.jpg", ReviewMediaType.Image, 0);
 
         // Assert
-        media.ReviewId.Should().Be(review.Id);
+        media.ReviewId.ShouldBe(review.Id);
     }
 
     #endregion
@@ -125,9 +125,9 @@ public class ReviewMediaTests
         var media2 = review.AddMedia("https://example.com/third.jpg", ReviewMediaType.Image, 2);
 
         // Assert
-        media0.DisplayOrder.Should().Be(0);
-        media1.DisplayOrder.Should().Be(1);
-        media2.DisplayOrder.Should().Be(2);
+        media0.DisplayOrder.ShouldBe(0);
+        media1.DisplayOrder.ShouldBe(1);
+        media2.DisplayOrder.ShouldBe(2);
     }
 
     [Fact]
@@ -142,9 +142,9 @@ public class ReviewMediaTests
         var media3 = review.AddMedia("https://example.com/c.jpg", ReviewMediaType.Image, 20);
 
         // Assert
-        media1.DisplayOrder.Should().Be(10);
-        media2.DisplayOrder.Should().Be(5);
-        media3.DisplayOrder.Should().Be(20);
+        media1.DisplayOrder.ShouldBe(10);
+        media2.DisplayOrder.ShouldBe(5);
+        media3.DisplayOrder.ShouldBe(20);
     }
 
     #endregion
@@ -163,7 +163,7 @@ public class ReviewMediaTests
         var media = review.AddMedia("https://example.com/file", type, 0);
 
         // Assert
-        media.MediaType.Should().Be(type);
+        media.MediaType.ShouldBe(type);
     }
 
     #endregion
@@ -182,7 +182,7 @@ public class ReviewMediaTests
         review.AddMedia("https://example.com/3.jpg", ReviewMediaType.Image, 2);
 
         // Assert
-        review.Media.Should().HaveCount(3);
+        review.Media.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -196,8 +196,8 @@ public class ReviewMediaTests
         var media2 = review.AddMedia("https://example.com/2.jpg", ReviewMediaType.Image, 1);
 
         // Assert
-        media1.ReviewId.Should().Be(review.Id);
-        media2.ReviewId.Should().Be(review.Id);
+        media1.ReviewId.ShouldBe(review.Id);
+        media2.ReviewId.ShouldBe(review.Id);
     }
 
     [Fact]
@@ -210,7 +210,7 @@ public class ReviewMediaTests
         var media = review.AddMedia("https://example.com/img.jpg", ReviewMediaType.Image, 0);
 
         // Assert
-        review.Media.Should().Contain(media);
+        review.Media.ShouldContain(media);
     }
 
     #endregion
@@ -228,7 +228,7 @@ public class ReviewMediaTests
         var media = review.AddMedia(longUrl, ReviewMediaType.Image, 0);
 
         // Assert
-        media.MediaUrl.Should().Be(longUrl);
+        media.MediaUrl.ShouldBe(longUrl);
     }
 
     [Fact]
@@ -241,7 +241,7 @@ public class ReviewMediaTests
         var media = review.AddMedia("https://cdn.example.com/secure/image.jpg", ReviewMediaType.Image, 0);
 
         // Assert
-        media.MediaUrl.Should().StartWith("https://");
+        media.MediaUrl.ShouldStartWith("https://");
     }
 
     #endregion

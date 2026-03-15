@@ -38,10 +38,10 @@ public class CrmCompanyEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.GetAsync("/api/crm/companies");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<PagedResult<CompanyListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeNull();
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class CrmCompanyEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await _client.GetAsync("/api/crm/companies");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -64,10 +64,10 @@ public class CrmCompanyEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.GetAsync("/api/crm/companies?page=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<PagedResult<CompanyListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.Items.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     #endregion
@@ -88,11 +88,11 @@ public class CrmCompanyEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.GetAsync($"/api/crm/companies/{createdCompany!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var company = await response.Content.ReadFromJsonAsync<CompanyDto>();
-        company.Should().NotBeNull();
-        company!.Id.Should().Be(createdCompany.Id);
-        company.Name.Should().Be(createRequest.Name);
+        company.ShouldNotBeNull();
+        company!.Id.ShouldBe(createdCompany.Id);
+        company.Name.ShouldBe(createRequest.Name);
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class CrmCompanyEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.GetAsync($"/api/crm/companies/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -123,10 +123,10 @@ public class CrmCompanyEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.PostAsJsonAsync("/api/crm/companies", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var company = await response.Content.ReadFromJsonAsync<CompanyDto>();
-        company.Should().NotBeNull();
-        company!.Name.Should().Be(request.Name);
+        company.ShouldNotBeNull();
+        company!.Name.ShouldBe(request.Name);
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class CrmCompanyEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await _client.PostAsJsonAsync("/api/crm/companies", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -167,12 +167,12 @@ public class CrmCompanyEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.PutAsJsonAsync($"/api/crm/companies/{createdCompany!.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updatedCompany = await response.Content.ReadFromJsonAsync<CompanyDto>();
-        updatedCompany.Should().NotBeNull();
-        updatedCompany!.Name.Should().Be("Updated Company Name");
-        updatedCompany.Domain.Should().Be("updated.com");
-        updatedCompany.Industry.Should().Be("Technology");
+        updatedCompany.ShouldNotBeNull();
+        updatedCompany!.Name.ShouldBe("Updated Company Name");
+        updatedCompany.Domain.ShouldBe("updated.com");
+        updatedCompany.Industry.ShouldBe("Technology");
     }
 
     [Fact]
@@ -186,7 +186,7 @@ public class CrmCompanyEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.PutAsJsonAsync($"/api/crm/companies/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -207,11 +207,11 @@ public class CrmCompanyEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.DeleteAsync($"/api/crm/companies/{createdCompany!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Verify it's deleted (soft delete - should return not found)
         var getResponse = await adminClient.GetAsync($"/api/crm/companies/{createdCompany.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -224,7 +224,7 @@ public class CrmCompanyEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.DeleteAsync($"/api/crm/companies/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -240,16 +240,16 @@ public class CrmCompanyEndpointsTests : IClassFixture<CustomWebApplicationFactor
         // Create
         var createRequest = CreateTestCompanyRequest();
         var createResponse = await adminClient.PostAsJsonAsync("/api/crm/companies", createRequest);
-        createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        createResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var created = await createResponse.Content.ReadFromJsonAsync<CompanyDto>();
-        created.Should().NotBeNull();
+        created.ShouldNotBeNull();
         var companyId = created!.Id;
 
         // Read
         var getResponse = await adminClient.GetAsync($"/api/crm/companies/{companyId}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var fetched = await getResponse.Content.ReadFromJsonAsync<CompanyDto>();
-        fetched!.Name.Should().Be(createRequest.Name);
+        fetched!.Name.ShouldBe(createRequest.Name);
 
         // Update
         var updateRequest = new UpdateCompanyRequest(
@@ -257,18 +257,18 @@ public class CrmCompanyEndpointsTests : IClassFixture<CustomWebApplicationFactor
             Industry: "Finance",
             Notes: "Updated via CRUD test");
         var updateResponse = await adminClient.PutAsJsonAsync($"/api/crm/companies/{companyId}", updateRequest);
-        updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        updateResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await updateResponse.Content.ReadFromJsonAsync<CompanyDto>();
-        updated!.Name.Should().Be("CrudUpdated Company");
-        updated.Industry.Should().Be("Finance");
+        updated!.Name.ShouldBe("CrudUpdated Company");
+        updated.Industry.ShouldBe("Finance");
 
         // Delete
         var deleteResponse = await adminClient.DeleteAsync($"/api/crm/companies/{companyId}");
-        deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        deleteResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Verify deleted
         var verifyResponse = await adminClient.GetAsync($"/api/crm/companies/{companyId}");
-        verifyResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        verifyResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion

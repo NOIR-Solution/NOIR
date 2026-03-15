@@ -34,13 +34,13 @@ public class WishlistItemTests
         var item = wishlist.AddItem(productId);
 
         // Assert
-        item.Should().NotBeNull();
-        item.Id.Should().NotBe(Guid.Empty);
-        item.WishlistId.Should().Be(wishlist.Id);
-        item.ProductId.Should().Be(productId);
-        item.ProductVariantId.Should().BeNull();
-        item.Note.Should().BeNull();
-        item.Priority.Should().Be(WishlistItemPriority.None);
+        item.ShouldNotBeNull();
+        item.Id.ShouldNotBe(Guid.Empty);
+        item.WishlistId.ShouldBe(wishlist.Id);
+        item.ProductId.ShouldBe(productId);
+        item.ProductVariantId.ShouldBeNull();
+        item.Note.ShouldBeNull();
+        item.Priority.ShouldBe(WishlistItemPriority.None);
     }
 
     [Fact]
@@ -55,8 +55,8 @@ public class WishlistItemTests
         var item = wishlist.AddItem(productId, variantId);
 
         // Assert
-        item.ProductId.Should().Be(productId);
-        item.ProductVariantId.Should().Be(variantId);
+        item.ProductId.ShouldBe(productId);
+        item.ProductVariantId.ShouldBe(variantId);
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class WishlistItemTests
         var item = wishlist.AddItem(Guid.NewGuid(), note: "Birthday gift idea");
 
         // Assert
-        item.Note.Should().Be("Birthday gift idea");
+        item.Note.ShouldBe("Birthday gift idea");
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class WishlistItemTests
         var item = wishlist.AddItem(Guid.NewGuid());
 
         // Assert
-        item.AddedAt.Should().BeOnOrAfter(beforeAdd);
+        item.AddedAt.ShouldBeGreaterThanOrEqualTo(beforeAdd);
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class WishlistItemTests
         var item = wishlist.AddItem(Guid.NewGuid());
 
         // Assert
-        item.TenantId.Should().Be("custom-tenant");
+        item.TenantId.ShouldBe("custom-tenant");
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class WishlistItemTests
         var item = wishlist.AddItem(Guid.NewGuid());
 
         // Assert
-        item.Priority.Should().Be(WishlistItemPriority.None);
+        item.Priority.ShouldBe(WishlistItemPriority.None);
     }
 
     [Fact]
@@ -123,7 +123,7 @@ public class WishlistItemTests
         var item2 = wishlist.AddItem(Guid.NewGuid());
 
         // Assert
-        item1.Id.Should().NotBe(item2.Id);
+        item1.Id.ShouldNotBe(item2.Id);
     }
 
     #endregion
@@ -141,7 +141,7 @@ public class WishlistItemTests
         item.UpdateNote("Updated note");
 
         // Assert
-        item.Note.Should().Be("Updated note");
+        item.Note.ShouldBe("Updated note");
     }
 
     [Fact]
@@ -155,7 +155,7 @@ public class WishlistItemTests
         item.UpdateNote(null);
 
         // Assert
-        item.Note.Should().BeNull();
+        item.Note.ShouldBeNull();
     }
 
     [Fact]
@@ -169,7 +169,7 @@ public class WishlistItemTests
         item.UpdateNote("");
 
         // Assert
-        item.Note.Should().BeEmpty();
+        item.Note.ShouldBeEmpty();
     }
 
     [Fact]
@@ -185,7 +185,7 @@ public class WishlistItemTests
         item.UpdateNote("Third");
 
         // Assert
-        item.Note.Should().Be("Third");
+        item.Note.ShouldBe("Third");
     }
 
     [Fact]
@@ -202,9 +202,9 @@ public class WishlistItemTests
         item.UpdateNote("New note");
 
         // Assert
-        item.ProductId.Should().Be(productId);
-        item.Priority.Should().Be(WishlistItemPriority.High);
-        item.AddedAt.Should().Be(originalAddedAt);
+        item.ProductId.ShouldBe(productId);
+        item.Priority.ShouldBe(WishlistItemPriority.High);
+        item.AddedAt.ShouldBe(originalAddedAt);
     }
 
     #endregion
@@ -226,7 +226,7 @@ public class WishlistItemTests
         item.UpdatePriority(priority);
 
         // Assert
-        item.Priority.Should().Be(priority);
+        item.Priority.ShouldBe(priority);
     }
 
     [Fact]
@@ -242,7 +242,7 @@ public class WishlistItemTests
         item.UpdatePriority(WishlistItemPriority.Medium);
 
         // Assert
-        item.Priority.Should().Be(WishlistItemPriority.Medium);
+        item.Priority.ShouldBe(WishlistItemPriority.Medium);
     }
 
     [Fact]
@@ -258,8 +258,8 @@ public class WishlistItemTests
         item.UpdatePriority(WishlistItemPriority.High);
 
         // Assert
-        item.Note.Should().Be(originalNote);
-        item.AddedAt.Should().Be(originalAddedAt);
+        item.Note.ShouldBe(originalNote);
+        item.AddedAt.ShouldBe(originalAddedAt);
     }
 
     #endregion
@@ -278,8 +278,8 @@ public class WishlistItemTests
         var secondItem = wishlist.AddItem(productId);
 
         // Assert
-        secondItem.Should().BeSameAs(firstItem);
-        wishlist.Items.Should().HaveCount(1);
+        secondItem.ShouldBeSameAs(firstItem);
+        wishlist.Items.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -295,8 +295,8 @@ public class WishlistItemTests
         var secondItem = wishlist.AddItem(productId, variantId);
 
         // Assert
-        secondItem.Should().BeSameAs(firstItem);
-        wishlist.Items.Should().HaveCount(1);
+        secondItem.ShouldBeSameAs(firstItem);
+        wishlist.Items.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -311,7 +311,7 @@ public class WishlistItemTests
         wishlist.AddItem(productId, Guid.NewGuid());
 
         // Assert
-        wishlist.Items.Should().HaveCount(2);
+        wishlist.Items.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -326,7 +326,7 @@ public class WishlistItemTests
         wishlist.AddItem(productId, Guid.NewGuid());
 
         // Assert
-        wishlist.Items.Should().HaveCount(2);
+        wishlist.Items.Count().ShouldBe(2);
     }
 
     #endregion

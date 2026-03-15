@@ -19,12 +19,12 @@ public class PipelineTests
         var pipeline = Pipeline.Create("Sales Pipeline", TestTenantId, isDefault: true);
 
         // Assert
-        pipeline.Should().NotBeNull();
-        pipeline.Id.Should().NotBe(Guid.Empty);
-        pipeline.Name.Should().Be("Sales Pipeline");
-        pipeline.IsDefault.Should().BeTrue();
-        pipeline.TenantId.Should().Be(TestTenantId);
-        pipeline.Stages.Should().BeEmpty();
+        pipeline.ShouldNotBeNull();
+        pipeline.Id.ShouldNotBe(Guid.Empty);
+        pipeline.Name.ShouldBe("Sales Pipeline");
+        pipeline.IsDefault.ShouldBeTrue();
+        pipeline.TenantId.ShouldBe(TestTenantId);
+        pipeline.Stages.ShouldBeEmpty();
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class PipelineTests
         var pipeline = Pipeline.Create("Custom Pipeline", TestTenantId);
 
         // Assert
-        pipeline.IsDefault.Should().BeFalse();
+        pipeline.IsDefault.ShouldBeFalse();
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class PipelineTests
     {
         // Act & Assert
         var act = () => Pipeline.Create("", TestTenantId);
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class PipelineTests
         var pipeline = Pipeline.Create("  Sales  ", TestTenantId);
 
         // Assert
-        pipeline.Name.Should().Be("Sales");
+        pipeline.Name.ShouldBe("Sales");
     }
 
     #endregion
@@ -69,7 +69,7 @@ public class PipelineTests
         pipeline.Update("New Name");
 
         // Assert
-        pipeline.Name.Should().Be("New Name");
+        pipeline.Name.ShouldBe("New Name");
     }
 
     #endregion
@@ -86,7 +86,7 @@ public class PipelineTests
         pipeline.SetDefault(true);
 
         // Assert
-        pipeline.IsDefault.Should().BeTrue();
+        pipeline.IsDefault.ShouldBeTrue();
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public class PipelineTests
         pipeline.SetDefault(false);
 
         // Assert
-        pipeline.IsDefault.Should().BeFalse();
+        pipeline.IsDefault.ShouldBeFalse();
     }
 
     #endregion
@@ -116,13 +116,13 @@ public class PipelineTests
         var stage = PipelineStage.Create(pipelineId, "Qualification", 1, TestTenantId, "#3B82F6");
 
         // Assert
-        stage.Should().NotBeNull();
-        stage.Id.Should().NotBe(Guid.Empty);
-        stage.PipelineId.Should().Be(pipelineId);
-        stage.Name.Should().Be("Qualification");
-        stage.SortOrder.Should().Be(1);
-        stage.Color.Should().Be("#3B82F6");
-        stage.TenantId.Should().Be(TestTenantId);
+        stage.ShouldNotBeNull();
+        stage.Id.ShouldNotBe(Guid.Empty);
+        stage.PipelineId.ShouldBe(pipelineId);
+        stage.Name.ShouldBe("Qualification");
+        stage.SortOrder.ShouldBe(1);
+        stage.Color.ShouldBe("#3B82F6");
+        stage.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -132,7 +132,7 @@ public class PipelineTests
         var stage = PipelineStage.Create(Guid.NewGuid(), "New", 0, TestTenantId);
 
         // Assert
-        stage.Color.Should().Be("#6366f1");
+        stage.Color.ShouldBe("#6366f1");
     }
 
     [Fact]
@@ -140,7 +140,7 @@ public class PipelineTests
     {
         // Act & Assert
         var act = () => PipelineStage.Create(Guid.NewGuid(), "", 0, TestTenantId);
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -153,9 +153,9 @@ public class PipelineTests
         stage.Update("New Stage", 2, "#FF0000");
 
         // Assert
-        stage.Name.Should().Be("New Stage");
-        stage.SortOrder.Should().Be(2);
-        stage.Color.Should().Be("#FF0000");
+        stage.Name.ShouldBe("New Stage");
+        stage.SortOrder.ShouldBe(2);
+        stage.Color.ShouldBe("#FF0000");
     }
 
     #endregion

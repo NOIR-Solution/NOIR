@@ -44,13 +44,13 @@ public class ProductVariantTests
         var variant = product.AddVariant("Size M", 120_000m, "SKU-M");
 
         // Assert
-        variant.Should().NotBeNull();
-        variant.Id.Should().NotBe(Guid.Empty);
-        variant.ProductId.Should().Be(product.Id);
-        variant.Name.Should().Be("Size M");
-        variant.Price.Should().Be(120_000m);
-        variant.Sku.Should().Be("SKU-M");
-        variant.TenantId.Should().Be(TestTenantId);
+        variant.ShouldNotBeNull();
+        variant.Id.ShouldNotBe(Guid.Empty);
+        variant.ProductId.ShouldBe(product.Id);
+        variant.Name.ShouldBe("Size M");
+        variant.Price.ShouldBe(120_000m);
+        variant.Sku.ShouldBe("SKU-M");
+        variant.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -60,11 +60,11 @@ public class ProductVariantTests
         var variant = CreateTestVariant();
 
         // Assert
-        variant.StockQuantity.Should().Be(0);
-        variant.CompareAtPrice.Should().BeNull();
-        variant.CostPrice.Should().BeNull();
-        variant.SortOrder.Should().Be(0);
-        variant.ImageId.Should().BeNull();
+        variant.StockQuantity.ShouldBe(0);
+        variant.CompareAtPrice.ShouldBeNull();
+        variant.CostPrice.ShouldBeNull();
+        variant.SortOrder.ShouldBe(0);
+        variant.ImageId.ShouldBeNull();
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class ProductVariantTests
         var variant = CreateTestVariant(sku: null);
 
         // Assert
-        variant.Sku.Should().BeNull();
+        variant.Sku.ShouldBeNull();
     }
 
     [Fact]
@@ -92,9 +92,9 @@ public class ProductVariantTests
 
         // Assert
         var parsed = variant.GetOptions();
-        parsed.Should().HaveCount(2);
-        parsed.Should().ContainKey("color").WhoseValue.Should().Be("Red");
-        parsed.Should().ContainKey("size").WhoseValue.Should().Be("M");
+        parsed.Count().ShouldBe(2);
+        parsed.ShouldContainKeyAndValue("color", "Red");
+        parsed.ShouldContainKeyAndValue("size", "M");
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public class ProductVariantTests
         var variant = CreateTestVariant(options: null);
 
         // Assert
-        variant.GetOptions().Should().BeEmpty();
+        variant.GetOptions().ShouldBeEmpty();
     }
 
     #endregion
@@ -121,9 +121,9 @@ public class ProductVariantTests
         variant.UpdateDetails("Updated", 200m, "NEW-SKU");
 
         // Assert
-        variant.Name.Should().Be("Updated");
-        variant.Price.Should().Be(200m);
-        variant.Sku.Should().Be("NEW-SKU");
+        variant.Name.ShouldBe("Updated");
+        variant.Price.ShouldBe(200m);
+        variant.Sku.ShouldBe("NEW-SKU");
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public class ProductVariantTests
         variant.UpdateDetails("Name", 100m, null);
 
         // Assert
-        variant.Sku.Should().BeNull();
+        variant.Sku.ShouldBeNull();
     }
 
     #endregion
@@ -153,8 +153,8 @@ public class ProductVariantTests
         variant.SetCompareAtPrice(150_000m);
 
         // Assert
-        variant.CompareAtPrice.Should().Be(150_000m);
-        variant.OnSale.Should().BeTrue();
+        variant.CompareAtPrice.ShouldBe(150_000m);
+        variant.OnSale.ShouldBeTrue();
     }
 
     [Fact]
@@ -167,8 +167,8 @@ public class ProductVariantTests
         variant.SetCompareAtPrice(50_000m);
 
         // Assert
-        variant.CompareAtPrice.Should().Be(50_000m);
-        variant.OnSale.Should().BeFalse();
+        variant.CompareAtPrice.ShouldBe(50_000m);
+        variant.OnSale.ShouldBeFalse();
     }
 
     [Fact]
@@ -181,7 +181,7 @@ public class ProductVariantTests
         variant.SetCompareAtPrice(100_000m);
 
         // Assert
-        variant.OnSale.Should().BeFalse();
+        variant.OnSale.ShouldBeFalse();
     }
 
     [Fact]
@@ -195,8 +195,8 @@ public class ProductVariantTests
         variant.SetCompareAtPrice(null);
 
         // Assert
-        variant.CompareAtPrice.Should().BeNull();
-        variant.OnSale.Should().BeFalse();
+        variant.CompareAtPrice.ShouldBeNull();
+        variant.OnSale.ShouldBeFalse();
     }
 
     #endregion
@@ -213,7 +213,7 @@ public class ProductVariantTests
         variant.SetCostPrice(50_000m);
 
         // Assert
-        variant.CostPrice.Should().Be(50_000m);
+        variant.CostPrice.ShouldBe(50_000m);
     }
 
     [Fact]
@@ -227,7 +227,7 @@ public class ProductVariantTests
         variant.SetCostPrice(null);
 
         // Assert
-        variant.CostPrice.Should().BeNull();
+        variant.CostPrice.ShouldBeNull();
     }
 
     #endregion
@@ -244,7 +244,7 @@ public class ProductVariantTests
         variant.SetStock(10);
 
         // Assert
-        variant.StockQuantity.Should().Be(10);
+        variant.StockQuantity.ShouldBe(10);
     }
 
     [Fact]
@@ -258,7 +258,7 @@ public class ProductVariantTests
         variant.SetStock(0);
 
         // Assert
-        variant.StockQuantity.Should().Be(0);
+        variant.StockQuantity.ShouldBe(0);
     }
 
     [Fact]
@@ -271,8 +271,8 @@ public class ProductVariantTests
         var act = () => variant.SetStock(-1);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Stock cannot be negative*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Stock cannot be negative");
     }
 
     [Fact]
@@ -286,7 +286,7 @@ public class ProductVariantTests
         variant.ReserveStock(3);
 
         // Assert
-        variant.StockQuantity.Should().Be(7);
+        variant.StockQuantity.ShouldBe(7);
     }
 
     [Fact]
@@ -300,7 +300,7 @@ public class ProductVariantTests
         variant.ReserveStock(5);
 
         // Assert
-        variant.StockQuantity.Should().Be(0);
+        variant.StockQuantity.ShouldBe(0);
     }
 
     [Fact]
@@ -314,8 +314,8 @@ public class ProductVariantTests
         var act = () => variant.ReserveStock(5);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Insufficient stock*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Insufficient stock");
     }
 
     [Fact]
@@ -329,7 +329,7 @@ public class ProductVariantTests
         variant.ReleaseStock(3);
 
         // Assert
-        variant.StockQuantity.Should().Be(8);
+        variant.StockQuantity.ShouldBe(8);
     }
 
     [Fact]
@@ -343,7 +343,7 @@ public class ProductVariantTests
         variant.AdjustStock(10);
 
         // Assert
-        variant.StockQuantity.Should().Be(15);
+        variant.StockQuantity.ShouldBe(15);
     }
 
     [Fact]
@@ -357,7 +357,7 @@ public class ProductVariantTests
         variant.AdjustStock(-3);
 
         // Assert
-        variant.StockQuantity.Should().Be(7);
+        variant.StockQuantity.ShouldBe(7);
     }
 
     [Fact]
@@ -371,8 +371,8 @@ public class ProductVariantTests
         var act = () => variant.AdjustStock(-5);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Stock cannot be negative*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Stock cannot be negative");
     }
 
     [Fact]
@@ -386,7 +386,7 @@ public class ProductVariantTests
         variant.AdjustStock(-5);
 
         // Assert
-        variant.StockQuantity.Should().Be(0);
+        variant.StockQuantity.ShouldBe(0);
     }
 
     #endregion
@@ -401,7 +401,7 @@ public class ProductVariantTests
         variant.SetStock(1);
 
         // Assert
-        variant.InStock.Should().BeTrue();
+        variant.InStock.ShouldBeTrue();
     }
 
     [Fact]
@@ -411,7 +411,7 @@ public class ProductVariantTests
         var variant = CreateTestVariant();
 
         // Assert
-        variant.InStock.Should().BeFalse();
+        variant.InStock.ShouldBeFalse();
     }
 
     [Fact]
@@ -422,7 +422,7 @@ public class ProductVariantTests
         variant.SetStock(5);
 
         // Assert
-        variant.LowStock.Should().BeTrue();
+        variant.LowStock.ShouldBeTrue();
     }
 
     [Fact]
@@ -433,7 +433,7 @@ public class ProductVariantTests
         variant.SetStock(6);
 
         // Assert
-        variant.LowStock.Should().BeFalse();
+        variant.LowStock.ShouldBeFalse();
     }
 
     [Fact]
@@ -443,7 +443,7 @@ public class ProductVariantTests
         var variant = CreateTestVariant();
 
         // Assert
-        variant.LowStock.Should().BeFalse();
+        variant.LowStock.ShouldBeFalse();
     }
 
     [Fact]
@@ -454,7 +454,7 @@ public class ProductVariantTests
         variant.SetStock(1);
 
         // Assert
-        variant.LowStock.Should().BeTrue();
+        variant.LowStock.ShouldBeTrue();
     }
 
     [Fact]
@@ -464,7 +464,7 @@ public class ProductVariantTests
         var variant = CreateTestVariant(price: 100_000m);
 
         // Assert
-        variant.OnSale.Should().BeFalse();
+        variant.OnSale.ShouldBeFalse();
     }
 
     [Fact]
@@ -475,7 +475,7 @@ public class ProductVariantTests
         variant.SetCompareAtPrice(150_000m);
 
         // Assert
-        variant.OnSale.Should().BeTrue();
+        variant.OnSale.ShouldBeTrue();
     }
 
     [Fact]
@@ -486,7 +486,7 @@ public class ProductVariantTests
         variant.SetCompareAtPrice(80_000m);
 
         // Assert
-        variant.OnSale.Should().BeFalse();
+        variant.OnSale.ShouldBeFalse();
     }
 
     #endregion
@@ -500,7 +500,7 @@ public class ProductVariantTests
         var variant = CreateTestVariant(options: null);
 
         // Assert
-        variant.GetOptions().Should().BeEmpty();
+        variant.GetOptions().ShouldBeEmpty();
     }
 
     [Fact]
@@ -519,9 +519,9 @@ public class ProductVariantTests
 
         // Assert
         var parsed = variant.GetOptions();
-        parsed.Should().HaveCount(2);
-        parsed.Should().ContainKey("color").WhoseValue.Should().Be("Blue");
-        parsed.Should().ContainKey("size").WhoseValue.Should().Be("XL");
+        parsed.Count().ShouldBe(2);
+        parsed.ShouldContainKeyAndValue("color", "Blue");
+        parsed.ShouldContainKeyAndValue("size", "XL");
     }
 
     [Fact]
@@ -535,9 +535,9 @@ public class ProductVariantTests
 
         // Assert
         var parsed = variant.GetOptions();
-        parsed.Should().HaveCount(1);
-        parsed.Should().ContainKey("new").WhoseValue.Should().Be("options");
-        parsed.Should().NotContainKey("old");
+        parsed.Count().ShouldBe(1);
+        parsed.ShouldContainKeyAndValue("new", "options");
+        parsed.ShouldNotContainKey("old");
     }
 
     [Fact]
@@ -550,7 +550,7 @@ public class ProductVariantTests
         variant.UpdateOptions(new Dictionary<string, string>());
 
         // Assert
-        variant.GetOptions().Should().BeEmpty();
+        variant.GetOptions().ShouldBeEmpty();
     }
 
     #endregion
@@ -567,7 +567,7 @@ public class ProductVariantTests
         variant.SetSortOrder(5);
 
         // Assert
-        variant.SortOrder.Should().Be(5);
+        variant.SortOrder.ShouldBe(5);
     }
 
     #endregion
@@ -585,7 +585,7 @@ public class ProductVariantTests
         variant.SetImage(imageId);
 
         // Assert
-        variant.ImageId.Should().Be(imageId);
+        variant.ImageId.ShouldBe(imageId);
     }
 
     [Fact]
@@ -599,7 +599,7 @@ public class ProductVariantTests
         variant.SetImage(null);
 
         // Assert
-        variant.ImageId.Should().BeNull();
+        variant.ImageId.ShouldBeNull();
     }
 
     #endregion

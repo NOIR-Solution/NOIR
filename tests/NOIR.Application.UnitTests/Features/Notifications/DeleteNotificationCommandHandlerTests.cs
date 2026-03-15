@@ -82,8 +82,8 @@ public class DeleteNotificationCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.Unauthorized);
     }
 
     #endregion
@@ -105,8 +105,8 @@ public class DeleteNotificationCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Contain("NOT_FOUND");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldContain("NOT_FOUND");
     }
 
     [Fact]
@@ -125,8 +125,8 @@ public class DeleteNotificationCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Contain("NOT_FOUND");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldContain("NOT_FOUND");
     }
 
     #endregion
@@ -149,7 +149,7 @@ public class DeleteNotificationCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _repositoryMock.Verify(x => x.Remove(notification), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -174,7 +174,7 @@ public class DeleteNotificationCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _hubContextMock.Verify(
             x => x.UpdateUnreadCountAsync(TestUserId, 5, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -196,7 +196,7 @@ public class DeleteNotificationCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _hubContextMock.Verify(
             x => x.UpdateUnreadCountAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<CancellationToken>()),
             Times.Never);

@@ -34,11 +34,11 @@ public class ProductCategoryTests
         var category = CreateTestCategory();
 
         // Assert
-        category.Should().NotBeNull();
-        category.Id.Should().NotBe(Guid.Empty);
-        category.Name.Should().Be("Electronics");
-        category.Slug.Should().Be("electronics");
-        category.TenantId.Should().Be(TestTenantId);
+        category.ShouldNotBeNull();
+        category.Id.ShouldNotBe(Guid.Empty);
+        category.Name.ShouldBe("Electronics");
+        category.Slug.ShouldBe("electronics");
+        category.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -48,13 +48,13 @@ public class ProductCategoryTests
         var category = CreateTestCategory();
 
         // Assert
-        category.ParentId.Should().BeNull();
-        category.SortOrder.Should().Be(0);
-        category.Description.Should().BeNull();
-        category.ImageUrl.Should().BeNull();
-        category.MetaTitle.Should().BeNull();
-        category.MetaDescription.Should().BeNull();
-        category.ProductCount.Should().Be(0);
+        category.ParentId.ShouldBeNull();
+        category.SortOrder.ShouldBe(0);
+        category.Description.ShouldBeNull();
+        category.ImageUrl.ShouldBeNull();
+        category.MetaTitle.ShouldBeNull();
+        category.MetaDescription.ShouldBeNull();
+        category.ProductCount.ShouldBe(0);
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class ProductCategoryTests
         var category = Domain.Entities.Product.ProductCategory.Create("Test", "MY-CATEGORY");
 
         // Assert
-        category.Slug.Should().Be("my-category");
+        category.Slug.ShouldBe("my-category");
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class ProductCategoryTests
         var category = CreateTestCategory(parentId: parentId);
 
         // Assert
-        category.ParentId.Should().Be(parentId);
+        category.ParentId.ShouldBe(parentId);
     }
 
     [Fact]
@@ -87,8 +87,8 @@ public class ProductCategoryTests
         var category = CreateTestCategory();
 
         // Assert
-        category.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ProductCategoryCreatedEvent>();
+        category.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ProductCategoryCreatedEvent>();
     }
 
     [Fact]
@@ -99,9 +99,9 @@ public class ProductCategoryTests
 
         // Assert
         var domainEvent = category.DomainEvents.Single() as ProductCategoryCreatedEvent;
-        domainEvent!.CategoryId.Should().Be(category.Id);
-        domainEvent.Name.Should().Be("Phones");
-        domainEvent.Slug.Should().Be("phones");
+        domainEvent!.CategoryId.ShouldBe(category.Id);
+        domainEvent.Name.ShouldBe("Phones");
+        domainEvent.Slug.ShouldBe("phones");
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class ProductCategoryTests
         var category = CreateTestCategory(tenantId: null);
 
         // Assert
-        category.TenantId.Should().BeNull();
+        category.TenantId.ShouldBeNull();
     }
 
     #endregion
@@ -129,10 +129,10 @@ public class ProductCategoryTests
         category.UpdateDetails("Phones", "phones", "All phones", "https://img.jpg");
 
         // Assert
-        category.Name.Should().Be("Phones");
-        category.Slug.Should().Be("phones");
-        category.Description.Should().Be("All phones");
-        category.ImageUrl.Should().Be("https://img.jpg");
+        category.Name.ShouldBe("Phones");
+        category.Slug.ShouldBe("phones");
+        category.Description.ShouldBe("All phones");
+        category.ImageUrl.ShouldBe("https://img.jpg");
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public class ProductCategoryTests
         category.UpdateDetails("Phones", "PHONE-Category", null, null);
 
         // Assert
-        category.Slug.Should().Be("phone-category");
+        category.Slug.ShouldBe("phone-category");
     }
 
     [Fact]
@@ -159,9 +159,9 @@ public class ProductCategoryTests
         category.UpdateDetails("Updated", "updated");
 
         // Assert
-        category.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ProductCategoryUpdatedEvent>()
-            .Which.Name.Should().Be("Updated");
+        category.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ProductCategoryUpdatedEvent>()
+            .Name.ShouldBe("Updated");
     }
 
     [Fact]
@@ -175,8 +175,8 @@ public class ProductCategoryTests
         category.UpdateDetails("Cat", "cat", null, null);
 
         // Assert
-        category.Description.Should().BeNull();
-        category.ImageUrl.Should().BeNull();
+        category.Description.ShouldBeNull();
+        category.ImageUrl.ShouldBeNull();
     }
 
     #endregion
@@ -193,8 +193,8 @@ public class ProductCategoryTests
         category.UpdateSeo("Electronics - Best Deals", "Find the best electronics here");
 
         // Assert
-        category.MetaTitle.Should().Be("Electronics - Best Deals");
-        category.MetaDescription.Should().Be("Find the best electronics here");
+        category.MetaTitle.ShouldBe("Electronics - Best Deals");
+        category.MetaDescription.ShouldBe("Find the best electronics here");
     }
 
     [Fact]
@@ -208,8 +208,8 @@ public class ProductCategoryTests
         category.UpdateSeo(null, null);
 
         // Assert
-        category.MetaTitle.Should().BeNull();
-        category.MetaDescription.Should().BeNull();
+        category.MetaTitle.ShouldBeNull();
+        category.MetaDescription.ShouldBeNull();
     }
 
     #endregion
@@ -227,7 +227,7 @@ public class ProductCategoryTests
         category.SetParent(parentId);
 
         // Assert
-        category.ParentId.Should().Be(parentId);
+        category.ParentId.ShouldBe(parentId);
     }
 
     [Fact]
@@ -240,7 +240,7 @@ public class ProductCategoryTests
         category.SetParent(null);
 
         // Assert
-        category.ParentId.Should().BeNull();
+        category.ParentId.ShouldBeNull();
     }
 
     [Fact]
@@ -253,8 +253,8 @@ public class ProductCategoryTests
         var act = () => category.SetParent(category.Id);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*cannot be its own parent*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("cannot be its own parent");
     }
 
     #endregion
@@ -271,7 +271,7 @@ public class ProductCategoryTests
         category.SetSortOrder(10);
 
         // Assert
-        category.SortOrder.Should().Be(10);
+        category.SortOrder.ShouldBe(10);
     }
 
     #endregion
@@ -288,7 +288,7 @@ public class ProductCategoryTests
         category.UpdateProductCount(50);
 
         // Assert
-        category.ProductCount.Should().Be(50);
+        category.ProductCount.ShouldBe(50);
     }
 
     [Fact]
@@ -303,7 +303,7 @@ public class ProductCategoryTests
         category.IncrementProductCount();
 
         // Assert
-        category.ProductCount.Should().Be(3);
+        category.ProductCount.ShouldBe(3);
     }
 
     [Fact]
@@ -317,7 +317,7 @@ public class ProductCategoryTests
         category.DecrementProductCount();
 
         // Assert
-        category.ProductCount.Should().Be(4);
+        category.ProductCount.ShouldBe(4);
     }
 
     [Fact]
@@ -330,7 +330,7 @@ public class ProductCategoryTests
         category.DecrementProductCount();
 
         // Assert
-        category.ProductCount.Should().Be(0);
+        category.ProductCount.ShouldBe(0);
     }
 
     #endregion
@@ -348,9 +348,9 @@ public class ProductCategoryTests
         category.MarkAsDeleted();
 
         // Assert
-        category.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ProductCategoryDeletedEvent>()
-            .Which.CategoryId.Should().Be(category.Id);
+        category.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ProductCategoryDeletedEvent>()
+            .CategoryId.ShouldBe(category.Id);
     }
 
     #endregion

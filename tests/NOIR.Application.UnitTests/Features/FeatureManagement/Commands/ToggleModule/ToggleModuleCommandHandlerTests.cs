@@ -66,8 +66,8 @@ public class ToggleModuleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.Forbidden);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.Forbidden);
     }
 
     [Fact]
@@ -81,8 +81,8 @@ public class ToggleModuleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.Forbidden);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.Forbidden);
     }
 
     #endregion
@@ -100,8 +100,8 @@ public class ToggleModuleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.Forbidden);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.Forbidden);
     }
 
     #endregion
@@ -120,9 +120,9 @@ public class ToggleModuleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.FeatureName.Should().Be(TestFeatureName);
-        result.Value.IsEnabled.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.FeatureName.ShouldBe(TestFeatureName);
+        result.Value.IsEnabled.ShouldBe(true);
         _dbContextMock.Verify(x => x.TenantModuleStates.AddAsync(
             It.Is<TenantModuleState>(s => s.FeatureName == TestFeatureName),
             It.IsAny<CancellationToken>()), Times.Once);
@@ -140,9 +140,9 @@ public class ToggleModuleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsEnabled.Should().BeFalse();
-        result.Value.IsEffective.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsEnabled.ShouldBe(false);
+        result.Value.IsEffective.ShouldBe(false);
     }
 
     #endregion
@@ -163,8 +163,8 @@ public class ToggleModuleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsEnabled.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsEnabled.ShouldBe(true);
         _dbContextMock.Verify(x => x.TenantModuleStates.AddAsync(
             It.IsAny<TenantModuleState>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -183,8 +183,8 @@ public class ToggleModuleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsEnabled.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsEnabled.ShouldBe(false);
     }
 
     #endregion
@@ -204,8 +204,8 @@ public class ToggleModuleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Value.IsAvailable.Should().BeTrue();
-        result.Value.IsEffective.Should().BeTrue();
+        result.Value.IsAvailable.ShouldBe(true);
+        result.Value.IsEffective.ShouldBe(true);
     }
 
     #endregion

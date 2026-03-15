@@ -77,8 +77,8 @@ public class DeleteProductAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
         _attributeRepositoryMock.Verify(x => x.Remove(attribute), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -112,7 +112,7 @@ public class DeleteProductAttributeCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        command.GetTargetDisplayName().Should().Be("Color");
+        command.GetTargetDisplayName().ShouldBe("Color");
     }
 
     #endregion
@@ -137,8 +137,8 @@ public class DeleteProductAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Attribute.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Attribute.NotFound);
         _attributeRepositoryMock.Verify(x => x.Remove(It.IsAny<ProductAttribute>()), Times.Never);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -168,9 +168,9 @@ public class DeleteProductAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Attribute.HasProducts);
-        result.Error.Message.Should().Contain("Size");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Attribute.HasProducts);
+        result.Error.Message.ShouldContain("Size");
         _attributeRepositoryMock.Verify(x => x.Remove(It.IsAny<ProductAttribute>()), Times.Never);
     }
 
@@ -205,9 +205,9 @@ public class DeleteProductAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Attribute.HasCategories);
-        result.Error.Message.Should().Contain("Material");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Attribute.HasCategories);
+        result.Error.Message.ShouldContain("Material");
     }
 
     #endregion

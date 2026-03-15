@@ -43,9 +43,9 @@ public class CreateTaskLabelCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Bug");
-        result.Value.Color.Should().Be("#EF4444");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Bug");
+        result.Value.Color.ShouldBe("#EF4444");
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -65,7 +65,7 @@ public class CreateTaskLabelCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }

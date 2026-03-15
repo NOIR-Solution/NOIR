@@ -82,8 +82,8 @@ public class DeleteUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
         _userIdentityServiceMock.Verify(
             x => x.SoftDeleteUserAsync(targetUserId, currentUserId, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -111,7 +111,7 @@ public class DeleteUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _userIdentityServiceMock.Verify(
             x => x.SoftDeleteUserAsync(targetUserId, "system", It.IsAny<CancellationToken>()),
             Times.Once);
@@ -140,8 +140,8 @@ public class DeleteUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.UserNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.UserNotFound);
         _userIdentityServiceMock.Verify(
             x => x.SoftDeleteUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -169,8 +169,8 @@ public class DeleteUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Business.CannotDelete);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Business.CannotDelete);
         _userIdentityServiceMock.Verify(
             x => x.SoftDeleteUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -203,8 +203,8 @@ public class DeleteUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Validation.General);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Validation.General);
     }
 
     #endregion

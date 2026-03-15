@@ -101,10 +101,10 @@ public class ReturnOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(OrderStatus.Returned);
-        result.Value.ReturnReason.Should().Be("Defective product");
-        result.Value.ReturnedAt.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(OrderStatus.Returned);
+        result.Value.ReturnReason.ShouldBe("Defective product");
+        result.Value.ReturnedAt.ShouldNotBeNull();
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -133,9 +133,9 @@ public class ReturnOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(OrderStatus.Returned);
-        result.Value.ReturnReason.Should().Be("Wrong size");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(OrderStatus.Returned);
+        result.Value.ReturnReason.ShouldBe("Wrong size");
     }
 
     [Fact]
@@ -160,9 +160,9 @@ public class ReturnOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(OrderStatus.Returned);
-        result.Value.ReturnReason.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(OrderStatus.Returned);
+        result.Value.ReturnReason.ShouldBeNull();
     }
 
     [Fact]
@@ -188,10 +188,10 @@ public class ReturnOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ReturnedAt.Should().NotBeNull();
-        result.Value.ReturnedAt.Should().BeOnOrAfter(beforeReturn);
-        result.Value.ReturnedAt.Should().BeOnOrBefore(DateTimeOffset.UtcNow.AddSeconds(1));
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ReturnedAt.ShouldNotBeNull();
+        result.Value.ReturnedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeReturn);
+        result.Value.ReturnedAt!.Value.ShouldBeLessThanOrEqualTo(DateTimeOffset.UtcNow.AddSeconds(1));
     }
 
     [Fact]
@@ -250,8 +250,8 @@ public class ReturnOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(OrderStatus.Returned);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(OrderStatus.Returned);
 
         // Verify inventory movement logger was called for each item
         _movementLoggerMock.Verify(
@@ -297,8 +297,8 @@ public class ReturnOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(OrderStatus.Returned);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(OrderStatus.Returned);
 
         // Inventory movement should not be logged since product was not found
         _movementLoggerMock.Verify(
@@ -340,12 +340,12 @@ public class ReturnOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.OrderNumber.Should().Be("ORD-20250126-0042");
-        result.Value.CustomerEmail.Should().Be("john@example.com");
-        result.Value.CustomerName.Should().Be("John Doe");
-        result.Value.Status.Should().Be(OrderStatus.Returned);
-        result.Value.ReturnReason.Should().Be("Customer changed mind");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.OrderNumber.ShouldBe("ORD-20250126-0042");
+        result.Value.CustomerEmail.ShouldBe("john@example.com");
+        result.Value.CustomerName.ShouldBe("John Doe");
+        result.Value.Status.ShouldBe(OrderStatus.Returned);
+        result.Value.ReturnReason.ShouldBe("Customer changed mind");
     }
 
     #endregion
@@ -368,10 +368,10 @@ public class ReturnOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be(ErrorCodes.Order.NotFound);
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.NotFound);
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -400,9 +400,9 @@ public class ReturnOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidReturnTransition);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.InvalidReturnTransition);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -428,9 +428,9 @@ public class ReturnOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidReturnTransition);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.InvalidReturnTransition);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -458,9 +458,9 @@ public class ReturnOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidReturnTransition);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.InvalidReturnTransition);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -486,9 +486,9 @@ public class ReturnOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidReturnTransition);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.InvalidReturnTransition);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -553,8 +553,8 @@ public class ReturnOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(OrderStatus.Returned);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(OrderStatus.Returned);
 
         // No product lookups should have happened
         _productRepositoryMock.Verify(

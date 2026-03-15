@@ -121,11 +121,11 @@ public class UpdateLegalPageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Title.Should().Be("New Title");
-        result.Value.HtmlContent.Should().Be("<p>Updated Content</p>");
-        result.Value.IsInherited.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Title.ShouldBe("New Title");
+        result.Value.HtmlContent.ShouldBe("<p>Updated Content</p>");
+        result.Value.IsInherited.ShouldBe(false);
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         _repositoryMock.Verify(x => x.AddAsync(It.IsAny<LegalPage>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -162,10 +162,10 @@ public class UpdateLegalPageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Title.Should().Be("Tenant Privacy Policy");
-        result.Value.IsInherited.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Title.ShouldBe("Tenant Privacy Policy");
+        result.Value.IsInherited.ShouldBe(false);
 
         // Should create a new tenant copy
         _repositoryMock.Verify(x => x.AddAsync(It.IsAny<LegalPage>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -201,9 +201,9 @@ public class UpdateLegalPageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Title.Should().Be("Updated Tenant Terms");
-        result.Value.IsInherited.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Title.ShouldBe("Updated Tenant Terms");
+        result.Value.IsInherited.ShouldBe(false);
 
         // Should NOT create new copy - should update existing
         _repositoryMock.Verify(x => x.AddAsync(It.IsAny<LegalPage>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -233,9 +233,9 @@ public class UpdateLegalPageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be("NOIR-LEGAL-001");
-        result.Error.Type.Should().Be(ErrorType.NotFound);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe("NOIR-LEGAL-001");
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
     }
 
     #endregion
@@ -274,8 +274,8 @@ public class UpdateLegalPageCommandHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Title.Should().Be("Updated Platform Terms");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Title.ShouldBe("Updated Platform Terms");
 
         // Should update in place, not create a copy
         _repositoryMock.Verify(x => x.AddAsync(It.IsAny<LegalPage>(), It.IsAny<CancellationToken>()), Times.Never);

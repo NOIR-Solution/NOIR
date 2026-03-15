@@ -38,10 +38,10 @@ public class WebhookEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/webhooks");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<WebhookSubscriptionSummaryDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeNull();
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class WebhookEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/webhooks");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -64,10 +64,10 @@ public class WebhookEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/webhooks?page=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<WebhookSubscriptionSummaryDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.Items.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     #endregion
@@ -84,7 +84,7 @@ public class WebhookEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/webhooks/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -111,10 +111,10 @@ public class WebhookEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/webhooks", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var webhook = await response.Content.ReadFromJsonWithEnumsAsync<WebhookSubscriptionDto>();
-        webhook.Should().NotBeNull();
-        webhook!.Name.Should().StartWith("Test Webhook");
+        webhook.ShouldNotBeNull();
+        webhook!.Name.ShouldStartWith("Test Webhook");
     }
 
     [Fact]
@@ -132,7 +132,7 @@ public class WebhookEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonWithEnumsAsync("/api/webhooks", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -155,7 +155,7 @@ public class WebhookEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/webhooks/{Guid.NewGuid()}", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -172,7 +172,7 @@ public class WebhookEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/webhooks/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -196,7 +196,7 @@ public class WebhookEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/webhooks/{createdWebhook!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -213,10 +213,10 @@ public class WebhookEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/webhooks/event-types");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<List<WebhookEventTypeDto>>();
-        result.Should().NotBeNull();
-        result!.Should().NotBeEmpty();
+        result.ShouldNotBeNull();
+        result!.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -226,7 +226,7 @@ public class WebhookEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/webhooks/event-types");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -243,7 +243,7 @@ public class WebhookEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsync($"/api/webhooks/{Guid.NewGuid()}/activate", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -260,7 +260,7 @@ public class WebhookEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsync($"/api/webhooks/{Guid.NewGuid()}/deactivate", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -277,7 +277,7 @@ public class WebhookEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/webhooks/{Guid.NewGuid()}/deliveries");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion

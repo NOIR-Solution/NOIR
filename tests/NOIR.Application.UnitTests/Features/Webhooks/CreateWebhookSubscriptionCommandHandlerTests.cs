@@ -74,7 +74,7 @@ public class CreateWebhookSubscriptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     [Fact]
@@ -107,15 +107,15 @@ public class CreateWebhookSubscriptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("My Webhook");
-        result.Value.Url.Should().Be("https://api.example.com/hook");
-        result.Value.EventPatterns.Should().Be("order.*,payment.*");
-        result.Value.Description.Should().Be("Order and payment notifications");
-        result.Value.MaxRetries.Should().Be(3);
-        result.Value.TimeoutSeconds.Should().Be(15);
-        result.Value.IsActive.Should().BeTrue();
-        result.Value.Status.Should().Be(WebhookSubscriptionStatus.Active);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("My Webhook");
+        result.Value.Url.ShouldBe("https://api.example.com/hook");
+        result.Value.EventPatterns.ShouldBe("order.*,payment.*");
+        result.Value.Description.ShouldBe("Order and payment notifications");
+        result.Value.MaxRetries.ShouldBe(3);
+        result.Value.TimeoutSeconds.ShouldBe(15);
+        result.Value.IsActive.ShouldBe(true);
+        result.Value.Status.ShouldBe(WebhookSubscriptionStatus.Active);
     }
 
     [Fact]
@@ -197,8 +197,8 @@ public class CreateWebhookSubscriptionCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        capturedSubscription.Should().NotBeNull();
-        capturedSubscription!.TenantId.Should().Be(tenantId);
+        capturedSubscription.ShouldNotBeNull();
+        capturedSubscription!.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -221,8 +221,8 @@ public class CreateWebhookSubscriptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().NotBe(Guid.Empty);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldNotBe(Guid.Empty);
     }
 
     #endregion
@@ -252,8 +252,8 @@ public class CreateWebhookSubscriptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-WEBHOOK-001");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-WEBHOOK-001");
     }
 
     [Fact]
@@ -335,7 +335,7 @@ public class CreateWebhookSubscriptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Error.Message.Should().Contain(duplicateUrl);
+        result.Error.Message.ShouldContain(duplicateUrl);
     }
 
     #endregion

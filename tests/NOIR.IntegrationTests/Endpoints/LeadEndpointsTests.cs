@@ -77,10 +77,10 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/crm/leads");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<LeadDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeNull();
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/crm/leads");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -103,10 +103,10 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/crm/leads?page=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<LeadDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.Items.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     #endregion
@@ -129,12 +129,12 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/crm/leads/{createdLead!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var lead = await response.Content.ReadFromJsonWithEnumsAsync<LeadDto>();
-        lead.Should().NotBeNull();
-        lead!.Id.Should().Be(createdLead.Id);
-        lead.Title.Should().Be(createRequest.Title);
-        lead.ContactId.Should().Be(contact.Id);
+        lead.ShouldNotBeNull();
+        lead!.Id.ShouldBe(createdLead.Id);
+        lead.Title.ShouldBe(createRequest.Title);
+        lead.ContactId.ShouldBe(contact.Id);
     }
 
     [Fact]
@@ -147,7 +147,7 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/crm/leads/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -167,13 +167,13 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/crm/leads", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var lead = await response.Content.ReadFromJsonWithEnumsAsync<LeadDto>();
-        lead.Should().NotBeNull();
-        lead!.Title.Should().Be(request.Title);
-        lead.ContactId.Should().Be(contact.Id);
-        lead.PipelineId.Should().Be(pipeline.Id);
-        lead.Status.Should().Be(LeadStatus.Active);
+        lead.ShouldNotBeNull();
+        lead!.Title.ShouldBe(request.Title);
+        lead.ContactId.ShouldBe(contact.Id);
+        lead.PipelineId.ShouldBe(pipeline.Id);
+        lead.Status.ShouldBe(LeadStatus.Active);
     }
 
     [Fact]
@@ -186,7 +186,7 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonWithEnumsAsync("/api/crm/leads", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -216,12 +216,12 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/crm/leads/{createdLead!.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updatedLead = await response.Content.ReadFromJsonWithEnumsAsync<LeadDto>();
-        updatedLead.Should().NotBeNull();
-        updatedLead!.Title.Should().Be("Updated Lead Title");
-        updatedLead.Value.Should().Be(50000);
-        updatedLead.Currency.Should().Be("EUR");
+        updatedLead.ShouldNotBeNull();
+        updatedLead!.Title.ShouldBe("Updated Lead Title");
+        updatedLead.Value.ShouldBe(50000);
+        updatedLead.Currency.ShouldBe("EUR");
     }
 
     [Fact]
@@ -237,7 +237,7 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/crm/leads/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -260,11 +260,11 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsync($"/api/crm/leads/{createdLead!.Id}/win", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var wonLead = await response.Content.ReadFromJsonWithEnumsAsync<LeadDto>();
-        wonLead.Should().NotBeNull();
-        wonLead!.Status.Should().Be(LeadStatus.Won);
-        wonLead.WonAt.Should().NotBeNull();
+        wonLead.ShouldNotBeNull();
+        wonLead!.Status.ShouldBe(LeadStatus.Won);
+        wonLead.WonAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -277,7 +277,7 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsync($"/api/crm/leads/{Guid.NewGuid()}/win", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -298,12 +298,12 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/crm/leads/{createdLead!.Id}/lose", loseRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var lostLead = await response.Content.ReadFromJsonWithEnumsAsync<LeadDto>();
-        lostLead.Should().NotBeNull();
-        lostLead!.Status.Should().Be(LeadStatus.Lost);
-        lostLead.LostAt.Should().NotBeNull();
-        lostLead.LostReason.Should().Be("Budget constraints");
+        lostLead.ShouldNotBeNull();
+        lostLead!.Status.ShouldBe(LeadStatus.Lost);
+        lostLead.LostAt.ShouldNotBeNull();
+        lostLead.LostReason.ShouldBe("Budget constraints");
     }
 
     [Fact]
@@ -326,10 +326,10 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsync($"/api/crm/leads/{createdLead.Id}/reopen", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var reopenedLead = await response.Content.ReadFromJsonWithEnumsAsync<LeadDto>();
-        reopenedLead.Should().NotBeNull();
-        reopenedLead!.Status.Should().Be(LeadStatus.Active);
+        reopenedLead.ShouldNotBeNull();
+        reopenedLead!.Status.ShouldBe(LeadStatus.Active);
     }
 
     #endregion
@@ -358,10 +358,10 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/crm/leads/{createdLead!.Id}/move-stage", moveRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var movedLead = await response.Content.ReadFromJsonWithEnumsAsync<LeadDto>();
-        movedLead.Should().NotBeNull();
-        movedLead!.StageId.Should().Be(targetStage.Id);
+        movedLead.ShouldNotBeNull();
+        movedLead!.StageId.ShouldBe(targetStage.Id);
     }
 
     #endregion
@@ -379,16 +379,16 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Create
         var createRequest = CreateTestLeadRequest(contact.Id, pipeline.Id);
         var createResponse = await adminClient.PostAsJsonWithEnumsAsync("/api/crm/leads", createRequest);
-        createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        createResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var created = await createResponse.Content.ReadFromJsonWithEnumsAsync<LeadDto>();
-        created.Should().NotBeNull();
+        created.ShouldNotBeNull();
         var leadId = created!.Id;
 
         // Read
         var getResponse = await adminClient.GetAsync($"/api/crm/leads/{leadId}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var fetched = await getResponse.Content.ReadFromJsonWithEnumsAsync<LeadDto>();
-        fetched!.Title.Should().Be(createRequest.Title);
+        fetched!.Title.ShouldBe(createRequest.Title);
 
         // Update
         var updateRequest = new UpdateLeadRequest(
@@ -398,22 +398,22 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             Currency: "GBP",
             Notes: "Updated via CRUD test");
         var updateResponse = await adminClient.PutAsJsonWithEnumsAsync($"/api/crm/leads/{leadId}", updateRequest);
-        updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        updateResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await updateResponse.Content.ReadFromJsonWithEnumsAsync<LeadDto>();
-        updated!.Title.Should().Be("CrudUpdated Lead");
-        updated.Value.Should().Be(75000);
+        updated!.Title.ShouldBe("CrudUpdated Lead");
+        updated.Value.ShouldBe(75000);
 
         // Win
         var winResponse = await adminClient.PostAsync($"/api/crm/leads/{leadId}/win", null);
-        winResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        winResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var won = await winResponse.Content.ReadFromJsonWithEnumsAsync<LeadDto>();
-        won!.Status.Should().Be(LeadStatus.Won);
+        won!.Status.ShouldBe(LeadStatus.Won);
 
         // Reopen
         var reopenResponse = await adminClient.PostAsync($"/api/crm/leads/{leadId}/reopen", null);
-        reopenResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        reopenResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var reopened = await reopenResponse.Content.ReadFromJsonWithEnumsAsync<LeadDto>();
-        reopened!.Status.Should().Be(LeadStatus.Active);
+        reopened!.Status.ShouldBe(LeadStatus.Active);
     }
 
     #endregion
@@ -440,7 +440,7 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsync($"/api/crm/leads/{createdLead.Id}/win", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -465,7 +465,7 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/crm/leads/{createdLead.Id}/lose", loseAgainRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -484,7 +484,7 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsync($"/api/crm/leads/{createdLead!.Id}/reopen", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -511,7 +511,7 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/crm/leads/{createdLead.Id}/move-stage", moveRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -536,10 +536,10 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
 
         // Assert - search customers by the contact's email
         var searchResponse = await adminClient.GetAsync($"/api/customers?search={contact.Email}");
-        searchResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        searchResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var customers = await searchResponse.Content.ReadFromJsonWithEnumsAsync<PagedResult<CustomerSummaryDto>>();
-        customers.Should().NotBeNull();
-        customers!.Items.Should().ContainSingle(c => c.Email == contact.Email);
+        customers.ShouldNotBeNull();
+        customers!.Items.Where(c => c.Email == contact.Email).ShouldHaveSingleItem();
     }
 
     #endregion
@@ -562,7 +562,7 @@ public class LeadEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/crm/leads/{createdLead!.Id}/reorder", 100.5);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion

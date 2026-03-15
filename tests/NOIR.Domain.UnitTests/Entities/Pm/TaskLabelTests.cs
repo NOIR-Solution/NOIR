@@ -20,12 +20,12 @@ public class TaskLabelTests
         var label = TaskLabel.Create(TestProjectId, "Bug", "#EF4444", TestTenantId);
 
         // Assert
-        label.Should().NotBeNull();
-        label.Id.Should().NotBe(Guid.Empty);
-        label.ProjectId.Should().Be(TestProjectId);
-        label.Name.Should().Be("Bug");
-        label.Color.Should().Be("#EF4444");
-        label.TenantId.Should().Be(TestTenantId);
+        label.ShouldNotBeNull();
+        label.Id.ShouldNotBe(Guid.Empty);
+        label.ProjectId.ShouldBe(TestProjectId);
+        label.Name.ShouldBe("Bug");
+        label.Color.ShouldBe("#EF4444");
+        label.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class TaskLabelTests
     {
         // Act & Assert
         var act = () => TaskLabel.Create(TestProjectId, "", "#EF4444", TestTenantId);
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public class TaskLabelTests
     {
         // Act & Assert
         var act = () => TaskLabel.Create(TestProjectId, "   ", "#EF4444", TestTenantId);
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -49,7 +49,7 @@ public class TaskLabelTests
     {
         // Act & Assert
         var act = () => TaskLabel.Create(TestProjectId, "Bug", "", TestTenantId);
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class TaskLabelTests
         var label = TaskLabel.Create(TestProjectId, "  Bug  ", "#EF4444", TestTenantId);
 
         // Assert
-        label.Name.Should().Be("Bug");
+        label.Name.ShouldBe("Bug");
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class TaskLabelTests
         var label = TaskLabel.Create(TestProjectId, "Bug", "#EF4444", null);
 
         // Assert
-        label.TenantId.Should().BeNull();
+        label.TenantId.ShouldBeNull();
     }
 
     #endregion
@@ -86,8 +86,8 @@ public class TaskLabelTests
         label.Update("Feature", "#3B82F6");
 
         // Assert
-        label.Name.Should().Be("Feature");
-        label.Color.Should().Be("#3B82F6");
+        label.Name.ShouldBe("Feature");
+        label.Color.ShouldBe("#3B82F6");
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class TaskLabelTests
         label.Update("  Enhancement  ", "#10B981");
 
         // Assert
-        label.Name.Should().Be("Enhancement");
+        label.Name.ShouldBe("Enhancement");
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class TaskLabelTests
         label.Update("Feature", "#3B82F6");
 
         // Assert
-        label.ProjectId.Should().Be(originalProjectId);
+        label.ProjectId.ShouldBe(originalProjectId);
     }
 
     #endregion

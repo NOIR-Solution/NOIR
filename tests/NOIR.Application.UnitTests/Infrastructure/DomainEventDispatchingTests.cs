@@ -180,7 +180,7 @@ public class DomainEventDispatchingTests
         await _sut.SavedChangesAsync(eventData, 1, CancellationToken.None);
 
         // Assert
-        aggregate.DomainEvents.Should().BeEmpty();
+        aggregate.DomainEvents.ShouldBeEmpty();
     }
 
     [Fact]
@@ -248,10 +248,10 @@ public class DomainEventDispatchingTests
         await _sut.SavedChangesAsync(eventData, 1, CancellationToken.None);
 
         // Assert - Events should be dispatched in order they were raised
-        publishedMessages.Should().HaveCount(3);
-        publishedMessages[0].Should().Contain("Created");
-        publishedMessages[1].Should().Contain("Name 1");
-        publishedMessages[2].Should().Contain("Name 2");
+        publishedMessages.Count().ShouldBe(3);
+        publishedMessages[0].ShouldContain("Created");
+        publishedMessages[1].ShouldContain("Name 1");
+        publishedMessages[2].ShouldContain("Name 2");
     }
 
     #endregion
@@ -273,7 +273,7 @@ public class DomainEventDispatchingTests
         var result = await _sut.SavedChangesAsync(eventData, expectedResult, CancellationToken.None);
 
         // Assert
-        result.Should().Be(expectedResult);
+        result.ShouldBe(expectedResult);
     }
 
     #endregion
@@ -299,7 +299,7 @@ public class DomainEventDispatchingTests
         var act = async () => await _sut.SavedChangesAsync(eventData, 1, CancellationToken.None);
 
         // Assert
-        await act.Should().NotThrowAsync();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -321,7 +321,7 @@ public class DomainEventDispatchingTests
         var result = await _sut.SavedChangesAsync(eventData, expectedResult, CancellationToken.None);
 
         // Assert - Operation completes successfully with correct result
-        result.Should().Be(expectedResult);
+        result.ShouldBe(expectedResult);
     }
 
     [Fact]
@@ -342,7 +342,7 @@ public class DomainEventDispatchingTests
         await _sut.SavedChangesAsync(eventData, 1, CancellationToken.None);
 
         // Assert - Events should still be cleared even when Wolverine not started
-        aggregate.DomainEvents.Should().BeEmpty();
+        aggregate.DomainEvents.ShouldBeEmpty();
     }
 
     #endregion

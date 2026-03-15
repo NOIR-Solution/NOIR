@@ -73,9 +73,9 @@ public class GetPostsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(3);
-        result.Value.TotalCount.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(3);
+        result.Value.TotalCount.ShouldBe(3);
     }
 
     [Fact]
@@ -105,8 +105,8 @@ public class GetPostsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -134,9 +134,9 @@ public class GetPostsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items[0].Status.Should().Be(PostStatus.Published);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items[0].Status.ShouldBe(PostStatus.Published);
     }
 
     [Fact]
@@ -167,8 +167,8 @@ public class GetPostsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -199,8 +199,8 @@ public class GetPostsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -228,8 +228,8 @@ public class GetPostsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -263,11 +263,11 @@ public class GetPostsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value.Items[0];
-        dto.Title.Should().Be("Mapped Post");
-        dto.Slug.Should().Be("mapped-post");
-        dto.Status.Should().Be(PostStatus.Published);
+        dto.Title.ShouldBe("Mapped Post");
+        dto.Slug.ShouldBe("mapped-post");
+        dto.Status.ShouldBe(PostStatus.Published);
     }
 
     [Fact]
@@ -292,9 +292,9 @@ public class GetPostsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
     }
 
     #endregion
@@ -329,13 +329,13 @@ public class GetPostsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PageNumber.Should().Be(2);
-        result.Value.PageSize.Should().Be(10);
-        result.Value.TotalCount.Should().Be(25);
-        result.Value.TotalPages.Should().Be(3);
-        result.Value.HasPreviousPage.Should().BeTrue();
-        result.Value.HasNextPage.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PageNumber.ShouldBe(2);
+        result.Value.PageSize.ShouldBe(10);
+        result.Value.TotalCount.ShouldBe(25);
+        result.Value.TotalPages.ShouldBe(3);
+        result.Value.HasPreviousPage.ShouldBe(true);
+        result.Value.HasNextPage.ShouldBe(true);
     }
 
     [Fact]
@@ -365,9 +365,9 @@ public class GetPostsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.HasPreviousPage.Should().BeFalse();
-        result.Value.HasNextPage.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.HasPreviousPage.ShouldBe(false);
+        result.Value.HasNextPage.ShouldBe(true);
     }
 
     [Fact]
@@ -397,9 +397,9 @@ public class GetPostsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.HasPreviousPage.Should().BeTrue();
-        result.Value.HasNextPage.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.HasPreviousPage.ShouldBe(true);
+        result.Value.HasNextPage.ShouldBe(false);
     }
 
     [Fact]
@@ -428,10 +428,10 @@ public class GetPostsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.PageSize.Should().Be(5);
-        result.Value.TotalPages.Should().Be(10);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.PageSize.ShouldBe(5);
+        result.Value.TotalPages.ShouldBe(10);
     }
 
     #endregion
@@ -473,8 +473,8 @@ public class GetPostsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -507,8 +507,8 @@ public class GetPostsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
     }
 
     #endregion

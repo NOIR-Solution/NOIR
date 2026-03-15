@@ -68,7 +68,7 @@ public class GetCategoryFiltersQueryHandlerTests
     public void Constructor_WithValidDependencies_ShouldCreateInstance()
     {
         // Assert
-        _handler.Should().NotBeNull();
+        _handler.ShouldNotBeNull();
     }
 
     #endregion
@@ -87,10 +87,10 @@ public class GetCategoryFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be(ErrorCodes.Product.CategoryNotFound);
-        result.Error.Message.Should().Contain("non-existent-category");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe(ErrorCodes.Product.CategoryNotFound);
+        result.Error.Message.ShouldContain("non-existent-category");
     }
 
     [Fact]
@@ -105,8 +105,8 @@ public class GetCategoryFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Message.Should().Contain("missing-slug-xyz");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Message.ShouldContain("missing-slug-xyz");
     }
 
     [Fact]
@@ -121,8 +121,8 @@ public class GetCategoryFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
     }
 
     #endregion
@@ -143,11 +143,11 @@ public class GetCategoryFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategoryId.Should().Be(category.Id);
-        result.Value.CategoryName.Should().Be("Electronics");
-        result.Value.CategorySlug.Should().Be("electronics");
-        result.Value.Filters.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategoryId.ShouldBe(category.Id);
+        result.Value.CategoryName.ShouldBe("Electronics");
+        result.Value.CategorySlug.ShouldBe("electronics");
+        result.Value.Filters.ShouldNotBeNull();
     }
 
     [Fact]
@@ -164,8 +164,8 @@ public class GetCategoryFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Filters.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Filters.ShouldNotBeNull();
     }
 
     #endregion
@@ -186,15 +186,15 @@ public class GetCategoryFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var inStockFilter = result.Value.Filters.FirstOrDefault(f => f.Code == "in_stock");
-        inStockFilter.Should().NotBeNull();
-        inStockFilter!.Name.Should().Be("Availability");
-        inStockFilter.Type.Should().Be("boolean");
-        inStockFilter.DisplayType.Should().Be(FacetDisplayType.Boolean);
-        inStockFilter.Values.Should().HaveCount(2);
-        inStockFilter.Values.Should().Contain(v => v.Value == "true" && v.Label == "In Stock");
-        inStockFilter.Values.Should().Contain(v => v.Value == "false" && v.Label == "Out of Stock");
+        inStockFilter.ShouldNotBeNull();
+        inStockFilter!.Name.ShouldBe("Availability");
+        inStockFilter.Type.ShouldBe("boolean");
+        inStockFilter.DisplayType.ShouldBe(FacetDisplayType.Boolean);
+        inStockFilter.Values.Count().ShouldBe(2);
+        inStockFilter.Values.ShouldContain(v => v.Value == "true" && v.Label == "In Stock");
+        inStockFilter.Values.ShouldContain(v => v.Value == "false" && v.Label == "Out of Stock");
     }
 
     [Fact]
@@ -211,9 +211,9 @@ public class GetCategoryFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var inStockFilter = result.Value.Filters.First(f => f.Code == "in_stock");
-        inStockFilter.DisplayType.Should().Be(FacetDisplayType.Boolean);
+        inStockFilter.DisplayType.ShouldBe(FacetDisplayType.Boolean);
     }
 
     [Fact]
@@ -230,15 +230,15 @@ public class GetCategoryFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var inStockFilter = result.Value.Filters.First(f => f.Code == "in_stock");
-        inStockFilter.Values.Should().HaveCount(2);
+        inStockFilter.Values.Count().ShouldBe(2);
 
         var trueValue = inStockFilter.Values.First(v => v.Value == "true");
-        trueValue.Label.Should().Be("In Stock");
+        trueValue.Label.ShouldBe("In Stock");
 
         var falseValue = inStockFilter.Values.First(v => v.Value == "false");
-        falseValue.Label.Should().Be("Out of Stock");
+        falseValue.Label.ShouldBe("Out of Stock");
     }
 
     #endregion
@@ -265,12 +265,12 @@ public class GetCategoryFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Filters.Should().Contain(f => f.Code == "color",
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Filters.ShouldContain(f => f.Code == "color",
             "a Color-type attribute should produce a filter with code 'color'");
         var colorFilter = result.Value.Filters.First(f => f.Code == "color");
-        colorFilter.DisplayType.Should().Be(FacetDisplayType.Color);
-        colorFilter.Type.Should().Be("color");
+        colorFilter.DisplayType.ShouldBe(FacetDisplayType.Color);
+        colorFilter.Type.ShouldBe("color");
     }
 
     [Fact]
@@ -293,12 +293,12 @@ public class GetCategoryFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Filters.Should().Contain(f => f.Code == "wireless",
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Filters.ShouldContain(f => f.Code == "wireless",
             "a Boolean-type attribute should produce a filter with code 'wireless'");
         var wirelessFilter = result.Value.Filters.First(f => f.Code == "wireless");
-        wirelessFilter.DisplayType.Should().Be(FacetDisplayType.Boolean);
-        wirelessFilter.Type.Should().Be("boolean");
+        wirelessFilter.DisplayType.ShouldBe(FacetDisplayType.Boolean);
+        wirelessFilter.Type.ShouldBe("boolean");
     }
 
     [Fact]
@@ -322,14 +322,14 @@ public class GetCategoryFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Filters.Should().Contain(f => f.Code == "screen_size",
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Filters.ShouldContain(f => f.Code == "screen_size",
             "a Number-type attribute should produce a filter with code 'screen_size'");
         var screenFilter = result.Value.Filters.First(f => f.Code == "screen_size");
-        screenFilter.DisplayType.Should().Be(FacetDisplayType.Range);
-        screenFilter.Unit.Should().Be("inch");
-        screenFilter.Min.Should().Be(10m);
-        screenFilter.Max.Should().Be(100m);
+        screenFilter.DisplayType.ShouldBe(FacetDisplayType.Range);
+        screenFilter.Unit.ShouldBe("inch");
+        screenFilter.Min.ShouldBe(10m);
+        screenFilter.Max.ShouldBe(100m);
     }
 
     [Fact]
@@ -352,12 +352,12 @@ public class GetCategoryFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Filters.Should().Contain(f => f.Code == "resolution",
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Filters.ShouldContain(f => f.Code == "resolution",
             "a Select-type attribute should produce a filter with code 'resolution'");
         var resolutionFilter = result.Value.Filters.First(f => f.Code == "resolution");
-        resolutionFilter.DisplayType.Should().Be(FacetDisplayType.Checkbox);
-        resolutionFilter.Type.Should().Be("select");
+        resolutionFilter.DisplayType.ShouldBe(FacetDisplayType.Checkbox);
+        resolutionFilter.Type.ShouldBe("select");
     }
 
     #endregion
@@ -386,12 +386,12 @@ public class GetCategoryFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Should include global attributes when no category-specific ones exist
-        result.Value.Filters.Should().Contain(f => f.Code == "material",
+        result.Value.Filters.ShouldContain(f => f.Code == "material",
             "global filterable attributes should be included when no category-specific ones exist");
         var materialFilter = result.Value.Filters.First(f => f.Code == "material");
-        materialFilter.Name.Should().Be("Material");
+        materialFilter.Name.ShouldBe("Material");
     }
 
     [Fact]
@@ -425,10 +425,10 @@ public class GetCategoryFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Should not include inactive or non-filterable attributes
-        result.Value.Filters.Should().NotContain(f => f.Code == "inactive");
-        result.Value.Filters.Should().NotContain(f => f.Code == "non_filter");
+        result.Value.Filters.ShouldNotContain(f => f.Code == "inactive");
+        result.Value.Filters.ShouldNotContain(f => f.Code == "non_filter");
     }
 
     #endregion
@@ -451,10 +451,10 @@ public class GetCategoryFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategoryName.Should().Be("Fashion");
-        result.Value.CategorySlug.Should().Be("fashion");
-        result.Value.CategoryId.Should().Be(fashion.Id);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategoryName.ShouldBe("Fashion");
+        result.Value.CategorySlug.ShouldBe("fashion");
+        result.Value.CategoryId.ShouldBe(fashion.Id);
     }
 
     #endregion
@@ -478,7 +478,7 @@ public class GetCategoryFiltersQueryHandlerTests
         var result = await _handler.Handle(query, token);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     [Fact]
@@ -495,8 +495,8 @@ public class GetCategoryFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Filters.Should().Contain(f => f.Code == "in_stock");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Filters.ShouldContain(f => f.Code == "in_stock");
     }
 
     [Fact]
@@ -515,8 +515,8 @@ public class GetCategoryFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
     }
 
     #endregion

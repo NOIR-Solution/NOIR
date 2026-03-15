@@ -38,8 +38,8 @@ public class LayerDependencyTests
             .GetResult();
 
         // Assert
-        result.IsSuccessful.Should().BeTrue(
-            because: "Domain layer should not depend on Application layer");
+        result.IsSuccessful.ShouldBeTrue(
+            "Domain layer should not depend on Application layer");
     }
 
     [Fact]
@@ -53,8 +53,8 @@ public class LayerDependencyTests
             .GetResult();
 
         // Assert
-        result.IsSuccessful.Should().BeTrue(
-            because: "Domain layer should not depend on Infrastructure layer");
+        result.IsSuccessful.ShouldBeTrue(
+            "Domain layer should not depend on Infrastructure layer");
     }
 
     [Fact]
@@ -68,8 +68,8 @@ public class LayerDependencyTests
             .GetResult();
 
         // Assert
-        result.IsSuccessful.Should().BeTrue(
-            because: "Domain layer should not depend on Web layer");
+        result.IsSuccessful.ShouldBeTrue(
+            "Domain layer should not depend on Web layer");
     }
 
     [Fact]
@@ -83,8 +83,8 @@ public class LayerDependencyTests
             .GetResult();
 
         // Assert
-        result.IsSuccessful.Should().BeTrue(
-            because: "Domain layer should not depend on Entity Framework Core");
+        result.IsSuccessful.ShouldBeTrue(
+            "Domain layer should not depend on Entity Framework Core");
     }
 
     [Fact]
@@ -98,8 +98,8 @@ public class LayerDependencyTests
             .GetResult();
 
         // Assert
-        result.IsSuccessful.Should().BeTrue(
-            because: "Domain layer should not depend on ASP.NET Core");
+        result.IsSuccessful.ShouldBeTrue(
+            "Domain layer should not depend on ASP.NET Core");
     }
 
     #endregion
@@ -117,8 +117,8 @@ public class LayerDependencyTests
             .GetResult();
 
         // Assert
-        result.IsSuccessful.Should().BeTrue(
-            because: "Application layer should not depend on Infrastructure layer");
+        result.IsSuccessful.ShouldBeTrue(
+            "Application layer should not depend on Infrastructure layer");
     }
 
     [Fact]
@@ -132,8 +132,8 @@ public class LayerDependencyTests
             .GetResult();
 
         // Assert
-        result.IsSuccessful.Should().BeTrue(
-            because: "Application layer should not depend on Web layer");
+        result.IsSuccessful.ShouldBeTrue(
+            "Application layer should not depend on Web layer");
     }
 
     [Fact]
@@ -213,8 +213,8 @@ public class LayerDependencyTests
             .GetResult();
 
         // Assert
-        result.IsSuccessful.Should().BeTrue(
-            because: "Application Features should not depend on Entity Framework Core");
+        result.IsSuccessful.ShouldBeTrue(
+            "Application Features should not depend on Entity Framework Core");
     }
 
     [Fact]
@@ -228,8 +228,8 @@ public class LayerDependencyTests
             .GetTypes();
 
         // Assert
-        result.Should().NotBeEmpty(
-            because: "Application layer should reference Domain layer");
+        result.ShouldNotBeEmpty(
+            "Application layer should reference Domain layer");
     }
 
     #endregion
@@ -247,8 +247,8 @@ public class LayerDependencyTests
             .GetResult();
 
         // Assert
-        result.IsSuccessful.Should().BeTrue(
-            because: "Infrastructure layer should not depend on Web layer");
+        result.IsSuccessful.ShouldBeTrue(
+            "Infrastructure layer should not depend on Web layer");
     }
 
     [Fact]
@@ -262,8 +262,8 @@ public class LayerDependencyTests
             .GetTypes();
 
         // Assert
-        result.Should().NotBeEmpty(
-            because: "Infrastructure layer should reference Domain layer");
+        result.ShouldNotBeEmpty(
+            "Infrastructure layer should reference Domain layer");
     }
 
     [Fact]
@@ -277,8 +277,8 @@ public class LayerDependencyTests
             .GetTypes();
 
         // Assert
-        result.Should().NotBeEmpty(
-            because: "Infrastructure layer should reference Application layer to implement interfaces");
+        result.ShouldNotBeEmpty(
+            "Infrastructure layer should reference Application layer to implement interfaces");
     }
 
     #endregion
@@ -296,7 +296,7 @@ public class LayerDependencyTests
             .GetTypes();
 
         // Assert - Endpoints should exist
-        endpointTypes.Should().NotBeEmpty();
+        endpointTypes.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -310,8 +310,8 @@ public class LayerDependencyTests
             .GetTypes();
 
         // Assert
-        result.Should().NotBeEmpty(
-            because: "Web layer should reference Application layer for commands/queries");
+        result.ShouldNotBeEmpty(
+            "Web layer should reference Application layer for commands/queries");
     }
 
     #endregion
@@ -340,8 +340,8 @@ public class LayerDependencyTests
         // Assert
         foreach (var type in specTypes)
         {
-            type.Name.Should().EndWith("Spec",
-                because: $"Public specification '{type.Name}' should end with 'Spec'");
+            type.Name.EndsWith("Spec").ShouldBeTrue(
+                $"Public specification '{type.Name}' should end with 'Spec'");
         }
     }
 
@@ -374,8 +374,8 @@ public class LayerDependencyTests
         // Assert
         foreach (var type in commandTypes)
         {
-            type.Name.Should().EndWith("Command",
-                because: $"Type '{type.Name}' in Commands namespace should end with 'Command'");
+            type.Name.EndsWith("Command").ShouldBeTrue(
+                $"Type '{type.Name}' in Commands namespace should end with 'Command'");
         }
     }
 
@@ -392,8 +392,8 @@ public class LayerDependencyTests
             .GetResult();
 
         // Assert
-        result.IsSuccessful.Should().BeTrue(
-            because: "All validators should end with 'Validator'");
+        result.IsSuccessful.ShouldBeTrue(
+            "All validators should end with 'Validator'");
     }
 
     [Fact]
@@ -411,8 +411,8 @@ public class LayerDependencyTests
         // Assert
         foreach (var type in handlerTypes)
         {
-            type.Name.Should().EndWith("Handler",
-                because: $"Type '{type.Name}' in Handlers namespace should end with 'Handler'");
+            type.Name.EndsWith("Handler").ShouldBeTrue(
+                $"Type '{type.Name}' in Handlers namespace should end with 'Handler'");
         }
     }
 
@@ -433,8 +433,8 @@ public class LayerDependencyTests
             .GetTypes();
 
         // Assert
-        interfaces.Should().NotBeEmpty(
-            because: "Application layer should define interfaces for dependency inversion");
+        interfaces.ShouldNotBeEmpty(
+            "Application layer should define interfaces for dependency inversion");
     }
 
     [Fact]
@@ -453,8 +453,8 @@ public class LayerDependencyTests
             .Distinct();
 
         // Assert
-        implementedInterfaces.Should().NotBeEmpty(
-            because: "Infrastructure layer should implement Application layer interfaces");
+        implementedInterfaces.ShouldNotBeEmpty(
+            "Infrastructure layer should implement Application layer interfaces");
     }
 
     #endregion
@@ -498,13 +498,13 @@ public class LayerDependencyTests
         // Assert
         foreach (var type in tenantEntityTypes)
         {
-            typeof(Domain.Common.IAuditableEntity).IsAssignableFrom(type).Should().BeTrue(
-                because: $"Tenant entity '{type.Name}' must implement IAuditableEntity for universal soft-delete support");
+            typeof(Domain.Common.IAuditableEntity).IsAssignableFrom(type).ShouldBeTrue(
+                $"Tenant entity '{type.Name}' must implement IAuditableEntity for universal soft-delete support");
         }
 
         // Verify we actually found tenant entities (guard against false positive)
-        tenantEntityTypes.Should().NotBeEmpty(
-            because: "There should be concrete TenantEntity<> or PlatformTenantEntity<> implementations in the domain");
+        tenantEntityTypes.ShouldNotBeEmpty(
+            "There should be concrete TenantEntity<> or PlatformTenantEntity<> implementations in the domain");
     }
 
     #endregion
@@ -545,8 +545,8 @@ public class LayerDependencyTests
                 baseType = baseType.BaseType;
             }
 
-            (baseType != null && baseType != typeof(object)).Should().BeTrue(
-                because: $"Entity '{type.Name}' should inherit from Entity<TId>");
+            (baseType != null && baseType != typeof(object)).ShouldBeTrue(
+                $"Entity '{type.Name}' should inherit from Entity<TId>");
         }
     }
 
@@ -561,7 +561,7 @@ public class LayerDependencyTests
         var types = Types.InAssembly(DomainAssembly).GetTypes();
 
         // Assert - Just verify Domain types exist and can be loaded
-        types.Should().NotBeEmpty();
+        types.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -571,7 +571,7 @@ public class LayerDependencyTests
         var types = Types.InAssembly(ApplicationAssembly).GetTypes();
 
         // Assert - Just verify Application types exist and can be loaded
-        types.Should().NotBeEmpty();
+        types.ShouldNotBeEmpty();
     }
 
     #endregion
@@ -594,8 +594,8 @@ public class LayerDependencyTests
             .ToList();
 
         // Assert
-        duplicates.Should().BeEmpty(
-            because: "Feature namespaces must not redefine common types like PagedResult<T> — " +
+        duplicates.ShouldBeEmpty(
+            "Feature namespaces must not redefine common types like PagedResult<T> — " +
                      "use NOIR.Application.Common.Models.PagedResult<T> instead. " +
                      $"Found duplicates: {string.Join(", ", duplicates.Select(t => t.FullName))}");
     }
@@ -622,8 +622,8 @@ public class LayerDependencyTests
             // Records are immutable by default, or check for init-only setters
             (type.IsValueType ||
              type.GetConstructors().Any(c => c.GetParameters().Length > 0) ||
-             type.IsSealed).Should().BeTrue(
-                because: $"Command '{type.Name}' should be immutable (record, readonly struct, or sealed with init-only properties)");
+             type.IsSealed).ShouldBeTrue(
+                $"Command '{type.Name}' should be immutable (record, readonly struct, or sealed with init-only properties)");
         }
     }
 
@@ -640,8 +640,8 @@ public class LayerDependencyTests
             .GetTypes();
 
         // Assert
-        queryTypes.Should().NotBeEmpty(
-            because: "Application should have Query classes for read operations");
+        queryTypes.ShouldNotBeEmpty(
+            "Application should have Query classes for read operations");
     }
 
     #endregion

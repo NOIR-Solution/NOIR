@@ -104,8 +104,8 @@ public class GetEmailTemplatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -126,10 +126,10 @@ public class GetEmailTemplatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1); // Only one "WelcomeEmail" should be returned
-        result.Value[0].Subject.Should().Be("Tenant Welcome");
-        result.Value[0].IsInherited.Should().BeFalse(); // Tenant owns it
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1); // Only one "WelcomeEmail" should be returned
+        result.Value[0].Subject.ShouldBe("Tenant Welcome");
+        result.Value[0].IsInherited.ShouldBe(false); // Tenant owns it
     }
 
     [Fact]
@@ -149,9 +149,9 @@ public class GetEmailTemplatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
-        result.Value[0].IsInherited.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
+        result.Value[0].IsInherited.ShouldBe(true);
     }
 
     [Fact]
@@ -175,14 +175,14 @@ public class GetEmailTemplatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value[0];
-        dto.Name.Should().Be("WelcomeEmail");
-        dto.Subject.Should().Be("Welcome");
-        dto.IsActive.Should().BeTrue();
-        dto.Version.Should().Be(1);
-        dto.AvailableVariables.Should().Contain("UserName");
-        dto.IsInherited.Should().BeFalse();
+        dto.Name.ShouldBe("WelcomeEmail");
+        dto.Subject.ShouldBe("Welcome");
+        dto.IsActive.ShouldBe(true);
+        dto.Version.ShouldBe(1);
+        dto.AvailableVariables.ShouldContain("UserName");
+        dto.IsInherited.ShouldBe(false);
     }
 
     [Fact]
@@ -197,8 +197,8 @@ public class GetEmailTemplatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     [Fact]
@@ -218,8 +218,8 @@ public class GetEmailTemplatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value[0].AvailableVariables.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value[0].AvailableVariables.ShouldBeEmpty();
     }
 
     [Fact]
@@ -241,11 +241,11 @@ public class GetEmailTemplatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(3);
-        result.Value[0].Name.Should().Be("AFirstTemplate");
-        result.Value[1].Name.Should().Be("MMiddleTemplate");
-        result.Value[2].Name.Should().Be("ZLastTemplate");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(3);
+        result.Value[0].Name.ShouldBe("AFirstTemplate");
+        result.Value[1].Name.ShouldBe("MMiddleTemplate");
+        result.Value[2].Name.ShouldBe("ZLastTemplate");
     }
 
     #endregion

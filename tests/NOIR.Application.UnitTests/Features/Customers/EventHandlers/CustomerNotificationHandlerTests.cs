@@ -72,7 +72,7 @@ public class CustomerNotificationHandlerTests
             .ThrowsAsync(new InvalidOperationException("SMTP connection refused"));
 
         // Act & Assert
-        await ((Func<Task>)(() => _sut.Handle(evt, CancellationToken.None))).Should().NotThrowAsync();
+        await _sut.Handle(evt, CancellationToken.None);
         _logger.Verify(
             x => x.Log(
                 LogLevel.Warning,

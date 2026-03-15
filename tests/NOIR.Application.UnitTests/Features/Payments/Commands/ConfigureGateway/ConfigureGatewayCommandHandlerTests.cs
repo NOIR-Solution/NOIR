@@ -86,14 +86,14 @@ public class ConfigureGatewayCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Provider.Should().Be("vnpay");
-        result.Value.DisplayName.Should().Be("VNPay");
-        result.Value.Environment.Should().Be(GatewayEnvironment.Sandbox);
-        result.Value.IsActive.Should().BeTrue();
-        result.Value.HasCredentials.Should().BeTrue();
-        result.Value.SortOrder.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Provider.ShouldBe("vnpay");
+        result.Value.DisplayName.ShouldBe("VNPay");
+        result.Value.Environment.ShouldBe(GatewayEnvironment.Sandbox);
+        result.Value.IsActive.ShouldBe(true);
+        result.Value.HasCredentials.ShouldBe(true);
+        result.Value.SortOrder.ShouldBe(1);
 
         _encryptionServiceMock.Verify(x => x.Encrypt(It.IsAny<string>()), Times.Once);
         _gatewayRepositoryMock.Verify(x => x.AddAsync(It.IsAny<PaymentGateway>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -122,8 +122,8 @@ public class ConfigureGatewayCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(false);
     }
 
     [Fact]
@@ -148,8 +148,8 @@ public class ConfigureGatewayCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Environment.Should().Be(GatewayEnvironment.Production);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Environment.ShouldBe(GatewayEnvironment.Production);
     }
 
     #endregion
@@ -171,10 +171,10 @@ public class ConfigureGatewayCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Conflict);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.GatewayAlreadyExists);
-        result.Error.Message.Should().Contain("vnpay");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Conflict);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.GatewayAlreadyExists);
+        result.Error.Message.ShouldContain("vnpay");
 
         _gatewayRepositoryMock.Verify(x => x.AddAsync(It.IsAny<PaymentGateway>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -211,10 +211,10 @@ public class ConfigureGatewayCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedJson.Should().NotBeNull();
-        capturedJson.Should().Contain("merchantId");
-        capturedJson.Should().Contain("secretKey");
+        result.IsSuccess.ShouldBe(true);
+        capturedJson.ShouldNotBeNull();
+        capturedJson.ShouldContain("merchantId");
+        capturedJson.ShouldContain("secretKey");
 
         _encryptionServiceMock.Verify(x => x.Encrypt(It.IsAny<string>()), Times.Once);
     }
@@ -241,9 +241,9 @@ public class ConfigureGatewayCommandHandlerTests
         var result = await _handler.Handle(momoCommand, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Provider.Should().Be("momo");
-        result.Value.DisplayName.Should().Be("MoMo");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Provider.ShouldBe("momo");
+        result.Value.DisplayName.ShouldBe("MoMo");
     }
 
     #endregion

@@ -105,13 +105,13 @@ public class CreateStockMovementCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.MovementType.Should().Be(InventoryMovementType.StockIn);
-        result.Value.QuantityBefore.Should().Be(50);
-        result.Value.QuantityMoved.Should().Be(20);
-        result.Value.QuantityAfter.Should().Be(70);
-        result.Value.Reference.Should().Be("PO-001");
-        result.Value.Notes.Should().Be("Supplier delivery");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.MovementType.ShouldBe(InventoryMovementType.StockIn);
+        result.Value.QuantityBefore.ShouldBe(50);
+        result.Value.QuantityMoved.ShouldBe(20);
+        result.Value.QuantityAfter.ShouldBe(70);
+        result.Value.Reference.ShouldBe("PO-001");
+        result.Value.Notes.ShouldBe("Supplier delivery");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -174,11 +174,11 @@ public class CreateStockMovementCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.MovementType.Should().Be(InventoryMovementType.StockOut);
-        result.Value.QuantityBefore.Should().Be(100);
-        result.Value.QuantityMoved.Should().Be(-30);
-        result.Value.QuantityAfter.Should().Be(70);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.MovementType.ShouldBe(InventoryMovementType.StockOut);
+        result.Value.QuantityBefore.ShouldBe(100);
+        result.Value.QuantityMoved.ShouldBe(-30);
+        result.Value.QuantityAfter.ShouldBe(70);
 
         _movementLoggerMock.Verify(
             x => x.LogMovementAsync(
@@ -216,9 +216,9 @@ public class CreateStockMovementCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-INVENTORY-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-INVENTORY-002");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -269,11 +269,11 @@ public class CreateStockMovementCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.MovementType.Should().Be(InventoryMovementType.Adjustment);
-        result.Value.QuantityBefore.Should().Be(50);
-        result.Value.QuantityMoved.Should().Be(15);
-        result.Value.QuantityAfter.Should().Be(65);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.MovementType.ShouldBe(InventoryMovementType.Adjustment);
+        result.Value.QuantityBefore.ShouldBe(50);
+        result.Value.QuantityMoved.ShouldBe(15);
+        result.Value.QuantityAfter.ShouldBe(65);
     }
 
     [Fact]
@@ -298,9 +298,9 @@ public class CreateStockMovementCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-INVENTORY-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-INVENTORY-002");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -327,10 +327,10 @@ public class CreateStockMovementCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-INVENTORY-001");
-        result.Error.Message.Should().Contain("Only StockIn, StockOut, and Adjustment are allowed");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-INVENTORY-001");
+        result.Error.Message.ShouldContain("Only StockIn, StockOut, and Adjustment are allowed");
 
         _productRepositoryMock.Verify(
             x => x.FirstOrDefaultAsync(
@@ -359,9 +359,9 @@ public class CreateStockMovementCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-022");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-022");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -389,9 +389,9 @@ public class CreateStockMovementCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-023");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-023");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -492,9 +492,9 @@ public class CreateStockMovementCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Reference.Should().BeNull();
-        result.Value.Notes.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Reference.ShouldBeNull();
+        result.Value.Notes.ShouldBeNull();
     }
 
     [Fact]

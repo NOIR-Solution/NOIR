@@ -45,6 +45,6 @@ public class BulkAssignTagsCommandValidatorTests
         var employeeIds = Enumerable.Range(0, 101).Select(_ => Guid.NewGuid()).ToList();
         var command = CreateValidCommand() with { EmployeeIds = employeeIds };
         var result = await _validator.TestValidateAsync(command);
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 }

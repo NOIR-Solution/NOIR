@@ -32,7 +32,7 @@ public class AuditableEntityInterceptorTests
         var interceptor = new AuditableEntityInterceptor(_currentUserMock.Object, _dateTimeMock.Object);
 
         // Assert
-        interceptor.Should().NotBeNull();
+        interceptor.ShouldNotBeNull();
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class AuditableEntityInterceptorTests
         var act = () => new AuditableEntityInterceptor(null!, _dateTimeMock.Object);
 
         // Assert - Constructor doesn't validate, it defers to usage
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class AuditableEntityInterceptorTests
         var act = () => new AuditableEntityInterceptor(_currentUserMock.Object, null!);
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     #endregion
@@ -63,7 +63,7 @@ public class AuditableEntityInterceptorTests
     public void Interceptor_ShouldInheritFromSaveChangesInterceptor()
     {
         // Assert
-        _sut.Should().BeAssignableTo<SaveChangesInterceptor>();
+        _sut.ShouldBeAssignableTo<SaveChangesInterceptor>();
     }
 
     #endregion
@@ -75,7 +75,7 @@ public class AuditableEntityInterceptorTests
     {
         // Assert
         var method = typeof(AuditableEntityInterceptor).GetMethod("SavingChanges");
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class AuditableEntityInterceptorTests
     {
         // Assert
         var method = typeof(AuditableEntityInterceptor).GetMethod("SavingChangesAsync");
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
     }
 
     #endregion
@@ -97,7 +97,7 @@ public class AuditableEntityInterceptorTests
         var interceptor = new AuditableEntityInterceptor(_currentUserMock.Object, _dateTimeMock.Object);
 
         // Assert - If we can create it without error, dependency is stored
-        interceptor.Should().NotBeNull();
+        interceptor.ShouldNotBeNull();
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class AuditableEntityInterceptorTests
         var interceptor = new AuditableEntityInterceptor(_currentUserMock.Object, _dateTimeMock.Object);
 
         // Assert - If we can create it without error, dependency is stored
-        interceptor.Should().NotBeNull();
+        interceptor.ShouldNotBeNull();
     }
 
     #endregion
@@ -121,7 +121,7 @@ public class AuditableEntityInterceptorTests
         var userId = _currentUserMock.Object.UserId;
 
         // Assert
-        userId.Should().Be("test-user");
+        userId.ShouldBe("test-user");
     }
 
     [Fact]
@@ -131,7 +131,7 @@ public class AuditableEntityInterceptorTests
         var now = _dateTimeMock.Object.UtcNow;
 
         // Assert
-        now.Should().Be(_testTime);
+        now.ShouldBe(_testTime);
     }
 
     #endregion
@@ -148,7 +148,7 @@ public class AuditableEntityInterceptorTests
         var userId = _currentUserMock.Object.UserId;
 
         // Assert
-        userId.Should().BeNull();
+        userId.ShouldBeNull();
     }
 
     [Fact]
@@ -161,7 +161,7 @@ public class AuditableEntityInterceptorTests
         var userId = _currentUserMock.Object.UserId;
 
         // Assert
-        userId.Should().BeEmpty();
+        userId.ShouldBeEmpty();
     }
 
     [Fact]
@@ -174,7 +174,7 @@ public class AuditableEntityInterceptorTests
         var userId = _currentUserMock.Object.UserId;
 
         // Assert
-        userId.Should().Be("   ");
+        userId.ShouldBe("   ");
     }
 
     #endregion
@@ -192,7 +192,7 @@ public class AuditableEntityInterceptorTests
         var now = _dateTimeMock.Object.UtcNow;
 
         // Assert
-        now.Should().Be(differentTime);
+        now.ShouldBe(differentTime);
     }
 
     [Fact]
@@ -202,7 +202,7 @@ public class AuditableEntityInterceptorTests
         var now = _dateTimeMock.Object.UtcNow;
 
         // Assert
-        now.Offset.Should().Be(TimeSpan.Zero);
+        now.Offset.ShouldBe(TimeSpan.Zero);
     }
 
     #endregion

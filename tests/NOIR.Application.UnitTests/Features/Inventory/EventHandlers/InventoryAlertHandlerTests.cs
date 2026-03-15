@@ -127,7 +127,7 @@ public class InventoryAlertHandlerTests
             .ThrowsAsync(new InvalidOperationException("Service unavailable"));
 
         // Act & Assert
-        await ((Func<Task>)(() => _sut.Handle(evt, CancellationToken.None))).Should().NotThrowAsync();
+        await _sut.Handle(evt, CancellationToken.None);
         _logger.Verify(
             x => x.Log(
                 LogLevel.Warning,
@@ -180,7 +180,7 @@ public class InventoryAlertHandlerTests
             .ThrowsAsync(new Exception("Hub unavailable"));
 
         // Act & Assert
-        await ((Func<Task>)(() => _sut.Handle(evt, CancellationToken.None))).Should().NotThrowAsync();
+        await _sut.Handle(evt, CancellationToken.None);
     }
 
     #endregion

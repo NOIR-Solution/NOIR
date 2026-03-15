@@ -41,7 +41,7 @@ public class CheckoutEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/checkout/initiate", command);
 
         // Assert
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.BadRequest, HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.BadRequest, HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class CheckoutEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/checkout/initiate", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -72,7 +72,7 @@ public class CheckoutEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/checkout/{invalidId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -101,7 +101,7 @@ public class CheckoutEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync($"/api/checkout/{invalidSessionId}/shipping-address", command);
 
         // Assert
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -124,7 +124,7 @@ public class CheckoutEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync($"/api/checkout/{invalidSessionId}/shipping-method", command);
 
         // Assert
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -147,7 +147,7 @@ public class CheckoutEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync($"/api/checkout/{invalidSessionId}/payment-method", command);
 
         // Assert
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -165,7 +165,7 @@ public class CheckoutEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync($"/api/checkout/{invalidSessionId}/complete", new { });
 
         // Assert
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
     }
 
     #endregion

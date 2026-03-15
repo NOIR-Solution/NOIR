@@ -35,8 +35,8 @@ public class GetProjectMembersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -52,8 +52,8 @@ public class GetProjectMembersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class GetProjectMembersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.First().Role.Should().Be(ProjectMemberRole.Manager);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.First().Role.ShouldBe(ProjectMemberRole.Manager);
     }
 }

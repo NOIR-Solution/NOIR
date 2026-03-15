@@ -21,7 +21,7 @@ public class StringMaskingExtensionsTests
         var result = input.MaskEmail();
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Theory]
@@ -33,7 +33,7 @@ public class StringMaskingExtensionsTests
         var result = (input ?? string.Empty).MaskEmail();
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public class StringMaskingExtensionsTests
         var result = input.MaskEmail();
 
         // Assert
-        result.Should().Be(input);
+        result.ShouldBe(input);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class StringMaskingExtensionsTests
         var result = input.MaskEmail();
 
         // Assert
-        result.Should().Be(input);
+        result.ShouldBe(input);
     }
 
     #endregion
@@ -78,7 +78,7 @@ public class StringMaskingExtensionsTests
         var result = input.MaskPhone();
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Theory]
@@ -90,7 +90,7 @@ public class StringMaskingExtensionsTests
         var result = (input ?? string.Empty).MaskPhone();
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     #endregion

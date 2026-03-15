@@ -41,16 +41,16 @@ public class WebhookSubscriptionTests
             tenantId: TestTenantId);
 
         // Assert
-        subscription.Name.Should().Be("Order Notifications");
-        subscription.Url.Should().Be("https://api.example.com/hooks");
-        subscription.EventPatterns.Should().Be("order.*,payment.*");
-        subscription.Description.Should().Be("Handles order and payment events");
-        subscription.CustomHeaders.Should().Be("{\"X-API-Key\":\"secret\"}");
-        subscription.MaxRetries.Should().Be(3);
-        subscription.TimeoutSeconds.Should().Be(15);
-        subscription.IsActive.Should().BeTrue();
-        subscription.Status.Should().Be(WebhookSubscriptionStatus.Active);
-        subscription.Id.Should().NotBe(Guid.Empty);
+        subscription.Name.ShouldBe("Order Notifications");
+        subscription.Url.ShouldBe("https://api.example.com/hooks");
+        subscription.EventPatterns.ShouldBe("order.*,payment.*");
+        subscription.Description.ShouldBe("Handles order and payment events");
+        subscription.CustomHeaders.ShouldBe("{\"X-API-Key\":\"secret\"}");
+        subscription.MaxRetries.ShouldBe(3);
+        subscription.TimeoutSeconds.ShouldBe(15);
+        subscription.IsActive.ShouldBeTrue();
+        subscription.Status.ShouldBe(WebhookSubscriptionStatus.Active);
+        subscription.Id.ShouldNotBe(Guid.Empty);
     }
 
     [Fact]
@@ -60,9 +60,9 @@ public class WebhookSubscriptionTests
         var subscription = CreateTestSubscription();
 
         // Assert
-        subscription.Secret.Should().NotBeNullOrEmpty();
-        subscription.Secret.Should().HaveLength(64);
-        subscription.Secret.Should().MatchRegex("^[0-9a-f]{64}$");
+        subscription.Secret.ShouldNotBeNullOrEmpty();
+        subscription.Secret.Length.ShouldBe(64);
+        subscription.Secret.ShouldMatch("^[0-9a-f]{64}$");
     }
 
     [Fact]
@@ -72,8 +72,8 @@ public class WebhookSubscriptionTests
         var subscription = CreateTestSubscription();
 
         // Assert
-        subscription.Status.Should().Be(WebhookSubscriptionStatus.Active);
-        subscription.IsActive.Should().BeTrue();
+        subscription.Status.ShouldBe(WebhookSubscriptionStatus.Active);
+        subscription.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -83,8 +83,8 @@ public class WebhookSubscriptionTests
         var subscription = CreateTestSubscription(name: "My Webhook", url: "https://example.com/webhook");
 
         // Assert
-        subscription.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<WebhookSubscriptionCreatedEvent>();
+        subscription.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<WebhookSubscriptionCreatedEvent>();
     }
 
     [Fact]
@@ -95,9 +95,9 @@ public class WebhookSubscriptionTests
 
         // Assert
         var evt = subscription.DomainEvents.OfType<WebhookSubscriptionCreatedEvent>().Single();
-        evt.SubscriptionId.Should().Be(subscription.Id);
-        evt.Name.Should().Be("My Webhook");
-        evt.Url.Should().Be("https://example.com/webhook");
+        evt.SubscriptionId.ShouldBe(subscription.Id);
+        evt.Name.ShouldBe("My Webhook");
+        evt.Url.ShouldBe("https://example.com/webhook");
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class WebhookSubscriptionTests
         var act = () => WebhookSubscription.Create(null!, "https://example.com/webhook", "order.*");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public class WebhookSubscriptionTests
         var act = () => WebhookSubscription.Create("", "https://example.com/webhook", "order.*");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public class WebhookSubscriptionTests
         var act = () => WebhookSubscription.Create("   ", "https://example.com/webhook", "order.*");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     #endregion
@@ -151,13 +151,13 @@ public class WebhookSubscriptionTests
             timeoutSeconds: 45);
 
         // Assert
-        subscription.Name.Should().Be("Updated Name");
-        subscription.Url.Should().Be("https://updated.example.com/webhook");
-        subscription.EventPatterns.Should().Be("product.*,review.*");
-        subscription.Description.Should().Be("Updated description");
-        subscription.CustomHeaders.Should().Be("{\"Authorization\":\"Bearer token\"}");
-        subscription.MaxRetries.Should().Be(3);
-        subscription.TimeoutSeconds.Should().Be(45);
+        subscription.Name.ShouldBe("Updated Name");
+        subscription.Url.ShouldBe("https://updated.example.com/webhook");
+        subscription.EventPatterns.ShouldBe("product.*,review.*");
+        subscription.Description.ShouldBe("Updated description");
+        subscription.CustomHeaders.ShouldBe("{\"Authorization\":\"Bearer token\"}");
+        subscription.MaxRetries.ShouldBe(3);
+        subscription.TimeoutSeconds.ShouldBe(45);
     }
 
     [Fact]
@@ -170,7 +170,7 @@ public class WebhookSubscriptionTests
         subscription.Update("Updated", "https://example.com/webhook", "order.*", null, null, 5, 30);
 
         // Assert
-        subscription.Description.Should().BeNull();
+        subscription.Description.ShouldBeNull();
     }
 
     #endregion
@@ -189,7 +189,7 @@ public class WebhookSubscriptionTests
         subscription.Activate();
 
         // Assert
-        subscription.IsActive.Should().BeTrue();
+        subscription.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -204,7 +204,7 @@ public class WebhookSubscriptionTests
         subscription.Activate();
 
         // Assert
-        subscription.Status.Should().Be(WebhookSubscriptionStatus.Active);
+        subscription.Status.ShouldBe(WebhookSubscriptionStatus.Active);
     }
 
     [Fact]
@@ -219,8 +219,8 @@ public class WebhookSubscriptionTests
         subscription.Activate();
 
         // Assert
-        subscription.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<WebhookSubscriptionActivatedEvent>();
+        subscription.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<WebhookSubscriptionActivatedEvent>();
     }
 
     [Fact]
@@ -236,8 +236,8 @@ public class WebhookSubscriptionTests
 
         // Assert
         var evt = subscription.DomainEvents.OfType<WebhookSubscriptionActivatedEvent>().Single();
-        evt.SubscriptionId.Should().Be(subscription.Id);
-        evt.Name.Should().Be("My Webhook");
+        evt.SubscriptionId.ShouldBe(subscription.Id);
+        evt.Name.ShouldBe("My Webhook");
     }
 
     #endregion
@@ -255,7 +255,7 @@ public class WebhookSubscriptionTests
         subscription.Deactivate();
 
         // Assert
-        subscription.IsActive.Should().BeFalse();
+        subscription.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -269,7 +269,7 @@ public class WebhookSubscriptionTests
         subscription.Deactivate();
 
         // Assert
-        subscription.Status.Should().Be(WebhookSubscriptionStatus.Inactive);
+        subscription.Status.ShouldBe(WebhookSubscriptionStatus.Inactive);
     }
 
     [Fact]
@@ -283,8 +283,8 @@ public class WebhookSubscriptionTests
         subscription.Deactivate();
 
         // Assert
-        subscription.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<WebhookSubscriptionDeactivatedEvent>();
+        subscription.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<WebhookSubscriptionDeactivatedEvent>();
     }
 
     [Fact]
@@ -299,8 +299,8 @@ public class WebhookSubscriptionTests
 
         // Assert
         var evt = subscription.DomainEvents.OfType<WebhookSubscriptionDeactivatedEvent>().Single();
-        evt.SubscriptionId.Should().Be(subscription.Id);
-        evt.Name.Should().Be("My Webhook");
+        evt.SubscriptionId.ShouldBe(subscription.Id);
+        evt.Name.ShouldBe("My Webhook");
     }
 
     #endregion
@@ -317,7 +317,7 @@ public class WebhookSubscriptionTests
         subscription.Suspend();
 
         // Assert
-        subscription.IsActive.Should().BeFalse();
+        subscription.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -330,7 +330,7 @@ public class WebhookSubscriptionTests
         subscription.Suspend();
 
         // Assert
-        subscription.Status.Should().Be(WebhookSubscriptionStatus.Suspended);
+        subscription.Status.ShouldBe(WebhookSubscriptionStatus.Suspended);
     }
 
     [Fact]
@@ -344,7 +344,7 @@ public class WebhookSubscriptionTests
         subscription.Suspend();
 
         // Assert
-        subscription.DomainEvents.Should().BeEmpty();
+        subscription.DomainEvents.ShouldBeEmpty();
     }
 
     #endregion
@@ -361,7 +361,7 @@ public class WebhookSubscriptionTests
         var result = subscription.MatchesEvent("order.created");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBeTrue();
     }
 
     [Fact]
@@ -374,7 +374,7 @@ public class WebhookSubscriptionTests
         var result = subscription.MatchesEvent("order.created");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBeFalse();
     }
 
     [Fact]
@@ -387,7 +387,7 @@ public class WebhookSubscriptionTests
         var result = subscription.MatchesEvent("order.created");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBeTrue();
     }
 
     [Fact]
@@ -400,7 +400,7 @@ public class WebhookSubscriptionTests
         var result = subscription.MatchesEvent("order.created");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBeTrue();
     }
 
     [Fact]
@@ -413,7 +413,7 @@ public class WebhookSubscriptionTests
         var result = subscription.MatchesEvent("order.cancelled");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBeFalse();
     }
 
     [Fact]
@@ -426,7 +426,7 @@ public class WebhookSubscriptionTests
         var result = subscription.MatchesEvent("");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBeFalse();
     }
 
     [Fact]
@@ -439,7 +439,7 @@ public class WebhookSubscriptionTests
         var result = subscription.MatchesEvent("payment.succeeded");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBeTrue();
     }
 
     [Fact]
@@ -452,7 +452,7 @@ public class WebhookSubscriptionTests
         var result = subscription.MatchesEvent("order.created");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBeFalse();
     }
 
     #endregion
@@ -470,8 +470,8 @@ public class WebhookSubscriptionTests
         var newSecret = subscription.RotateSecret();
 
         // Assert
-        newSecret.Should().NotBe(originalSecret);
-        subscription.Secret.Should().NotBe(originalSecret);
+        newSecret.ShouldNotBe(originalSecret);
+        subscription.Secret.ShouldNotBe(originalSecret);
     }
 
     [Fact]
@@ -484,8 +484,8 @@ public class WebhookSubscriptionTests
         var newSecret = subscription.RotateSecret();
 
         // Assert
-        newSecret.Should().HaveLength(64);
-        newSecret.Should().MatchRegex("^[0-9a-f]{64}$");
+        newSecret.Length.ShouldBe(64);
+        newSecret.ShouldMatch("^[0-9a-f]{64}$");
     }
 
     [Fact]
@@ -498,7 +498,7 @@ public class WebhookSubscriptionTests
         var newSecret = subscription.RotateSecret();
 
         // Assert
-        subscription.Secret.Should().Be(newSecret);
+        subscription.Secret.ShouldBe(newSecret);
     }
 
     #endregion
@@ -516,9 +516,9 @@ public class WebhookSubscriptionTests
         subscription.RecordDelivery();
 
         // Assert
-        subscription.LastDeliveryAt.Should().NotBeNull();
-        subscription.LastDeliveryAt.Should().BeAfter(before);
-        subscription.LastDeliveryAt.Should().BeBefore(DateTimeOffset.UtcNow.AddSeconds(1));
+        subscription.LastDeliveryAt.ShouldNotBeNull();
+        subscription.LastDeliveryAt!.Value.ShouldBeGreaterThan(before);
+        subscription.LastDeliveryAt!.Value.ShouldBeLessThan(DateTimeOffset.UtcNow.AddSeconds(1));
     }
 
     [Fact]
@@ -533,7 +533,7 @@ public class WebhookSubscriptionTests
         subscription.RecordDelivery();
 
         // Assert
-        subscription.LastDeliveryAt.Should().BeOnOrAfter(firstDeliveryAt!.Value);
+        subscription.LastDeliveryAt!.Value.ShouldBeGreaterThanOrEqualTo(firstDeliveryAt!.Value);
     }
 
     #endregion

@@ -78,10 +78,10 @@ public class GetRevenueReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.TotalRevenue.Should().Be(150000m);
-        result.Value.TotalOrders.Should().Be(420);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.TotalRevenue.ShouldBe(150000m);
+        result.Value.TotalOrders.ShouldBe(420);
     }
 
     #endregion
@@ -110,7 +110,7 @@ public class GetRevenueReportQueryHandlerTests
         var afterExecution = DateTimeOffset.UtcNow;
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _reportServiceMock.Verify(
             x => x.GetRevenueReportAsync(
                 "monthly",
@@ -143,7 +143,7 @@ public class GetRevenueReportQueryHandlerTests
         var afterExecution = DateTimeOffset.UtcNow;
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _reportServiceMock.Verify(
             x => x.GetRevenueReportAsync(
                 "weekly",
@@ -176,7 +176,7 @@ public class GetRevenueReportQueryHandlerTests
         var afterExecution = DateTimeOffset.UtcNow;
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _reportServiceMock.Verify(
             x => x.GetRevenueReportAsync(
                 "daily",
@@ -217,7 +217,7 @@ public class GetRevenueReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _reportServiceMock.Verify(
             x => x.GetRevenueReportAsync(
                 period,
@@ -247,7 +247,7 @@ public class GetRevenueReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _reportServiceMock.Verify(
             x => x.GetRevenueReportAsync(
                 "monthly",
@@ -303,15 +303,15 @@ public class GetRevenueReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeSameAs(expectedReport);
-        result.Value.Period.Should().Be("weekly");
-        result.Value.TotalRevenue.Should().Be(42000m);
-        result.Value.AverageOrderValue.Should().Be(420m);
-        result.Value.RevenueByDay.Should().HaveCount(1);
-        result.Value.RevenueByCategory.Should().HaveCount(1);
-        result.Value.RevenueByPaymentMethod.Should().HaveCount(1);
-        result.Value.ComparedToPreviousPeriod.RevenueChange.Should().Be(-0.05m);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeSameAs(expectedReport);
+        result.Value.Period.ShouldBe("weekly");
+        result.Value.TotalRevenue.ShouldBe(42000m);
+        result.Value.AverageOrderValue.ShouldBe(420m);
+        result.Value.RevenueByDay.Count().ShouldBe(1);
+        result.Value.RevenueByCategory.Count().ShouldBe(1);
+        result.Value.RevenueByPaymentMethod.Count().ShouldBe(1);
+        result.Value.ComparedToPreviousPeriod.RevenueChange.ShouldBe(-0.05m);
     }
 
     #endregion
@@ -388,12 +388,12 @@ public class GetRevenueReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TotalRevenue.Should().Be(0m);
-        result.Value.TotalOrders.Should().Be(0);
-        result.Value.RevenueByDay.Should().BeEmpty();
-        result.Value.RevenueByCategory.Should().BeEmpty();
-        result.Value.RevenueByPaymentMethod.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TotalRevenue.ShouldBe(0m);
+        result.Value.TotalOrders.ShouldBe(0);
+        result.Value.RevenueByDay.ShouldBeEmpty();
+        result.Value.RevenueByCategory.ShouldBeEmpty();
+        result.Value.RevenueByPaymentMethod.ShouldBeEmpty();
     }
 
     #endregion
@@ -420,8 +420,8 @@ public class GetRevenueReportQueryHandlerTests
         var act = () => _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("Database connection failed");
+        (await Should.ThrowAsync<InvalidOperationException>(act))
+            .Message.ShouldBe("Database connection failed");
     }
 
     #endregion

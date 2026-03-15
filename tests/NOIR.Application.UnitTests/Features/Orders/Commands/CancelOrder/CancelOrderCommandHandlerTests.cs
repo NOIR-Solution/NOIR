@@ -76,10 +76,10 @@ public class CancelOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(OrderStatus.Cancelled);
-        result.Value.CancellationReason.Should().Be("Customer requested cancellation");
-        result.Value.CancelledAt.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(OrderStatus.Cancelled);
+        result.Value.CancellationReason.ShouldBe("Customer requested cancellation");
+        result.Value.CancelledAt.ShouldNotBeNull();
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -109,9 +109,9 @@ public class CancelOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(OrderStatus.Cancelled);
-        result.Value.CancellationReason.Should().Be("Out of stock");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(OrderStatus.Cancelled);
+        result.Value.CancellationReason.ShouldBe("Out of stock");
     }
 
     [Fact]
@@ -138,8 +138,8 @@ public class CancelOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(OrderStatus.Cancelled);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(OrderStatus.Cancelled);
     }
 
     [Fact]
@@ -164,9 +164,9 @@ public class CancelOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(OrderStatus.Cancelled);
-        result.Value.CancellationReason.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(OrderStatus.Cancelled);
+        result.Value.CancellationReason.ShouldBeNull();
     }
 
     #endregion
@@ -189,10 +189,10 @@ public class CancelOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be(ErrorCodes.Order.NotFound);
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.NotFound);
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -224,10 +224,10 @@ public class CancelOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidCancelTransition);
-        result.Error.Message.Should().Contain("Cannot cancel order");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.InvalidCancelTransition);
+        result.Error.Message.ShouldContain("Cannot cancel order");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -256,9 +256,9 @@ public class CancelOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidCancelTransition);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.InvalidCancelTransition);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -284,9 +284,9 @@ public class CancelOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidCancelTransition);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.InvalidCancelTransition);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -316,9 +316,9 @@ public class CancelOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidCancelTransition);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.InvalidCancelTransition);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -388,12 +388,12 @@ public class CancelOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.OrderNumber.Should().Be("ORD-20250126-0042");
-        result.Value.CustomerEmail.Should().Be("john@example.com");
-        result.Value.CustomerName.Should().Be("John Doe");
-        result.Value.Status.Should().Be(OrderStatus.Cancelled);
-        result.Value.CancellationReason.Should().Be("Customer requested");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.OrderNumber.ShouldBe("ORD-20250126-0042");
+        result.Value.CustomerEmail.ShouldBe("john@example.com");
+        result.Value.CustomerName.ShouldBe("John Doe");
+        result.Value.Status.ShouldBe(OrderStatus.Cancelled);
+        result.Value.CancellationReason.ShouldBe("Customer requested");
     }
 
     #endregion

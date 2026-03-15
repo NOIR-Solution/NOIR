@@ -69,7 +69,7 @@ public class PermissionAuthorizationHandlerTests
         await _sut.HandleAsync(context);
 
         // Assert
-        context.HasSucceeded.Should().BeFalse();
+        context.HasSucceeded.ShouldBe(false);
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public class PermissionAuthorizationHandlerTests
         await _sut.HandleAsync(context);
 
         // Assert
-        context.HasSucceeded.Should().BeFalse();
+        context.HasSucceeded.ShouldBe(false);
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class PermissionAuthorizationHandlerTests
         await _sut.HandleAsync(context);
 
         // Assert
-        context.HasSucceeded.Should().BeFalse();
+        context.HasSucceeded.ShouldBe(false);
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class PermissionAuthorizationHandlerTests
         await _sut.HandleAsync(context);
 
         // Assert
-        context.HasSucceeded.Should().BeFalse();
+        context.HasSucceeded.ShouldBe(false);
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public class PermissionAuthorizationHandlerTests
         await _sut.HandleAsync(context);
 
         // Assert
-        context.HasSucceeded.Should().BeTrue();
+        context.HasSucceeded.ShouldBe(true);
     }
 
     [Fact]
@@ -169,7 +169,7 @@ public class PermissionAuthorizationHandlerTests
         await _sut.HandleAsync(context);
 
         // Assert
-        context.HasSucceeded.Should().BeFalse();
+        context.HasSucceeded.ShouldBe(false);
     }
 
     [Fact]
@@ -190,7 +190,7 @@ public class PermissionAuthorizationHandlerTests
         await _sut.HandleAsync(context);
 
         // Assert
-        context.HasSucceeded.Should().BeFalse();
+        context.HasSucceeded.ShouldBe(false);
     }
 
     [Fact]
@@ -219,7 +219,7 @@ public class PermissionAuthorizationHandlerTests
         await _sut.HandleAsync(context);
 
         // Assert
-        context.HasSucceeded.Should().BeTrue();
+        context.HasSucceeded.ShouldBe(true);
     }
 
     #endregion
@@ -251,8 +251,8 @@ public class PermissionAuthorizationHandlerTests
         await _sut.HandleAsync(context2);
 
         // Assert
-        context1.HasSucceeded.Should().BeTrue();
-        context2.HasSucceeded.Should().BeTrue();
+        context1.HasSucceeded.ShouldBe(true);
+        context2.HasSucceeded.ShouldBe(true);
         // Verify FindByIdAsync was only called once (second call used cache)
         _userManagerMock.Verify(x => x.FindByIdAsync(userId), Times.Once);
     }
@@ -271,7 +271,7 @@ public class PermissionAuthorizationHandlerTests
             _cache);
 
         // Assert
-        handler.Should().NotBeNull();
+        handler.ShouldNotBeNull();
     }
 
     #endregion
@@ -291,7 +291,7 @@ public class PermissionAuthorizationHandlerTests
         await _sut.HandleAsync(context);
 
         // Assert
-        context.HasSucceeded.Should().BeFalse();
+        context.HasSucceeded.ShouldBe(false);
     }
 
     [Fact]
@@ -322,7 +322,7 @@ public class PermissionAuthorizationHandlerTests
         await _sut.HandleAsync(context);
 
         // Assert
-        context.HasSucceeded.Should().BeTrue();
+        context.HasSucceeded.ShouldBe(true);
     }
 
     [Fact]
@@ -352,7 +352,7 @@ public class PermissionAuthorizationHandlerTests
         await _sut.HandleAsync(context);
 
         // Assert
-        context.HasSucceeded.Should().BeTrue();
+        context.HasSucceeded.ShouldBe(true);
     }
 
     [Fact]
@@ -371,7 +371,7 @@ public class PermissionAuthorizationHandlerTests
         await _sut.HandleAsync(context);
 
         // Assert
-        context.HasSucceeded.Should().BeTrue();
+        context.HasSucceeded.ShouldBe(true);
         _userManagerMock.Verify(x => x.FindByIdAsync(It.IsAny<string>()), Times.Never);
     }
 
@@ -391,7 +391,7 @@ public class PermissionAuthorizationHandlerTests
         await _sut.HandleAsync(context);
 
         // Assert
-        context.HasSucceeded.Should().BeFalse();
+        context.HasSucceeded.ShouldBe(false);
     }
 
     [Fact]
@@ -414,7 +414,7 @@ public class PermissionAuthorizationHandlerTests
         await _sut.HandleAsync(context);
 
         // Assert
-        context.HasSucceeded.Should().BeFalse();
+        context.HasSucceeded.ShouldBe(false);
     }
 
     #endregion

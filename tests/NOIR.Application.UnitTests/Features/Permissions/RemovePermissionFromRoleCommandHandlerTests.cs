@@ -67,8 +67,8 @@ public class RemovePermissionFromRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEquivalentTo(remainingPermissions);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(remainingPermissions);
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class RemovePermissionFromRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _roleIdentityServiceMock.Verify(
             x => x.RemovePermissionsAsync(roleId, permissionsToRemove, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -129,8 +129,8 @@ public class RemovePermissionFromRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     #endregion
@@ -154,8 +154,8 @@ public class RemovePermissionFromRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.RoleNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.RoleNotFound);
         _roleIdentityServiceMock.Verify(
             x => x.RemovePermissionsAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -186,8 +186,8 @@ public class RemovePermissionFromRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Validation.General);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Validation.General);
     }
 
     #endregion

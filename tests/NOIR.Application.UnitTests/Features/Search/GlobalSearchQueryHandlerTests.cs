@@ -126,13 +126,13 @@ public class GlobalSearchQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().BeEmpty();
-        result.Value.Orders.Should().BeEmpty();
-        result.Value.Customers.Should().BeEmpty();
-        result.Value.BlogPosts.Should().BeEmpty();
-        result.Value.Users.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.ShouldBeEmpty();
+        result.Value.Orders.ShouldBeEmpty();
+        result.Value.Customers.ShouldBeEmpty();
+        result.Value.BlogPosts.ShouldBeEmpty();
+        result.Value.Users.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
     }
 
     [Fact]
@@ -145,8 +145,8 @@ public class GlobalSearchQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TotalCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TotalCount.ShouldBe(0);
     }
 
     [Fact]
@@ -159,8 +159,8 @@ public class GlobalSearchQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TotalCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TotalCount.ShouldBe(0);
     }
 
     #endregion
@@ -188,10 +188,10 @@ public class GlobalSearchQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().HaveCount(1);
-        result.Value.Products[0].Type.Should().Be("product");
-        result.Value.Products[0].Title.Should().Be("Test Product");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.Count().ShouldBe(1);
+        result.Value.Products[0].Type.ShouldBe("product");
+        result.Value.Products[0].Title.ShouldBe("Test Product");
     }
 
     [Fact]
@@ -207,8 +207,8 @@ public class GlobalSearchQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.ShouldBeEmpty();
 
         _productRepositoryMock.Verify(
             x => x.ListAsync(It.IsAny<ProductsSpec>(), It.IsAny<CancellationToken>()),
@@ -236,11 +236,11 @@ public class GlobalSearchQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Orders.Should().HaveCount(1);
-        result.Value.Orders[0].Type.Should().Be("order");
-        result.Value.Orders[0].Title.Should().Be("ORD-001");
-        result.Value.Orders[0].Subtitle.Should().Be("customer@test.com");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Orders.Count().ShouldBe(1);
+        result.Value.Orders[0].Type.ShouldBe("order");
+        result.Value.Orders[0].Title.ShouldBe("ORD-001");
+        result.Value.Orders[0].Subtitle.ShouldBe("customer@test.com");
     }
 
     [Fact]
@@ -264,11 +264,11 @@ public class GlobalSearchQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Customers.Should().HaveCount(1);
-        result.Value.Customers[0].Type.Should().Be("customer");
-        result.Value.Customers[0].Title.Should().Be("John Doe");
-        result.Value.Customers[0].Subtitle.Should().Be("customer@test.com");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Customers.Count().ShouldBe(1);
+        result.Value.Customers[0].Type.ShouldBe("customer");
+        result.Value.Customers[0].Title.ShouldBe("John Doe");
+        result.Value.Customers[0].Subtitle.ShouldBe("customer@test.com");
     }
 
     [Fact]
@@ -292,10 +292,10 @@ public class GlobalSearchQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.BlogPosts.Should().HaveCount(1);
-        result.Value.BlogPosts[0].Type.Should().Be("blogPost");
-        result.Value.BlogPosts[0].Title.Should().Be("My Blog Post");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.BlogPosts.Count().ShouldBe(1);
+        result.Value.BlogPosts[0].Type.ShouldBe("blogPost");
+        result.Value.BlogPosts[0].Title.ShouldBe("My Blog Post");
     }
 
     #endregion
@@ -316,11 +316,11 @@ public class GlobalSearchQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Users.Should().HaveCount(1);
-        result.Value.Users[0].Type.Should().Be("user");
-        result.Value.Users[0].Title.Should().Be("Test User");
-        result.Value.Users[0].Subtitle.Should().Be("test@test.com");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Users.Count().ShouldBe(1);
+        result.Value.Users[0].Type.ShouldBe("user");
+        result.Value.Users[0].Title.ShouldBe("Test User");
+        result.Value.Users[0].Subtitle.ShouldBe("test@test.com");
     }
 
     [Fact]
@@ -337,13 +337,13 @@ public class GlobalSearchQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().BeEmpty();
-        result.Value.Orders.Should().BeEmpty();
-        result.Value.Customers.Should().BeEmpty();
-        result.Value.BlogPosts.Should().BeEmpty();
-        result.Value.Users.Should().HaveCount(1);
-        result.Value.TotalCount.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.ShouldBeEmpty();
+        result.Value.Orders.ShouldBeEmpty();
+        result.Value.Customers.ShouldBeEmpty();
+        result.Value.BlogPosts.ShouldBeEmpty();
+        result.Value.Users.Count().ShouldBe(1);
+        result.Value.TotalCount.ShouldBe(1);
 
         // Verify no repository calls were made
         _productRepositoryMock.Verify(
@@ -395,8 +395,8 @@ public class GlobalSearchQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().HaveCount(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.Count().ShouldBe(3);
 
         // Verify that the spec was called with correct take parameter
         _productRepositoryMock.Verify(
@@ -444,8 +444,8 @@ public class GlobalSearchQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TotalCount.Should().Be(5); // 1 product + 1 order + 1 customer + 1 blog + 1 user
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TotalCount.ShouldBe(5); // 1 product + 1 order + 1 customer + 1 blog + 1 user
     }
 
     #endregion

@@ -63,20 +63,20 @@ public class CustomerAddressTests
             isDefault: true);
 
         // Assert
-        address.Should().NotBeNull();
-        address.Id.Should().NotBe(Guid.Empty);
-        address.CustomerId.Should().Be(customerId);
-        address.AddressType.Should().Be(AddressType.Shipping);
-        address.FullName.Should().Be("John Doe");
-        address.Phone.Should().Be("+84912345678");
-        address.AddressLine1.Should().Be("123 Main Street");
-        address.AddressLine2.Should().Be("Apt 4B");
-        address.Ward.Should().Be("Ward 1");
-        address.District.Should().Be("District 1");
-        address.Province.Should().Be("Ho Chi Minh City");
-        address.PostalCode.Should().Be("700000");
-        address.IsDefault.Should().BeTrue();
-        address.TenantId.Should().Be(TestTenantId);
+        address.ShouldNotBeNull();
+        address.Id.ShouldNotBe(Guid.Empty);
+        address.CustomerId.ShouldBe(customerId);
+        address.AddressType.ShouldBe(AddressType.Shipping);
+        address.FullName.ShouldBe("John Doe");
+        address.Phone.ShouldBe("+84912345678");
+        address.AddressLine1.ShouldBe("123 Main Street");
+        address.AddressLine2.ShouldBe("Apt 4B");
+        address.Ward.ShouldBe("Ward 1");
+        address.District.ShouldBe("District 1");
+        address.Province.ShouldBe("Ho Chi Minh City");
+        address.PostalCode.ShouldBe("700000");
+        address.IsDefault.ShouldBeTrue();
+        address.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class CustomerAddressTests
         var address = CreateTestAddress();
 
         // Assert
-        address.IsDefault.Should().BeFalse();
+        address.IsDefault.ShouldBeFalse();
     }
 
     [Fact]
@@ -100,10 +100,10 @@ public class CustomerAddressTests
             postalCode: null);
 
         // Assert
-        address.AddressLine2.Should().BeNull();
-        address.Ward.Should().BeNull();
-        address.District.Should().BeNull();
-        address.PostalCode.Should().BeNull();
+        address.AddressLine2.ShouldBeNull();
+        address.Ward.ShouldBeNull();
+        address.District.ShouldBeNull();
+        address.PostalCode.ShouldBeNull();
     }
 
     [Theory]
@@ -116,7 +116,7 @@ public class CustomerAddressTests
         var address = CreateTestAddress(addressType: addressType);
 
         // Assert
-        address.AddressType.Should().Be(addressType);
+        address.AddressType.ShouldBe(addressType);
     }
 
     [Fact]
@@ -126,7 +126,7 @@ public class CustomerAddressTests
         var address = CreateTestAddress(tenantId: null);
 
         // Assert
-        address.TenantId.Should().BeNull();
+        address.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -137,7 +137,7 @@ public class CustomerAddressTests
         var address2 = CreateTestAddress();
 
         // Assert
-        address1.Id.Should().NotBe(address2.Id);
+        address1.Id.ShouldNotBe(address2.Id);
     }
 
     #endregion
@@ -164,16 +164,16 @@ public class CustomerAddressTests
             true);
 
         // Assert
-        address.AddressType.Should().Be(AddressType.Billing);
-        address.FullName.Should().Be("Jane Smith");
-        address.Phone.Should().Be("+84987654321");
-        address.AddressLine1.Should().Be("456 Oak Avenue");
-        address.AddressLine2.Should().Be("Suite 200");
-        address.Ward.Should().Be("Ward 5");
-        address.District.Should().Be("District 3");
-        address.Province.Should().Be("Ha Noi");
-        address.PostalCode.Should().Be("100000");
-        address.IsDefault.Should().BeTrue();
+        address.AddressType.ShouldBe(AddressType.Billing);
+        address.FullName.ShouldBe("Jane Smith");
+        address.Phone.ShouldBe("+84987654321");
+        address.AddressLine1.ShouldBe("456 Oak Avenue");
+        address.AddressLine2.ShouldBe("Suite 200");
+        address.Ward.ShouldBe("Ward 5");
+        address.District.ShouldBe("District 3");
+        address.Province.ShouldBe("Ha Noi");
+        address.PostalCode.ShouldBe("100000");
+        address.IsDefault.ShouldBeTrue();
     }
 
     [Fact]
@@ -192,7 +192,7 @@ public class CustomerAddressTests
             "Ha Noi");
 
         // Assert - CustomerId should remain unchanged
-        address.CustomerId.Should().Be(customerId);
+        address.CustomerId.ShouldBe(customerId);
     }
 
     [Fact]
@@ -218,10 +218,10 @@ public class CustomerAddressTests
             postalCode: null);
 
         // Assert
-        address.AddressLine2.Should().BeNull();
-        address.Ward.Should().BeNull();
-        address.District.Should().BeNull();
-        address.PostalCode.Should().BeNull();
+        address.AddressLine2.ShouldBeNull();
+        address.Ward.ShouldBeNull();
+        address.District.ShouldBeNull();
+        address.PostalCode.ShouldBeNull();
     }
 
     [Fact]
@@ -239,7 +239,7 @@ public class CustomerAddressTests
             address.Province);
 
         // Assert
-        address.AddressType.Should().Be(AddressType.Both);
+        address.AddressType.ShouldBe(AddressType.Both);
     }
 
     #endregion
@@ -256,7 +256,7 @@ public class CustomerAddressTests
         address.SetAsDefault();
 
         // Assert
-        address.IsDefault.Should().BeTrue();
+        address.IsDefault.ShouldBeTrue();
     }
 
     [Fact]
@@ -269,7 +269,7 @@ public class CustomerAddressTests
         address.SetAsDefault();
 
         // Assert
-        address.IsDefault.Should().BeTrue();
+        address.IsDefault.ShouldBeTrue();
     }
 
     [Fact]
@@ -282,7 +282,7 @@ public class CustomerAddressTests
         address.RemoveDefault();
 
         // Assert
-        address.IsDefault.Should().BeFalse();
+        address.IsDefault.ShouldBeFalse();
     }
 
     [Fact]
@@ -295,7 +295,7 @@ public class CustomerAddressTests
         address.RemoveDefault();
 
         // Assert
-        address.IsDefault.Should().BeFalse();
+        address.IsDefault.ShouldBeFalse();
     }
 
     #endregion

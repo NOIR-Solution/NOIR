@@ -22,7 +22,7 @@ public class RepositoryDiVerificationTests
         await _factory.ExecuteWithTenantAsync(services =>
         {
             var repository = services.GetRequiredService<IRepository<NOIR.Domain.Entities.Hr.Employee, Guid>>();
-            repository.Should().NotBeNull();
+            repository.ShouldNotBeNull();
             return Task.CompletedTask;
         });
     }
@@ -33,7 +33,7 @@ public class RepositoryDiVerificationTests
         await _factory.ExecuteWithTenantAsync(services =>
         {
             var repository = services.GetRequiredService<IRepository<NOIR.Domain.Entities.Hr.Department, Guid>>();
-            repository.Should().NotBeNull();
+            repository.ShouldNotBeNull();
             return Task.CompletedTask;
         });
     }
@@ -48,7 +48,7 @@ public class RepositoryDiVerificationTests
         await _factory.ExecuteWithTenantAsync(services =>
         {
             var repository = services.GetRequiredService<IRepository<NOIR.Domain.Entities.Crm.CrmContact, Guid>>();
-            repository.Should().NotBeNull();
+            repository.ShouldNotBeNull();
             return Task.CompletedTask;
         });
     }
@@ -59,7 +59,7 @@ public class RepositoryDiVerificationTests
         await _factory.ExecuteWithTenantAsync(services =>
         {
             var repository = services.GetRequiredService<IRepository<NOIR.Domain.Entities.Crm.CrmCompany, Guid>>();
-            repository.Should().NotBeNull();
+            repository.ShouldNotBeNull();
             return Task.CompletedTask;
         });
     }
@@ -70,7 +70,7 @@ public class RepositoryDiVerificationTests
         await _factory.ExecuteWithTenantAsync(services =>
         {
             var repository = services.GetRequiredService<IRepository<NOIR.Domain.Entities.Crm.CrmActivity, Guid>>();
-            repository.Should().NotBeNull();
+            repository.ShouldNotBeNull();
             return Task.CompletedTask;
         });
     }
@@ -81,7 +81,7 @@ public class RepositoryDiVerificationTests
         await _factory.ExecuteWithTenantAsync(services =>
         {
             var repository = services.GetRequiredService<IRepository<NOIR.Domain.Entities.Crm.Lead, Guid>>();
-            repository.Should().NotBeNull();
+            repository.ShouldNotBeNull();
             return Task.CompletedTask;
         });
     }
@@ -92,7 +92,7 @@ public class RepositoryDiVerificationTests
         await _factory.ExecuteWithTenantAsync(services =>
         {
             var repository = services.GetRequiredService<IRepository<NOIR.Domain.Entities.Crm.Pipeline, Guid>>();
-            repository.Should().NotBeNull();
+            repository.ShouldNotBeNull();
             return Task.CompletedTask;
         });
     }

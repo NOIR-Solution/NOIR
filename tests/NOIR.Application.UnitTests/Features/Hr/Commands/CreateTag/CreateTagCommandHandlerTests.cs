@@ -55,10 +55,10 @@ public class CreateTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Name.Should().Be("Senior Developer");
-        result.Value.Category.Should().Be(EmployeeTagCategory.Skill);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Name.ShouldBe("Senior Developer");
+        result.Value.Category.ShouldBe(EmployeeTagCategory.Skill);
 
         _tagRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<EmployeeTag>(), It.IsAny<CancellationToken>()),
@@ -83,7 +83,7 @@ public class CreateTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
 
         _tagRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<EmployeeTag>(), It.IsAny<CancellationToken>()),

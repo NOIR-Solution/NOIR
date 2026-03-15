@@ -69,8 +69,8 @@ public class ApproveReviewCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(ReviewStatus.Approved);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(ReviewStatus.Approved);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -127,8 +127,8 @@ public class ApproveReviewCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-REVIEW-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-REVIEW-002");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),

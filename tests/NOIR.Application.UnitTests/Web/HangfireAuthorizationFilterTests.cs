@@ -36,7 +36,7 @@ public class HangfireAuthorizationFilterTests
         var filter = CreateFilter();
 
         // Assert
-        filter.Should().NotBeNull();
+        filter.ShouldNotBeNull();
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class HangfireAuthorizationFilterTests
     {
         // Constructor accepts null (no guard clause), but will throw when Authorize is called
         var filter = new HangfireAuthorizationFilter(null!, _mockConfiguration.Object, _mockServiceProvider.Object);
-        filter.Should().NotBeNull();
+        filter.ShouldNotBeNull();
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class HangfireAuthorizationFilterTests
     {
         // Constructor accepts null (no guard clause), but will throw when Authorize is called
         var filter = new HangfireAuthorizationFilter(_mockEnvironment.Object, null!, _mockServiceProvider.Object);
-        filter.Should().NotBeNull();
+        filter.ShouldNotBeNull();
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class HangfireAuthorizationFilterTests
     {
         // Constructor accepts null (no guard clause), but will throw when Authorize is called
         var filter = new HangfireAuthorizationFilter(_mockEnvironment.Object, _mockConfiguration.Object, null!);
-        filter.Should().NotBeNull();
+        filter.ShouldNotBeNull();
     }
 
     #endregion
@@ -74,7 +74,7 @@ public class HangfireAuthorizationFilterTests
         var filter = CreateFilter();
 
         // Assert
-        filter.Should().BeAssignableTo<IDashboardAuthorizationFilter>();
+        filter.ShouldBeAssignableTo<IDashboardAuthorizationFilter>();
     }
 
     #endregion
@@ -88,15 +88,15 @@ public class HangfireAuthorizationFilterTests
         var method = typeof(HangfireAuthorizationFilter)
             .GetMethod("Authorize", [typeof(DashboardContext)]);
 
-        method.Should().NotBeNull();
-        method!.ReturnType.Should().Be(typeof(bool));
+        method.ShouldNotBeNull();
+        method!.ReturnType.ShouldBe(typeof(bool));
     }
 
     [Fact]
     public void HangfireAuthorizationFilter_ShouldBePublicClass()
     {
         // Assert
-        typeof(HangfireAuthorizationFilter).IsPublic.Should().BeTrue();
+        typeof(HangfireAuthorizationFilter).IsPublic.ShouldBe(true);
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class HangfireAuthorizationFilterTests
         var constructor = typeof(HangfireAuthorizationFilter)
             .GetConstructor([typeof(IHostEnvironment), typeof(IConfiguration), typeof(IServiceProvider)]);
 
-        constructor.Should().NotBeNull();
+        constructor.ShouldNotBeNull();
     }
 
     #endregion
@@ -117,8 +117,8 @@ public class HangfireAuthorizationFilterTests
     public void HangfirePermission_ShouldBeDefinedInPermissionsClass()
     {
         // Verify the permission constant exists and has correct value
-        Permissions.HangfireDashboard.Should().Be("system:hangfire");
-        Permissions.ClaimType.Should().Be("permission");
+        Permissions.HangfireDashboard.ShouldBe("system:hangfire");
+        Permissions.ClaimType.ShouldBe("permission");
     }
 
     #endregion
@@ -136,7 +136,7 @@ public class HangfireAuthorizationFilterTests
         _mockConfiguration.Setup(c => c["Spa:DevServerUrl"]).Returns("http://localhost:3000");
 
         var filter = CreateFilter();
-        filter.Should().NotBeNull();
+        filter.ShouldNotBeNull();
 
         // Actual redirect behavior tested in integration tests
     }
@@ -151,7 +151,7 @@ public class HangfireAuthorizationFilterTests
         _mockEnvironment.Setup(e => e.EnvironmentName).Returns("Production");
 
         var filter = CreateFilter();
-        filter.Should().NotBeNull();
+        filter.ShouldNotBeNull();
 
         // Actual redirect behavior tested in integration tests
     }
@@ -169,7 +169,7 @@ public class HangfireAuthorizationFilterTests
         // return true; // CRITICAL: Return true to prevent Hangfire from overwriting our redirect with a 401
 
         var filter = CreateFilter();
-        filter.Should().NotBeNull();
+        filter.ShouldNotBeNull();
     }
 
     [Fact]
@@ -183,7 +183,7 @@ public class HangfireAuthorizationFilterTests
         // This leverages PermissionAuthorizationHandler which queries role claims from ASP.NET Identity
 
         var filter = CreateFilter();
-        filter.Should().NotBeNull();
+        filter.ShouldNotBeNull();
     }
 
     #endregion

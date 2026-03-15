@@ -101,12 +101,12 @@ public class GetCategoryByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Id.Should().Be(categoryId);
-        result.Value.Name.Should().Be("Technology");
-        result.Value.Slug.Should().Be("technology");
-        result.Value.Description.Should().Be("Tech articles");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Id.ShouldBe(categoryId);
+        result.Value.Name.ShouldBe("Technology");
+        result.Value.Slug.ShouldBe("technology");
+        result.Value.Description.ShouldBe("Tech articles");
     }
 
     [Fact]
@@ -138,15 +138,15 @@ public class GetCategoryByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Name.Should().Be("Business");
-        dto.Slug.Should().Be("business");
-        dto.Description.Should().Be("Business insights");
-        dto.SortOrder.Should().Be(5);
-        dto.MetaTitle.Should().Be("Business - Meta Title");
-        dto.MetaDescription.Should().Be("Business meta description");
-        dto.ImageUrl.Should().Be("https://example.com/business.jpg");
+        dto.Name.ShouldBe("Business");
+        dto.Slug.ShouldBe("business");
+        dto.Description.ShouldBe("Business insights");
+        dto.SortOrder.ShouldBe(5);
+        dto.MetaTitle.ShouldBe("Business - Meta Title");
+        dto.MetaDescription.ShouldBe("Business meta description");
+        dto.ImageUrl.ShouldBe("https://example.com/business.jpg");
     }
 
     [Fact]
@@ -173,9 +173,9 @@ public class GetCategoryByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ParentId.Should().Be(parentId);
-        result.Value.ParentName.Should().Be("Technology");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ParentId.ShouldBe(parentId);
+        result.Value.ParentName.ShouldBe("Technology");
     }
 
     [Fact]
@@ -204,11 +204,11 @@ public class GetCategoryByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Children.Should().NotBeNull();
-        result.Value.Children.Should().HaveCount(2);
-        result.Value.Children.Should().Contain(c => c.Name == "Programming");
-        result.Value.Children.Should().Contain(c => c.Name == "Hardware");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Children.ShouldNotBeNull();
+        result.Value.Children.Count().ShouldBe(2);
+        result.Value.Children.ShouldContain(c => c.Name == "Programming");
+        result.Value.Children.ShouldContain(c => c.Name == "Hardware");
     }
 
     [Fact]
@@ -234,8 +234,8 @@ public class GetCategoryByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PostCount.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PostCount.ShouldBe(3);
     }
 
     #endregion
@@ -260,8 +260,8 @@ public class GetCategoryByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-BLOG-020");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-BLOG-020");
     }
 
     #endregion
@@ -289,8 +289,8 @@ public class GetCategoryByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Description.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Description.ShouldBeNull();
     }
 
     [Fact]
@@ -311,9 +311,9 @@ public class GetCategoryByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ParentId.Should().BeNull();
-        result.Value.ParentName.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ParentId.ShouldBeNull();
+        result.Value.ParentName.ShouldBeNull();
     }
 
     [Fact]
@@ -334,9 +334,9 @@ public class GetCategoryByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Children might be null or empty depending on whether spec includes them
-        result.Value.Children?.Should().BeEmpty();
+        result.Value.Children?.ShouldBeEmpty();
     }
 
     [Fact]
@@ -385,8 +385,8 @@ public class GetCategoryByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CreatedAt.Should().NotBe(default);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CreatedAt.ShouldNotBe(default);
     }
 
     #endregion

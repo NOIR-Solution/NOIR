@@ -59,7 +59,7 @@ public class CookieAuthServiceTests
 
         // Assert
         var cookies = _httpContext.Response.Headers["Set-Cookie"].ToString();
-        cookies.Should().Contain("noir.access=test-access-token");
+        cookies.ShouldContain("noir.access=test-access-token");
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class CookieAuthServiceTests
 
         // Assert
         var cookies = _httpContext.Response.Headers["Set-Cookie"].ToString();
-        cookies.Should().Contain("noir.refresh=test-refresh-token");
+        cookies.ShouldContain("noir.refresh=test-refresh-token");
     }
 
     [Fact]
@@ -93,7 +93,7 @@ public class CookieAuthServiceTests
 
         // Assert
         var cookies = _httpContext.Response.Headers["Set-Cookie"].ToString();
-        cookies.Should().Contain("httponly");
+        cookies.ShouldContain("httponly");
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public class CookieAuthServiceTests
 
         // Assert
         var cookies = _httpContext.Response.Headers["Set-Cookie"].ToString();
-        cookies.Should().Contain("samesite=strict");
+        cookies.ShouldContain("samesite=strict");
     }
 
     [Fact]
@@ -129,8 +129,8 @@ public class CookieAuthServiceTests
         var act = () => service.SetAuthCookies("token", "refresh", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("HttpContext is not available");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldBe("HttpContext is not available");
     }
 
     #endregion
@@ -145,7 +145,7 @@ public class CookieAuthServiceTests
 
         // Assert
         var cookies = _httpContext.Response.Headers["Set-Cookie"].ToString();
-        cookies.Should().Contain("noir.access=");
+        cookies.ShouldContain("noir.access=");
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class CookieAuthServiceTests
 
         // Assert
         var cookies = _httpContext.Response.Headers["Set-Cookie"].ToString();
-        cookies.Should().Contain("noir.refresh=");
+        cookies.ShouldContain("noir.refresh=");
     }
 
     [Fact]
@@ -175,7 +175,7 @@ public class CookieAuthServiceTests
         var act = () => service.ClearAuthCookies();
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     #endregion
@@ -192,7 +192,7 @@ public class CookieAuthServiceTests
         var token = _service.GetRefreshTokenFromCookie();
 
         // Assert
-        token.Should().Be("test-refresh-token");
+        token.ShouldBe("test-refresh-token");
     }
 
     [Fact]
@@ -204,7 +204,7 @@ public class CookieAuthServiceTests
         var token = _service.GetRefreshTokenFromCookie();
 
         // Assert
-        token.Should().BeNull();
+        token.ShouldBeNull();
     }
 
     [Fact]
@@ -223,7 +223,7 @@ public class CookieAuthServiceTests
         var token = service.GetRefreshTokenFromCookie();
 
         // Assert
-        token.Should().BeNull();
+        token.ShouldBeNull();
     }
 
     #endregion
@@ -240,7 +240,7 @@ public class CookieAuthServiceTests
         var token = _service.GetAccessTokenFromCookie();
 
         // Assert
-        token.Should().Be("test-access-token");
+        token.ShouldBe("test-access-token");
     }
 
     [Fact]
@@ -252,7 +252,7 @@ public class CookieAuthServiceTests
         var token = _service.GetAccessTokenFromCookie();
 
         // Assert
-        token.Should().BeNull();
+        token.ShouldBeNull();
     }
 
     [Fact]
@@ -271,7 +271,7 @@ public class CookieAuthServiceTests
         var token = service.GetAccessTokenFromCookie();
 
         // Assert
-        token.Should().BeNull();
+        token.ShouldBeNull();
     }
 
     #endregion
@@ -300,7 +300,7 @@ public class CookieAuthServiceTests
 
         // Assert
         var cookies = _httpContext.Response.Headers["Set-Cookie"].ToString();
-        cookies.Should().Contain("secure");
+        cookies.ShouldContain("secure");
     }
 
     #endregion

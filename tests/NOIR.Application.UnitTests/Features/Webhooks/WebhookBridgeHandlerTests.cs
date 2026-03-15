@@ -62,7 +62,7 @@ public class WebhookBridgeHandlerTests
         var act = async () => await _handler.Handle(evt, CancellationToken.None);
 
         // Assert
-        await act.Should().NotThrowAsync();
+        act.ShouldNotThrow();
     }
 
     #endregion
@@ -113,9 +113,9 @@ public class WebhookBridgeHandlerTests
         await _handler.Handle(evt, CancellationToken.None);
 
         // Assert
-        capturedEvent.Should().NotBeNull();
-        capturedEvent.Should().BeOfType<OrderCreatedEvent>();
-        ((OrderCreatedEvent)capturedEvent!).OrderId.Should().Be(orderId);
+        capturedEvent.ShouldNotBeNull();
+        capturedEvent.ShouldBeOfType<OrderCreatedEvent>();
+        ((OrderCreatedEvent)capturedEvent!).OrderId.ShouldBe(orderId);
     }
 
     [Fact]

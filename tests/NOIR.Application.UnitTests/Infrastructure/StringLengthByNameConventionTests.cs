@@ -152,7 +152,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithNames>(context, nameof(TestEntityWithNames.Name));
-        maxLength.Should().Be(200);
+        maxLength.ShouldBe(200);
     }
 
     [Fact]
@@ -160,7 +160,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithNames>(context, nameof(TestEntityWithNames.Title));
-        maxLength.Should().Be(200);
+        maxLength.ShouldBe(200);
     }
 
     [Fact]
@@ -168,7 +168,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithNames>(context, nameof(TestEntityWithNames.Email));
-        maxLength.Should().Be(256);
+        maxLength.ShouldBe(256);
     }
 
     [Fact]
@@ -176,7 +176,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithNames>(context, nameof(TestEntityWithNames.PhoneNumber));
-        maxLength.Should().Be(20);
+        maxLength.ShouldBe(20);
     }
 
     [Fact]
@@ -184,7 +184,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithNames>(context, nameof(TestEntityWithNames.Phone));
-        maxLength.Should().Be(20);
+        maxLength.ShouldBe(20);
     }
 
     #endregion
@@ -196,7 +196,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithContent>(context, nameof(TestEntityWithContent.Description));
-        maxLength.Should().Be(2000);
+        maxLength.ShouldBe(2000);
     }
 
     [Fact]
@@ -204,7 +204,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithContent>(context, nameof(TestEntityWithContent.Notes));
-        maxLength.Should().Be(4000);
+        maxLength.ShouldBe(4000);
     }
 
     [Fact]
@@ -212,7 +212,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithContent>(context, nameof(TestEntityWithContent.Comment));
-        maxLength.Should().Be(4000);
+        maxLength.ShouldBe(4000);
     }
 
     [Fact]
@@ -220,7 +220,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithContent>(context, nameof(TestEntityWithContent.Message));
-        maxLength.Should().Be(4000);
+        maxLength.ShouldBe(4000);
     }
 
     #endregion
@@ -232,7 +232,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithReferences>(context, nameof(TestEntityWithReferences.Code));
-        maxLength.Should().Be(50);
+        maxLength.ShouldBe(50);
     }
 
     [Fact]
@@ -240,7 +240,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithReferences>(context, nameof(TestEntityWithReferences.Reference));
-        maxLength.Should().Be(100);
+        maxLength.ShouldBe(100);
     }
 
     [Fact]
@@ -248,7 +248,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithReferences>(context, nameof(TestEntityWithReferences.ExternalId));
-        maxLength.Should().Be(100);
+        maxLength.ShouldBe(100);
     }
 
     #endregion
@@ -260,7 +260,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithAddress>(context, nameof(TestEntityWithAddress.Address));
-        maxLength.Should().Be(500);
+        maxLength.ShouldBe(500);
     }
 
     [Fact]
@@ -268,7 +268,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithAddress>(context, nameof(TestEntityWithAddress.Street));
-        maxLength.Should().Be(200);
+        maxLength.ShouldBe(200);
     }
 
     [Fact]
@@ -276,7 +276,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithAddress>(context, nameof(TestEntityWithAddress.City));
-        maxLength.Should().Be(100);
+        maxLength.ShouldBe(100);
     }
 
     [Fact]
@@ -284,7 +284,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithAddress>(context, nameof(TestEntityWithAddress.State));
-        maxLength.Should().Be(100);
+        maxLength.ShouldBe(100);
     }
 
     [Fact]
@@ -292,7 +292,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithAddress>(context, nameof(TestEntityWithAddress.Country));
-        maxLength.Should().Be(100);
+        maxLength.ShouldBe(100);
     }
 
     [Fact]
@@ -301,7 +301,7 @@ public class StringLengthByNameConventionTests
         // PostalCode ends with "Code" which matches earlier in dictionary iteration
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithAddress>(context, nameof(TestEntityWithAddress.PostalCode));
-        maxLength.Should().Be(50);
+        maxLength.ShouldBe(50);
     }
 
     [Fact]
@@ -310,7 +310,7 @@ public class StringLengthByNameConventionTests
         // ZipCode ends with "Code" which matches earlier in dictionary iteration
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithAddress>(context, nameof(TestEntityWithAddress.ZipCode));
-        maxLength.Should().Be(50);
+        maxLength.ShouldBe(50);
     }
 
     #endregion
@@ -322,7 +322,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithUrls>(context, nameof(TestEntityWithUrls.Url));
-        maxLength.Should().Be(2000);
+        maxLength.ShouldBe(2000);
     }
 
     [Fact]
@@ -330,7 +330,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithUrls>(context, nameof(TestEntityWithUrls.ImageUrl));
-        maxLength.Should().Be(2000);
+        maxLength.ShouldBe(2000);
     }
 
     [Fact]
@@ -338,7 +338,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithUrls>(context, nameof(TestEntityWithUrls.Website));
-        maxLength.Should().Be(2000);
+        maxLength.ShouldBe(2000);
     }
 
     #endregion
@@ -351,7 +351,7 @@ public class StringLengthByNameConventionTests
         // IpAddress ends with "Address" which matches earlier in dictionary iteration
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithNetwork>(context, nameof(TestEntityWithNetwork.IpAddress));
-        maxLength.Should().Be(500);
+        maxLength.ShouldBe(500);
     }
 
     [Fact]
@@ -359,7 +359,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithNetwork>(context, nameof(TestEntityWithNetwork.UserAgent));
-        maxLength.Should().Be(500);
+        maxLength.ShouldBe(500);
     }
 
     [Fact]
@@ -367,7 +367,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithNetwork>(context, nameof(TestEntityWithNetwork.DeviceName));
-        maxLength.Should().Be(200);
+        maxLength.ShouldBe(200);
     }
 
     #endregion
@@ -379,7 +379,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithSecurity>(context, nameof(TestEntityWithSecurity.Token));
-        maxLength.Should().Be(500);
+        maxLength.ShouldBe(500);
     }
 
     [Fact]
@@ -387,7 +387,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithSecurity>(context, nameof(TestEntityWithSecurity.CorrelationId));
-        maxLength.Should().Be(100);
+        maxLength.ShouldBe(100);
     }
 
     #endregion
@@ -399,7 +399,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithSuffixes>(context, nameof(TestEntityWithSuffixes.CustomerName));
-        maxLength.Should().Be(200);
+        maxLength.ShouldBe(200);
     }
 
     [Fact]
@@ -407,7 +407,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithSuffixes>(context, nameof(TestEntityWithSuffixes.CustomerEmail));
-        maxLength.Should().Be(256);
+        maxLength.ShouldBe(256);
     }
 
     [Fact]
@@ -415,7 +415,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithSuffixes>(context, nameof(TestEntityWithSuffixes.ProfileImageUrl));
-        maxLength.Should().Be(2000);
+        maxLength.ShouldBe(2000);
     }
 
     [Fact]
@@ -423,7 +423,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithSuffixes>(context, nameof(TestEntityWithSuffixes.ShippingAddress));
-        maxLength.Should().Be(500);
+        maxLength.ShouldBe(500);
     }
 
     #endregion
@@ -435,7 +435,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithPresetLength>(context, nameof(TestEntityWithPresetLength.Name));
-        maxLength.Should().Be(50); // Preset, not 200
+        maxLength.ShouldBe(50); // Preset, not 200
     }
 
     [Fact]
@@ -443,7 +443,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithPresetLength>(context, nameof(TestEntityWithPresetLength.Description));
-        maxLength.Should().Be(100); // Preset, not 2000
+        maxLength.ShouldBe(100); // Preset, not 2000
     }
 
     #endregion
@@ -455,7 +455,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithNoMatch>(context, nameof(TestEntityWithNoMatch.SomeRandomField));
-        maxLength.Should().BeNull();
+        maxLength.ShouldBeNull();
     }
 
     [Fact]
@@ -463,7 +463,7 @@ public class StringLengthByNameConventionTests
     {
         using var context = CreateContext();
         var maxLength = GetMaxLength<TestEntityWithNoMatch>(context, nameof(TestEntityWithNoMatch.AnotherField));
-        maxLength.Should().BeNull();
+        maxLength.ShouldBeNull();
     }
 
     #endregion
@@ -502,7 +502,7 @@ public class StringLengthByNameConventionTests
             ?.FindProperty(nameof(TestEntityWithCaseVariations.NAME))
             ?.GetMaxLength();
 
-        maxLength.Should().Be(200);
+        maxLength.ShouldBe(200);
     }
 
     [Fact]
@@ -517,7 +517,7 @@ public class StringLengthByNameConventionTests
             ?.FindProperty(nameof(TestEntityWithCaseVariations.email))
             ?.GetMaxLength();
 
-        maxLength.Should().Be(256);
+        maxLength.ShouldBe(256);
     }
 
     #endregion

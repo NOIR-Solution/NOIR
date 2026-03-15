@@ -28,8 +28,8 @@ public class PostDomainEventTests
         var post = CreateTestPost();
 
         // Assert
-        post.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PostCreatedEvent>();
+        post.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<PostCreatedEvent>();
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class PostDomainEventTests
 
         // Assert
         var domainEvent = post.DomainEvents.OfType<PostCreatedEvent>().Single();
-        domainEvent.PostId.Should().Be(post.Id);
+        domainEvent.PostId.ShouldBe(post.Id);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class PostDomainEventTests
 
         // Assert
         var domainEvent = post.DomainEvents.OfType<PostCreatedEvent>().Single();
-        domainEvent.Title.Should().Be("Getting Started with .NET");
+        domainEvent.Title.ShouldBe("Getting Started with .NET");
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class PostDomainEventTests
 
         // Assert
         var domainEvent = post.DomainEvents.OfType<PostCreatedEvent>().Single();
-        domainEvent.Slug.Should().Be("my-first-post");
+        domainEvent.Slug.ShouldBe("my-first-post");
     }
 
     #endregion
@@ -80,8 +80,8 @@ public class PostDomainEventTests
         post.UpdateContent("Updated Title", "updated-slug", "An excerpt", null, "<p>Content</p>");
 
         // Assert
-        post.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PostUpdatedEvent>();
+        post.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<PostUpdatedEvent>();
     }
 
     [Fact]
@@ -96,8 +96,8 @@ public class PostDomainEventTests
 
         // Assert
         var domainEvent = post.DomainEvents.OfType<PostUpdatedEvent>().Single();
-        domainEvent.PostId.Should().Be(post.Id);
-        domainEvent.Title.Should().Be("New Title");
+        domainEvent.PostId.ShouldBe(post.Id);
+        domainEvent.Title.ShouldBe("New Title");
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class PostDomainEventTests
         post.UpdateContent("Title v2", "slug-v2", null, null, null);
 
         // Assert
-        post.DomainEvents.OfType<PostUpdatedEvent>().Should().HaveCount(2);
+        post.DomainEvents.OfType<PostUpdatedEvent>().Count().ShouldBe(2);
     }
 
     #endregion
@@ -130,8 +130,8 @@ public class PostDomainEventTests
         post.Publish();
 
         // Assert
-        post.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PostPublishedEvent>();
+        post.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<PostPublishedEvent>();
     }
 
     [Fact]
@@ -146,9 +146,9 @@ public class PostDomainEventTests
 
         // Assert
         var domainEvent = post.DomainEvents.OfType<PostPublishedEvent>().Single();
-        domainEvent.PostId.Should().Be(post.Id);
-        domainEvent.Title.Should().Be("Published Post");
-        domainEvent.Slug.Should().Be("published-post");
+        domainEvent.PostId.ShouldBe(post.Id);
+        domainEvent.Title.ShouldBe("Published Post");
+        domainEvent.Slug.ShouldBe("published-post");
     }
 
     #endregion
@@ -167,8 +167,8 @@ public class PostDomainEventTests
         post.Unpublish();
 
         // Assert
-        post.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PostUnpublishedEvent>();
+        post.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<PostUnpublishedEvent>();
     }
 
     [Fact]
@@ -184,8 +184,8 @@ public class PostDomainEventTests
 
         // Assert
         var domainEvent = post.DomainEvents.OfType<PostUnpublishedEvent>().Single();
-        domainEvent.PostId.Should().Be(post.Id);
-        domainEvent.Title.Should().Be("Retracted Post");
+        domainEvent.PostId.ShouldBe(post.Id);
+        domainEvent.Title.ShouldBe("Retracted Post");
     }
 
     [Fact]
@@ -200,8 +200,8 @@ public class PostDomainEventTests
         post.Unpublish();
 
         // Assert
-        post.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PostUnpublishedEvent>();
+        post.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<PostUnpublishedEvent>();
     }
 
     #endregion
@@ -213,22 +213,22 @@ public class PostDomainEventTests
     {
         // Act - Create
         var post = CreateTestPost(title: "Lifecycle Post");
-        post.DomainEvents.Should().ContainSingle().Which.Should().BeOfType<PostCreatedEvent>();
+        post.DomainEvents.ShouldHaveSingleItem().ShouldBeOfType<PostCreatedEvent>();
 
         // Act - Update content
         post.ClearDomainEvents();
         post.UpdateContent("Updated Lifecycle Post", "lifecycle-post", "excerpt", null, "<p>Body</p>");
-        post.DomainEvents.Should().ContainSingle().Which.Should().BeOfType<PostUpdatedEvent>();
+        post.DomainEvents.ShouldHaveSingleItem().ShouldBeOfType<PostUpdatedEvent>();
 
         // Act - Publish
         post.ClearDomainEvents();
         post.Publish();
-        post.DomainEvents.Should().ContainSingle().Which.Should().BeOfType<PostPublishedEvent>();
+        post.DomainEvents.ShouldHaveSingleItem().ShouldBeOfType<PostPublishedEvent>();
 
         // Act - Unpublish
         post.ClearDomainEvents();
         post.Unpublish();
-        post.DomainEvents.Should().ContainSingle().Which.Should().BeOfType<PostUnpublishedEvent>();
+        post.DomainEvents.ShouldHaveSingleItem().ShouldBeOfType<PostUnpublishedEvent>();
     }
 
     #endregion

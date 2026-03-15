@@ -23,9 +23,9 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateSrcset(variants);
 
         // Assert
-        result.Should().Contain("/images/test-thumb.jpg 320w");
-        result.Should().Contain("/images/test-medium.jpg 640w");
-        result.Should().Contain("/images/test-large.jpg 1280w");
+        result.ShouldContain("/images/test-thumb.jpg 320w");
+        result.ShouldContain("/images/test-medium.jpg 640w");
+        result.ShouldContain("/images/test-large.jpg 1280w");
     }
 
     [Fact]
@@ -44,9 +44,9 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateSrcset(variants, OutputFormat.WebP);
 
         // Assert
-        result.Should().Contain("/images/test-thumb.webp 320w");
-        result.Should().Contain("/images/test-medium.webp 640w");
-        result.Should().NotContain(".jpg");
+        result.ShouldContain("/images/test-thumb.webp 320w");
+        result.ShouldContain("/images/test-medium.webp 640w");
+        result.ShouldNotContain(".jpg");
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateSrcset(variants);
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -77,9 +77,9 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateSrcset(variants);
 
         // Assert
-        result.Should().Contain("/images/test-thumb.jpg 320w");
-        result.Should().Contain("/images/test-large.jpg 1280w");
-        result.Should().NotContain("640w");
+        result.ShouldContain("/images/test-thumb.jpg 320w");
+        result.ShouldContain("/images/test-large.jpg 1280w");
+        result.ShouldNotContain("640w");
     }
 
     [Fact]
@@ -96,8 +96,8 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateSrcset(variants);
 
         // Assert
-        result.Should().Contain("/images/test-thumb.jpg 320w");
-        result.Should().NotContain("640w");
+        result.ShouldContain("/images/test-thumb.jpg 320w");
+        result.ShouldNotContain("640w");
     }
 
     [Fact]
@@ -116,9 +116,9 @@ public class SrcsetGeneratorTests
 
         // Assert
         var parts = result.Split(", ");
-        parts[0].Should().Contain("320w");
-        parts[1].Should().Contain("640w");
-        parts[2].Should().Contain("1280w");
+        parts[0].ShouldContain("320w");
+        parts[1].ShouldContain("640w");
+        parts[2].ShouldContain("1280w");
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateSrcset(variants);
 
         // Assert
-        result.Should().Be("/images/test.jpg 640w");
+        result.ShouldBe("/images/test.jpg 640w");
     }
 
     [Fact]
@@ -151,8 +151,8 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateSrcset(variants, OutputFormat.Avif);
 
         // Assert
-        result.Should().Contain("/images/test-thumb.avif 320w");
-        result.Should().NotContain(".jpg");
+        result.ShouldContain("/images/test-thumb.avif 320w");
+        result.ShouldNotContain(".jpg");
     }
 
     #endregion
@@ -166,7 +166,7 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateSizes();
 
         // Assert
-        result.Should().Be("100vw");
+        result.ShouldBe("100vw");
     }
 
     [Fact]
@@ -176,7 +176,7 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateSizes("50vw");
 
         // Assert
-        result.Should().Be("50vw");
+        result.ShouldBe("50vw");
     }
 
     [Fact]
@@ -193,9 +193,9 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateSizes("33vw", breakpoints);
 
         // Assert
-        result.Should().Contain("(max-width: 640px) 100vw");
-        result.Should().Contain("(max-width: 1024px) 50vw");
-        result.Should().EndWith("33vw");
+        result.ShouldContain("(max-width: 640px) 100vw");
+        result.ShouldContain("(max-width: 1024px) 50vw");
+        result.ShouldEndWith("33vw");
     }
 
     [Fact]
@@ -205,7 +205,7 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateSizes("100vw", null);
 
         // Assert
-        result.Should().Be("100vw");
+        result.ShouldBe("100vw");
     }
 
     [Fact]
@@ -218,7 +218,7 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateSizes("100vw", breakpoints);
 
         // Assert
-        result.Should().Be("100vw");
+        result.ShouldBe("100vw");
     }
 
     [Fact]
@@ -237,10 +237,10 @@ public class SrcsetGeneratorTests
 
         // Assert
         var parts = result.Split(", ");
-        parts[0].Should().Contain("480px");
-        parts[1].Should().Contain("768px");
-        parts[2].Should().Contain("1024px");
-        parts[3].Should().Be("33vw");
+        parts[0].ShouldContain("480px");
+        parts[1].ShouldContain("768px");
+        parts[2].ShouldContain("1024px");
+        parts[3].ShouldBe("33vw");
     }
 
     #endregion
@@ -262,14 +262,14 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GeneratePictureElement(variants, "Test image");
 
         // Assert
-        result.Should().Contain("<picture>");
-        result.Should().Contain("</picture>");
-        result.Should().Contain("type=\"image/avif\"");
-        result.Should().Contain("type=\"image/webp\"");
-        result.Should().Contain("<img");
-        result.Should().Contain("alt=\"Test image\"");
-        result.Should().Contain("loading=\"lazy\"");
-        result.Should().Contain("decoding=\"async\"");
+        result.ShouldContain("<picture>");
+        result.ShouldContain("</picture>");
+        result.ShouldContain("type=\"image/avif\"");
+        result.ShouldContain("type=\"image/webp\"");
+        result.ShouldContain("<img");
+        result.ShouldContain("alt=\"Test image\"");
+        result.ShouldContain("loading=\"lazy\"");
+        result.ShouldContain("decoding=\"async\"");
     }
 
     [Fact]
@@ -285,7 +285,7 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GeneratePictureElement(variants, "Test", className: "my-image-class");
 
         // Assert
-        result.Should().Contain("class=\"my-image-class\"");
+        result.ShouldContain("class=\"my-image-class\"");
     }
 
     [Fact]
@@ -301,7 +301,7 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GeneratePictureElement(variants, "Test", sizes: "50vw");
 
         // Assert
-        result.Should().Contain("sizes=\"50vw\"");
+        result.ShouldContain("sizes=\"50vw\"");
     }
 
     [Fact]
@@ -317,7 +317,7 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GeneratePictureElement(variants, "Test", loading: "eager");
 
         // Assert
-        result.Should().Contain("loading=\"eager\"");
+        result.ShouldContain("loading=\"eager\"");
     }
 
     [Fact]
@@ -333,8 +333,8 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GeneratePictureElement(variants, "Test <script>alert('xss')</script>");
 
         // Assert
-        result.Should().Contain("&lt;script&gt;");
-        result.Should().NotContain("<script>");
+        result.ShouldContain("&lt;script&gt;");
+        result.ShouldNotContain("<script>");
     }
 
     [Fact]
@@ -350,7 +350,7 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GeneratePictureElement(variants, "Test \"quoted\" text");
 
         // Assert
-        result.Should().Contain("&quot;quoted&quot;");
+        result.ShouldContain("&quot;quoted&quot;");
     }
 
     #endregion
@@ -371,12 +371,12 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateImgTag(variants, "Test image");
 
         // Assert
-        result.Should().Contain("<img");
-        result.Should().Contain("alt=\"Test image\"");
-        result.Should().Contain("loading=\"lazy\"");
-        result.Should().Contain("decoding=\"async\"");
-        result.Should().Contain("srcset=\"");
-        result.Should().Contain("sizes=\"100vw\"");
+        result.ShouldContain("<img");
+        result.ShouldContain("alt=\"Test image\"");
+        result.ShouldContain("loading=\"lazy\"");
+        result.ShouldContain("decoding=\"async\"");
+        result.ShouldContain("srcset=\"");
+        result.ShouldContain("sizes=\"100vw\"");
     }
 
     [Fact]
@@ -393,8 +393,8 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateImgTag(variants, "Test", format: OutputFormat.WebP);
 
         // Assert
-        result.Should().Contain("/images/test.webp");
-        result.Should().NotContain("/images/test.jpg");
+        result.ShouldContain("/images/test.webp");
+        result.ShouldNotContain("/images/test.jpg");
     }
 
     [Fact]
@@ -410,7 +410,7 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateImgTag(variants, "Test", className: "responsive-img");
 
         // Assert
-        result.Should().Contain("class=\"responsive-img\"");
+        result.ShouldContain("class=\"responsive-img\"");
     }
 
     [Fact]
@@ -426,7 +426,7 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateImgTag(variants, "Test", sizes: "(max-width: 640px) 100vw, 50vw");
 
         // Assert
-        result.Should().Contain("sizes=\"(max-width: 640px) 100vw, 50vw\"");
+        result.ShouldContain("sizes=\"(max-width: 640px) 100vw, 50vw\"");
     }
 
     [Fact]
@@ -444,7 +444,7 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateImgTag(variants, "Test");
 
         // Assert
-        result.Should().Contain("src=\"/images/test-large.jpg\"");
+        result.ShouldContain("src=\"/images/test-large.jpg\"");
     }
 
     #endregion
@@ -466,11 +466,11 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateBackgroundImageCss(variants, ImageVariant.Medium);
 
         // Assert
-        result.Should().Contain("background-image:");
-        result.Should().Contain("image-set(");
-        result.Should().Contain("type(\"image/avif\")");
-        result.Should().Contain("type(\"image/webp\")");
-        result.Should().Contain("type(\"image/jpeg\")");
+        result.ShouldContain("background-image:");
+        result.ShouldContain("image-set(");
+        result.ShouldContain("type(\"image/avif\")");
+        result.ShouldContain("type(\"image/webp\")");
+        result.ShouldContain("type(\"image/jpeg\")");
     }
 
     [Fact]
@@ -483,7 +483,7 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateBackgroundImageCss(variants, ImageVariant.Medium);
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -499,7 +499,7 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateBackgroundImageCss(variants, ImageVariant.Large);
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -515,8 +515,8 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateBackgroundImageCss(variants, ImageVariant.Medium);
 
         // Assert
-        result.Should().Contain("url(\"/images/bg.jpg\")");
-        result.Should().Contain("type(\"image/jpeg\")");
+        result.ShouldContain("url(\"/images/bg.jpg\")");
+        result.ShouldContain("type(\"image/jpeg\")");
     }
 
     [Fact]
@@ -534,7 +534,7 @@ public class SrcsetGeneratorTests
 
         // Assert
         // Fallback should use JPEG (most compatible)
-        result.Should().StartWith("background-image: url(\"/images/bg.jpg\");");
+        result.ShouldStartWith("background-image: url(\"/images/bg.jpg\");");
     }
 
     #endregion
@@ -554,7 +554,7 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateSrcset(variants);
 
         // Assert
-        result.Should().Contain("/images/test%20image.jpg");
+        result.ShouldContain("/images/test%20image.jpg");
     }
 
     [Fact]
@@ -570,7 +570,7 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GenerateSrcset(variants);
 
         // Assert
-        result.Should().Contain("https://cdn.example.com/images/test.jpg 320w");
+        result.ShouldContain("https://cdn.example.com/images/test.jpg 320w");
     }
 
     [Fact]
@@ -587,8 +587,8 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GeneratePictureElement(variants, "Test");
 
         // Assert
-        result.Should().NotContain("type=\"image/avif\"");
-        result.Should().Contain("type=\"image/webp\"");
+        result.ShouldNotContain("type=\"image/avif\"");
+        result.ShouldContain("type=\"image/webp\"");
     }
 
     [Fact]
@@ -604,8 +604,8 @@ public class SrcsetGeneratorTests
         var result = SrcsetGenerator.GeneratePictureElement(variants, "Test");
 
         // Assert
-        result.Should().NotContain("type=\"image/webp\"");
-        result.Should().NotContain("type=\"image/avif\"");
+        result.ShouldNotContain("type=\"image/webp\"");
+        result.ShouldNotContain("type=\"image/avif\"");
     }
 
     #endregion

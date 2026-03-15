@@ -53,13 +53,13 @@ public class ProductFilterIndexTests
         var index = CreateTestIndex();
 
         // Assert
-        index.Should().NotBeNull();
-        index.Id.Should().NotBe(Guid.Empty);
-        index.ProductId.Should().Be(TestProductId);
-        index.ProductName.Should().Be("Test Product");
-        index.ProductSlug.Should().Be("test-product");
-        index.Status.Should().Be(ProductStatus.Active);
-        index.TenantId.Should().Be(TestTenantId);
+        index.ShouldNotBeNull();
+        index.Id.ShouldNotBe(Guid.Empty);
+        index.ProductId.ShouldBe(TestProductId);
+        index.ProductName.ShouldBe("Test Product");
+        index.ProductSlug.ShouldBe("test-product");
+        index.Status.ShouldBe(ProductStatus.Active);
+        index.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -69,9 +69,9 @@ public class ProductFilterIndexTests
         var index = CreateTestIndex(basePrice: 150_000m);
 
         // Assert
-        index.MinPrice.Should().Be(150_000m);
-        index.MaxPrice.Should().Be(150_000m);
-        index.Currency.Should().Be("VND");
+        index.MinPrice.ShouldBe(150_000m);
+        index.MaxPrice.ShouldBe(150_000m);
+        index.Currency.ShouldBe("VND");
     }
 
     [Fact]
@@ -81,17 +81,17 @@ public class ProductFilterIndexTests
         var index = CreateTestIndex();
 
         // Assert
-        index.InStock.Should().BeFalse();
-        index.TotalStock.Should().Be(0);
-        index.AverageRating.Should().BeNull();
-        index.ReviewCount.Should().Be(0);
-        index.AttributesJson.Should().Be("{}");
-        index.SearchText.Should().BeEmpty();
-        index.PrimaryImageUrl.Should().BeNull();
-        index.SortOrder.Should().Be(0);
-        index.CategoryId.Should().BeNull();
-        index.CategoryPath.Should().BeNull();
-        index.BrandId.Should().BeNull();
+        index.InStock.ShouldBeFalse();
+        index.TotalStock.ShouldBe(0);
+        index.AverageRating.ShouldBeNull();
+        index.ReviewCount.ShouldBe(0);
+        index.AttributesJson.ShouldBe("{}");
+        index.SearchText.ShouldBeEmpty();
+        index.PrimaryImageUrl.ShouldBeNull();
+        index.SortOrder.ShouldBe(0);
+        index.CategoryId.ShouldBeNull();
+        index.CategoryPath.ShouldBeNull();
+        index.BrandId.ShouldBeNull();
     }
 
     [Fact]
@@ -104,8 +104,8 @@ public class ProductFilterIndexTests
         var index = CreateTestIndex();
 
         // Assert
-        index.LastSyncedAt.Should().BeOnOrAfter(before);
-        index.ProductUpdatedAt.Should().BeOnOrAfter(before);
+        index.LastSyncedAt.ShouldBeGreaterThanOrEqualTo(before);
+        index.ProductUpdatedAt.ShouldBeGreaterThanOrEqualTo(before);
     }
 
     [Theory]
@@ -119,7 +119,7 @@ public class ProductFilterIndexTests
         var index = CreateTestIndex(status: status);
 
         // Assert
-        index.Status.Should().Be(status);
+        index.Status.ShouldBe(status);
     }
 
     #endregion
@@ -136,8 +136,8 @@ public class ProductFilterIndexTests
         index.UpdateStock(50, true);
 
         // Assert
-        index.TotalStock.Should().Be(50);
-        index.InStock.Should().BeTrue();
+        index.TotalStock.ShouldBe(50);
+        index.InStock.ShouldBeTrue();
     }
 
     [Fact]
@@ -151,8 +151,8 @@ public class ProductFilterIndexTests
         index.UpdateStock(0, false);
 
         // Assert
-        index.TotalStock.Should().Be(0);
-        index.InStock.Should().BeFalse();
+        index.TotalStock.ShouldBe(0);
+        index.InStock.ShouldBeFalse();
     }
 
     [Fact]
@@ -166,7 +166,7 @@ public class ProductFilterIndexTests
         index.UpdateStock(10, true);
 
         // Assert
-        index.LastSyncedAt.Should().BeOnOrAfter(before);
+        index.LastSyncedAt.ShouldBeGreaterThanOrEqualTo(before);
     }
 
     #endregion
@@ -183,9 +183,9 @@ public class ProductFilterIndexTests
         index.UpdatePricing(50_000m, 200_000m, "USD");
 
         // Assert
-        index.MinPrice.Should().Be(50_000m);
-        index.MaxPrice.Should().Be(200_000m);
-        index.Currency.Should().Be("USD");
+        index.MinPrice.ShouldBe(50_000m);
+        index.MaxPrice.ShouldBe(200_000m);
+        index.Currency.ShouldBe("USD");
     }
 
     [Fact]
@@ -199,7 +199,7 @@ public class ProductFilterIndexTests
         index.UpdatePricing(100m, 200m, "VND");
 
         // Assert
-        index.LastSyncedAt.Should().BeOnOrAfter(before);
+        index.LastSyncedAt.ShouldBeGreaterThanOrEqualTo(before);
     }
 
     #endregion
@@ -216,8 +216,8 @@ public class ProductFilterIndexTests
         index.UpdateRating(4.5m, 120);
 
         // Assert
-        index.AverageRating.Should().Be(4.5m);
-        index.ReviewCount.Should().Be(120);
+        index.AverageRating.ShouldBe(4.5m);
+        index.ReviewCount.ShouldBe(120);
     }
 
     [Fact]
@@ -231,8 +231,8 @@ public class ProductFilterIndexTests
         index.UpdateRating(null, 0);
 
         // Assert
-        index.AverageRating.Should().BeNull();
-        index.ReviewCount.Should().Be(0);
+        index.AverageRating.ShouldBeNull();
+        index.ReviewCount.ShouldBe(0);
     }
 
     #endregion
@@ -250,7 +250,7 @@ public class ProductFilterIndexTests
         index.SetAttributesJson(json);
 
         // Assert
-        index.AttributesJson.Should().Be(json);
+        index.AttributesJson.ShouldBe(json);
     }
 
     [Fact]
@@ -263,7 +263,7 @@ public class ProductFilterIndexTests
         index.SetAttributesJson(null!);
 
         // Assert
-        index.AttributesJson.Should().Be("{}");
+        index.AttributesJson.ShouldBe("{}");
     }
 
     [Fact]
@@ -277,7 +277,7 @@ public class ProductFilterIndexTests
         index.SetAttributesJson("{}");
 
         // Assert
-        index.LastSyncedAt.Should().BeOnOrAfter(before);
+        index.LastSyncedAt.ShouldBeGreaterThanOrEqualTo(before);
     }
 
     #endregion
@@ -294,7 +294,7 @@ public class ProductFilterIndexTests
         index.SetSearchText("iPhone 15 Pro Max Apple");
 
         // Assert
-        index.SearchText.Should().Be("iPhone 15 Pro Max Apple");
+        index.SearchText.ShouldBe("iPhone 15 Pro Max Apple");
     }
 
     [Fact]
@@ -307,7 +307,7 @@ public class ProductFilterIndexTests
         index.SetSearchText(null!);
 
         // Assert
-        index.SearchText.Should().BeEmpty();
+        index.SearchText.ShouldBeEmpty();
     }
 
     #endregion
@@ -324,7 +324,7 @@ public class ProductFilterIndexTests
         index.SetCategoryPath("1/5/23");
 
         // Assert
-        index.CategoryPath.Should().Be("1/5/23");
+        index.CategoryPath.ShouldBe("1/5/23");
     }
 
     [Fact]
@@ -338,7 +338,7 @@ public class ProductFilterIndexTests
         index.SetCategoryPath(null);
 
         // Assert
-        index.CategoryPath.Should().BeNull();
+        index.CategoryPath.ShouldBeNull();
     }
 
     #endregion
@@ -350,13 +350,13 @@ public class ProductFilterIndexTests
     {
         // Arrange
         var index = CreateTestIndex();
-        index.LastSyncedAt.Should().NotBe(DateTime.MinValue);
+        index.LastSyncedAt.ShouldNotBe(DateTime.MinValue);
 
         // Act
         index.MarkAsStale();
 
         // Assert
-        index.LastSyncedAt.Should().Be(DateTime.MinValue);
+        index.LastSyncedAt.ShouldBe(DateTime.MinValue);
     }
 
     #endregion
@@ -374,9 +374,9 @@ public class ProductFilterIndexTests
         index.UpdateFromProduct(product, null, null);
 
         // Assert
-        index.ProductName.Should().Be("Updated Product");
-        index.ProductSlug.Should().Be("updated-product");
-        index.Status.Should().Be(ProductStatus.Draft);
+        index.ProductName.ShouldBe("Updated Product");
+        index.ProductSlug.ShouldBe("updated-product");
+        index.Status.ShouldBe(ProductStatus.Draft);
     }
 
     [Fact]
@@ -392,10 +392,10 @@ public class ProductFilterIndexTests
         index.UpdateFromProduct(product, category, null, "1/5");
 
         // Assert
-        index.CategoryId.Should().Be(category.Id);
-        index.CategoryName.Should().Be("Electronics");
-        index.CategorySlug.Should().Be("electronics");
-        index.CategoryPath.Should().Be("1/5");
+        index.CategoryId.ShouldBe(category.Id);
+        index.CategoryName.ShouldBe("Electronics");
+        index.CategorySlug.ShouldBe("electronics");
+        index.CategoryPath.ShouldBe("1/5");
     }
 
     [Fact]
@@ -411,9 +411,9 @@ public class ProductFilterIndexTests
         index.UpdateFromProduct(product, null, brand);
 
         // Assert
-        index.BrandId.Should().Be(brand.Id);
-        index.BrandName.Should().Be("Nike");
-        index.BrandSlug.Should().Be("nike");
+        index.BrandId.ShouldBe(brand.Id);
+        index.BrandName.ShouldBe("Nike");
+        index.BrandSlug.ShouldBe("nike");
     }
 
     [Fact]
@@ -427,8 +427,8 @@ public class ProductFilterIndexTests
         index.UpdateFromProduct(product, null, null);
 
         // Assert
-        index.MinPrice.Should().Be(300_000m);
-        index.MaxPrice.Should().Be(300_000m);
+        index.MinPrice.ShouldBe(300_000m);
+        index.MaxPrice.ShouldBe(300_000m);
     }
 
     [Fact]
@@ -444,8 +444,8 @@ public class ProductFilterIndexTests
         index.UpdateFromProduct(product, null, null);
 
         // Assert
-        index.MinPrice.Should().Be(80_000m);
-        index.MaxPrice.Should().Be(150_000m);
+        index.MinPrice.ShouldBe(80_000m);
+        index.MaxPrice.ShouldBe(150_000m);
     }
 
     [Fact]
@@ -463,8 +463,8 @@ public class ProductFilterIndexTests
         index.UpdateFromProduct(product, null, null);
 
         // Assert
-        index.TotalStock.Should().Be(15);
-        index.InStock.Should().BeTrue();
+        index.TotalStock.ShouldBe(15);
+        index.InStock.ShouldBeTrue();
     }
 
     [Fact]
@@ -478,8 +478,8 @@ public class ProductFilterIndexTests
         index.UpdateFromProduct(product, null, null);
 
         // Assert
-        index.SearchText.Should().Contain("iPhone 15");
-        index.SearchText.Should().Contain("iphone-15");
+        index.SearchText.ShouldContain("iPhone 15");
+        index.SearchText.ShouldContain("iphone-15");
     }
 
     [Fact]
@@ -494,7 +494,7 @@ public class ProductFilterIndexTests
         index.UpdateFromProduct(product, null, null);
 
         // Assert
-        index.LastSyncedAt.Should().BeOnOrAfter(before);
+        index.LastSyncedAt.ShouldBeGreaterThanOrEqualTo(before);
     }
 
     [Fact]
@@ -509,7 +509,7 @@ public class ProductFilterIndexTests
         index.UpdateFromProduct(product, null, null);
 
         // Assert
-        index.BrandName.Should().Be("Legacy Brand Name");
+        index.BrandName.ShouldBe("Legacy Brand Name");
     }
 
     #endregion

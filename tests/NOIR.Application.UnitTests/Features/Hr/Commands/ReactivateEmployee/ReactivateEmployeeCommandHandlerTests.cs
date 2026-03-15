@@ -47,9 +47,9 @@ public class ReactivateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        employee.Status.Should().Be(EmployeeStatus.Active);
-        employee.EndDate.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        employee.Status.ShouldBe(EmployeeStatus.Active);
+        employee.EndDate.ShouldBeNull();
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -67,8 +67,8 @@ public class ReactivateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-HR-010");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-HR-010");
     }
 
     [Fact]
@@ -89,9 +89,9 @@ public class ReactivateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        employee.Status.Should().Be(EmployeeStatus.Active);
-        employee.EndDate.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        employee.Status.ShouldBe(EmployeeStatus.Active);
+        employee.EndDate.ShouldBeNull();
     }
 
     [Fact]
@@ -112,11 +112,11 @@ public class ReactivateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(EmployeeStatus.Active);
-        result.Value.EndDate.Should().BeNull();
-        result.Value.EmployeeCode.Should().Be("EMP-002");
-        result.Value.FirstName.Should().Be("Jane");
-        result.Value.LastName.Should().Be("Smith");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(EmployeeStatus.Active);
+        result.Value.EndDate.ShouldBeNull();
+        result.Value.EmployeeCode.ShouldBe("EMP-002");
+        result.Value.FirstName.ShouldBe("Jane");
+        result.Value.LastName.ShouldBe("Smith");
     }
 }

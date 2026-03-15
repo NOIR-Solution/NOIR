@@ -67,8 +67,8 @@ public class AddTaskCommentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Content.Should().Be("Great progress!");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Content.ShouldBe("Great progress!");
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -87,7 +87,7 @@ public class AddTaskCommentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 
     [Fact]
@@ -109,6 +109,6 @@ public class AddTaskCommentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 }

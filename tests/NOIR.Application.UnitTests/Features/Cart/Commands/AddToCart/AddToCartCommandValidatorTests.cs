@@ -104,8 +104,8 @@ public class AddToCartCommandValidatorTests
             SessionId = null
         };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Either UserId or SessionId must be provided");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Either UserId or SessionId must be provided");
     }
 
     [Fact]
@@ -117,8 +117,8 @@ public class AddToCartCommandValidatorTests
             SessionId = ""
         };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Either UserId or SessionId must be provided");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Either UserId or SessionId must be provided");
     }
 
     [Fact]

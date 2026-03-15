@@ -46,12 +46,12 @@ public class ProductAttributeTests
         var attr = CreateTestAttribute();
 
         // Assert
-        attr.Should().NotBeNull();
-        attr.Id.Should().NotBe(Guid.Empty);
-        attr.Code.Should().Be("screen_size");
-        attr.Name.Should().Be("Screen Size");
-        attr.Type.Should().Be(AttributeType.Text);
-        attr.TenantId.Should().Be(TestTenantId);
+        attr.ShouldNotBeNull();
+        attr.Id.ShouldNotBe(Guid.Empty);
+        attr.Code.ShouldBe("screen_size");
+        attr.Name.ShouldBe("Screen Size");
+        attr.Type.ShouldBe(AttributeType.Text);
+        attr.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -61,24 +61,24 @@ public class ProductAttributeTests
         var attr = CreateTestAttribute();
 
         // Assert
-        attr.IsFilterable.Should().BeFalse();
-        attr.IsSearchable.Should().BeFalse();
-        attr.IsRequired.Should().BeFalse();
-        attr.IsVariantAttribute.Should().BeFalse();
-        attr.ShowInProductCard.Should().BeFalse();
-        attr.ShowInSpecifications.Should().BeTrue();
-        attr.IsActive.Should().BeTrue();
-        attr.IsGlobal.Should().BeFalse();
-        attr.SortOrder.Should().Be(0);
-        attr.Unit.Should().BeNull();
-        attr.ValidationRegex.Should().BeNull();
-        attr.MinValue.Should().BeNull();
-        attr.MaxValue.Should().BeNull();
-        attr.MaxLength.Should().BeNull();
-        attr.DefaultValue.Should().BeNull();
-        attr.Placeholder.Should().BeNull();
-        attr.HelpText.Should().BeNull();
-        attr.Values.Should().BeEmpty();
+        attr.IsFilterable.ShouldBeFalse();
+        attr.IsSearchable.ShouldBeFalse();
+        attr.IsRequired.ShouldBeFalse();
+        attr.IsVariantAttribute.ShouldBeFalse();
+        attr.ShowInProductCard.ShouldBeFalse();
+        attr.ShowInSpecifications.ShouldBeTrue();
+        attr.IsActive.ShouldBeTrue();
+        attr.IsGlobal.ShouldBeFalse();
+        attr.SortOrder.ShouldBe(0);
+        attr.Unit.ShouldBeNull();
+        attr.ValidationRegex.ShouldBeNull();
+        attr.MinValue.ShouldBeNull();
+        attr.MaxValue.ShouldBeNull();
+        attr.MaxLength.ShouldBeNull();
+        attr.DefaultValue.ShouldBeNull();
+        attr.Placeholder.ShouldBeNull();
+        attr.HelpText.ShouldBeNull();
+        attr.Values.ShouldBeEmpty();
     }
 
     [Fact]
@@ -88,7 +88,7 @@ public class ProductAttributeTests
         var attr = Domain.Entities.Product.ProductAttribute.Create("Screen Size", "Screen Size", AttributeType.Text);
 
         // Assert
-        attr.Code.Should().Be("screen_size");
+        attr.Code.ShouldBe("screen_size");
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class ProductAttributeTests
         var attr = Domain.Entities.Product.ProductAttribute.Create("COLOR", "Color", AttributeType.Select);
 
         // Assert
-        attr.Code.Should().Be("color");
+        attr.Code.ShouldBe("color");
     }
 
     [Fact]
@@ -108,8 +108,8 @@ public class ProductAttributeTests
         var attr = CreateTestAttribute();
 
         // Assert
-        attr.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ProductAttributeCreatedEvent>();
+        attr.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ProductAttributeCreatedEvent>();
     }
 
     [Fact]
@@ -120,10 +120,10 @@ public class ProductAttributeTests
 
         // Assert
         var domainEvent = attr.DomainEvents.Single() as ProductAttributeCreatedEvent;
-        domainEvent!.AttributeId.Should().Be(attr.Id);
-        domainEvent.Code.Should().Be("ram");
-        domainEvent.Name.Should().Be("RAM");
-        domainEvent.Type.Should().Be(AttributeType.Number);
+        domainEvent!.AttributeId.ShouldBe(attr.Id);
+        domainEvent.Code.ShouldBe("ram");
+        domainEvent.Name.ShouldBe("RAM");
+        domainEvent.Type.ShouldBe(AttributeType.Number);
     }
 
     [Theory]
@@ -143,7 +143,7 @@ public class ProductAttributeTests
         var attr = Domain.Entities.Product.ProductAttribute.Create("test", "Test", type);
 
         // Assert
-        attr.Type.Should().Be(type);
+        attr.Type.ShouldBe(type);
     }
 
     #endregion
@@ -161,8 +161,8 @@ public class ProductAttributeTests
         attr.UpdateDetails("Battery Size", "Battery Size");
 
         // Assert
-        attr.Code.Should().Be("battery_size");
-        attr.Name.Should().Be("Battery Size");
+        attr.Code.ShouldBe("battery_size");
+        attr.Name.ShouldBe("Battery Size");
     }
 
     [Fact]
@@ -175,7 +175,7 @@ public class ProductAttributeTests
         attr.UpdateDetails("RAM Capacity", "RAM");
 
         // Assert
-        attr.Code.Should().Be("ram_capacity");
+        attr.Code.ShouldBe("ram_capacity");
     }
 
     [Fact]
@@ -189,8 +189,8 @@ public class ProductAttributeTests
         attr.UpdateDetails("updated_code", "Updated Name");
 
         // Assert
-        attr.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ProductAttributeUpdatedEvent>();
+        attr.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ProductAttributeUpdatedEvent>();
     }
 
     #endregion
@@ -207,7 +207,7 @@ public class ProductAttributeTests
         attr.SetType(AttributeType.Number);
 
         // Assert
-        attr.Type.Should().Be(AttributeType.Number);
+        attr.Type.ShouldBe(AttributeType.Number);
     }
 
     #endregion
@@ -228,10 +228,10 @@ public class ProductAttributeTests
             isVariantAttribute: true);
 
         // Assert
-        attr.IsFilterable.Should().BeTrue();
-        attr.IsSearchable.Should().BeTrue();
-        attr.IsRequired.Should().BeTrue();
-        attr.IsVariantAttribute.Should().BeTrue();
+        attr.IsFilterable.ShouldBeTrue();
+        attr.IsSearchable.ShouldBeTrue();
+        attr.IsRequired.ShouldBeTrue();
+        attr.IsVariantAttribute.ShouldBeTrue();
     }
 
     [Fact]
@@ -245,10 +245,10 @@ public class ProductAttributeTests
         attr.SetBehaviorFlags(false, false, false, false);
 
         // Assert
-        attr.IsFilterable.Should().BeFalse();
-        attr.IsSearchable.Should().BeFalse();
-        attr.IsRequired.Should().BeFalse();
-        attr.IsVariantAttribute.Should().BeFalse();
+        attr.IsFilterable.ShouldBeFalse();
+        attr.IsSearchable.ShouldBeFalse();
+        attr.IsRequired.ShouldBeFalse();
+        attr.IsVariantAttribute.ShouldBeFalse();
     }
 
     #endregion
@@ -265,8 +265,8 @@ public class ProductAttributeTests
         attr.SetDisplayFlags(showInProductCard: true, showInSpecifications: false);
 
         // Assert
-        attr.ShowInProductCard.Should().BeTrue();
-        attr.ShowInSpecifications.Should().BeFalse();
+        attr.ShowInProductCard.ShouldBeTrue();
+        attr.ShowInSpecifications.ShouldBeFalse();
     }
 
     #endregion
@@ -283,11 +283,11 @@ public class ProductAttributeTests
         attr.SetTypeConfiguration("inch", @"^\d+$", 0m, 100m, null);
 
         // Assert
-        attr.Unit.Should().Be("inch");
-        attr.ValidationRegex.Should().Be(@"^\d+$");
-        attr.MinValue.Should().Be(0m);
-        attr.MaxValue.Should().Be(100m);
-        attr.MaxLength.Should().BeNull();
+        attr.Unit.ShouldBe("inch");
+        attr.ValidationRegex.ShouldBe(@"^\d+$");
+        attr.MinValue.ShouldBe(0m);
+        attr.MaxValue.ShouldBe(100m);
+        attr.MaxLength.ShouldBeNull();
     }
 
     [Fact]
@@ -300,7 +300,7 @@ public class ProductAttributeTests
         attr.SetTypeConfiguration(null, null, null, null, 255);
 
         // Assert
-        attr.MaxLength.Should().Be(255);
+        attr.MaxLength.ShouldBe(255);
     }
 
     #endregion
@@ -317,9 +317,9 @@ public class ProductAttributeTests
         attr.SetDefaults("Default Val", "Enter value...", "This is a help text");
 
         // Assert
-        attr.DefaultValue.Should().Be("Default Val");
-        attr.Placeholder.Should().Be("Enter value...");
-        attr.HelpText.Should().Be("This is a help text");
+        attr.DefaultValue.ShouldBe("Default Val");
+        attr.Placeholder.ShouldBe("Enter value...");
+        attr.HelpText.ShouldBe("This is a help text");
     }
 
     [Fact]
@@ -333,9 +333,9 @@ public class ProductAttributeTests
         attr.SetDefaults(null, null, null);
 
         // Assert
-        attr.DefaultValue.Should().BeNull();
-        attr.Placeholder.Should().BeNull();
-        attr.HelpText.Should().BeNull();
+        attr.DefaultValue.ShouldBeNull();
+        attr.Placeholder.ShouldBeNull();
+        attr.HelpText.ShouldBeNull();
     }
 
     #endregion
@@ -352,7 +352,7 @@ public class ProductAttributeTests
         attr.SetActive(false);
 
         // Assert
-        attr.IsActive.Should().BeFalse();
+        attr.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -366,7 +366,7 @@ public class ProductAttributeTests
         attr.SetActive(true);
 
         // Assert
-        attr.IsActive.Should().BeTrue();
+        attr.IsActive.ShouldBeTrue();
     }
 
     #endregion
@@ -383,7 +383,7 @@ public class ProductAttributeTests
         attr.SetSortOrder(5);
 
         // Assert
-        attr.SortOrder.Should().Be(5);
+        attr.SortOrder.ShouldBe(5);
     }
 
     #endregion
@@ -400,7 +400,7 @@ public class ProductAttributeTests
         attr.SetGlobal(true);
 
         // Assert
-        attr.IsGlobal.Should().BeTrue();
+        attr.IsGlobal.ShouldBeTrue();
     }
 
     [Fact]
@@ -414,7 +414,7 @@ public class ProductAttributeTests
         attr.SetGlobal(false);
 
         // Assert
-        attr.IsGlobal.Should().BeFalse();
+        attr.IsGlobal.ShouldBeFalse();
     }
 
     #endregion
@@ -431,10 +431,10 @@ public class ProductAttributeTests
         var value = attr.AddValue("red", "Red");
 
         // Assert
-        attr.Values.Should().ContainSingle();
-        value.Value.Should().Be("red");
-        value.DisplayValue.Should().Be("Red");
-        value.AttributeId.Should().Be(attr.Id);
+        attr.Values.ShouldHaveSingleItem();
+        value.Value.ShouldBe("red");
+        value.DisplayValue.ShouldBe("Red");
+        value.AttributeId.ShouldBe(attr.Id);
     }
 
     [Fact]
@@ -447,8 +447,8 @@ public class ProductAttributeTests
         var value = attr.AddValue("wifi", "WiFi");
 
         // Assert
-        attr.Values.Should().ContainSingle();
-        value.Value.Should().Be("wifi");
+        attr.Values.ShouldHaveSingleItem();
+        value.Value.ShouldBe("wifi");
     }
 
     [Fact]
@@ -463,7 +463,7 @@ public class ProductAttributeTests
         attr.AddValue("green", "Green", 2);
 
         // Assert
-        attr.Values.Should().HaveCount(3);
+        attr.Values.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -477,14 +477,14 @@ public class ProductAttributeTests
         var value = attr.AddValue("red", "Red");
 
         // Assert
-        attr.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ProductAttributeValueAddedEvent>();
+        attr.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ProductAttributeValueAddedEvent>();
 
         var domainEvent = attr.DomainEvents.Single() as ProductAttributeValueAddedEvent;
-        domainEvent!.AttributeId.Should().Be(attr.Id);
-        domainEvent.ValueId.Should().Be(value.Id);
-        domainEvent.Value.Should().Be("red");
-        domainEvent.DisplayValue.Should().Be("Red");
+        domainEvent!.AttributeId.ShouldBe(attr.Id);
+        domainEvent.ValueId.ShouldBe(value.Id);
+        domainEvent.Value.ShouldBe("red");
+        domainEvent.DisplayValue.ShouldBe("Red");
     }
 
     [Fact]
@@ -497,8 +497,8 @@ public class ProductAttributeTests
         var act = () => attr.AddValue("value", "Value");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Select or MultiSelect*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Select or MultiSelect");
     }
 
     [Theory]
@@ -518,7 +518,7 @@ public class ProductAttributeTests
         var act = () => attr.AddValue("value", "Value");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>();
+        Should.Throw<InvalidOperationException>(act);
     }
 
     [Fact]
@@ -532,8 +532,8 @@ public class ProductAttributeTests
         var act = () => attr.AddValue("red", "Red Variant");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*already exists*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("already exists");
     }
 
     [Fact]
@@ -547,8 +547,8 @@ public class ProductAttributeTests
         var act = () => attr.AddValue("RED", "Red Upper");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*already exists*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("already exists");
     }
 
     [Fact]
@@ -561,7 +561,7 @@ public class ProductAttributeTests
         var value = attr.AddValue("red", "Red");
 
         // Assert
-        value.TenantId.Should().Be(TestTenantId);
+        value.TenantId.ShouldBe(TestTenantId);
     }
 
     #endregion
@@ -579,7 +579,7 @@ public class ProductAttributeTests
         attr.RemoveValue(value.Id);
 
         // Assert
-        attr.Values.Should().BeEmpty();
+        attr.Values.ShouldBeEmpty();
     }
 
     [Fact]
@@ -594,8 +594,8 @@ public class ProductAttributeTests
         attr.RemoveValue(value.Id);
 
         // Assert
-        attr.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ProductAttributeValueRemovedEvent>();
+        attr.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ProductAttributeValueRemovedEvent>();
     }
 
     [Fact]
@@ -608,8 +608,8 @@ public class ProductAttributeTests
         var act = () => attr.RemoveValue(Guid.NewGuid());
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*not found*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("not found");
     }
 
     #endregion
@@ -627,8 +627,8 @@ public class ProductAttributeTests
         var retrieved = attr.GetValue(added.Id);
 
         // Assert
-        retrieved.Should().NotBeNull();
-        retrieved!.Id.Should().Be(added.Id);
+        retrieved.ShouldNotBeNull();
+        retrieved!.Id.ShouldBe(added.Id);
     }
 
     [Fact]
@@ -641,7 +641,7 @@ public class ProductAttributeTests
         var retrieved = attr.GetValue(Guid.NewGuid());
 
         // Assert
-        retrieved.Should().BeNull();
+        retrieved.ShouldBeNull();
     }
 
     #endregion
@@ -655,7 +655,7 @@ public class ProductAttributeTests
         var attr = CreateSelectAttribute();
 
         // Assert
-        attr.RequiresValues.Should().BeTrue();
+        attr.RequiresValues.ShouldBeTrue();
     }
 
     [Fact]
@@ -665,7 +665,7 @@ public class ProductAttributeTests
         var attr = CreateMultiSelectAttribute();
 
         // Assert
-        attr.RequiresValues.Should().BeTrue();
+        attr.RequiresValues.ShouldBeTrue();
     }
 
     [Theory]
@@ -683,7 +683,7 @@ public class ProductAttributeTests
         var attr = CreateTestAttribute(type: type);
 
         // Assert
-        attr.RequiresValues.Should().BeFalse();
+        attr.RequiresValues.ShouldBeFalse();
     }
 
     #endregion
@@ -701,9 +701,9 @@ public class ProductAttributeTests
         attr.MarkAsDeleted();
 
         // Assert
-        attr.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ProductAttributeDeletedEvent>()
-            .Which.AttributeId.Should().Be(attr.Id);
+        attr.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ProductAttributeDeletedEvent>()
+            .AttributeId.ShouldBe(attr.Id);
     }
 
     #endregion

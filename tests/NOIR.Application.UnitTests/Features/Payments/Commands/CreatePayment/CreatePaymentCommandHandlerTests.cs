@@ -146,12 +146,12 @@ public class CreatePaymentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.TransactionNumber.Should().Be(TestTransactionNumber);
-        result.Value.Provider.Should().Be("vnpay");
-        result.Value.Amount.Should().Be(500000m);
-        result.Value.Status.Should().Be(PaymentStatus.Processing);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.TransactionNumber.ShouldBe(TestTransactionNumber);
+        result.Value.Provider.ShouldBe("vnpay");
+        result.Value.Amount.ShouldBe(500000m);
+        result.Value.Status.ShouldBe(PaymentStatus.Processing);
 
         _paymentRepositoryMock.Verify(x => x.AddAsync(It.IsAny<PaymentTransaction>(), It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -180,9 +180,9 @@ public class CreatePaymentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(PaymentStatus.CodPending);
-        result.Value.PaymentMethod.Should().Be(PaymentMethod.COD);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(PaymentStatus.CodPending);
+        result.Value.PaymentMethod.ShouldBe(PaymentMethod.COD);
 
         // COD should not call the gateway provider
         _gatewayFactoryMock.Verify(x => x.GetProvider(It.IsAny<string>()), Times.Never);
@@ -213,8 +213,8 @@ public class CreatePaymentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TransactionNumber.Should().Be(TestTransactionNumber);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TransactionNumber.ShouldBe(TestTransactionNumber);
 
         // Should not create a new payment
         _paymentRepositoryMock.Verify(x => x.AddAsync(It.IsAny<PaymentTransaction>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -238,10 +238,10 @@ public class CreatePaymentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.GatewayNotFound);
-        result.Error.Message.Should().Contain("vnpay");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.GatewayNotFound);
+        result.Error.Message.ShouldContain("vnpay");
 
         _paymentRepositoryMock.Verify(x => x.AddAsync(It.IsAny<PaymentTransaction>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -261,9 +261,9 @@ public class CreatePaymentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.GatewayNotActive);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.GatewayNotActive);
 
         _gatewayFactoryMock.Verify(x => x.GetProvider(It.IsAny<string>()), Times.Never);
     }
@@ -287,9 +287,9 @@ public class CreatePaymentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Failure);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.ProviderNotConfigured);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Failure);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.ProviderNotConfigured);
     }
 
     [Fact]
@@ -329,9 +329,9 @@ public class CreatePaymentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Payment.InitiationFailed);
-        result.Error.Message.Should().Be(errorMessage);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.InitiationFailed);
+        result.Error.Message.ShouldBe(errorMessage);
 
         // Verify failed payment was saved
         _paymentRepositoryMock.Verify(x => x.AddAsync(
@@ -378,8 +378,8 @@ public class CreatePaymentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(PaymentStatus.RequiresAction);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(PaymentStatus.RequiresAction);
     }
 
     #endregion

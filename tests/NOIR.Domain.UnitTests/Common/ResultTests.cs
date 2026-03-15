@@ -9,9 +9,9 @@ public class ResultTests
         var result = Result.Success();
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.IsFailure.Should().BeFalse();
-        result.Error.Should().Be(Error.None);
+        result.IsSuccess.ShouldBeTrue();
+        result.IsFailure.ShouldBeFalse();
+        result.Error.ShouldBe(Error.None);
     }
 
     [Fact]
@@ -24,9 +24,9 @@ public class ResultTests
         var result = Result.Failure(error);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(error);
+        result.IsSuccess.ShouldBeFalse();
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(error);
     }
 
     [Fact]
@@ -39,8 +39,8 @@ public class ResultTests
         var result = Result.Success(value);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(value);
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBe(value);
     }
 
     [Fact]
@@ -53,8 +53,8 @@ public class ResultTests
         var act = () => result.Value;
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot access value of a failed result.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot access value of a failed result.");
     }
 
     [Fact]
@@ -67,8 +67,8 @@ public class ResultTests
         Result<string> result = value;
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(value);
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBe(value);
     }
 }
 
@@ -84,9 +84,9 @@ public class ErrorTests
         var error = Error.NotFound("User", id);
 
         // Assert
-        error.Code.Should().Be(ErrorCodes.Business.NotFound);
-        error.Message.Should().Be($"User with id '{id}' was not found.");
-        error.Type.Should().Be(ErrorType.NotFound);
+        error.Code.ShouldBe(ErrorCodes.Business.NotFound);
+        error.Message.ShouldBe($"User with id '{id}' was not found.");
+        error.Type.ShouldBe(ErrorType.NotFound);
     }
 
     [Fact]
@@ -96,9 +96,9 @@ public class ErrorTests
         var error = Error.Unauthorized("Invalid credentials.");
 
         // Assert
-        error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
-        error.Message.Should().Be("Invalid credentials.");
-        error.Type.Should().Be(ErrorType.Unauthorized);
+        error.Code.ShouldBe(ErrorCodes.Auth.Unauthorized);
+        error.Message.ShouldBe("Invalid credentials.");
+        error.Type.ShouldBe(ErrorType.Unauthorized);
     }
 
     [Fact]
@@ -108,9 +108,9 @@ public class ErrorTests
         var error = Error.Forbidden("Access denied.");
 
         // Assert
-        error.Code.Should().Be(ErrorCodes.Auth.Forbidden);
-        error.Message.Should().Be("Access denied.");
-        error.Type.Should().Be(ErrorType.Forbidden);
+        error.Code.ShouldBe(ErrorCodes.Auth.Forbidden);
+        error.Message.ShouldBe("Access denied.");
+        error.Type.ShouldBe(ErrorType.Forbidden);
     }
 
     [Fact]
@@ -120,9 +120,9 @@ public class ErrorTests
         var error = Error.Validation("Email", "Email is required.");
 
         // Assert
-        error.Code.Should().Be(ErrorCodes.Validation.General);
-        error.Message.Should().Be("Email is required.");
-        error.Type.Should().Be(ErrorType.Validation);
+        error.Code.ShouldBe(ErrorCodes.Validation.General);
+        error.Message.ShouldBe("Email is required.");
+        error.Type.ShouldBe(ErrorType.Validation);
     }
 
     [Fact]
@@ -132,8 +132,8 @@ public class ErrorTests
         var error = Error.Conflict("Email already exists.");
 
         // Assert
-        error.Code.Should().Be(ErrorCodes.Business.Conflict);
-        error.Message.Should().Be("Email already exists.");
-        error.Type.Should().Be(ErrorType.Conflict);
+        error.Code.ShouldBe(ErrorCodes.Business.Conflict);
+        error.Message.ShouldBe("Email already exists.");
+        error.Type.ShouldBe(ErrorType.Conflict);
     }
 }

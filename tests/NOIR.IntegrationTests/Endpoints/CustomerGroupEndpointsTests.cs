@@ -38,10 +38,10 @@ public class CustomerGroupEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.GetAsync("/api/customer-groups");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<PagedResult<CustomerGroupListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeNull();
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class CustomerGroupEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await _client.GetAsync("/api/customer-groups");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -64,10 +64,10 @@ public class CustomerGroupEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.GetAsync("/api/customer-groups?pageNumber=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<PagedResult<CustomerGroupListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.Items.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     #endregion
@@ -90,11 +90,11 @@ public class CustomerGroupEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.GetAsync($"/api/customer-groups/{createdGroup!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var group = await response.Content.ReadFromJsonAsync<CustomerGroupDto>();
-        group.Should().NotBeNull();
-        group!.Id.Should().Be(createdGroup.Id);
-        group.Name.Should().Be(createRequest.Name);
+        group.ShouldNotBeNull();
+        group!.Id.ShouldBe(createdGroup.Id);
+        group.Name.ShouldBe(createRequest.Name);
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class CustomerGroupEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.GetAsync($"/api/customer-groups/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -125,12 +125,12 @@ public class CustomerGroupEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.PostAsJsonAsync("/api/customer-groups", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var group = await response.Content.ReadFromJsonAsync<CustomerGroupDto>();
-        group.Should().NotBeNull();
-        group!.Name.Should().Be(request.Name);
-        group.Description.Should().Be(request.Description);
-        group.IsActive.Should().BeTrue();
+        group.ShouldNotBeNull();
+        group!.Name.ShouldBe(request.Name);
+        group.Description.ShouldBe(request.Description);
+        group.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -148,7 +148,7 @@ public class CustomerGroupEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.PostAsJsonAsync("/api/customer-groups", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class CustomerGroupEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.PostAsJsonAsync("/api/customer-groups", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -177,7 +177,7 @@ public class CustomerGroupEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await _client.PostAsJsonAsync("/api/customer-groups", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -206,11 +206,11 @@ public class CustomerGroupEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.PutAsJsonAsync($"/api/customer-groups/{createdGroup!.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updatedGroup = await response.Content.ReadFromJsonAsync<CustomerGroupDto>();
-        updatedGroup.Should().NotBeNull();
-        updatedGroup!.Name.Should().Be("Updated Group Name");
-        updatedGroup.Description.Should().Be("Updated description");
+        updatedGroup.ShouldNotBeNull();
+        updatedGroup!.Name.ShouldBe("Updated Group Name");
+        updatedGroup.Description.ShouldBe("Updated description");
     }
 
     [Fact]
@@ -227,7 +227,7 @@ public class CustomerGroupEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.PutAsJsonAsync($"/api/customer-groups/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -250,11 +250,11 @@ public class CustomerGroupEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.DeleteAsync($"/api/customer-groups/{createdGroup!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Verify it's deleted (soft delete - should return not found)
         var getResponse = await adminClient.GetAsync($"/api/customer-groups/{createdGroup.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -267,7 +267,7 @@ public class CustomerGroupEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.DeleteAsync($"/api/customer-groups/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -281,7 +281,7 @@ public class CustomerGroupEndpointsTests : IClassFixture<CustomWebApplicationFac
         await _factory.ExecuteWithTenantAsync(sp =>
         {
             var repository = sp.GetRequiredService<IRepository<CustomerGroup, Guid>>();
-            repository.Should().NotBeNull();
+            repository.ShouldNotBeNull();
             return Task.CompletedTask;
         });
     }

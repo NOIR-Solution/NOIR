@@ -116,11 +116,11 @@ public class RejectRefundCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Status.Should().Be(RefundStatus.Rejected);
-        result.Value.RefundNumber.Should().Be(TestRefundNumber);
-        result.Value.ReasonDetail.Should().Be("Not eligible for refund");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Status.ShouldBe(RefundStatus.Rejected);
+        result.Value.RefundNumber.ShouldBe(TestRefundNumber);
+        result.Value.ReasonDetail.ShouldBe("Not eligible for refund");
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         _paymentHubContextMock.Verify(x => x.SendRefundStatusUpdateAsync(
@@ -152,8 +152,8 @@ public class RejectRefundCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ReasonDetail.Should().Be("Rejected");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ReasonDetail.ShouldBe("Rejected");
     }
 
     #endregion
@@ -174,9 +174,9 @@ public class RejectRefundCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.RefundNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.RefundNotFound);
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -196,10 +196,10 @@ public class RejectRefundCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.InvalidRefundStatus);
-        result.Error.Message.Should().Contain("pending");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.InvalidRefundStatus);
+        result.Error.Message.ShouldContain("pending");
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -219,9 +219,9 @@ public class RejectRefundCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.InvalidRefundStatus);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.InvalidRefundStatus);
     }
 
     [Fact]
@@ -239,9 +239,9 @@ public class RejectRefundCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.InvalidRequesterId);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.InvalidRequesterId);
     }
 
     [Fact]
@@ -259,9 +259,9 @@ public class RejectRefundCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.InvalidRequesterId);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.InvalidRequesterId);
     }
 
     #endregion

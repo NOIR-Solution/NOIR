@@ -79,7 +79,7 @@ public class BulkImportProductsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public class BulkImportProductsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public class BulkImportProductsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     // ===== BasePrice Validation =====
@@ -153,7 +153,7 @@ public class BulkImportProductsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -189,7 +189,7 @@ public class BulkImportProductsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -206,7 +206,7 @@ public class BulkImportProductsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -223,7 +223,7 @@ public class BulkImportProductsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -240,7 +240,7 @@ public class BulkImportProductsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -257,7 +257,7 @@ public class BulkImportProductsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -274,7 +274,7 @@ public class BulkImportProductsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -291,7 +291,7 @@ public class BulkImportProductsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     // ===== Numeric Validations =====
@@ -310,7 +310,7 @@ public class BulkImportProductsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -344,7 +344,7 @@ public class BulkImportProductsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -361,7 +361,7 @@ public class BulkImportProductsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -378,7 +378,7 @@ public class BulkImportProductsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     // ===== Images Validation =====
@@ -415,7 +415,7 @@ public class BulkImportProductsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -450,7 +450,7 @@ public class BulkImportProductsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -468,7 +468,7 @@ public class BulkImportProductsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]

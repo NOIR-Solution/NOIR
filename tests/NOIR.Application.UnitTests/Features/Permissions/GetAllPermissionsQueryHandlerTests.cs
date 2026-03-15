@@ -31,9 +31,9 @@ public class GetAllPermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Should().NotBeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -46,15 +46,15 @@ public class GetAllPermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().AllSatisfy(permission =>
+        result.IsSuccess.ShouldBe(true);
+        foreach (var permission in result.Value)
         {
-            permission.Id.Should().NotBeNullOrEmpty();
-            permission.Name.Should().NotBeNullOrEmpty();
-            permission.Resource.Should().NotBeNullOrEmpty();
-            permission.Action.Should().NotBeNullOrEmpty();
-            permission.DisplayName.Should().NotBeNullOrEmpty();
-        });
+            permission.Id.ShouldNotBeNullOrEmpty();
+            permission.Name.ShouldNotBeNullOrEmpty();
+            permission.Resource.ShouldNotBeNullOrEmpty();
+            permission.Action.ShouldNotBeNullOrEmpty();
+            permission.DisplayName.ShouldNotBeNullOrEmpty();
+        }
     }
 
     [Fact]
@@ -67,11 +67,11 @@ public class GetAllPermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         // Verify that permissions have categories assigned
         var categorizedPermissions = result.Value.Where(p => p.Category is not null).ToList();
-        categorizedPermissions.Should().NotBeEmpty();
+        categorizedPermissions.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -84,11 +84,11 @@ public class GetAllPermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         var sortOrders = result.Value.Select(p => p.SortOrder).ToList();
-        sortOrders.Should().BeInAscendingOrder();
-        sortOrders.Should().OnlyHaveUniqueItems();
+        sortOrders.ShouldBeInOrder(SortDirection.Ascending);
+        sortOrders.ShouldBeUnique();
     }
 
     [Fact]
@@ -101,10 +101,10 @@ public class GetAllPermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         // All static permissions should be marked as system
-        result.Value.Should().AllSatisfy(p => p.IsSystem.Should().BeTrue());
+        result.Value.ShouldAllBe(p => p.IsSystem == true);
     }
 
     [Fact]
@@ -117,15 +117,15 @@ public class GetAllPermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         // Verify IsTenantAllowed is populated (some should be allowed, some not)
         var tenantAllowedPermissions = result.Value.Where(p => p.IsTenantAllowed).ToList();
         var notTenantAllowedPermissions = result.Value.Where(p => !p.IsTenantAllowed).ToList();
 
         // Both lists should have items (some permissions are tenant-allowed, some are not)
-        tenantAllowedPermissions.Should().NotBeEmpty();
-        notTenantAllowedPermissions.Should().NotBeEmpty();
+        tenantAllowedPermissions.ShouldNotBeEmpty();
+        notTenantAllowedPermissions.ShouldNotBeEmpty();
     }
 
     #endregion
@@ -144,8 +144,8 @@ public class GetAllPermissionsQueryHandlerTests
         var result = await _handler.Handle(query, token);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -159,10 +159,10 @@ public class GetAllPermissionsQueryHandlerTests
         var result2 = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result1.IsSuccess.Should().BeTrue();
-        result2.IsSuccess.Should().BeTrue();
-        result1.Value.Should().HaveCount(result2.Value.Count);
-        result1.Value.Select(p => p.Name).Should().BeEquivalentTo(result2.Value.Select(p => p.Name));
+        result1.IsSuccess.ShouldBe(true);
+        result2.IsSuccess.ShouldBe(true);
+        result1.Value.Count().ShouldBe(result2.Value.Count);
+        result1.Value.Select(p => p.Name).ShouldBe(result2.Value.Select(p => p.Name));
     }
 
     [Fact]
@@ -175,13 +175,13 @@ public class GetAllPermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         var permissionNames = result.Value.Select(p => p.Name).ToList();
 
         // Verify some known permissions exist
-        permissionNames.Should().Contain(p => p.Contains("users"));
-        permissionNames.Should().Contain(p => p.Contains("roles"));
+        permissionNames.ShouldContain(p => p.Contains("users"));
+        permissionNames.ShouldContain(p => p.Contains("roles"));
     }
 
     #endregion

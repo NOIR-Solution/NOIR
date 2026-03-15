@@ -42,10 +42,10 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/pm/tasks?projectId={project.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<TaskCardDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeNull();
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync($"/api/pm/tasks?projectId={Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -69,10 +69,10 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/pm/tasks?projectId={project.Id}&page=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<TaskCardDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.Items.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     #endregion
@@ -90,9 +90,9 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/pm/tasks/search?projectId={project.Id}&q=test");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<List<TaskSearchDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync($"/api/pm/tasks/search?projectId={Guid.NewGuid()}&q=test");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -121,11 +121,11 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/pm/tasks/{task.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<TaskDto>();
-        result.Should().NotBeNull();
-        result!.Id.Should().Be(task.Id);
-        result.Title.Should().Be(task.Title);
+        result.ShouldNotBeNull();
+        result!.Id.ShouldBe(task.Id);
+        result.Title.ShouldBe(task.Title);
     }
 
     [Fact]
@@ -138,7 +138,7 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/pm/tasks/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -148,7 +148,7 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync($"/api/pm/tasks/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -167,12 +167,12 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/pm/tasks", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var task = await response.Content.ReadFromJsonWithEnumsAsync<TaskDto>();
-        task.Should().NotBeNull();
-        task!.Title.Should().Be(request.Title);
-        task.ProjectId.Should().Be(project.Id);
-        task.TaskNumber.Should().NotBeNullOrEmpty();
+        task.ShouldNotBeNull();
+        task!.Title.ShouldBe(request.Title);
+        task.ProjectId.ShouldBe(project.Id);
+        task.TaskNumber.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -185,7 +185,7 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonWithEnumsAsync("/api/pm/tasks", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -199,7 +199,7 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/pm/tasks", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -223,11 +223,11 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/pm/tasks/{task.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await response.Content.ReadFromJsonWithEnumsAsync<TaskDto>();
-        updated.Should().NotBeNull();
-        updated!.Title.Should().Be("Updated Task Title");
-        updated.Priority.Should().Be(TaskPriority.High);
+        updated.ShouldNotBeNull();
+        updated!.Title.ShouldBe("Updated Task Title");
+        updated.Priority.ShouldBe(TaskPriority.High);
     }
 
     [Fact]
@@ -241,7 +241,7 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/pm/tasks/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -262,10 +262,10 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/pm/tasks/{task.Id}/status", statusRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<TaskDto>();
-        result.Should().NotBeNull();
-        result!.Status.Should().Be(ProjectTaskStatus.InProgress);
+        result.ShouldNotBeNull();
+        result!.Status.ShouldBe(ProjectTaskStatus.InProgress);
     }
 
     [Fact]
@@ -279,7 +279,7 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/pm/tasks/{Guid.NewGuid()}/status", statusRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -300,9 +300,9 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/pm/tasks/{parentTask.Id}/subtasks", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<TaskDto>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -316,7 +316,7 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/pm/tasks/{Guid.NewGuid()}/subtasks", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -335,11 +335,11 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/pm/tasks/{task.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Verify it's deleted (soft delete - should return not found)
         var getResponse = await adminClient.GetAsync($"/api/pm/tasks/{task.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -352,7 +352,7 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/pm/tasks/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -374,10 +374,10 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/pm/tasks/{task.Id}/comments", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var comment = await response.Content.ReadFromJsonWithEnumsAsync<TaskCommentDto>();
-        comment.Should().NotBeNull();
-        comment!.Content.Should().Be("This is a test comment.");
+        comment.ShouldNotBeNull();
+        comment!.Content.ShouldBe("This is a test comment.");
     }
 
     [Fact]
@@ -391,7 +391,7 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/pm/tasks/{Guid.NewGuid()}/comments", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -416,10 +416,10 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/tasks/{task.Id}/comments/{comment!.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await response.Content.ReadFromJsonWithEnumsAsync<TaskCommentDto>();
-        updated.Should().NotBeNull();
-        updated!.Content.Should().Be("Updated comment content.");
+        updated.ShouldNotBeNull();
+        updated!.Content.ShouldBe("Updated comment content.");
     }
 
     [Fact]
@@ -442,7 +442,7 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/tasks/{task.Id}/comments/{comment!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -463,10 +463,10 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/tasks/{task.Id}/labels/{label.Id}", new { });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<TaskLabelBriefDto>();
-        result.Should().NotBeNull();
-        result!.Id.Should().Be(label.Id);
+        result.ShouldNotBeNull();
+        result!.Id.ShouldBe(label.Id);
     }
 
     [Fact]
@@ -486,7 +486,7 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/tasks/{task.Id}/labels/{label.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -515,10 +515,10 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/tasks/{task.Id}/move", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<TaskDto>();
-        result.Should().NotBeNull();
-        result!.ColumnId.Should().Be(targetColumn.Id);
+        result.ShouldNotBeNull();
+        result!.ColumnId.ShouldBe(targetColumn.Id);
     }
 
     [Fact]
@@ -533,7 +533,7 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/tasks/{Guid.NewGuid()}/move", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -555,9 +555,9 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/tasks/{task.Id}/reorder", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<TaskDto>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -572,7 +572,7 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/tasks/{Guid.NewGuid()}/reorder", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -598,7 +598,7 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/tasks/{task.Id}/status", doneRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -621,10 +621,10 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/tasks/{task.Id}/status", inProgressRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<TaskDto>();
-        result.Should().NotBeNull();
-        result!.Status.Should().Be(ProjectTaskStatus.InProgress);
+        result.ShouldNotBeNull();
+        result!.Status.ShouldBe(ProjectTaskStatus.InProgress);
     }
 
     #endregion
@@ -641,13 +641,13 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Create
         var createRequest = CreateTestTaskRequest(project.Id);
         var createResponse = await adminClient.PostAsJsonWithEnumsAsync("/api/pm/tasks", createRequest);
-        createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        createResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var created = await createResponse.Content.ReadFromJsonWithEnumsAsync<TaskDto>();
-        created.Should().NotBeNull();
+        created.ShouldNotBeNull();
 
         // Read
         var getResponse = await adminClient.GetAsync($"/api/pm/tasks/{created!.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Update
         var updateRequest = new UpdateTaskRequest(
@@ -655,19 +655,19 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             Description: "Updated via lifecycle test",
             Priority: TaskPriority.Urgent);
         var updateResponse = await adminClient.PutAsJsonWithEnumsAsync($"/api/pm/tasks/{created.Id}", updateRequest);
-        updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        updateResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await updateResponse.Content.ReadFromJsonWithEnumsAsync<TaskDto>();
-        updated!.Title.Should().Be("Lifecycle Updated Task");
+        updated!.Title.ShouldBe("Lifecycle Updated Task");
 
         // Change status
         var statusResponse = await adminClient.PostAsJsonWithEnumsAsync(
             $"/api/pm/tasks/{created.Id}/status",
             new ChangeTaskStatusRequest(ProjectTaskStatus.InProgress));
-        statusResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        statusResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Delete
         var deleteResponse = await adminClient.DeleteAsync($"/api/pm/tasks/{created.Id}");
-        deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        deleteResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -680,7 +680,7 @@ public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         await _factory.ExecuteWithTenantAsync(sp =>
         {
             var repository = sp.GetRequiredService<IRepository<ProjectTask, Guid>>();
-            repository.Should().NotBeNull();
+            repository.ShouldNotBeNull();
             return Task.CompletedTask;
         });
     }

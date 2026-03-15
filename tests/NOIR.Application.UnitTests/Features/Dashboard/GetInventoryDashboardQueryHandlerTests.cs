@@ -75,8 +75,8 @@ public class GetInventoryDashboardQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(expected);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(expected);
     }
 
     [Fact]
@@ -95,12 +95,12 @@ public class GetInventoryDashboardQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.LowStockAlerts.Should().HaveCount(2);
-        result.Value.LowStockAlerts.Should().AllSatisfy(a =>
+        result.IsSuccess.ShouldBe(true);
+        result.Value.LowStockAlerts.Count().ShouldBe(2);
+        foreach (var a in result.Value.LowStockAlerts)
         {
-            a.CurrentStock.Should().BeLessThan(a.Threshold);
-        });
+            a.CurrentStock.ShouldBeLessThan(a.Threshold);
+        }
     }
 
     [Fact]
@@ -119,11 +119,11 @@ public class GetInventoryDashboardQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ValueSummary.TotalValue.Should().Be(500_000m);
-        result.Value.ValueSummary.TotalSku.Should().Be(200);
-        result.Value.ValueSummary.InStockSku.Should().Be(180);
-        result.Value.ValueSummary.OutOfStockSku.Should().Be(20);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ValueSummary.TotalValue.ShouldBe(500_000m);
+        result.Value.ValueSummary.TotalSku.ShouldBe(200);
+        result.Value.ValueSummary.InStockSku.ShouldBe(180);
+        result.Value.ValueSummary.OutOfStockSku.ShouldBe(20);
     }
 
     #endregion

@@ -93,11 +93,11 @@ public class GetUserPermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.UserId.Should().Be(userId);
-        result.Value.Permissions.Should().HaveCount(2);
-        result.Value.Permissions.Should().Contain("users.read");
-        result.Value.Permissions.Should().Contain("users.write");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.UserId.ShouldBe(userId);
+        result.Value.Permissions.Count().ShouldBe(2);
+        result.Value.Permissions.ShouldContain("users.read");
+        result.Value.Permissions.ShouldContain("users.write");
     }
 
     [Fact]
@@ -137,12 +137,12 @@ public class GetUserPermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Permissions.Should().HaveCount(4);
-        result.Value.Permissions.Should().Contain("users.read");
-        result.Value.Permissions.Should().Contain("users.write");
-        result.Value.Permissions.Should().Contain("content.read");
-        result.Value.Permissions.Should().Contain("content.write");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Permissions.Count().ShouldBe(4);
+        result.Value.Permissions.ShouldContain("users.read");
+        result.Value.Permissions.ShouldContain("users.write");
+        result.Value.Permissions.ShouldContain("content.read");
+        result.Value.Permissions.ShouldContain("content.write");
     }
 
     [Fact]
@@ -182,9 +182,9 @@ public class GetUserPermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Permissions.Should().HaveCount(4); // Deduplicated
-        result.Value.Permissions.Should().OnlyHaveUniqueItems();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Permissions.Count().ShouldBe(4); // Deduplicated
+        result.Value.Permissions.ShouldBeUnique();
     }
 
     [Fact]
@@ -217,10 +217,10 @@ public class GetUserPermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.UserId.Should().Be(userId);
-        result.Value.Email.Should().Be(email);
-        result.Value.Roles.Should().BeEquivalentTo(roles);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.UserId.ShouldBe(userId);
+        result.Value.Email.ShouldBe(email);
+        result.Value.Roles.ShouldBe(roles);
     }
 
     [Fact]
@@ -251,8 +251,8 @@ public class GetUserPermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Permissions.Should().BeInAscendingOrder();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Permissions.ShouldBeInOrder(SortDirection.Ascending);
     }
 
     #endregion
@@ -279,9 +279,9 @@ public class GetUserPermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Permissions.Should().BeEmpty();
-        result.Value.Roles.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Permissions.ShouldBeEmpty();
+        result.Value.Roles.ShouldBeEmpty();
     }
 
     [Fact]
@@ -312,9 +312,9 @@ public class GetUserPermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Permissions.Should().BeEmpty();
-        result.Value.Roles.Should().ContainSingle().Which.Should().Be("EmptyRole");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Permissions.ShouldBeEmpty();
+        result.Value.Roles.ShouldHaveSingleItem().ShouldBe("EmptyRole");
     }
 
     #endregion
@@ -337,8 +337,8 @@ public class GetUserPermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.UserNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.UserNotFound);
     }
 
     [Fact]
@@ -394,8 +394,8 @@ public class GetUserPermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Permissions.Should().ContainSingle().Which.Should().Be("valid.permission");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Permissions.ShouldHaveSingleItem().ShouldBe("valid.permission");
     }
 
     #endregion
@@ -477,9 +477,9 @@ public class GetUserPermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // HashSet with OrdinalIgnoreCase should deduplicate
-        result.Value.Permissions.Should().ContainSingle();
+        result.Value.Permissions.ShouldHaveSingleItem();
     }
 
     #endregion

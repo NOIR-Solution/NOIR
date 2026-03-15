@@ -48,16 +48,16 @@ public class InventoryReceiptItemTests
         var item = receipt.AddItem(variantId, productId, "Ao Polo", "Size L", "SKU-AP-L", 20, 150_000m);
 
         // Assert
-        item.Should().NotBeNull();
-        item.Id.Should().NotBe(Guid.Empty);
-        item.InventoryReceiptId.Should().Be(receipt.Id);
-        item.ProductVariantId.Should().Be(variantId);
-        item.ProductId.Should().Be(productId);
-        item.ProductName.Should().Be("Ao Polo");
-        item.VariantName.Should().Be("Size L");
-        item.Sku.Should().Be("SKU-AP-L");
-        item.Quantity.Should().Be(20);
-        item.UnitCost.Should().Be(150_000m);
+        item.ShouldNotBeNull();
+        item.Id.ShouldNotBe(Guid.Empty);
+        item.InventoryReceiptId.ShouldBe(receipt.Id);
+        item.ProductVariantId.ShouldBe(variantId);
+        item.ProductId.ShouldBe(productId);
+        item.ProductName.ShouldBe("Ao Polo");
+        item.VariantName.ShouldBe("Size L");
+        item.Sku.ShouldBe("SKU-AP-L");
+        item.Quantity.ShouldBe(20);
+        item.UnitCost.ShouldBe(150_000m);
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class InventoryReceiptItemTests
         var item = AddTestItem(receipt);
 
         // Assert
-        item.TenantId.Should().Be("custom-tenant");
+        item.TenantId.ShouldBe("custom-tenant");
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class InventoryReceiptItemTests
         var item = receipt.AddItem(Guid.NewGuid(), Guid.NewGuid(), "Product", "Variant", null, 5, 10_000m);
 
         // Assert
-        item.Sku.Should().BeNull();
+        item.Sku.ShouldBeNull();
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class InventoryReceiptItemTests
         var item2 = AddTestItem(receipt);
 
         // Assert
-        item1.Id.Should().NotBe(item2.Id);
+        item1.Id.ShouldNotBe(item2.Id);
     }
 
     #endregion
@@ -112,7 +112,7 @@ public class InventoryReceiptItemTests
         var item = AddTestItem(receipt, quantity: 10, unitCost: 25_000m);
 
         // Assert
-        item.LineTotal.Should().Be(250_000m);
+        item.LineTotal.ShouldBe(250_000m);
     }
 
     [Theory]
@@ -128,7 +128,7 @@ public class InventoryReceiptItemTests
         var item = AddTestItem(receipt, quantity: quantity, unitCost: unitCost);
 
         // Assert
-        item.LineTotal.Should().Be(expectedTotal);
+        item.LineTotal.ShouldBe(expectedTotal);
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class InventoryReceiptItemTests
         var item = AddTestItem(receipt, quantity: 100, unitCost: 0m);
 
         // Assert
-        item.LineTotal.Should().Be(0m);
+        item.LineTotal.ShouldBe(0m);
     }
 
     #endregion
@@ -156,7 +156,7 @@ public class InventoryReceiptItemTests
         AddTestItem(receipt, quantity: 30);
 
         // Assert
-        receipt.TotalQuantity.Should().Be(60);
+        receipt.TotalQuantity.ShouldBe(60);
     }
 
     [Fact]
@@ -169,7 +169,7 @@ public class InventoryReceiptItemTests
         AddTestItem(receipt, quantity: 3, unitCost: 50_000m);   // 150,000
 
         // Assert
-        receipt.TotalCost.Should().Be(350_000m);
+        receipt.TotalCost.ShouldBe(350_000m);
     }
 
     [Fact]
@@ -179,8 +179,8 @@ public class InventoryReceiptItemTests
         var receipt = CreateDraftReceipt();
 
         // Assert
-        receipt.TotalQuantity.Should().Be(0);
-        receipt.TotalCost.Should().Be(0m);
+        receipt.TotalQuantity.ShouldBe(0);
+        receipt.TotalCost.ShouldBe(0m);
     }
 
     #endregion
@@ -197,7 +197,7 @@ public class InventoryReceiptItemTests
         var item = AddTestItem(receipt, productName: "Original Product Name");
 
         // Assert
-        item.ProductName.Should().Be("Original Product Name");
+        item.ProductName.ShouldBe("Original Product Name");
     }
 
     [Fact]
@@ -210,7 +210,7 @@ public class InventoryReceiptItemTests
         var item = AddTestItem(receipt, variantName: "Color: Red, Size: XL");
 
         // Assert
-        item.VariantName.Should().Be("Color: Red, Size: XL");
+        item.VariantName.ShouldBe("Color: Red, Size: XL");
     }
 
     #endregion

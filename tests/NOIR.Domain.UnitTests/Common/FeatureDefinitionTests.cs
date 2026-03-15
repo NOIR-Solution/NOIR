@@ -18,9 +18,9 @@ public class FeatureDefinitionTests
             "features.ecommerce.products.description");
 
         // Assert
-        definition.Name.Should().Be("Ecommerce.Products");
-        definition.DisplayNameKey.Should().Be("features.ecommerce.products.name");
-        definition.DescriptionKey.Should().Be("features.ecommerce.products.description");
+        definition.Name.ShouldBe("Ecommerce.Products");
+        definition.DisplayNameKey.ShouldBe("features.ecommerce.products.name");
+        definition.DescriptionKey.ShouldBe("features.ecommerce.products.description");
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class FeatureDefinitionTests
             "features.ecommerce.products.description");
 
         // Assert
-        definition.DefaultEnabled.Should().BeTrue();
+        definition.DefaultEnabled.ShouldBeTrue();
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class FeatureDefinitionTests
             DefaultEnabled: false);
 
         // Assert
-        definition.DefaultEnabled.Should().BeFalse();
+        definition.DefaultEnabled.ShouldBeFalse();
     }
 
     #endregion
@@ -71,7 +71,7 @@ public class FeatureDefinitionTests
             true);
 
         // Assert
-        definition1.Should().Be(definition2);
+        definition1.ShouldBe(definition2);
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class FeatureDefinitionTests
             false);
 
         // Assert
-        definition1.Should().NotBe(definition2);
+        definition1.ShouldNotBe(definition2);
     }
 
     #endregion

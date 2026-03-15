@@ -76,8 +76,8 @@ public class ReorderBlogCategoriesCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Category ID is required.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Category ID is required.");
     }
 
     [Fact]
@@ -115,8 +115,8 @@ public class ReorderBlogCategoriesCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Sort order must be a non-negative number.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Sort order must be a non-negative number.");
     }
 
     [Theory]
@@ -177,9 +177,9 @@ public class ReorderBlogCategoriesCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Category ID is required.");
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Sort order must be a non-negative number.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Category ID is required.");
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Sort order must be a non-negative number.");
     }
 
     #endregion

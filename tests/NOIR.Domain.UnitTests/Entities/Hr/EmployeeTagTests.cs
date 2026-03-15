@@ -34,15 +34,15 @@ public class EmployeeTagTests
         var tag = CreateTestTag(color: TestColor);
 
         // Assert
-        tag.Should().NotBeNull();
-        tag.Id.Should().NotBe(Guid.Empty);
-        tag.Name.Should().Be(TestName);
-        tag.Category.Should().Be(EmployeeTagCategory.Skill);
-        tag.Color.Should().Be(TestColor);
-        tag.Description.Should().Be(TestDescription);
-        tag.SortOrder.Should().Be(0);
-        tag.IsActive.Should().BeTrue();
-        tag.TenantId.Should().Be(TestTenantId);
+        tag.ShouldNotBeNull();
+        tag.Id.ShouldNotBe(Guid.Empty);
+        tag.Name.ShouldBe(TestName);
+        tag.Category.ShouldBe(EmployeeTagCategory.Skill);
+        tag.Color.ShouldBe(TestColor);
+        tag.Description.ShouldBe(TestDescription);
+        tag.SortOrder.ShouldBe(0);
+        tag.IsActive.ShouldBeTrue();
+        tag.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class EmployeeTagTests
         var act = () => CreateTestTag(name: null!);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class EmployeeTagTests
         var act = () => CreateTestTag(name: "");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class EmployeeTagTests
         var act = () => CreateTestTag(name: "   ");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class EmployeeTagTests
         var tag = CreateTestTag(color: null);
 
         // Assert
-        tag.Color.Should().Be(DefaultColor);
+        tag.Color.ShouldBe(DefaultColor);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public class EmployeeTagTests
         var tag = CreateTestTag(color: TestColor);
 
         // Assert
-        tag.Color.Should().Be(TestColor);
+        tag.Color.ShouldBe(TestColor);
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public class EmployeeTagTests
         var tag = CreateTestTag(name: "  Senior Developer  ");
 
         // Assert
-        tag.Name.Should().Be("Senior Developer");
+        tag.Name.ShouldBe("Senior Developer");
     }
 
     [Fact]
@@ -112,8 +112,8 @@ public class EmployeeTagTests
         var tag = CreateTestTag(color: "  #ef4444  ", description: "  Test description  ");
 
         // Assert
-        tag.Color.Should().Be("#ef4444");
-        tag.Description.Should().Be("Test description");
+        tag.Color.ShouldBe("#ef4444");
+        tag.Description.ShouldBe("Test description");
     }
 
     [Fact]
@@ -123,7 +123,7 @@ public class EmployeeTagTests
         var tag = CreateTestTag(description: null);
 
         // Assert
-        tag.Description.Should().BeNull();
+        tag.Description.ShouldBeNull();
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public class EmployeeTagTests
         var tag2 = CreateTestTag();
 
         // Assert
-        tag1.Id.Should().NotBe(tag2.Id);
+        tag1.Id.ShouldNotBe(tag2.Id);
     }
 
     [Fact]
@@ -144,7 +144,7 @@ public class EmployeeTagTests
         var tag = CreateTestTag(sortOrder: 5);
 
         // Assert
-        tag.SortOrder.Should().Be(5);
+        tag.SortOrder.ShouldBe(5);
     }
 
     #endregion
@@ -161,11 +161,11 @@ public class EmployeeTagTests
         tag.Update("Lead Developer", EmployeeTagCategory.Seniority, "#3b82f6", "Team leads", 3);
 
         // Assert
-        tag.Name.Should().Be("Lead Developer");
-        tag.Category.Should().Be(EmployeeTagCategory.Seniority);
-        tag.Color.Should().Be("#3b82f6");
-        tag.Description.Should().Be("Team leads");
-        tag.SortOrder.Should().Be(3);
+        tag.Name.ShouldBe("Lead Developer");
+        tag.Category.ShouldBe(EmployeeTagCategory.Seniority);
+        tag.Color.ShouldBe("#3b82f6");
+        tag.Description.ShouldBe("Team leads");
+        tag.SortOrder.ShouldBe(3);
     }
 
     [Fact]
@@ -178,7 +178,7 @@ public class EmployeeTagTests
         var act = () => tag.Update(null!, EmployeeTagCategory.Skill, null, null, 0);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -191,7 +191,7 @@ public class EmployeeTagTests
         tag.Update("Updated", EmployeeTagCategory.Skill, null, null, 0);
 
         // Assert
-        tag.Color.Should().Be(TestColor);
+        tag.Color.ShouldBe(TestColor);
     }
 
     [Fact]
@@ -204,8 +204,8 @@ public class EmployeeTagTests
         tag.Update("  Trimmed Name  ", EmployeeTagCategory.Skill, null, "  Trimmed desc  ", 0);
 
         // Assert
-        tag.Name.Should().Be("Trimmed Name");
-        tag.Description.Should().Be("Trimmed desc");
+        tag.Name.ShouldBe("Trimmed Name");
+        tag.Description.ShouldBe("Trimmed desc");
     }
 
     #endregion
@@ -222,7 +222,7 @@ public class EmployeeTagTests
         tag.Deactivate();
 
         // Assert
-        tag.IsActive.Should().BeFalse();
+        tag.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -236,7 +236,7 @@ public class EmployeeTagTests
         tag.Activate();
 
         // Assert
-        tag.IsActive.Should().BeTrue();
+        tag.IsActive.ShouldBeTrue();
     }
 
     #endregion

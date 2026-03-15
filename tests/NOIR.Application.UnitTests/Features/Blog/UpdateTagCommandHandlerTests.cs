@@ -96,11 +96,11 @@ public class UpdateTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("New Name");
-        result.Value.Slug.Should().Be("new-slug");
-        result.Value.Description.Should().Be("New description");
-        result.Value.Color.Should().Be("#FFFFFF");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("New Name");
+        result.Value.Slug.ShouldBe("new-slug");
+        result.Value.Description.ShouldBe("New description");
+        result.Value.Color.ShouldBe("#FFFFFF");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -140,7 +140,7 @@ public class UpdateTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         // Should not check for slug conflicts when slug hasn't changed
         _tagRepositoryMock.Verify(
@@ -187,8 +187,8 @@ public class UpdateTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Slug.Should().Be("completely-new-slug");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Slug.ShouldBe("completely-new-slug");
 
         // Should check for slug conflicts when slug changes
         _tagRepositoryMock.Verify(
@@ -234,8 +234,8 @@ public class UpdateTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Slug.Should().Be("upper-case-slug");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Slug.ShouldBe("upper-case-slug");
     }
 
     #endregion
@@ -265,9 +265,9 @@ public class UpdateTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-BLOG-012");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-BLOG-012");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -318,9 +318,9 @@ public class UpdateTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Conflict);
-        result.Error.Code.Should().Be("NOIR-BLOG-011");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Conflict);
+        result.Error.Code.ShouldBe("NOIR-BLOG-011");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -403,8 +403,8 @@ public class UpdateTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PostCount.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PostCount.ShouldBe(3);
     }
 
     [Fact]
@@ -439,9 +439,9 @@ public class UpdateTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Description.Should().BeNull();
-        result.Value.Color.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Description.ShouldBeNull();
+        result.Value.Color.ShouldBeNull();
     }
 
     #endregion

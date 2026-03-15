@@ -68,12 +68,12 @@ public class GetPaymentGatewaysQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(4);
-        result.Value[0].Provider.Should().Be("vnpay");
-        result.Value[1].Provider.Should().Be("momo");
-        result.Value[2].Provider.Should().Be("zalopay");
-        result.Value[3].Provider.Should().Be("cod");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(4);
+        result.Value[0].Provider.ShouldBe("vnpay");
+        result.Value[1].Provider.ShouldBe("momo");
+        result.Value[2].Provider.ShouldBe("zalopay");
+        result.Value[3].Provider.ShouldBe("cod");
     }
 
     [Fact]
@@ -95,20 +95,20 @@ public class GetPaymentGatewaysQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value[0];
-        dto.Id.Should().Be(gateway.Id);
-        dto.Provider.Should().Be("vnpay");
-        dto.DisplayName.Should().Be("VNPay");
-        dto.IsActive.Should().BeTrue();
-        dto.SortOrder.Should().Be(1);
-        dto.Environment.Should().Be(GatewayEnvironment.Sandbox);
-        dto.HasCredentials.Should().BeTrue();
-        dto.WebhookUrl.Should().Be("https://api.example.com/webhooks/vnpay");
-        dto.MinAmount.Should().Be(10000);
-        dto.MaxAmount.Should().Be(100000000);
-        dto.SupportedCurrencies.Should().Be("[\"VND\"]");
-        dto.HealthStatus.Should().Be(GatewayHealthStatus.Healthy);
+        dto.Id.ShouldBe(gateway.Id);
+        dto.Provider.ShouldBe("vnpay");
+        dto.DisplayName.ShouldBe("VNPay");
+        dto.IsActive.ShouldBe(true);
+        dto.SortOrder.ShouldBe(1);
+        dto.Environment.ShouldBe(GatewayEnvironment.Sandbox);
+        dto.HasCredentials.ShouldBe(true);
+        dto.WebhookUrl.ShouldBe("https://api.example.com/webhooks/vnpay");
+        dto.MinAmount.ShouldBe(10000);
+        dto.MaxAmount.ShouldBe(100000000);
+        dto.SupportedCurrencies.ShouldBe("[\"VND\"]");
+        dto.HealthStatus.ShouldBe(GatewayHealthStatus.Healthy);
     }
 
     [Fact]
@@ -133,10 +133,10 @@ public class GetPaymentGatewaysQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
-        result.Value.Should().Contain(g => g.IsActive == true);
-        result.Value.Should().Contain(g => g.IsActive == false);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
+        result.Value.ShouldContain(g => g.IsActive == true);
+        result.Value.ShouldContain(g => g.IsActive == false);
     }
 
     [Fact]
@@ -157,9 +157,9 @@ public class GetPaymentGatewaysQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
-        result.Value[0].Provider.Should().Be("cod");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
+        result.Value[0].Provider.ShouldBe("cod");
     }
 
     #endregion
@@ -182,8 +182,8 @@ public class GetPaymentGatewaysQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     #endregion

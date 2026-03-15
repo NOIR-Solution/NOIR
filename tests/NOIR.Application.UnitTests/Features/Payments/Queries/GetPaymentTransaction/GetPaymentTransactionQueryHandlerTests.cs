@@ -64,10 +64,10 @@ public class GetPaymentTransactionQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TransactionNumber.Should().Be("TXN-001");
-        result.Value.Provider.Should().Be("vnpay");
-        result.Value.Amount.Should().Be(100000m);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TransactionNumber.ShouldBe("TXN-001");
+        result.Value.Provider.ShouldBe("vnpay");
+        result.Value.Amount.ShouldBe(100000m);
     }
 
     [Fact]
@@ -94,20 +94,20 @@ public class GetPaymentTransactionQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Id.Should().Be(transaction.Id);
-        dto.TransactionNumber.Should().Be("TXN-002");
-        dto.Provider.Should().Be("momo");
-        dto.OrderId.Should().Be(orderId);
-        dto.CustomerId.Should().Be(customerId);
-        dto.Amount.Should().Be(250000m);
-        dto.Currency.Should().Be("VND");
-        dto.GatewayFee.Should().Be(2500m);
-        dto.NetAmount.Should().Be(247500m);
-        dto.Status.Should().Be(PaymentStatus.Pending);
-        dto.PaymentMethod.Should().Be(PaymentMethod.EWallet);
-        dto.ExpiresAt.Should().NotBeNull();
+        dto.Id.ShouldBe(transaction.Id);
+        dto.TransactionNumber.ShouldBe("TXN-002");
+        dto.Provider.ShouldBe("momo");
+        dto.OrderId.ShouldBe(orderId);
+        dto.CustomerId.ShouldBe(customerId);
+        dto.Amount.ShouldBe(250000m);
+        dto.Currency.ShouldBe("VND");
+        dto.GatewayFee.ShouldBe(2500m);
+        dto.NetAmount.ShouldBe(247500m);
+        dto.Status.ShouldBe(PaymentStatus.Pending);
+        dto.PaymentMethod.ShouldBe(PaymentMethod.EWallet);
+        dto.ExpiresAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -129,10 +129,10 @@ public class GetPaymentTransactionQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(PaymentStatus.Paid);
-        result.Value.GatewayTransactionId.Should().Be("gateway-txn-123");
-        result.Value.PaidAt.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(PaymentStatus.Paid);
+        result.Value.GatewayTransactionId.ShouldBe("gateway-txn-123");
+        result.Value.PaidAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -154,9 +154,9 @@ public class GetPaymentTransactionQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(PaymentStatus.Failed);
-        result.Value.FailureReason.Should().Be("Insufficient funds");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(PaymentStatus.Failed);
+        result.Value.FailureReason.ShouldBe("Insufficient funds");
     }
 
     [Fact]
@@ -187,10 +187,10 @@ public class GetPaymentTransactionQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PaymentMethod.Should().Be(PaymentMethod.COD);
-        result.Value.CodCollectorName.Should().Be("Delivery Agent");
-        result.Value.CodCollectedAt.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PaymentMethod.ShouldBe(PaymentMethod.COD);
+        result.Value.CodCollectorName.ShouldBe("Delivery Agent");
+        result.Value.CodCollectedAt.ShouldNotBeNull();
     }
 
     #endregion
@@ -215,8 +215,8 @@ public class GetPaymentTransactionQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Payment.TransactionNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.TransactionNotFound);
     }
 
     #endregion

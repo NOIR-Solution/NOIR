@@ -1,4 +1,3 @@
-using FluentAssertions;
 using NOIR.Infrastructure.Services.Payment.Providers.MoMo;
 using Xunit;
 
@@ -22,9 +21,9 @@ public class MoMoSignatureHelperTests
         var signature2 = MoMoSignatureHelper.CreateSignature(rawData, TestSecretKey);
 
         // Assert
-        signature1.Should().NotBeNullOrEmpty();
-        signature1.Should().Be(signature2, "Same input should produce same signature");
-        signature1.Should().HaveLength(64, "SHA256 produces 32 bytes = 64 hex characters");
+        signature1.ShouldNotBeNullOrEmpty();
+        signature1.ShouldBe(signature2, "Same input should produce same signature");
+        signature1.Length.ShouldBe(64, "SHA256 produces 32 bytes = 64 hex characters");
     }
 
     [Fact]
@@ -39,7 +38,7 @@ public class MoMoSignatureHelperTests
         var signature2 = MoMoSignatureHelper.CreateSignature(rawData2, TestSecretKey);
 
         // Assert
-        signature1.Should().NotBe(signature2, "Different data should produce different signatures");
+        signature1.ShouldNotBe(signature2, "Different data should produce different signatures");
     }
 
     [Fact]
@@ -53,7 +52,7 @@ public class MoMoSignatureHelperTests
         var isValid = MoMoSignatureHelper.VerifySignature(rawData, TestSecretKey, signature);
 
         // Assert
-        isValid.Should().BeTrue();
+        isValid.ShouldBe(true);
     }
 
     [Fact]
@@ -68,7 +67,7 @@ public class MoMoSignatureHelperTests
         var isValid = MoMoSignatureHelper.VerifySignature(tamperedData, TestSecretKey, signature);
 
         // Assert
-        isValid.Should().BeFalse("Tampered data should fail signature verification");
+        isValid.ShouldBeFalse("Tampered data should fail signature verification");
     }
 
     [Fact]
@@ -84,7 +83,7 @@ public class MoMoSignatureHelperTests
         var isValid = MoMoSignatureHelper.VerifySignature(rawData, wrongKey, signature);
 
         // Assert
-        isValid.Should().BeFalse("Wrong key should fail signature verification");
+        isValid.ShouldBeFalse("Wrong key should fail signature verification");
     }
 
     [Fact]
@@ -99,7 +98,7 @@ public class MoMoSignatureHelperTests
         var isValid = MoMoSignatureHelper.VerifySignature(rawData, TestSecretKey, upperCaseSignature);
 
         // Assert
-        isValid.Should().BeTrue("Signature comparison should be case-insensitive");
+        isValid.ShouldBeTrue("Signature comparison should be case-insensitive");
     }
 
     [Fact]
@@ -119,7 +118,7 @@ public class MoMoSignatureHelperTests
             requestType: "captureWallet");
 
         // Assert
-        result.Should().Be("accessKey=abc&amount=50000&extraData=&ipnUrl=https://example.com/ipn&orderId=order123&orderInfo=Test order&partnerCode=MOMO&redirectUrl=https://example.com/return&requestId=req123&requestType=captureWallet");
+        result.ShouldBe("accessKey=abc&amount=50000&extraData=&ipnUrl=https://example.com/ipn&orderId=order123&orderInfo=Test order&partnerCode=MOMO&redirectUrl=https://example.com/return&requestId=req123&requestType=captureWallet");
     }
 
     [Fact]
@@ -142,10 +141,10 @@ public class MoMoSignatureHelperTests
             transId: "trans123");
 
         // Assert
-        result.Should().Contain("accessKey=abc");
-        result.Should().Contain("amount=50000");
-        result.Should().Contain("resultCode=0");
-        result.Should().Contain("transId=trans123");
+        result.ShouldContain("accessKey=abc");
+        result.ShouldContain("amount=50000");
+        result.ShouldContain("resultCode=0");
+        result.ShouldContain("transId=trans123");
     }
 
     [Fact]
@@ -159,7 +158,7 @@ public class MoMoSignatureHelperTests
             requestId: "req123");
 
         // Assert
-        result.Should().Be("accessKey=abc&orderId=order123&partnerCode=MOMO&requestId=req123");
+        result.ShouldBe("accessKey=abc&orderId=order123&partnerCode=MOMO&requestId=req123");
     }
 
     [Fact]
@@ -176,7 +175,7 @@ public class MoMoSignatureHelperTests
             transId: 123456789);
 
         // Assert
-        result.Should().Be("accessKey=abc&amount=50000&description=Refund for order&orderId=refund123&partnerCode=MOMO&requestId=req123&transId=123456789");
+        result.ShouldBe("accessKey=abc&amount=50000&description=Refund for order&orderId=refund123&partnerCode=MOMO&requestId=req123&transId=123456789");
     }
 
     [Fact]
@@ -189,8 +188,8 @@ public class MoMoSignatureHelperTests
         var signature = MoMoSignatureHelper.CreateSignature(rawData, TestSecretKey);
 
         // Assert
-        signature.Should().NotBeNullOrEmpty();
-        signature.Should().HaveLength(64);
+        signature.ShouldNotBeNullOrEmpty();
+        signature.Length.ShouldBe(64);
     }
 
     [Theory]
@@ -202,8 +201,8 @@ public class MoMoSignatureHelperTests
         var signature = MoMoSignatureHelper.CreateSignature(rawData, secretKey);
 
         // Assert
-        signature.Should().NotBeNullOrEmpty("Even empty inputs should produce a hash");
-        signature.Should().HaveLength(64);
+        signature.ShouldNotBeNullOrEmpty("Even empty inputs should produce a hash");
+        signature.Length.ShouldBe(64);
     }
 
     [Fact]
@@ -223,10 +222,10 @@ public class MoMoSignatureHelperTests
             requestType: "captureWallet");
 
         // Assert
-        result.Should().Contain("orderInfo=Thanh toán đơn hàng #123");
+        result.ShouldContain("orderInfo=Thanh toán đơn hàng #123");
 
         // Verify signature can be created
         var signature = MoMoSignatureHelper.CreateSignature(result, TestSecretKey);
-        signature.Should().HaveLength(64);
+        signature.Length.ShouldBe(64);
     }
 }

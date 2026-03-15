@@ -370,7 +370,7 @@ var orders = await db.Orders.ToListAsync();
 | `xunit` | Test framework |
 | `xunit.runner.visualstudio` | VS Test runner |
 | `Moq` | Mocking |
-| `FluentAssertions` | Fluent assertions |
+| `Shouldly` | Assertion library |
 | `Microsoft.AspNetCore.Mvc.Testing` | Integration testing |
 | `Bogus` | Fake data generation |
 
@@ -394,8 +394,8 @@ public class UserServiceTests
         var result = await service.GetUserAsync(1);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Name.Should().Be("John");
+        result.ShouldNotBeNull();
+        result.Name.ShouldBe("John");
     }
 }
 ```
@@ -469,7 +469,7 @@ public class UserServiceTests
 <PackageReference Include="xunit" />
 <PackageReference Include="xunit.runner.visualstudio" />
 <PackageReference Include="Moq" />
-<PackageReference Include="FluentAssertions" />
+<PackageReference Include="Shouldly" />
 <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
 <PackageReference Include="Bogus" />
 ```

@@ -36,9 +36,9 @@ public class DashboardEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.GetAsync("/api/dashboard/metrics");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<DashboardMetricsDto>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class DashboardEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await _client.GetAsync("/api/dashboard/metrics");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -61,9 +61,9 @@ public class DashboardEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.GetAsync("/api/dashboard/metrics?topProducts=3&salesDays=7");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<DashboardMetricsDto>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -76,17 +76,17 @@ public class DashboardEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.GetAsync("/api/dashboard/metrics");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<DashboardMetricsDto>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
 
         // Verify all sections are present
-        result!.Revenue.Should().NotBeNull("Revenue section should be present");
-        result.OrderCounts.Should().NotBeNull("OrderCounts section should be present");
-        result.TopSellingProducts.Should().NotBeNull("TopSellingProducts section should be present");
-        result.LowStockProducts.Should().NotBeNull("LowStockProducts section should be present");
-        result.RecentOrders.Should().NotBeNull("RecentOrders section should be present");
-        result.SalesOverTime.Should().NotBeNull("SalesOverTime section should be present");
-        result.ProductDistribution.Should().NotBeNull("ProductDistribution section should be present");
+        result!.Revenue.ShouldNotBeNull("Revenue section should be present");
+        result.OrderCounts.ShouldNotBeNull("OrderCounts section should be present");
+        result.TopSellingProducts.ShouldNotBeNull("TopSellingProducts section should be present");
+        result.LowStockProducts.ShouldNotBeNull("LowStockProducts section should be present");
+        result.RecentOrders.ShouldNotBeNull("RecentOrders section should be present");
+        result.SalesOverTime.ShouldNotBeNull("SalesOverTime section should be present");
+        result.ProductDistribution.ShouldNotBeNull("ProductDistribution section should be present");
     }
 }

@@ -81,14 +81,17 @@ public class GetPaymentDetailsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Transaction.Should().NotBeNull();
-        result.Value.Transaction.Id.Should().Be(TestPaymentId);
-        result.Value.Transaction.TransactionNumber.Should().Be(TestTransactionNumber);
-        result.Value.OperationLogs.Should().NotBeNull().And.BeEmpty();
-        result.Value.WebhookLogs.Should().NotBeNull().And.BeEmpty();
-        result.Value.Refunds.Should().NotBeNull().And.BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Transaction.ShouldNotBeNull();
+        result.Value.Transaction.Id.ShouldBe(TestPaymentId);
+        result.Value.Transaction.TransactionNumber.ShouldBe(TestTransactionNumber);
+        result.Value.OperationLogs.ShouldNotBeNull();
+        result.Value.OperationLogs.ShouldBeEmpty();
+        result.Value.WebhookLogs.ShouldNotBeNull();
+        result.Value.WebhookLogs.ShouldBeEmpty();
+        result.Value.Refunds.ShouldNotBeNull();
+        result.Value.Refunds.ShouldBeEmpty();
     }
 
     [Fact]
@@ -105,8 +108,8 @@ public class GetPaymentDetailsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.TransactionNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.TransactionNotFound);
     }
 }

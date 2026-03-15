@@ -91,8 +91,8 @@ public class GetOrderPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -129,23 +129,23 @@ public class GetOrderPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
 
         var dto = result.Value[0];
-        dto.TransactionNumber.Should().Be("TXN-20250126-0042");
-        dto.PaymentGatewayId.Should().Be(gatewayId);
-        dto.Provider.Should().Be("VNPay");
-        dto.OrderId.Should().Be(orderId);
-        dto.CustomerId.Should().Be(customerId);
-        dto.Amount.Should().Be(250.00m);
-        dto.Currency.Should().Be("VND");
-        dto.PaymentMethod.Should().Be(PaymentMethod.CreditCard);
-        dto.Status.Should().Be(PaymentStatus.Paid);
-        dto.GatewayFee.Should().Be(5.00m);
-        dto.NetAmount.Should().Be(245.00m);
-        dto.GatewayTransactionId.Should().Be("GTX-12345");
-        dto.PaidAt.Should().NotBeNull();
+        dto.TransactionNumber.ShouldBe("TXN-20250126-0042");
+        dto.PaymentGatewayId.ShouldBe(gatewayId);
+        dto.Provider.ShouldBe("VNPay");
+        dto.OrderId.ShouldBe(orderId);
+        dto.CustomerId.ShouldBe(customerId);
+        dto.Amount.ShouldBe(250.00m);
+        dto.Currency.ShouldBe("VND");
+        dto.PaymentMethod.ShouldBe(PaymentMethod.CreditCard);
+        dto.Status.ShouldBe(PaymentStatus.Paid);
+        dto.GatewayFee.ShouldBe(5.00m);
+        dto.NetAmount.ShouldBe(245.00m);
+        dto.GatewayTransactionId.ShouldBe("GTX-12345");
+        dto.PaidAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -166,8 +166,8 @@ public class GetOrderPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     [Fact]
@@ -195,12 +195,12 @@ public class GetOrderPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(4);
-        result.Value.Should().Contain(p => p.PaymentMethod == PaymentMethod.BankTransfer);
-        result.Value.Should().Contain(p => p.PaymentMethod == PaymentMethod.CreditCard);
-        result.Value.Should().Contain(p => p.PaymentMethod == PaymentMethod.COD);
-        result.Value.Should().Contain(p => p.PaymentMethod == PaymentMethod.EWallet);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(4);
+        result.Value.ShouldContain(p => p.PaymentMethod == PaymentMethod.BankTransfer);
+        result.Value.ShouldContain(p => p.PaymentMethod == PaymentMethod.CreditCard);
+        result.Value.ShouldContain(p => p.PaymentMethod == PaymentMethod.COD);
+        result.Value.ShouldContain(p => p.PaymentMethod == PaymentMethod.EWallet);
     }
 
     [Fact]
@@ -226,11 +226,11 @@ public class GetOrderPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(3);
-        result.Value.Should().Contain(p => p.Status == PaymentStatus.Pending);
-        result.Value.Should().Contain(p => p.Status == PaymentStatus.Paid);
-        result.Value.Should().Contain(p => p.Status == PaymentStatus.Failed);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(3);
+        result.Value.ShouldContain(p => p.Status == PaymentStatus.Pending);
+        result.Value.ShouldContain(p => p.Status == PaymentStatus.Paid);
+        result.Value.ShouldContain(p => p.Status == PaymentStatus.Failed);
     }
 
     [Fact]
@@ -257,11 +257,11 @@ public class GetOrderPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(3);
-        result.Value.Should().Contain(p => p.Provider == "VNPay");
-        result.Value.Should().Contain(p => p.Provider == "MoMo");
-        result.Value.Should().Contain(p => p.Provider == "ZaloPay");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(3);
+        result.Value.ShouldContain(p => p.Provider == "VNPay");
+        result.Value.ShouldContain(p => p.Provider == "MoMo");
+        result.Value.ShouldContain(p => p.Provider == "ZaloPay");
     }
 
     #endregion
@@ -292,11 +292,11 @@ public class GetOrderPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
-        result.Value[0].Status.Should().Be(PaymentStatus.Paid);
-        result.Value[0].PaidAt.Should().NotBeNull();
-        result.Value[0].GatewayTransactionId.Should().NotBeNullOrEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
+        result.Value[0].Status.ShouldBe(PaymentStatus.Paid);
+        result.Value[0].PaidAt.ShouldNotBeNull();
+        result.Value[0].GatewayTransactionId.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -323,10 +323,10 @@ public class GetOrderPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
-        result.Value[0].Status.Should().Be(PaymentStatus.Failed);
-        result.Value[0].FailureReason.Should().Be("Payment declined");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
+        result.Value[0].Status.ShouldBe(PaymentStatus.Failed);
+        result.Value[0].FailureReason.ShouldBe("Payment declined");
     }
 
     [Fact]
@@ -353,9 +353,9 @@ public class GetOrderPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
-        result.Value[0].Status.Should().Be(PaymentStatus.Cancelled);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
+        result.Value[0].Status.ShouldBe(PaymentStatus.Cancelled);
     }
 
     #endregion
@@ -387,9 +387,9 @@ public class GetOrderPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
-        result.Value[0].PaymentMethod.Should().Be(PaymentMethod.COD);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
+        result.Value[0].PaymentMethod.ShouldBe(PaymentMethod.COD);
     }
 
     #endregion
@@ -444,9 +444,9 @@ public class GetOrderPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
-        result.Value[0].CreatedAt.Should().NotBe(default);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
+        result.Value[0].CreatedAt.ShouldNotBe(default);
     }
 
     [Fact]
@@ -472,10 +472,10 @@ public class GetOrderPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
-        result.Value.Should().Contain(p => p.Currency == "VND" && p.Amount == 100000m);
-        result.Value.Should().Contain(p => p.Currency == "USD" && p.Amount == 50m);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
+        result.Value.ShouldContain(p => p.Currency == "VND" && p.Amount == 100000m);
+        result.Value.ShouldContain(p => p.Currency == "USD" && p.Amount == 50m);
     }
 
     [Fact]
@@ -503,9 +503,9 @@ public class GetOrderPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
-        result.Value[0].ExpiresAt.Should().Be(expiresAt);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
+        result.Value[0].ExpiresAt.ShouldBe(expiresAt);
     }
 
     [Fact]

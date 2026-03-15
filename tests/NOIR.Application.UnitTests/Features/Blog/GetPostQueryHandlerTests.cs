@@ -74,10 +74,10 @@ public class GetPostQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Title.Should().Be("Found Post");
-        result.Value.Slug.Should().Be("found-post");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Title.ShouldBe("Found Post");
+        result.Value.Slug.ShouldBe("found-post");
     }
 
     [Fact]
@@ -118,19 +118,19 @@ public class GetPostQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Title.Should().Be("Complete Post");
-        dto.Slug.Should().Be("complete-post");
-        dto.Excerpt.Should().Be("This is the excerpt");
-        dto.ContentJson.Should().Be("[{\"type\":\"paragraph\"}]");
-        dto.ContentHtml.Should().Be("<p>This is HTML content</p>");
-        dto.Status.Should().Be(PostStatus.Published);
-        dto.MetaTitle.Should().Be("SEO Title");
-        dto.MetaDescription.Should().Be("SEO Description");
-        dto.CanonicalUrl.Should().Be("https://example.com/canonical");
-        dto.AllowIndexing.Should().BeTrue();
-        dto.AuthorId.Should().Be(authorId);
+        dto.Title.ShouldBe("Complete Post");
+        dto.Slug.ShouldBe("complete-post");
+        dto.Excerpt.ShouldBe("This is the excerpt");
+        dto.ContentJson.ShouldBe("[{\"type\":\"paragraph\"}]");
+        dto.ContentHtml.ShouldBe("<p>This is HTML content</p>");
+        dto.Status.ShouldBe(PostStatus.Published);
+        dto.MetaTitle.ShouldBe("SEO Title");
+        dto.MetaDescription.ShouldBe("SEO Description");
+        dto.CanonicalUrl.ShouldBe("https://example.com/canonical");
+        dto.AllowIndexing.ShouldBe(true);
+        dto.AuthorId.ShouldBe(authorId);
     }
 
     #endregion
@@ -155,9 +155,9 @@ public class GetPostQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Slug.Should().Be("slug-post");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Slug.ShouldBe("slug-post");
     }
 
     [Fact]
@@ -180,7 +180,7 @@ public class GetPostQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _currentUserMock.Verify(x => x.TenantId, Times.Once);
     }
 
@@ -206,9 +206,9 @@ public class GetPostQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
-        result.Error.Code.Should().Be("NOIR-BLOG-003");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.ShouldNotBeNull();
+        result.Error.Code.ShouldBe("NOIR-BLOG-003");
     }
 
     [Fact]
@@ -227,9 +227,9 @@ public class GetPostQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
-        result.Error.Code.Should().Be("NOIR-BLOG-003");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.ShouldNotBeNull();
+        result.Error.Code.ShouldBe("NOIR-BLOG-003");
     }
 
     #endregion
@@ -246,9 +246,9 @@ public class GetPostQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
-        result.Error.Code.Should().Be("NOIR-BLOG-013");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.ShouldNotBeNull();
+        result.Error.Code.ShouldBe("NOIR-BLOG-013");
     }
 
     [Fact]
@@ -261,9 +261,9 @@ public class GetPostQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
-        result.Error.Code.Should().Be("NOIR-BLOG-013");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.ShouldNotBeNull();
+        result.Error.Code.ShouldBe("NOIR-BLOG-013");
     }
 
     [Fact]
@@ -285,8 +285,8 @@ public class GetPostQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Title.Should().Be("ID Priority Post");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Title.ShouldBe("ID Priority Post");
     }
 
     #endregion
@@ -315,9 +315,9 @@ public class GetPostQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Tags.Should().NotBeNull();
-        result.Value.Tags.Should().BeEmpty(); // Empty because TagAssignments is empty in mock
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Tags.ShouldNotBeNull();
+        result.Value.Tags.ShouldBeEmpty(); // Empty because TagAssignments is empty in mock
     }
 
     #endregion
@@ -343,8 +343,8 @@ public class GetPostQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(PostStatus.Draft);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(PostStatus.Draft);
     }
 
     [Fact]
@@ -366,9 +366,9 @@ public class GetPostQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(PostStatus.Published);
-        result.Value.PublishedAt.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(PostStatus.Published);
+        result.Value.PublishedAt.ShouldNotBeNull();
     }
 
     #endregion

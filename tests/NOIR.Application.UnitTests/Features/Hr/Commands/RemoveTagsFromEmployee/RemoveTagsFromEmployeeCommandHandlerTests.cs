@@ -57,7 +57,7 @@ public class RemoveTagsFromEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
             Times.Once);
@@ -77,6 +77,6 @@ public class RemoveTagsFromEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
     }
 }

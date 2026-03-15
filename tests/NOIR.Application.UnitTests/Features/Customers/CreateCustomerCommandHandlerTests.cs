@@ -76,10 +76,10 @@ public class CreateCustomerCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Email.Should().Be("john@example.com");
-        result.Value.FirstName.Should().Be("John");
-        result.Value.LastName.Should().Be("Doe");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Email.ShouldBe("john@example.com");
+        result.Value.FirstName.ShouldBe("John");
+        result.Value.LastName.ShouldBe("Doe");
 
         _customerRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Customer>(), It.IsAny<CancellationToken>()),
@@ -112,9 +112,9 @@ public class CreateCustomerCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Phone.Should().Be("0901234567");
-        result.Value.UserId.Should().Be("user-abc-123");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Phone.ShouldBe("0901234567");
+        result.Value.UserId.ShouldBe("user-abc-123");
     }
 
     [Fact]
@@ -137,10 +137,10 @@ public class CreateCustomerCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Tags.Should().Contain("vip");
-        result.Value.Tags.Should().Contain("premium");
-        result.Value.Tags.Should().Contain("loyal");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Tags.ShouldContain("vip");
+        result.Value.Tags.ShouldContain("premium");
+        result.Value.Tags.ShouldContain("loyal");
     }
 
     [Fact]
@@ -163,8 +163,8 @@ public class CreateCustomerCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Notes.Should().Be("Important customer - handle with care");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Notes.ShouldBe("Important customer - handle with care");
     }
 
     [Fact]
@@ -187,10 +187,10 @@ public class CreateCustomerCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Segment.Should().Be(CustomerSegment.New);
-        result.Value.Tier.Should().Be(CustomerTier.Standard);
-        result.Value.IsActive.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Segment.ShouldBe(CustomerSegment.New);
+        result.Value.Tier.ShouldBe(CustomerTier.Standard);
+        result.Value.IsActive.ShouldBe(true);
     }
 
     #endregion
@@ -216,8 +216,8 @@ public class CreateCustomerCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CUSTOMER-001");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CUSTOMER-001");
 
         _customerRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Customer>(), It.IsAny<CancellationToken>()),
@@ -254,9 +254,9 @@ public class CreateCustomerCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedCustomer.Should().NotBeNull();
-        capturedCustomer!.TenantId.Should().Be(tenantId);
+        result.IsSuccess.ShouldBe(true);
+        capturedCustomer.ShouldNotBeNull();
+        capturedCustomer!.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -318,8 +318,8 @@ public class CreateCustomerCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Tags.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Tags.ShouldBeNull();
     }
 
     [Fact]
@@ -342,8 +342,8 @@ public class CreateCustomerCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Notes.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Notes.ShouldBeNull();
     }
 
     #endregion

@@ -56,8 +56,8 @@ public class ProductTests
         var product = Product.Create("Test Product", "SKU001");
 
         // Assert
-        product.Should().NotBeNull();
-        product.Name.Should().Be("Test Product");
+        product.ShouldNotBeNull();
+        product.Name.ShouldBe("Test Product");
     }
 }
 ```
@@ -86,7 +86,7 @@ public class CreateProductCommandHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBeTrue();
     }
 }
 ```
@@ -110,7 +110,7 @@ public class ProductsEndpointsTests : IntegrationTestBase
         var response = await Client.PostAsJsonAsync("/api/products", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
     }
 }
 ```
@@ -185,8 +185,8 @@ public async Task Method_Scenario_ExpectedBehavior()
 ```
 
 ### Assertions
-- Use FluentAssertions for readable assertions
-- Example: `result.IsSuccess.Should().BeTrue()`
+- Use Shouldly for readable assertions
+- Example: `result.IsSuccess.ShouldBeTrue()`
 
 ---
 
@@ -237,7 +237,7 @@ Tests run automatically on every push to `main` branch via GitHub Actions.
 ## Resources
 
 - [xUnit Documentation](https://xunit.net/)
-- [FluentAssertions Documentation](https://fluentassertions.com/)
+- [Shouldly Documentation](https://github.com/shouldly/shouldly)
 - [Moq Documentation](https://github.com/devlooped/moq)
 - [NetArchTest Documentation](https://github.com/BenMorris/NetArchTest)
 

@@ -36,7 +36,7 @@ public class CartEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/cart");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public class CartEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/cart");
 
         // Assert - Guest users get an empty cart via session cookie
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -63,7 +63,7 @@ public class CartEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/cart/summary");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -82,7 +82,7 @@ public class CartEndpointsTests : IClassFixture<CustomWebApplicationFactory>
 
         // Assert
         // May return BadRequest or NotFound depending on validation
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.BadRequest, HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.BadRequest, HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class CartEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/cart/items", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -116,7 +116,7 @@ public class CartEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/cart/{invalidCartId}/items/{invalidItemId}", command);
 
         // Assert
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -135,7 +135,7 @@ public class CartEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/cart/{invalidCartId}/items/{invalidItemId}");
 
         // Assert
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.NoContent);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.NoContent);
     }
 
     #endregion
@@ -153,7 +153,7 @@ public class CartEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/cart/{invalidCartId}");
 
         // Assert - Returns OK with empty cart (via ToHttpResult) or NotFound if cart doesn't exist
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.OK, HttpStatusCode.NotFound);
     }
 
     #endregion

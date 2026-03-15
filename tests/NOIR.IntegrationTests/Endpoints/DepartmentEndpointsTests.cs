@@ -39,9 +39,9 @@ public class DepartmentEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.GetAsync("/api/hr/departments");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<List<DepartmentTreeNodeDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class DepartmentEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await _client.GetAsync("/api/hr/departments");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -64,9 +64,9 @@ public class DepartmentEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.GetAsync("/api/hr/departments?includeInactive=true");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<List<DepartmentTreeNodeDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     #endregion
@@ -84,11 +84,11 @@ public class DepartmentEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.GetAsync($"/api/hr/departments/{dept.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<DepartmentDto>();
-        result.Should().NotBeNull();
-        result!.Id.Should().Be(dept.Id);
-        result.Name.Should().Be(dept.Name);
+        result.ShouldNotBeNull();
+        result!.Id.ShouldBe(dept.Id);
+        result.Name.ShouldBe(dept.Name);
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class DepartmentEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.GetAsync($"/api/hr/departments/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class DepartmentEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await _client.GetAsync($"/api/hr/departments/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -129,11 +129,11 @@ public class DepartmentEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/hr/departments", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var dept = await response.Content.ReadFromJsonWithEnumsAsync<DepartmentDto>();
-        dept.Should().NotBeNull();
-        dept!.Name.Should().Be(request.Name);
-        dept.Code.Should().BeEquivalentTo(request.Code);
+        dept.ShouldNotBeNull();
+        dept!.Name.ShouldBe(request.Name);
+        dept.Code.ShouldBe(request.Code);
     }
 
     [Fact]
@@ -151,7 +151,7 @@ public class DepartmentEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/hr/departments", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class DepartmentEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await _client.PostAsJsonWithEnumsAsync("/api/hr/departments", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -185,10 +185,10 @@ public class DepartmentEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/hr/departments", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var dept = await response.Content.ReadFromJsonWithEnumsAsync<DepartmentDto>();
-        dept.Should().NotBeNull();
-        dept!.ParentDepartmentId.Should().Be(parent.Id);
+        dept.ShouldNotBeNull();
+        dept!.ParentDepartmentId.ShouldBe(parent.Id);
     }
 
     #endregion
@@ -211,11 +211,11 @@ public class DepartmentEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/hr/departments/{dept.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await response.Content.ReadFromJsonWithEnumsAsync<DepartmentDto>();
-        updated.Should().NotBeNull();
-        updated!.Name.Should().Be("Updated Department");
-        updated.Description.Should().Be("Updated description");
+        updated.ShouldNotBeNull();
+        updated!.Name.ShouldBe("Updated Department");
+        updated.Description.ShouldBe("Updated description");
     }
 
     [Fact]
@@ -229,7 +229,7 @@ public class DepartmentEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/hr/departments/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -247,11 +247,11 @@ public class DepartmentEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.DeleteAsync($"/api/hr/departments/{dept.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Verify it's deleted (soft delete - should return not found)
         var getResponse = await adminClient.GetAsync($"/api/hr/departments/{dept.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -264,7 +264,7 @@ public class DepartmentEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.DeleteAsync($"/api/hr/departments/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -280,26 +280,26 @@ public class DepartmentEndpointsTests : IClassFixture<CustomWebApplicationFactor
         // Create
         var createRequest = CreateTestDepartmentRequest();
         var createResponse = await adminClient.PostAsJsonWithEnumsAsync("/api/hr/departments", createRequest);
-        createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        createResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var created = await createResponse.Content.ReadFromJsonWithEnumsAsync<DepartmentDto>();
-        created.Should().NotBeNull();
+        created.ShouldNotBeNull();
 
         // Read
         var getResponse = await adminClient.GetAsync($"/api/hr/departments/{created!.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Update
         var updateRequest = new UpdateDepartmentRequest(
             "Lifecycle Updated", created.Code,
             Description: "Updated via lifecycle test");
         var updateResponse = await adminClient.PutAsJsonWithEnumsAsync($"/api/hr/departments/{created.Id}", updateRequest);
-        updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        updateResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await updateResponse.Content.ReadFromJsonWithEnumsAsync<DepartmentDto>();
-        updated!.Name.Should().Be("Lifecycle Updated");
+        updated!.Name.ShouldBe("Lifecycle Updated");
 
         // Delete
         var deleteResponse = await adminClient.DeleteAsync($"/api/hr/departments/{created.Id}");
-        deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        deleteResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -312,7 +312,7 @@ public class DepartmentEndpointsTests : IClassFixture<CustomWebApplicationFactor
         await _factory.ExecuteWithTenantAsync(sp =>
         {
             var repository = sp.GetRequiredService<IRepository<Department, Guid>>();
-            repository.Should().NotBeNull();
+            repository.ShouldNotBeNull();
             return Task.CompletedTask;
         });
     }

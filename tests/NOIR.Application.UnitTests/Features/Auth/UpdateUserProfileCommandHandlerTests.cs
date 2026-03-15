@@ -117,12 +117,12 @@ public class UpdateUserProfileCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.FirstName.Should().Be("Updated");
-        result.Value.LastName.Should().Be("Name");
-        result.Value.DisplayName.Should().Be("New Display");
-        result.Value.PhoneNumber.Should().Be("+1234567890");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.FirstName.ShouldBe("Updated");
+        result.Value.LastName.ShouldBe("Name");
+        result.Value.DisplayName.ShouldBe("New Display");
+        result.Value.PhoneNumber.ShouldBe("+1234567890");
     }
 
     [Fact]
@@ -159,7 +159,7 @@ public class UpdateUserProfileCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _userIdentityServiceMock.Verify(
             x => x.UpdateUserAsync(
                 TestUserId,
@@ -192,7 +192,7 @@ public class UpdateUserProfileCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _userIdentityServiceMock.Verify(
             x => x.UpdateUserAsync(It.IsAny<string>(), It.IsAny<UpdateUserDto>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -222,7 +222,7 @@ public class UpdateUserProfileCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _userIdentityServiceMock.Verify(
             x => x.UpdateUserAsync(It.IsAny<string>(), It.IsAny<UpdateUserDto>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -258,12 +258,12 @@ public class UpdateUserProfileCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(TestUserId);
-        result.Value.Email.Should().Be("test@example.com");
-        result.Value.Roles.Should().Contain("Admin");
-        result.Value.Roles.Should().Contain("User");
-        result.Value.TenantId.Should().Be("default"); // Handler returns user.TenantId from database, not _currentUser.TenantId
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(TestUserId);
+        result.Value.Email.ShouldBe("test@example.com");
+        result.Value.Roles.ShouldContain("Admin");
+        result.Value.Roles.ShouldContain("User");
+        result.Value.TenantId.ShouldBe("default"); // Handler returns user.TenantId from database, not _currentUser.TenantId
     }
 
     #endregion
@@ -285,9 +285,9 @@ public class UpdateUserProfileCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Unauthorized);
-        result.Error.Message.Should().Contain("auth.user.notAuthenticated");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Unauthorized);
+        result.Error.Message.ShouldContain("auth.user.notAuthenticated");
     }
 
     [Fact]
@@ -307,8 +307,8 @@ public class UpdateUserProfileCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Unauthorized);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Unauthorized);
     }
 
     [Fact]
@@ -328,8 +328,8 @@ public class UpdateUserProfileCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Unauthorized);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Unauthorized);
     }
 
     #endregion
@@ -355,9 +355,9 @@ public class UpdateUserProfileCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain("auth.user.notFound");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Message.ShouldContain("auth.user.notFound");
     }
 
     [Fact]
@@ -386,8 +386,8 @@ public class UpdateUserProfileCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
     }
 
     #endregion
@@ -418,9 +418,9 @@ public class UpdateUserProfileCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Failure);
-        result.Error.Message.Should().Contain("auth.user.updateFailed");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Failure);
+        result.Error.Message.ShouldContain("auth.user.updateFailed");
     }
 
     #endregion

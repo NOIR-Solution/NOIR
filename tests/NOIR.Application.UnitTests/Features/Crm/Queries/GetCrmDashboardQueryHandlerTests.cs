@@ -31,14 +31,14 @@ public class GetCrmDashboardQueryHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TotalContacts.Should().Be(0);
-        result.Value.TotalCompanies.Should().Be(0);
-        result.Value.ActiveLeads.Should().Be(0);
-        result.Value.WonLeads.Should().Be(0);
-        result.Value.LostLeads.Should().Be(0);
-        result.Value.TotalPipelineValue.Should().Be(0);
-        result.Value.WonDealValue.Should().Be(0);
-        result.Value.ConversionRate.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TotalContacts.ShouldBe(0);
+        result.Value.TotalCompanies.ShouldBe(0);
+        result.Value.ActiveLeads.ShouldBe(0);
+        result.Value.WonLeads.ShouldBe(0);
+        result.Value.LostLeads.ShouldBe(0);
+        result.Value.TotalPipelineValue.ShouldBe(0);
+        result.Value.WonDealValue.ShouldBe(0);
+        result.Value.ConversionRate.ShouldBe(0);
     }
 }

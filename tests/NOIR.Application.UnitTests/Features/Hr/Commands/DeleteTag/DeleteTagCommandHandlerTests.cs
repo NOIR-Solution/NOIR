@@ -57,7 +57,7 @@ public class DeleteTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _tagRepositoryMock.Verify(
             x => x.Remove(existingTag),
             Times.Once);
@@ -80,7 +80,7 @@ public class DeleteTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
         _tagRepositoryMock.Verify(
             x => x.Remove(It.IsAny<EmployeeTag>()),
             Times.Never);

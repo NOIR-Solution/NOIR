@@ -100,10 +100,11 @@ public class ExportEmployeesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ContentType.Should().Be("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        result.Value.FileName.Should().StartWith("employees-").And.EndWith(".xlsx");
-        result.Value.FileBytes.Should().BeEquivalentTo(excelBytes);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ContentType.ShouldBe("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        result.Value.FileName.ShouldStartWith("employees-");
+        result.Value.FileName.ShouldEndWith(".xlsx");
+        result.Value.FileBytes.ShouldBe(excelBytes);
 
         _excelExportServiceMock.Verify(
             x => x.CreateExcelFile("Employees", It.IsAny<IReadOnlyList<string>>(), It.IsAny<IReadOnlyList<IReadOnlyList<object?>>>()),
@@ -127,17 +128,18 @@ public class ExportEmployeesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ContentType.Should().Be("text/csv");
-        result.Value.FileName.Should().StartWith("employees-").And.EndWith(".csv");
-        result.Value.FileBytes.Should().NotBeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ContentType.ShouldBe("text/csv");
+        result.Value.FileName.ShouldStartWith("employees-");
+        result.Value.FileName.ShouldEndWith(".csv");
+        result.Value.FileBytes.ShouldNotBeEmpty();
 
         var csvContent = Encoding.UTF8.GetString(result.Value.FileBytes);
-        csvContent.Should().Contain("FirstName");
-        csvContent.Should().Contain("LastName");
-        csvContent.Should().Contain("Email");
-        csvContent.Should().Contain("Alice");
-        csvContent.Should().Contain("Bob");
+        csvContent.ShouldContain("FirstName");
+        csvContent.ShouldContain("LastName");
+        csvContent.ShouldContain("Email");
+        csvContent.ShouldContain("Alice");
+        csvContent.ShouldContain("Bob");
     }
 
     [Fact]
@@ -157,7 +159,7 @@ public class ExportEmployeesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         _employeeRepositoryMock.Verify(
             x => x.ListAsync(It.IsAny<EmployeesForExportSpec>(), It.IsAny<CancellationToken>()),

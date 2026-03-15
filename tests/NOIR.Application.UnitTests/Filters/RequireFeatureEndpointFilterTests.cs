@@ -41,7 +41,7 @@ public class RequireFeatureEndpointFilterTests
         var filter = new RequireFeatureEndpointFilter("Ecommerce.Products");
 
         // Assert
-        filter.Should().NotBeNull();
+        filter.ShouldNotBeNull();
     }
 
     #endregion
@@ -65,7 +65,7 @@ public class RequireFeatureEndpointFilterTests
         var result = await filter.InvokeAsync(context, next);
 
         // Assert
-        result.Should().Be(expectedResult);
+        result.ShouldBe(expectedResult);
         _featureCheckerMock.Verify(
             x => x.IsEnabledAsync("Ecommerce.Products", It.IsAny<CancellationToken>()),
             Times.Once);
@@ -87,7 +87,7 @@ public class RequireFeatureEndpointFilterTests
         var result = await filter.InvokeAsync(context, next);
 
         // Assert
-        result.Should().Be("CartResult");
+        result.ShouldBe("CartResult");
     }
 
     #endregion
@@ -115,8 +115,8 @@ public class RequireFeatureEndpointFilterTests
         var result = await filter.InvokeAsync(context, next);
 
         // Assert
-        nextCalled.Should().BeFalse("next delegate should not be called when feature is disabled");
-        result.Should().NotBeNull();
+        nextCalled.ShouldBeFalse("next delegate should not be called when feature is disabled");
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -140,7 +140,7 @@ public class RequireFeatureEndpointFilterTests
         await filter.InvokeAsync(context, next);
 
         // Assert
-        nextCallCount.Should().Be(0);
+        nextCallCount.ShouldBe(0);
     }
 
     #endregion

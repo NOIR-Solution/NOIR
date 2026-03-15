@@ -95,12 +95,12 @@ public class GetLegalPageQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Id.Should().Be(tenantPage.Id);
-        result.Value.Title.Should().Be("Tenant Terms");
-        result.Value.Slug.Should().Be("terms-of-service");
-        result.Value.IsInherited.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Id.ShouldBe(tenantPage.Id);
+        result.Value.Title.ShouldBe("Tenant Terms");
+        result.Value.Slug.ShouldBe("terms-of-service");
+        result.Value.IsInherited.ShouldBe(false);
     }
 
     [Fact]
@@ -119,10 +119,10 @@ public class GetLegalPageQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Title.Should().Be("Platform Privacy");
-        result.Value.IsInherited.Should().BeTrue(); // Tenant sees platform page as inherited
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Title.ShouldBe("Platform Privacy");
+        result.Value.IsInherited.ShouldBe(true); // Tenant sees platform page as inherited
     }
 
     [Fact]
@@ -144,8 +144,8 @@ public class GetLegalPageQueryHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsInherited.Should().BeFalse(); // Platform users own platform pages
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsInherited.ShouldBe(false); // Platform users own platform pages
     }
 
     [Fact]
@@ -165,17 +165,17 @@ public class GetLegalPageQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Id.Should().Be(page.Id);
-        dto.Slug.Should().Be("terms-of-service");
-        dto.Title.Should().Be("Terms of Service");
-        dto.HtmlContent.Should().Be("<h1>Terms</h1><p>Please read.</p>");
-        dto.MetaTitle.Should().Be("Meta Title");
-        dto.MetaDescription.Should().Be("Meta Description");
-        dto.AllowIndexing.Should().BeTrue();
-        dto.IsActive.Should().BeTrue();
-        dto.Version.Should().Be(1);
+        dto.Id.ShouldBe(page.Id);
+        dto.Slug.ShouldBe("terms-of-service");
+        dto.Title.ShouldBe("Terms of Service");
+        dto.HtmlContent.ShouldBe("<h1>Terms</h1><p>Please read.</p>");
+        dto.MetaTitle.ShouldBe("Meta Title");
+        dto.MetaDescription.ShouldBe("Meta Description");
+        dto.AllowIndexing.ShouldBe(true);
+        dto.IsActive.ShouldBe(true);
+        dto.Version.ShouldBe(1);
     }
 
     #endregion
@@ -193,9 +193,9 @@ public class GetLegalPageQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be("NOIR-LEGAL-001");
-        result.Error.Type.Should().Be(ErrorType.NotFound);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe("NOIR-LEGAL-001");
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
     }
 
     [Fact]
@@ -210,8 +210,8 @@ public class GetLegalPageQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
     }
 
     #endregion

@@ -92,8 +92,8 @@ public class AssignRolesToUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Roles.Should().BeEquivalentTo(roleNames);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Roles.ShouldBe(roleNames);
     }
 
     [Fact]
@@ -125,7 +125,7 @@ public class AssignRolesToUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _userIdentityServiceMock.Verify(
             x => x.AssignRolesAsync(userId, roleNames, true, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -186,8 +186,8 @@ public class AssignRolesToUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.UserNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.UserNotFound);
         _userIdentityServiceMock.Verify(
             x => x.AssignRolesAsync(It.IsAny<string>(), It.IsAny<IReadOnlyList<string>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -214,8 +214,8 @@ public class AssignRolesToUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.RoleNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.RoleNotFound);
         _userIdentityServiceMock.Verify(
             x => x.AssignRolesAsync(It.IsAny<string>(), It.IsAny<IReadOnlyList<string>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -246,8 +246,8 @@ public class AssignRolesToUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.RoleNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.RoleNotFound);
     }
 
     #endregion
@@ -279,8 +279,8 @@ public class AssignRolesToUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Validation.General);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Validation.General);
     }
 
     #endregion

@@ -86,9 +86,9 @@ public class DeleteProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
-        existingProduct.Variants.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
+        existingProduct.Variants.Count().ShouldBe(1);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -121,8 +121,8 @@ public class DeleteProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Variants.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Variants.ShouldBeEmpty();
     }
 
     [Fact]
@@ -152,8 +152,8 @@ public class DeleteProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Variants.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Variants.ShouldBeEmpty();
     }
 
     [Fact]
@@ -187,7 +187,7 @@ public class DeleteProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     #endregion
@@ -210,11 +210,11 @@ public class DeleteProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-024");
-        result.Error.Message.Should().Contain("Product");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-024");
+        result.Error.Message.ShouldContain("Product");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -242,11 +242,11 @@ public class DeleteProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-025");
-        result.Error.Message.Should().Contain("Variant");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-025");
+        result.Error.Message.ShouldContain("Variant");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -274,9 +274,9 @@ public class DeleteProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-025");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-025");
     }
 
     #endregion
@@ -347,9 +347,9 @@ public class DeleteProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Variants.Should().HaveCount(2);
-        existingProduct.Variants.Should().NotContain(v => v.Id == variantToDelete.Id);
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Variants.Count().ShouldBe(2);
+        existingProduct.Variants.ShouldNotContain(v => v.Id == variantToDelete.Id);
     }
 
     [Fact]
@@ -378,7 +378,7 @@ public class DeleteProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     [Fact]
@@ -410,8 +410,8 @@ public class DeleteProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.TotalStock.Should().Be(20); // Only variant2's stock remains
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.TotalStock.ShouldBe(20); // Only variant2's stock remains
     }
 
     [Fact]
@@ -441,8 +441,8 @@ public class DeleteProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Variants.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Variants.ShouldBeEmpty();
     }
 
     #endregion

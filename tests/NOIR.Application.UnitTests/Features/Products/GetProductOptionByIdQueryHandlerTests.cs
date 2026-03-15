@@ -54,9 +54,9 @@ public class GetProductOptionByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("color");
-        result.Value.DisplayName.Should().Be("Color");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("color");
+        result.Value.DisplayName.ShouldBe("Color");
     }
 
     [Fact]
@@ -79,10 +79,10 @@ public class GetProductOptionByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Values.Should().HaveCount(2);
-        result.Value.Values.Should().Contain(v => v.DisplayValue == "Red");
-        result.Value.Values.Should().Contain(v => v.DisplayValue == "Blue");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Values.Count().ShouldBe(2);
+        result.Value.Values.ShouldContain(v => v.DisplayValue == "Red");
+        result.Value.Values.ShouldContain(v => v.DisplayValue == "Blue");
     }
 
     #endregion
@@ -105,9 +105,9 @@ public class GetProductOptionByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-051");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-051");
     }
 
     [Fact]
@@ -128,9 +128,9 @@ public class GetProductOptionByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-051");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-051");
     }
 
     #endregion
@@ -181,13 +181,13 @@ public class GetProductOptionByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Id.Should().Be(option.Id);
-        dto.Name.Should().Be("size");
-        dto.DisplayName.Should().Be("Size");
-        dto.SortOrder.Should().Be(0); // Auto-calculated by AddOption
-        dto.Values.Should().HaveCount(1);
+        dto.Id.ShouldBe(option.Id);
+        dto.Name.ShouldBe("size");
+        dto.DisplayName.ShouldBe("Size");
+        dto.SortOrder.ShouldBe(0); // Auto-calculated by AddOption
+        dto.Values.Count().ShouldBe(1);
     }
 
     #endregion

@@ -198,11 +198,11 @@ public class DeliverWebhookCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        deliveryLog.Status.Should().Be(WebhookDeliveryStatus.Succeeded);
-        deliveryLog.ResponseStatusCode.Should().Be(200);
-        deliveryLog.ResponseBody.Should().NotBeNullOrEmpty();
-        deliveryLog.DurationMs.Should().NotBeNull();
-        deliveryLog.DurationMs!.Value.Should().BeGreaterThanOrEqualTo(0);
+        deliveryLog.Status.ShouldBe(WebhookDeliveryStatus.Succeeded);
+        deliveryLog.ResponseStatusCode.ShouldBe(200);
+        deliveryLog.ResponseBody.ShouldNotBeNullOrEmpty();
+        deliveryLog.DurationMs.ShouldNotBeNull();
+        deliveryLog.DurationMs!.Value.ShouldBeGreaterThanOrEqualTo(0);
     }
 
     [Fact]
@@ -238,7 +238,7 @@ public class DeliverWebhookCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert — RecordDelivery sets LastDeliveryAt
-        subscription.LastDeliveryAt.Should().NotBeNull();
+        subscription.LastDeliveryAt.ShouldNotBeNull();
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
             Times.Once);
@@ -320,9 +320,9 @@ public class DeliverWebhookCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        capturedRequest.Should().NotBeNull();
+        capturedRequest.ShouldNotBeNull();
         var signatureHeader = capturedRequest!.Headers.GetValues("X-Webhook-Signature-256").Single();
-        signatureHeader.Should().Be($"sha256={expectedSignature}");
+        signatureHeader.ShouldBe($"sha256={expectedSignature}");
     }
 
     [Theory]
@@ -367,9 +367,9 @@ public class DeliverWebhookCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        capturedRequest.Should().NotBeNull();
+        capturedRequest.ShouldNotBeNull();
         var signatureHeader = capturedRequest!.Headers.GetValues("X-Webhook-Signature-256").Single();
-        signatureHeader.Should().Be($"sha256={expected}");
+        signatureHeader.ShouldBe($"sha256={expected}");
     }
 
     private static string ComputeExpectedSignature(string payload, string secret)
@@ -423,22 +423,22 @@ public class DeliverWebhookCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        capturedRequest.Should().NotBeNull();
+        capturedRequest.ShouldNotBeNull();
 
         // X-Webhook-Signature-256 header present with sha256= prefix
-        capturedRequest!.Headers.Contains("X-Webhook-Signature-256").Should().BeTrue();
+        capturedRequest!.Headers.Contains("X-Webhook-Signature-256").ShouldBe(true);
         var signature = capturedRequest.Headers.GetValues("X-Webhook-Signature-256").Single();
-        signature.Should().StartWith("sha256=");
+        signature.ShouldStartWith("sha256=");
 
         // X-Webhook-Event header matches event type
-        capturedRequest.Headers.GetValues("X-Webhook-Event").Single().Should().Be(eventType);
+        capturedRequest.Headers.GetValues("X-Webhook-Event").Single().ShouldBe(eventType);
 
         // X-Webhook-Delivery-Id header matches delivery log ID
         capturedRequest.Headers.GetValues("X-Webhook-Delivery-Id").Single()
-            .Should().Be(command.DeliveryLogId.ToString());
+            .ShouldBe(command.DeliveryLogId.ToString());
 
         // Content-Type is application/json
-        capturedRequest.Content!.Headers.ContentType!.MediaType.Should().Be("application/json");
+        capturedRequest.Content!.Headers.ContentType!.MediaType.ShouldBe("application/json");
     }
 
     #endregion
@@ -471,15 +471,15 @@ public class DeliverWebhookCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        deliveryLog.Status.Should().Be(WebhookDeliveryStatus.Retrying);
-        deliveryLog.ResponseStatusCode.Should().Be((int)statusCode);
-        deliveryLog.ErrorMessage.Should().NotBeNullOrEmpty();
-        deliveryLog.NextRetryAt.Should().NotBeNull();
+        deliveryLog.Status.ShouldBe(WebhookDeliveryStatus.Retrying);
+        deliveryLog.ResponseStatusCode.ShouldBe((int)statusCode);
+        deliveryLog.ErrorMessage.ShouldNotBeNullOrEmpty();
+        deliveryLog.NextRetryAt.ShouldNotBeNull();
 
         // Wolverine ScheduleAsync calls PublishAsync with DeliveryOptions.ScheduledTime
         var retry = GetScheduledRetry();
-        retry.Should().NotBeNull("a retry should have been scheduled");
-        retry!.Value.Command.AttemptNumber.Should().Be(2);
+        retry.ShouldNotBeNull("a retry should have been scheduled");
+        retry!.Value.Command.AttemptNumber.ShouldBe(2);
     }
 
     [Theory]
@@ -507,12 +507,12 @@ public class DeliverWebhookCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        deliveryLog.Status.Should().Be(WebhookDeliveryStatus.Retrying);
-        deliveryLog.ResponseStatusCode.Should().Be((int)statusCode);
+        deliveryLog.Status.ShouldBe(WebhookDeliveryStatus.Retrying);
+        deliveryLog.ResponseStatusCode.ShouldBe((int)statusCode);
 
         var retry = GetScheduledRetry();
-        retry.Should().NotBeNull("a retry should have been scheduled");
-        retry!.Value.Command.AttemptNumber.Should().Be(2);
+        retry.ShouldNotBeNull("a retry should have been scheduled");
+        retry!.Value.Command.AttemptNumber.ShouldBe(2);
     }
 
     [Theory]
@@ -545,10 +545,10 @@ public class DeliverWebhookCommandHandlerTests
 
         // Assert — verify the scheduled time corresponds to the expected delay
         var retry = GetScheduledRetry();
-        retry.Should().NotBeNull("a retry should have been scheduled");
+        retry.ShouldNotBeNull("a retry should have been scheduled");
 
         var expectedTime = beforeHandle.AddSeconds(expectedDelaySeconds);
-        retry!.Value.Options.ScheduledTime!.Value.Should().BeCloseTo(expectedTime, TimeSpan.FromSeconds(5));
+        retry!.Value.Options.ScheduledTime!.Value.ShouldBe(expectedTime, TimeSpan.FromSeconds(5));
     }
 
     #endregion
@@ -576,8 +576,8 @@ public class DeliverWebhookCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        deliveryLog.Status.Should().Be(WebhookDeliveryStatus.Exhausted);
-        deliveryLog.NextRetryAt.Should().BeNull();
+        deliveryLog.Status.ShouldBe(WebhookDeliveryStatus.Exhausted);
+        deliveryLog.NextRetryAt.ShouldBeNull();
 
         // No retry should have been scheduled
         _messageBusMock.Verify(
@@ -606,7 +606,7 @@ public class DeliverWebhookCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        deliveryLog.Status.Should().Be(WebhookDeliveryStatus.Exhausted);
+        deliveryLog.Status.ShouldBe(WebhookDeliveryStatus.Exhausted);
 
         _messageBusMock.Verify(
             x => x.PublishAsync(It.IsAny<object>(), It.IsAny<DeliveryOptions?>()),
@@ -645,14 +645,14 @@ public class DeliverWebhookCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        deliveryLog.Status.Should().Be(WebhookDeliveryStatus.Retrying);
-        deliveryLog.ErrorMessage.Should().Contain("timed out");
-        deliveryLog.ResponseStatusCode.Should().BeNull();
-        deliveryLog.ResponseBody.Should().BeNull();
+        deliveryLog.Status.ShouldBe(WebhookDeliveryStatus.Retrying);
+        deliveryLog.ErrorMessage.ShouldContain("timed out");
+        deliveryLog.ResponseStatusCode.ShouldBeNull();
+        deliveryLog.ResponseBody.ShouldBeNull();
 
         var retry = GetScheduledRetry();
-        retry.Should().NotBeNull("a retry should have been scheduled");
-        retry!.Value.Command.AttemptNumber.Should().Be(2);
+        retry.ShouldNotBeNull("a retry should have been scheduled");
+        retry!.Value.Command.AttemptNumber.ShouldBe(2);
     }
 
     #endregion
@@ -683,14 +683,14 @@ public class DeliverWebhookCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        deliveryLog.Status.Should().Be(WebhookDeliveryStatus.Retrying);
-        deliveryLog.ErrorMessage.Should().Contain("HTTP request failed");
-        deliveryLog.ErrorMessage.Should().Contain("No such host is known.");
-        deliveryLog.ResponseStatusCode.Should().BeNull();
+        deliveryLog.Status.ShouldBe(WebhookDeliveryStatus.Retrying);
+        deliveryLog.ErrorMessage.ShouldContain("HTTP request failed");
+        deliveryLog.ErrorMessage.ShouldContain("No such host is known.");
+        deliveryLog.ResponseStatusCode.ShouldBeNull();
 
         var retry = GetScheduledRetry();
-        retry.Should().NotBeNull("a retry should have been scheduled");
-        retry!.Value.Command.AttemptNumber.Should().Be(2);
+        retry.ShouldNotBeNull("a retry should have been scheduled");
+        retry!.Value.Command.AttemptNumber.ShouldBe(2);
     }
 
     #endregion
@@ -739,9 +739,9 @@ public class DeliverWebhookCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        capturedRequest.Should().NotBeNull();
-        capturedRequest!.Headers.GetValues("X-Custom-Token").Single().Should().Be("abc-123");
-        capturedRequest.Headers.GetValues("X-Correlation-Id").Single().Should().Be("corr-456");
+        capturedRequest.ShouldNotBeNull();
+        capturedRequest!.Headers.GetValues("X-Custom-Token").Single().ShouldBe("abc-123");
+        capturedRequest.Headers.GetValues("X-Correlation-Id").Single().ShouldBe("corr-456");
     }
 
     [Theory]
@@ -796,8 +796,8 @@ public class DeliverWebhookCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert — safe header is present
-        capturedRequest.Should().NotBeNull();
-        capturedRequest!.Headers.GetValues("X-Safe-Header").Single().Should().Be("safe-value");
+        capturedRequest.ShouldNotBeNull();
+        capturedRequest!.Headers.GetValues("X-Safe-Header").Single().ShouldBe("safe-value");
 
         // The blocked header should not have the malicious value.
         // For standard webhook headers (X-Webhook-*), they will have the legitimate value from the handler.
@@ -807,7 +807,7 @@ public class DeliverWebhookCommandHandlerTests
         {
             // These are set by the handler itself, so they will not have the "malicious-value"
             var headerValues = capturedRequest.Headers.GetValues(blockedHeaderName).ToList();
-            headerValues.Should().NotContain("malicious-value");
+            headerValues.ShouldNotContain("malicious-value");
         }
     }
 
@@ -839,7 +839,7 @@ public class DeliverWebhookCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert — delivery still succeeds
-        deliveryLog.Status.Should().Be(WebhookDeliveryStatus.Succeeded);
+        deliveryLog.Status.ShouldBe(WebhookDeliveryStatus.Succeeded);
     }
 
     [Fact]
@@ -868,7 +868,7 @@ public class DeliverWebhookCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        deliveryLog.Status.Should().Be(WebhookDeliveryStatus.Succeeded);
+        deliveryLog.Status.ShouldBe(WebhookDeliveryStatus.Succeeded);
     }
 
     #endregion

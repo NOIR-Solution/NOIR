@@ -59,9 +59,9 @@ public class GetRolePermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(3);
-        result.Value.Should().BeEquivalentTo(permissions);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(3);
+        result.Value.ShouldBe(permissions);
     }
 
     [Fact]
@@ -85,8 +85,8 @@ public class GetRolePermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().ContainSingle().Which.Should().Be("users.read");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldHaveSingleItem().ShouldBe("users.read");
     }
 
     [Fact]
@@ -119,9 +119,9 @@ public class GetRolePermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(7);
-        result.Value.Should().BeEquivalentTo(permissions);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(7);
+        result.Value.ShouldBe(permissions);
     }
 
     #endregion
@@ -148,9 +148,9 @@ public class GetRolePermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.ShouldBeEmpty();
     }
 
     #endregion
@@ -173,8 +173,8 @@ public class GetRolePermissionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.RoleNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.RoleNotFound);
         _roleIdentityServiceMock.Verify(
             x => x.GetPermissionsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -255,7 +255,7 @@ public class GetRolePermissionsQueryHandlerTests
         await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        callOrder.Should().ContainInOrder("FindByIdAsync", "GetPermissionsAsync");
+        callOrder.ShouldBe(new[] { "FindByIdAsync", "GetPermissionsAsync" });
     }
 
     [Fact]
@@ -291,8 +291,8 @@ public class GetRolePermissionsQueryHandlerTests
         var result2 = await _handler.Handle(query2, CancellationToken.None);
 
         // Assert
-        result1.Value.Should().ContainSingle().Which.Should().Be("admin.full");
-        result2.Value.Should().ContainSingle().Which.Should().Be("users.read");
+        result1.Value.ShouldHaveSingleItem().ShouldBe("admin.full");
+        result2.Value.ShouldHaveSingleItem().ShouldBe("users.read");
     }
 
     #endregion

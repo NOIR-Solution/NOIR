@@ -81,8 +81,8 @@ public class GetNotificationsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.Unauthorized);
     }
 
     #endregion
@@ -108,10 +108,10 @@ public class GetNotificationsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
-        result.Value.TotalPages.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
+        result.Value.TotalPages.ShouldBe(0);
     }
 
     [Fact]
@@ -134,11 +134,11 @@ public class GetNotificationsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.TotalCount.Should().Be(5);
-        result.Value.Page.Should().Be(1);
-        result.Value.PageSize.Should().Be(10);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.TotalCount.ShouldBe(5);
+        result.Value.Page.ShouldBe(1);
+        result.Value.PageSize.ShouldBe(10);
     }
 
     [Fact]
@@ -161,8 +161,8 @@ public class GetNotificationsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TotalPages.Should().Be(4); // Ceiling(10/3) = 4
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TotalPages.ShouldBe(4); // Ceiling(10/3) = 4
     }
 
     [Fact]
@@ -194,16 +194,16 @@ public class GetNotificationsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value.Items.First();
-        dto.Id.Should().Be(notification.Id);
-        dto.Type.Should().Be(NotificationType.Success);
-        dto.Category.Should().Be(NotificationCategory.Security);
-        dto.Title.Should().Be("Security Alert");
-        dto.Message.Should().Be("Your password was changed");
-        dto.IconClass.Should().Be("fa-shield");
-        dto.ActionUrl.Should().Be("/security/settings");
-        dto.IsRead.Should().BeFalse();
+        dto.Id.ShouldBe(notification.Id);
+        dto.Type.ShouldBe(NotificationType.Success);
+        dto.Category.ShouldBe(NotificationCategory.Security);
+        dto.Title.ShouldBe("Security Alert");
+        dto.Message.ShouldBe("Your password was changed");
+        dto.IconClass.ShouldBe("fa-shield");
+        dto.ActionUrl.ShouldBe("/security/settings");
+        dto.IsRead.ShouldBe(false);
     }
 
     [Fact]
@@ -234,10 +234,10 @@ public class GetNotificationsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value.Items.First();
-        dto.IsRead.Should().BeTrue();
-        dto.ReadAt.Should().NotBeNull();
+        dto.IsRead.ShouldBe(true);
+        dto.ReadAt.ShouldNotBeNull();
     }
 
     #endregion
@@ -263,7 +263,7 @@ public class GetNotificationsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Verify both list and count specs are called (filter is applied via spec)
         _repositoryMock.Verify(
             x => x.ListAsync(It.IsAny<ISpecification<Notification>>(), It.IsAny<CancellationToken>()),

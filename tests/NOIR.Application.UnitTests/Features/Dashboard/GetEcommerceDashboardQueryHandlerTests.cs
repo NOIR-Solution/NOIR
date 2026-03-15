@@ -70,8 +70,8 @@ public class GetEcommerceDashboardQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(expected);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(expected);
     }
 
     [Fact]
@@ -92,9 +92,9 @@ public class GetEcommerceDashboardQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Revenue.TotalRevenue.Should().Be(100_000m);
-        result.Value.Revenue.TotalOrders.Should().Be(50);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Revenue.TotalRevenue.ShouldBe(100_000m);
+        result.Value.Revenue.TotalOrders.ShouldBe(50);
     }
 
     #endregion

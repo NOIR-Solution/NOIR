@@ -92,8 +92,8 @@ public class DeletePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
 
         _postRepositoryMock.Verify(
             x => x.Remove(post),
@@ -123,8 +123,8 @@ public class DeletePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        post.TagAssignments.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        post.TagAssignments.ShouldBeEmpty();
     }
 
     [Fact]
@@ -167,9 +167,9 @@ public class DeletePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        tag1.PostCount.Should().Be(0); // Decremented from 1 to 0
-        tag2.PostCount.Should().Be(1); // Decremented from 2 to 1
+        result.IsSuccess.ShouldBe(true);
+        tag1.PostCount.ShouldBe(0); // Decremented from 1 to 0
+        tag2.PostCount.ShouldBe(1); // Decremented from 2 to 1
     }
 
     [Fact]
@@ -192,7 +192,7 @@ public class DeletePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // No tags to query since post has no tag assignments
         _tagRepositoryMock.Verify(
             x => x.ListAsync(It.IsAny<ISpecification<PostTag>>(), It.IsAny<CancellationToken>()),
@@ -229,8 +229,8 @@ public class DeletePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        post.TagAssignments.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        post.TagAssignments.ShouldBeEmpty();
     }
 
     #endregion
@@ -252,10 +252,10 @@ public class DeletePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-BLOG-003");
-        result.Error.Message.Should().Contain(postId.ToString());
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-BLOG-003");
+        result.Error.Message.ShouldContain(postId.ToString());
 
         _postRepositoryMock.Verify(
             x => x.Remove(It.IsAny<Post>()),
@@ -367,10 +367,10 @@ public class DeletePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        tags[0].PostCount.Should().Be(0); // Was 1, now 0
-        tags[1].PostCount.Should().Be(1); // Was 2, now 1
-        tags[2].PostCount.Should().Be(2); // Was 3, now 2
+        result.IsSuccess.ShouldBe(true);
+        tags[0].PostCount.ShouldBe(0); // Was 1, now 0
+        tags[1].PostCount.ShouldBe(1); // Was 2, now 1
+        tags[2].PostCount.ShouldBe(2); // Was 3, now 2
     }
 
     [Fact]
@@ -399,8 +399,8 @@ public class DeletePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        removedPost.Should().Be(post);
+        result.IsSuccess.ShouldBe(true);
+        removedPost.ShouldBe(post);
         // Note: The actual soft delete is handled by the interceptor,
         // this test just verifies Remove is called on the correct entity
     }

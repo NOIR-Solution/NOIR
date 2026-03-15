@@ -15,12 +15,12 @@ public class ApplicationUserTests
         var user = new ApplicationUser();
 
         // Assert
-        user.IsActive.Should().BeTrue();
-        user.IsDeleted.Should().BeFalse();
-        user.FirstName.Should().BeNull();
-        user.LastName.Should().BeNull();
-        user.RefreshToken.Should().BeNull();
-        user.RefreshTokenExpiryTime.Should().BeNull();
+        user.IsActive.ShouldBe(true);
+        user.IsDeleted.ShouldBe(false);
+        user.FirstName.ShouldBeNull();
+        user.LastName.ShouldBeNull();
+        user.RefreshToken.ShouldBeNull();
+        user.RefreshTokenExpiryTime.ShouldBeNull();
     }
 
     [Fact]
@@ -30,11 +30,11 @@ public class ApplicationUserTests
         var user = new ApplicationUser();
 
         // Assert
-        user.CreatedBy.Should().BeNull();
-        user.ModifiedAt.Should().BeNull();
-        user.ModifiedBy.Should().BeNull();
-        user.DeletedAt.Should().BeNull();
-        user.DeletedBy.Should().BeNull();
+        user.CreatedBy.ShouldBeNull();
+        user.ModifiedAt.ShouldBeNull();
+        user.ModifiedBy.ShouldBeNull();
+        user.DeletedAt.ShouldBeNull();
+        user.DeletedBy.ShouldBeNull();
     }
 
     #endregion
@@ -51,7 +51,7 @@ public class ApplicationUserTests
         user.FirstName = "John";
 
         // Assert
-        user.FirstName.Should().Be("John");
+        user.FirstName.ShouldBe("John");
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class ApplicationUserTests
         user.LastName = "Doe";
 
         // Assert
-        user.LastName.Should().Be("Doe");
+        user.LastName.ShouldBe("Doe");
     }
 
     [Theory]
@@ -80,7 +80,7 @@ public class ApplicationUserTests
         user.FirstName = firstName;
 
         // Assert
-        user.FirstName.Should().Be(firstName);
+        user.FirstName.ShouldBe(firstName);
     }
 
     #endregion
@@ -101,7 +101,7 @@ public class ApplicationUserTests
         var fullName = user.FullName;
 
         // Assert
-        fullName.Should().Be("John Doe");
+        fullName.ShouldBe("John Doe");
     }
 
     [Fact]
@@ -118,7 +118,7 @@ public class ApplicationUserTests
         var fullName = user.FullName;
 
         // Assert
-        fullName.Should().Be("John");
+        fullName.ShouldBe("John");
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class ApplicationUserTests
         var fullName = user.FullName;
 
         // Assert
-        fullName.Should().Be("Doe");
+        fullName.ShouldBe("Doe");
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public class ApplicationUserTests
         var fullName = user.FullName;
 
         // Assert
-        fullName.Should().BeEmpty();
+        fullName.ShouldBeEmpty();
     }
 
     [Fact]
@@ -169,7 +169,7 @@ public class ApplicationUserTests
         var fullName = user.FullName;
 
         // Assert - Trim is applied to the result, not individual names
-        fullName.Should().Be("John     Doe");
+        fullName.ShouldBe("John     Doe");
     }
 
     #endregion
@@ -187,7 +187,7 @@ public class ApplicationUserTests
         user.RefreshToken = token;
 
         // Assert
-        user.RefreshToken.Should().Be(token);
+        user.RefreshToken.ShouldBe(token);
     }
 
     [Fact]
@@ -201,7 +201,7 @@ public class ApplicationUserTests
         user.RefreshTokenExpiryTime = expiry;
 
         // Assert
-        user.RefreshTokenExpiryTime.Should().Be(expiry);
+        user.RefreshTokenExpiryTime.ShouldBe(expiry);
     }
 
     #endregion
@@ -215,7 +215,7 @@ public class ApplicationUserTests
         var user = new ApplicationUser();
 
         // Assert
-        user.IsActive.Should().BeTrue();
+        user.IsActive.ShouldBe(true);
     }
 
     [Fact]
@@ -228,7 +228,7 @@ public class ApplicationUserTests
         user.IsActive = false;
 
         // Assert
-        user.IsActive.Should().BeFalse();
+        user.IsActive.ShouldBe(false);
     }
 
     #endregion
@@ -242,7 +242,7 @@ public class ApplicationUserTests
         var user = new ApplicationUser();
 
         // Assert - Each user belongs to exactly one tenant
-        user.TenantId.Should().BeNull();
+        user.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -256,7 +256,7 @@ public class ApplicationUserTests
         user.TenantId = tenantId;
 
         // Assert
-        user.TenantId.Should().Be(tenantId);
+        user.TenantId.ShouldBe(tenantId);
     }
 
     #endregion
@@ -274,7 +274,7 @@ public class ApplicationUserTests
         user.CreatedAt = createdAt;
 
         // Assert
-        user.CreatedAt.Should().Be(createdAt);
+        user.CreatedAt.ShouldBe(createdAt);
     }
 
     [Fact]
@@ -287,7 +287,7 @@ public class ApplicationUserTests
         user.CreatedBy = "admin";
 
         // Assert
-        user.CreatedBy.Should().Be("admin");
+        user.CreatedBy.ShouldBe("admin");
     }
 
     [Fact]
@@ -301,7 +301,7 @@ public class ApplicationUserTests
         user.ModifiedAt = modifiedAt;
 
         // Assert
-        user.ModifiedAt.Should().Be(modifiedAt);
+        user.ModifiedAt.ShouldBe(modifiedAt);
     }
 
     [Fact]
@@ -314,7 +314,7 @@ public class ApplicationUserTests
         user.ModifiedBy = "editor";
 
         // Assert
-        user.ModifiedBy.Should().Be("editor");
+        user.ModifiedBy.ShouldBe("editor");
     }
 
     #endregion
@@ -328,7 +328,7 @@ public class ApplicationUserTests
         var user = new ApplicationUser();
 
         // Assert
-        user.IsDeleted.Should().BeFalse();
+        user.IsDeleted.ShouldBe(false);
     }
 
     [Fact]
@@ -341,7 +341,7 @@ public class ApplicationUserTests
         user.IsDeleted = true;
 
         // Assert
-        user.IsDeleted.Should().BeTrue();
+        user.IsDeleted.ShouldBe(true);
     }
 
     [Fact]
@@ -355,7 +355,7 @@ public class ApplicationUserTests
         user.DeletedAt = deletedAt;
 
         // Assert
-        user.DeletedAt.Should().Be(deletedAt);
+        user.DeletedAt.ShouldBe(deletedAt);
     }
 
     [Fact]
@@ -368,7 +368,7 @@ public class ApplicationUserTests
         user.DeletedBy = "admin";
 
         // Assert
-        user.DeletedBy.Should().Be("admin");
+        user.DeletedBy.ShouldBe("admin");
     }
 
     #endregion
@@ -382,7 +382,7 @@ public class ApplicationUserTests
         var user = new ApplicationUser();
 
         // Assert
-        user.Should().BeAssignableTo<IAuditableEntity>();
+        user.ShouldBeAssignableTo<IAuditableEntity>();
     }
 
     #endregion
@@ -399,7 +399,7 @@ public class ApplicationUserTests
         user.Email = "test@example.com";
 
         // Assert
-        user.Email.Should().Be("test@example.com");
+        user.Email.ShouldBe("test@example.com");
     }
 
     [Fact]
@@ -412,7 +412,7 @@ public class ApplicationUserTests
         user.UserName = "testuser";
 
         // Assert
-        user.UserName.Should().Be("testuser");
+        user.UserName.ShouldBe("testuser");
     }
 
     #endregion

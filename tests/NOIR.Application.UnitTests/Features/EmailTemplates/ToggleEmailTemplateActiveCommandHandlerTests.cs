@@ -136,9 +136,9 @@ public class ToggleEmailTemplateActiveCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeTrue();
-        result.Value.Id.Should().Be(template.Id);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(true);
+        result.Value.Id.ShouldBe(template.Id);
 
         // Verify no new template was created
         _repositoryMock.Verify(x => x.AddAsync(It.IsAny<EmailTemplate>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -165,8 +165,8 @@ public class ToggleEmailTemplateActiveCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(false);
     }
 
     #endregion
@@ -195,10 +195,10 @@ public class ToggleEmailTemplateActiveCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeFalse();
-        result.Value.IsInherited.Should().BeFalse(); // Now tenant-owned
-        result.Value.Id.Should().NotBe(platformTemplate.Id); // New ID for copy
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(false);
+        result.Value.IsInherited.ShouldBe(false); // Now tenant-owned
+        result.Value.Id.ShouldNotBe(platformTemplate.Id); // New ID for copy
 
         // Verify Copy-on-Write: a new template was created
         _repositoryMock.Verify(
@@ -232,8 +232,8 @@ public class ToggleEmailTemplateActiveCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(tenantCopy.Id); // Should use existing tenant copy
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(tenantCopy.Id); // Should use existing tenant copy
 
         // Verify no new template was created
         _repositoryMock.Verify(x => x.AddAsync(It.IsAny<EmailTemplate>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -266,9 +266,9 @@ public class ToggleEmailTemplateActiveCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(platformTemplate.Id); // Same ID, updated in place
-        result.Value.IsActive.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(platformTemplate.Id); // Same ID, updated in place
+        result.Value.IsActive.ShouldBe(false);
 
         // Verify no copy was created
         _repositoryMock.Verify(x => x.AddAsync(It.IsAny<EmailTemplate>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -291,8 +291,8 @@ public class ToggleEmailTemplateActiveCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-EMAIL-001");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-EMAIL-001");
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -321,8 +321,8 @@ public class ToggleEmailTemplateActiveCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(true);
     }
 
     [Fact]
@@ -399,8 +399,8 @@ public class ToggleEmailTemplateActiveCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsInherited.Should().BeFalse(); // Tenant template is not inherited
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsInherited.ShouldBe(false); // Tenant template is not inherited
     }
 
     #endregion

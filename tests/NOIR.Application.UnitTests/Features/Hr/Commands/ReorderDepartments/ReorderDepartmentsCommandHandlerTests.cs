@@ -50,10 +50,10 @@ public class ReorderDepartmentsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
-        dept1.SortOrder.Should().Be(1);
-        dept2.SortOrder.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
+        dept1.SortOrder.ShouldBe(1);
+        dept2.SortOrder.ShouldBe(0);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -75,7 +75,7 @@ public class ReorderDepartmentsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

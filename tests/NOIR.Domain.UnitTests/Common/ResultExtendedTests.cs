@@ -19,11 +19,11 @@ public class ResultExtendedTests
         var result = Result.ValidationFailure(errors);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Validation.General);
-        result.Error.Message.Should().Contain("Email is required");
-        result.Error.Message.Should().Contain("Password is too short");
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Validation.General);
+        result.Error.Message.ShouldContain("Email is required");
+        result.Error.Message.ShouldContain("Password is too short");
     }
 
     [Fact]
@@ -36,8 +36,8 @@ public class ResultExtendedTests
         var result = Result.ValidationFailure(errors);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Type.ShouldBe(ErrorType.Validation);
     }
 
     [Fact]
@@ -53,9 +53,11 @@ public class ResultExtendedTests
             .Invoke([true, Error.NotFound("test", "1")]);
 
         // Assert
-        act.Should().Throw<System.Reflection.TargetInvocationException>()
-            .WithInnerException<InvalidOperationException>()
-            .WithMessage("Success result cannot have an error.");
+        var __ex = Should.Throw<System.Reflection.TargetInvocationException>(act);
+
+        __ex.InnerException.ShouldBeOfType<InvalidOperationException>();
+
+        __ex.InnerException!.Message.ShouldContain("Success result cannot have an error.");
     }
 
     [Fact]
@@ -71,9 +73,11 @@ public class ResultExtendedTests
             .Invoke([false, Error.None]);
 
         // Assert
-        act.Should().Throw<System.Reflection.TargetInvocationException>()
-            .WithInnerException<InvalidOperationException>()
-            .WithMessage("Failure result must have an error.");
+        var __ex = Should.Throw<System.Reflection.TargetInvocationException>(act);
+
+        __ex.InnerException.ShouldBeOfType<InvalidOperationException>();
+
+        __ex.InnerException!.Message.ShouldContain("Failure result must have an error.");
     }
 }
 
@@ -89,9 +93,9 @@ public class ErrorExtendedTests
         var error = Error.NotFound("Custom not found message");
 
         // Assert
-        error.Code.Should().Be(ErrorCodes.Business.NotFound);
-        error.Message.Should().Be("Custom not found message");
-        error.Type.Should().Be(ErrorType.NotFound);
+        error.Code.ShouldBe(ErrorCodes.Business.NotFound);
+        error.Message.ShouldBe("Custom not found message");
+        error.Type.ShouldBe(ErrorType.NotFound);
     }
 
     [Fact]
@@ -101,9 +105,9 @@ public class ErrorExtendedTests
         var error = Error.Unauthorized();
 
         // Assert
-        error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
-        error.Message.Should().Be("Unauthorized access.");
-        error.Type.Should().Be(ErrorType.Unauthorized);
+        error.Code.ShouldBe(ErrorCodes.Auth.Unauthorized);
+        error.Message.ShouldBe("Unauthorized access.");
+        error.Type.ShouldBe(ErrorType.Unauthorized);
     }
 
     [Fact]
@@ -113,9 +117,9 @@ public class ErrorExtendedTests
         var error = Error.Forbidden();
 
         // Assert
-        error.Code.Should().Be(ErrorCodes.Auth.Forbidden);
-        error.Message.Should().Be("Access forbidden.");
-        error.Type.Should().Be(ErrorType.Forbidden);
+        error.Code.ShouldBe(ErrorCodes.Auth.Forbidden);
+        error.Message.ShouldBe("Access forbidden.");
+        error.Type.ShouldBe(ErrorType.Forbidden);
     }
 
     [Fact]
@@ -132,11 +136,11 @@ public class ErrorExtendedTests
         var error = Error.ValidationErrors(errors);
 
         // Assert
-        error.Code.Should().Be(ErrorCodes.Validation.General);
-        error.Type.Should().Be(ErrorType.Validation);
-        error.Message.Should().Contain("Email is required");
-        error.Message.Should().Contain("Email is invalid");
-        error.Message.Should().Contain("Name is required");
+        error.Code.ShouldBe(ErrorCodes.Validation.General);
+        error.Type.ShouldBe(ErrorType.Validation);
+        error.Message.ShouldContain("Email is required");
+        error.Message.ShouldContain("Email is invalid");
+        error.Message.ShouldContain("Name is required");
     }
 
     [Fact]
@@ -149,9 +153,9 @@ public class ErrorExtendedTests
         var error = Error.ValidationErrors(errors);
 
         // Assert
-        error.Code.Should().Be(ErrorCodes.Validation.General);
-        error.Type.Should().Be(ErrorType.Validation);
-        error.Message.Should().Be("Error 1; Error 2; Error 3");
+        error.Code.ShouldBe(ErrorCodes.Validation.General);
+        error.Type.ShouldBe(ErrorType.Validation);
+        error.Message.ShouldBe("Error 1; Error 2; Error 3");
     }
 
     [Fact]
@@ -161,24 +165,24 @@ public class ErrorExtendedTests
         var error = Error.Failure("Custom.Code", "Something went wrong");
 
         // Assert
-        error.Code.Should().Be("Custom.Code");
-        error.Message.Should().Be("Something went wrong");
-        error.Type.Should().Be(ErrorType.Failure);
+        error.Code.ShouldBe("Custom.Code");
+        error.Message.ShouldBe("Something went wrong");
+        error.Type.ShouldBe(ErrorType.Failure);
     }
 
     [Fact]
     public void None_ShouldHaveEmptyCodeAndMessage()
     {
         // Assert
-        Error.None.Code.Should().BeEmpty();
-        Error.None.Message.Should().BeEmpty();
+        Error.None.Code.ShouldBeEmpty();
+        Error.None.Message.ShouldBeEmpty();
     }
 
     [Fact]
     public void NullValue_ShouldHaveCorrectCodeAndMessage()
     {
         // Assert
-        Error.NullValue.Code.Should().Be(ErrorCodes.Validation.Required);
-        Error.NullValue.Message.Should().Be("The specified result value is null.");
+        Error.NullValue.Code.ShouldBe(ErrorCodes.Validation.Required);
+        Error.NullValue.Message.ShouldBe("The specified result value is null.");
     }
 }

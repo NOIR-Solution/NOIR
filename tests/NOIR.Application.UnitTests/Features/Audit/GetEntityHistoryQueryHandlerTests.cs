@@ -75,9 +75,9 @@ public class GetEntityHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(3);
-        result.Value.TotalCount.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(3);
+        result.Value.TotalCount.ShouldBe(3);
     }
 
     [Fact]
@@ -106,14 +106,14 @@ public class GetEntityHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var historyEntry = result.Value.Items[0];
-        historyEntry.Operation.Should().Be("Update");
-        historyEntry.Version.Should().Be(5);
-        historyEntry.UserId.Should().Be(userId);
-        historyEntry.UserEmail.Should().Be("admin@noir.local");
-        historyEntry.HandlerName.Should().Be("UpdateUserCommandHandler");
-        historyEntry.Changes.Should().HaveCount(1);
+        historyEntry.Operation.ShouldBe("Update");
+        historyEntry.Version.ShouldBe(5);
+        historyEntry.UserId.ShouldBe(userId);
+        historyEntry.UserEmail.ShouldBe("admin@noir.local");
+        historyEntry.HandlerName.ShouldBe("UpdateUserCommandHandler");
+        historyEntry.Changes.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -149,9 +149,9 @@ public class GetEntityHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.Items.Select(e => e.Version).Should().BeInAscendingOrder();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.Items.Select(e => e.Version).ShouldBeInOrder(SortDirection.Ascending);
     }
 
     #endregion
@@ -182,9 +182,9 @@ public class GetEntityHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
     }
 
     #endregion
@@ -220,7 +220,7 @@ public class GetEntityHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _auditLogQueryServiceMock.Verify(
             x => x.GetEntityHistoryAsync(
                 "User",
@@ -263,7 +263,7 @@ public class GetEntityHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _auditLogQueryServiceMock.Verify(
             x => x.GetEntityHistoryAsync(
                 "Tenant",
@@ -307,7 +307,7 @@ public class GetEntityHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _auditLogQueryServiceMock.Verify(
             x => x.GetEntityHistoryAsync(
                 "Role",
@@ -354,7 +354,7 @@ public class GetEntityHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _auditLogQueryServiceMock.Verify(
             x => x.GetEntityHistoryAsync(
                 "User",
@@ -401,13 +401,13 @@ public class GetEntityHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PageNumber.Should().Be(2);
-        result.Value.PageSize.Should().Be(10);
-        result.Value.TotalCount.Should().Be(25);
-        result.Value.TotalPages.Should().Be(3);
-        result.Value.HasPreviousPage.Should().BeTrue();
-        result.Value.HasNextPage.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PageNumber.ShouldBe(2);
+        result.Value.PageSize.ShouldBe(10);
+        result.Value.TotalCount.ShouldBe(25);
+        result.Value.TotalPages.ShouldBe(3);
+        result.Value.HasPreviousPage.ShouldBe(true);
+        result.Value.HasNextPage.ShouldBe(true);
     }
 
     [Fact]
@@ -438,9 +438,9 @@ public class GetEntityHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.HasPreviousPage.Should().BeFalse();
-        result.Value.HasNextPage.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.HasPreviousPage.ShouldBe(false);
+        result.Value.HasNextPage.ShouldBe(true);
     }
 
     [Fact]
@@ -471,9 +471,9 @@ public class GetEntityHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.HasPreviousPage.Should().BeTrue();
-        result.Value.HasNextPage.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.HasPreviousPage.ShouldBe(true);
+        result.Value.HasNextPage.ShouldBe(false);
     }
 
     [Fact]
@@ -503,10 +503,10 @@ public class GetEntityHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.PageSize.Should().Be(5);
-        result.Value.TotalPages.Should().Be(10);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.PageSize.ShouldBe(5);
+        result.Value.TotalPages.ShouldBe(10);
     }
 
     #endregion
@@ -620,7 +620,7 @@ public class GetEntityHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _auditLogQueryServiceMock.Verify(
             x => x.GetEntityHistoryAsync(
                 "Tenant",

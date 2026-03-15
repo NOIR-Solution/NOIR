@@ -100,10 +100,10 @@ public class GetCategoryAttributeFormSchemaQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategoryId.Should().Be(categoryId);
-        result.Value.CategoryName.Should().Be("Electronics");
-        result.Value.Fields.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategoryId.ShouldBe(categoryId);
+        result.Value.CategoryName.ShouldBe("Electronics");
+        result.Value.Fields.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -140,8 +140,8 @@ public class GetCategoryAttributeFormSchemaQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Fields.Should().HaveCount(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Fields.Count().ShouldBe(3);
         // Fields should be ordered by sortOrder
     }
 
@@ -177,9 +177,9 @@ public class GetCategoryAttributeFormSchemaQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Fields.Should().HaveCount(1);
-        result.Value.Fields.First().IsRequired.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Fields.Count().ShouldBe(1);
+        result.Value.Fields.First().IsRequired.ShouldBe(true);
     }
 
     [Fact]
@@ -202,8 +202,8 @@ public class GetCategoryAttributeFormSchemaQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Fields.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Fields.ShouldBeEmpty();
     }
 
     #endregion
@@ -226,8 +226,8 @@ public class GetCategoryAttributeFormSchemaQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Product.CategoryNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Product.CategoryNotFound);
     }
 
     #endregion
@@ -288,9 +288,9 @@ public class GetCategoryAttributeFormSchemaQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Fields.First().CurrentValue.Should().BeNull();
-        result.Value.Fields.First().CurrentDisplayValue.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Fields.First().CurrentValue.ShouldBeNull();
+        result.Value.Fields.First().CurrentDisplayValue.ShouldBeNull();
     }
 
     #endregion

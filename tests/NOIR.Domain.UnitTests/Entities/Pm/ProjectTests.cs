@@ -32,23 +32,23 @@ public class ProjectTests
             visibility: ProjectVisibility.Internal);
 
         // Assert
-        project.Should().NotBeNull();
-        project.Id.Should().NotBe(Guid.Empty);
-        project.ProjectCode.Should().Be("PRJ-20260301-000002");
-        project.Name.Should().Be("Enterprise App");
-        project.Slug.Should().Be("enterprise-app");
-        project.Description.Should().Be("Main app");
-        project.Status.Should().Be(ProjectStatus.Active);
-        project.StartDate.Should().NotBeNull();
-        project.EndDate.Should().NotBeNull();
-        project.DueDate.Should().NotBeNull();
-        project.OwnerId.Should().Be(ownerId);
-        project.Budget.Should().Be(100000m);
-        project.Currency.Should().Be("USD");
-        project.Color.Should().Be("#FF0000");
-        project.Icon.Should().Be("rocket");
-        project.Visibility.Should().Be(ProjectVisibility.Internal);
-        project.TenantId.Should().Be(TestTenantId);
+        project.ShouldNotBeNull();
+        project.Id.ShouldNotBe(Guid.Empty);
+        project.ProjectCode.ShouldBe("PRJ-20260301-000002");
+        project.Name.ShouldBe("Enterprise App");
+        project.Slug.ShouldBe("enterprise-app");
+        project.Description.ShouldBe("Main app");
+        project.Status.ShouldBe(ProjectStatus.Active);
+        project.StartDate.ShouldNotBeNull();
+        project.EndDate.ShouldNotBeNull();
+        project.DueDate.ShouldNotBeNull();
+        project.OwnerId.ShouldBe(ownerId);
+        project.Budget.ShouldBe(100000m);
+        project.Currency.ShouldBe("USD");
+        project.Color.ShouldBe("#FF0000");
+        project.Icon.ShouldBe("rocket");
+        project.Visibility.ShouldBe(ProjectVisibility.Internal);
+        project.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -58,17 +58,17 @@ public class ProjectTests
         var project = Project.Create("Simple Project", "simple-project", "PRJ-20260301-000003", TestTenantId);
 
         // Assert
-        project.Status.Should().Be(ProjectStatus.Active);
-        project.Description.Should().BeNull();
-        project.StartDate.Should().BeNull();
-        project.EndDate.Should().BeNull();
-        project.DueDate.Should().BeNull();
-        project.OwnerId.Should().BeNull();
-        project.Budget.Should().BeNull();
-        project.Currency.Should().Be("VND");
-        project.Color.Should().BeNull();
-        project.Icon.Should().BeNull();
-        project.Visibility.Should().Be(ProjectVisibility.Private);
+        project.Status.ShouldBe(ProjectStatus.Active);
+        project.Description.ShouldBeNull();
+        project.StartDate.ShouldBeNull();
+        project.EndDate.ShouldBeNull();
+        project.DueDate.ShouldBeNull();
+        project.OwnerId.ShouldBeNull();
+        project.Budget.ShouldBeNull();
+        project.Currency.ShouldBe("VND");
+        project.Color.ShouldBeNull();
+        project.Icon.ShouldBeNull();
+        project.Visibility.ShouldBe(ProjectVisibility.Private);
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class ProjectTests
     {
         // Act & Assert
         var act = () => Project.Create("", "slug", "PRJ-20260301-000004", TestTenantId);
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public class ProjectTests
     {
         // Act & Assert
         var act = () => Project.Create("Name", "", "PRJ-20260301-000005", TestTenantId);
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -94,8 +94,8 @@ public class ProjectTests
         var project = Project.Create("  Padded Name  ", "  padded-slug  ", "PRJ-20260301-000006", TestTenantId);
 
         // Assert
-        project.Name.Should().Be("Padded Name");
-        project.Slug.Should().Be("padded-slug");
+        project.Name.ShouldBe("Padded Name");
+        project.Slug.ShouldBe("padded-slug");
     }
 
     #endregion
@@ -118,15 +118,15 @@ public class ProjectTests
             ProjectVisibility.Public);
 
         // Assert
-        project.Name.Should().Be("Updated Name");
-        project.Slug.Should().Be("updated-slug");
-        project.Description.Should().Be("New description");
-        project.OwnerId.Should().Be(newOwnerId);
-        project.Budget.Should().Be(50000m);
-        project.Currency.Should().Be("EUR");
-        project.Color.Should().Be("#00FF00");
-        project.Icon.Should().Be("star");
-        project.Visibility.Should().Be(ProjectVisibility.Public);
+        project.Name.ShouldBe("Updated Name");
+        project.Slug.ShouldBe("updated-slug");
+        project.Description.ShouldBe("New description");
+        project.OwnerId.ShouldBe(newOwnerId);
+        project.Budget.ShouldBe(50000m);
+        project.Currency.ShouldBe("EUR");
+        project.Color.ShouldBe("#00FF00");
+        project.Icon.ShouldBe("star");
+        project.Visibility.ShouldBe(ProjectVisibility.Public);
     }
 
     #endregion
@@ -143,8 +143,8 @@ public class ProjectTests
         project.Archive();
 
         // Assert
-        project.Status.Should().Be(ProjectStatus.Archived);
-        project.DomainEvents.Should().Contain(e => e is Events.Pm.ProjectArchivedEvent);
+        project.Status.ShouldBe(ProjectStatus.Archived);
+        project.DomainEvents.ShouldContain(e => e is Events.Pm.ProjectArchivedEvent);
     }
 
     [Fact]
@@ -156,8 +156,8 @@ public class ProjectTests
 
         // Act & Assert
         var act = () => project.Archive();
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Project is already archived.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Project is already archived.");
     }
 
     #endregion
@@ -175,10 +175,10 @@ public class ProjectTests
         project.Complete();
 
         // Assert
-        project.Status.Should().Be(ProjectStatus.Completed);
-        project.EndDate.Should().NotBeNull();
-        project.EndDate.Should().BeOnOrAfter(beforeComplete);
-        project.DomainEvents.Should().Contain(e => e is Events.Pm.ProjectCompletedEvent);
+        project.Status.ShouldBe(ProjectStatus.Completed);
+        project.EndDate.ShouldNotBeNull();
+        project.EndDate!.Value.ShouldBeGreaterThanOrEqualTo(beforeComplete);
+        project.DomainEvents.ShouldContain(e => e is Events.Pm.ProjectCompletedEvent);
     }
 
     [Fact]
@@ -190,8 +190,8 @@ public class ProjectTests
 
         // Act & Assert
         var act = () => project.Complete();
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Only active or on-hold projects can be completed.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Only active or on-hold projects can be completed.");
     }
 
     [Fact]
@@ -203,8 +203,8 @@ public class ProjectTests
 
         // Act & Assert
         var act = () => project.Complete();
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Only active or on-hold projects can be completed.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Only active or on-hold projects can be completed.");
     }
 
     #endregion
@@ -222,7 +222,7 @@ public class ProjectTests
         project.Reactivate();
 
         // Assert
-        project.Status.Should().Be(ProjectStatus.Active);
+        project.Status.ShouldBe(ProjectStatus.Active);
     }
 
     [Fact]
@@ -236,7 +236,7 @@ public class ProjectTests
         project.Reactivate();
 
         // Assert
-        project.Status.Should().Be(ProjectStatus.Active);
+        project.Status.ShouldBe(ProjectStatus.Active);
     }
 
     [Fact]
@@ -247,8 +247,8 @@ public class ProjectTests
 
         // Act & Assert
         var act = () => project.Reactivate();
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Project is already active.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Project is already active.");
     }
 
     #endregion
@@ -266,9 +266,9 @@ public class ProjectTests
         project.ChangeStatus(ProjectStatus.Completed);
 
         // Assert
-        project.Status.Should().Be(ProjectStatus.Completed);
-        project.EndDate.Should().NotBeNull();
-        project.EndDate.Should().BeOnOrAfter(beforeChange);
+        project.Status.ShouldBe(ProjectStatus.Completed);
+        project.EndDate.ShouldNotBeNull();
+        project.EndDate!.Value.ShouldBeGreaterThanOrEqualTo(beforeChange);
     }
 
     [Fact]
@@ -281,8 +281,8 @@ public class ProjectTests
         project.ChangeStatus(ProjectStatus.OnHold);
 
         // Assert
-        project.Status.Should().Be(ProjectStatus.OnHold);
-        project.EndDate.Should().BeNull();
+        project.Status.ShouldBe(ProjectStatus.OnHold);
+        project.EndDate.ShouldBeNull();
     }
 
     #endregion

@@ -80,8 +80,8 @@ public class DeleteMediaFileCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
 
         _repositoryMock.Verify(
             x => x.Remove(mediaFile),
@@ -112,8 +112,8 @@ public class DeleteMediaFileCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be("NOIR-MEDIA-002");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe("NOIR-MEDIA-002");
 
         _repositoryMock.Verify(
             x => x.Remove(It.IsAny<MediaFile>()),
@@ -146,7 +146,7 @@ public class DeleteMediaFileCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _repositoryMock.Verify(x => x.Remove(mediaFile), Times.Once);
     }
 

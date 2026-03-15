@@ -26,8 +26,8 @@ public class DateTimeServiceTests
 
         // Assert
         var after = DateTimeOffset.UtcNow;
-        result.Should().BeOnOrAfter(before);
-        result.Should().BeOnOrBefore(after);
+        result.ShouldBeGreaterThanOrEqualTo(before);
+        result.ShouldBeLessThanOrEqualTo(after);
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class DateTimeServiceTests
         var result = _sut.UtcNow;
 
         // Assert
-        result.Offset.Should().Be(TimeSpan.Zero);
+        result.Offset.ShouldBe(TimeSpan.Zero);
     }
 
     [Fact]
@@ -49,7 +49,7 @@ public class DateTimeServiceTests
         var result2 = _sut.UtcNow;
 
         // Assert
-        result2.Should().BeOnOrAfter(result1);
+        result2.ShouldBeGreaterThanOrEqualTo(result1);
     }
 
     #endregion
@@ -66,7 +66,7 @@ public class DateTimeServiceTests
         var result = _sut.Today;
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Fact]
@@ -76,9 +76,9 @@ public class DateTimeServiceTests
         var result = _sut.Today;
 
         // Assert - DateOnly must have valid values
-        result.Year.Should().BeGreaterThan(2000);
-        result.Month.Should().BeInRange(1, 12);
-        result.Day.Should().BeInRange(1, 31);
+        result.Year.ShouldBeGreaterThan(2000);
+        result.Month.ShouldBeInRange(1, 12);
+        result.Day.ShouldBeInRange(1, 31);
     }
 
     #endregion

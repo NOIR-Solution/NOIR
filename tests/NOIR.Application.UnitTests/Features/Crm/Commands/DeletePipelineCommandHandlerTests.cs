@@ -47,7 +47,7 @@ public class DeletePipelineCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _pipelineRepoMock.Verify(x => x.Remove(It.IsAny<Pipeline>()), Times.Never);
     }
 
@@ -71,7 +71,7 @@ public class DeletePipelineCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _pipelineRepoMock.Verify(x => x.Remove(It.IsAny<Pipeline>()), Times.Never);
     }
 
@@ -95,7 +95,7 @@ public class DeletePipelineCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _pipelineRepoMock.Verify(x => x.Remove(pipeline), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -114,6 +114,6 @@ public class DeletePipelineCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 }

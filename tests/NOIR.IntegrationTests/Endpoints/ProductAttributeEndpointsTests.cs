@@ -38,10 +38,10 @@ public class ProductAttributeEndpointsTests : IClassFixture<CustomWebApplication
         var response = await adminClient.GetAsync("/api/product-attributes");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<ProductAttributeListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeNull();
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class ProductAttributeEndpointsTests : IClassFixture<CustomWebApplication
         var response = await _client.GetAsync("/api/product-attributes");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -64,10 +64,10 @@ public class ProductAttributeEndpointsTests : IClassFixture<CustomWebApplication
         var response = await adminClient.GetAsync("/api/product-attributes?pageNumber=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<ProductAttributeListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.Items.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     #endregion
@@ -90,11 +90,11 @@ public class ProductAttributeEndpointsTests : IClassFixture<CustomWebApplication
         var response = await adminClient.GetAsync($"/api/product-attributes/{createdAttr!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var attr = await response.Content.ReadFromJsonWithEnumsAsync<ProductAttributeDto>();
-        attr.Should().NotBeNull();
-        attr!.Id.Should().Be(createdAttr.Id);
-        attr.Name.Should().Be(createRequest.Name);
+        attr.ShouldNotBeNull();
+        attr!.Id.ShouldBe(createdAttr.Id);
+        attr.Name.ShouldBe(createRequest.Name);
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class ProductAttributeEndpointsTests : IClassFixture<CustomWebApplication
         var response = await adminClient.GetAsync($"/api/product-attributes/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -125,11 +125,11 @@ public class ProductAttributeEndpointsTests : IClassFixture<CustomWebApplication
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/product-attributes", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var attr = await response.Content.ReadFromJsonWithEnumsAsync<ProductAttributeDto>();
-        attr.Should().NotBeNull();
-        attr!.Name.Should().Be(request.Name);
-        attr.Code.Should().Be(request.Code);
+        attr.ShouldNotBeNull();
+        attr!.Name.ShouldBe(request.Name);
+        attr.Code.ShouldBe(request.Code);
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class ProductAttributeEndpointsTests : IClassFixture<CustomWebApplication
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/product-attributes", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -159,7 +159,7 @@ public class ProductAttributeEndpointsTests : IClassFixture<CustomWebApplication
         var response = await _client.PostAsJsonWithEnumsAsync("/api/product-attributes", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -177,7 +177,7 @@ public class ProductAttributeEndpointsTests : IClassFixture<CustomWebApplication
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/product-attributes", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 
     #endregion
@@ -214,7 +214,7 @@ public class ProductAttributeEndpointsTests : IClassFixture<CustomWebApplication
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/product-attributes/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -237,11 +237,11 @@ public class ProductAttributeEndpointsTests : IClassFixture<CustomWebApplication
         var response = await adminClient.DeleteAsync($"/api/product-attributes/{createdAttr!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Verify it's deleted (soft delete - should return not found)
         var getResponse = await adminClient.GetAsync($"/api/product-attributes/{createdAttr.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -254,7 +254,7 @@ public class ProductAttributeEndpointsTests : IClassFixture<CustomWebApplication
         var response = await adminClient.DeleteAsync($"/api/product-attributes/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion

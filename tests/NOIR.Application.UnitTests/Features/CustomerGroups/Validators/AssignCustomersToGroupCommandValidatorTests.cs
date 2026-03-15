@@ -75,7 +75,7 @@ public class AssignCustomersToGroupCommandValidatorTests
 
         // Act & Assert
         var act = () => _validator.TestValidateAsync(command);
-        await act.Should().ThrowAsync<NullReferenceException>();
+        await Should.ThrowAsync<NullReferenceException>(act);
     }
 
     [Fact]

@@ -36,8 +36,8 @@ public class RepositoryLocalDbTests : IAsyncLifetime
 
             // Assert - Query should work with SQL Server
             var retrieved = await context.RefreshTokens.FindAsync(token.Id);
-            retrieved.Should().NotBeNull();
-            retrieved!.UserId.Should().Be("sql-user");
+            retrieved.ShouldNotBeNull();
+            retrieved!.UserId.ShouldBe("sql-user");
         });
     }
 
@@ -61,7 +61,7 @@ public class RepositoryLocalDbTests : IAsyncLifetime
 
             // Assert
             var count = await context.RefreshTokens.CountAsync();
-            count.Should().Be(3);
+            count.ShouldBe(3);
         });
     }
 
@@ -84,8 +84,8 @@ public class RepositoryLocalDbTests : IAsyncLifetime
             var result = await context.RefreshTokens.FindAsync(token.Id);
 
             // Assert
-            result.Should().NotBeNull();
-            result!.Id.Should().Be(token.Id);
+            result.ShouldNotBeNull();
+            result!.Id.ShouldBe(token.Id);
         });
     }
 
@@ -100,7 +100,7 @@ public class RepositoryLocalDbTests : IAsyncLifetime
             var result = await context.RefreshTokens.FindAsync(Guid.NewGuid());
 
             // Assert
-            result.Should().BeNull();
+            result.ShouldBeNull();
         });
     }
 
@@ -132,8 +132,8 @@ public class RepositoryLocalDbTests : IAsyncLifetime
                 .ToListAsync();
 
             // Assert
-            result.Should().HaveCount(2);
-            result.Should().AllSatisfy(t => t.UserId.Should().Be("filter-user-1"));
+            result.Count().ShouldBe(2);
+            result.ShouldAllBe(t => t.UserId == "filter-user-1");
         });
     }
 
@@ -158,7 +158,7 @@ public class RepositoryLocalDbTests : IAsyncLifetime
                 .CountAsync(t => t.UserId == "count-user");
 
             // Assert
-            count.Should().Be(2);
+            count.ShouldBe(2);
         });
     }
 
@@ -178,7 +178,7 @@ public class RepositoryLocalDbTests : IAsyncLifetime
                 .AnyAsync(t => t.Token == token.Token);
 
             // Assert
-            exists.Should().BeTrue();
+            exists.ShouldBeTrue();
         });
     }
 
@@ -203,8 +203,8 @@ public class RepositoryLocalDbTests : IAsyncLifetime
 
             // Assert - Get fresh from database
             var updated = await context.RefreshTokens.FindAsync(token.Id);
-            updated!.IsRevoked.Should().BeTrue();
-            updated.RevokedByIp.Should().Be("127.0.0.1");
+            updated!.IsRevoked.ShouldBeTrue();
+            updated.RevokedByIp.ShouldBe("127.0.0.1");
         });
     }
 
@@ -235,15 +235,15 @@ public class RepositoryLocalDbTests : IAsyncLifetime
             var deleted = await context.RefreshTokens
                 .Where(t => t.Id == tokenId)
                 .FirstOrDefaultAsync();
-            deleted.Should().BeNull("entity should be filtered out by soft delete query filter");
+            deleted.ShouldBeNull("entity should be filtered out by soft delete query filter");
 
             // But still exists in database with IsDeleted = true
             var softDeleted = await context.RefreshTokens
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(t => t.Id == tokenId);
-            softDeleted.Should().NotBeNull();
-            softDeleted!.IsDeleted.Should().BeTrue();
-            softDeleted.DeletedAt.Should().NotBeNull();
+            softDeleted.ShouldNotBeNull();
+            softDeleted!.IsDeleted.ShouldBeTrue();
+            softDeleted.DeletedAt.ShouldNotBeNull();
         });
     }
 
@@ -274,8 +274,8 @@ public class RepositoryLocalDbTests : IAsyncLifetime
 
             // Assert
             var saved = await context.EntityAuditLogs.FindAsync(auditLog.Id);
-            saved.Should().NotBeNull();
-            saved!.Operation.Should().Be(nameof(EntityAuditOperation.Added));
+            saved.ShouldNotBeNull();
+            saved!.Operation.ShouldBe(nameof(EntityAuditOperation.Added));
         });
     }
 
@@ -303,7 +303,7 @@ public class RepositoryLocalDbTests : IAsyncLifetime
 
             // Assert
             var saved = await context.EntityAuditLogs.FindAsync(auditLog.Id);
-            saved!.EntityDiff.Should().HaveLength(50000);
+            saved!.EntityDiff.Length.ShouldBe(50000);
         });
     }
 
@@ -363,7 +363,7 @@ public class RepositoryLocalDbTests : IAsyncLifetime
                 .ToListAsync();
 
             // Assert
-            ordered.Should().BeInAscendingOrder();
+            ordered.ShouldBeInOrder(SortDirection.Ascending);
         });
     }
 

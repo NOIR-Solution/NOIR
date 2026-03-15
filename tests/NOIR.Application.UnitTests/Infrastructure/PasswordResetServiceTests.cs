@@ -114,10 +114,10 @@ public class PasswordResetServiceTests
         var result = await _sut.RequestPasswordResetAsync(email);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SessionToken.Should().Be(sessionToken);
-        result.Value.MaskedEmail.Should().Be("te***t@example.com");
-        result.Value.OtpLength.Should().Be(6);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SessionToken.ShouldBe(sessionToken);
+        result.Value.MaskedEmail.ShouldBe("te***t@example.com");
+        result.Value.OtpLength.ShouldBe(6);
 
         _otpRepositoryMock.Verify(x => x.AddAsync(It.IsAny<PasswordResetOtp>(), It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -137,8 +137,8 @@ public class PasswordResetServiceTests
         var result = await _sut.RequestPasswordResetAsync(email);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-AUTH-1021");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-AUTH-1021");
 
         _otpRepositoryMock.Verify(x => x.AddAsync(It.IsAny<PasswordResetOtp>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -172,7 +172,7 @@ public class PasswordResetServiceTests
         var result = await _sut.RequestPasswordResetAsync(email);
 
         // Assert - Should still return success (prevent email enumeration)
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         // But email should NOT be sent
         _emailServiceMock.Verify(
@@ -213,8 +213,8 @@ public class PasswordResetServiceTests
         var result = await _sut.RequestPasswordResetAsync(email);
 
         // Assert - Should return existing session
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SessionToken.Should().Be("existing_session");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SessionToken.ShouldBe("existing_session");
 
         // Should NOT create a new OTP
         _otpRepositoryMock.Verify(x => x.AddAsync(It.IsAny<PasswordResetOtp>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -252,8 +252,8 @@ public class PasswordResetServiceTests
         var result = await _sut.VerifyOtpAsync(sessionToken, otp);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ResetToken.Should().Be(resetToken);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ResetToken.ShouldBe(resetToken);
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -270,8 +270,8 @@ public class PasswordResetServiceTests
         var result = await _sut.VerifyOtpAsync("invalid_session", "123456");
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-AUTH-1025");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-AUTH-1025");
     }
 
     [Fact]
@@ -298,8 +298,8 @@ public class PasswordResetServiceTests
         var result = await _sut.VerifyOtpAsync(sessionToken, "wrong_otp");
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-AUTH-1023");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-AUTH-1023");
 
         // Should save the failed attempt
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -330,8 +330,8 @@ public class PasswordResetServiceTests
         var result = await _sut.VerifyOtpAsync(sessionToken, "123456");
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-AUTH-1028");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-AUTH-1028");
     }
 
     #endregion
@@ -376,8 +376,8 @@ public class PasswordResetServiceTests
         var result = await _sut.ResendOtpAsync(sessionToken);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(true);
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -394,8 +394,8 @@ public class PasswordResetServiceTests
         var result = await _sut.ResendOtpAsync("invalid_session");
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-AUTH-1025");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-AUTH-1025");
     }
 
     [Fact]
@@ -421,8 +421,8 @@ public class PasswordResetServiceTests
         var result = await _sut.ResendOtpAsync("session");
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-AUTH-1028");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-AUTH-1028");
     }
 
     #endregion
@@ -460,7 +460,7 @@ public class PasswordResetServiceTests
         var result = await _sut.ResetPasswordAsync(resetToken, newPassword);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
@@ -486,8 +486,8 @@ public class PasswordResetServiceTests
         var result = await _sut.ResetPasswordAsync("invalid_token", "NewPassword123!");
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-AUTH-1025");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-AUTH-1025");
     }
 
     [Fact]
@@ -519,8 +519,8 @@ public class PasswordResetServiceTests
         var result = await _sut.ResetPasswordAsync(resetToken, "weak");
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-AUTH-1030");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-AUTH-1030");
     }
 
     #endregion
@@ -539,7 +539,7 @@ public class PasswordResetServiceTests
         var result = await _sut.IsRateLimitedAsync("test@example.com");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -554,7 +554,7 @@ public class PasswordResetServiceTests
         var result = await _sut.IsRateLimitedAsync("test@example.com");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -567,7 +567,7 @@ public class PasswordResetServiceTests
         var result = await _sut.IsRateLimitedAsync("test@example.com");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
         _otpRepositoryMock.Verify(
             x => x.CountAsync(It.IsAny<ISpecification<PasswordResetOtp>>(), It.IsAny<CancellationToken>()),
             Times.Never,

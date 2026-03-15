@@ -32,20 +32,20 @@ public class CrmContactTests
             phone, jobTitle, companyId, ownerId, notes: notes);
 
         // Assert
-        contact.Should().NotBeNull();
-        contact.Id.Should().NotBe(Guid.Empty);
-        contact.FirstName.Should().Be("John");
-        contact.LastName.Should().Be("Doe");
-        contact.Email.Should().Be("john.doe@example.com"); // lowercased
-        contact.Source.Should().Be(ContactSource.Web);
-        contact.Phone.Should().Be("555-0100");
-        contact.JobTitle.Should().Be("CTO");
-        contact.CompanyId.Should().Be(companyId);
-        contact.OwnerId.Should().Be(ownerId);
-        contact.Notes.Should().Be("Important contact");
-        contact.TenantId.Should().Be(TestTenantId);
-        contact.CustomerId.Should().BeNull();
-        contact.FullName.Should().Be("John Doe");
+        contact.ShouldNotBeNull();
+        contact.Id.ShouldNotBe(Guid.Empty);
+        contact.FirstName.ShouldBe("John");
+        contact.LastName.ShouldBe("Doe");
+        contact.Email.ShouldBe("john.doe@example.com"); // lowercased
+        contact.Source.ShouldBe(ContactSource.Web);
+        contact.Phone.ShouldBe("555-0100");
+        contact.JobTitle.ShouldBe("CTO");
+        contact.CompanyId.ShouldBe(companyId);
+        contact.OwnerId.ShouldBe(ownerId);
+        contact.Notes.ShouldBe("Important contact");
+        contact.TenantId.ShouldBe(TestTenantId);
+        contact.CustomerId.ShouldBeNull();
+        contact.FullName.ShouldBe("John Doe");
     }
 
     [Fact]
@@ -58,12 +58,12 @@ public class CrmContactTests
             phone: " 555-0100 ", jobTitle: " CTO ", notes: " Note ");
 
         // Assert
-        contact.FirstName.Should().Be("John");
-        contact.LastName.Should().Be("Doe");
-        contact.Email.Should().Be("john@example.com");
-        contact.Phone.Should().Be("555-0100");
-        contact.JobTitle.Should().Be("CTO");
-        contact.Notes.Should().Be("Note");
+        contact.FirstName.ShouldBe("John");
+        contact.LastName.ShouldBe("Doe");
+        contact.Email.ShouldBe("john@example.com");
+        contact.Phone.ShouldBe("555-0100");
+        contact.JobTitle.ShouldBe("CTO");
+        contact.Notes.ShouldBe("Note");
     }
 
     [Fact]
@@ -75,12 +75,12 @@ public class CrmContactTests
             ContactSource.Other, TestTenantId);
 
         // Assert
-        contact.Phone.Should().BeNull();
-        contact.JobTitle.Should().BeNull();
-        contact.CompanyId.Should().BeNull();
-        contact.OwnerId.Should().BeNull();
-        contact.CustomerId.Should().BeNull();
-        contact.Notes.Should().BeNull();
+        contact.Phone.ShouldBeNull();
+        contact.JobTitle.ShouldBeNull();
+        contact.CompanyId.ShouldBeNull();
+        contact.OwnerId.ShouldBeNull();
+        contact.CustomerId.ShouldBeNull();
+        contact.Notes.ShouldBeNull();
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class CrmContactTests
             "", "Doe", "john@example.com",
             ContactSource.Web, TestTenantId);
 
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public class CrmContactTests
             "John", "", "john@example.com",
             ContactSource.Web, TestTenantId);
 
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public class CrmContactTests
             "John", "Doe", "",
             ContactSource.Web, TestTenantId);
 
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     #endregion
@@ -139,16 +139,16 @@ public class CrmContactTests
             newCompanyId, newOwnerId, newCustomerId, "Updated notes");
 
         // Assert
-        contact.FirstName.Should().Be("Jane");
-        contact.LastName.Should().Be("Smith");
-        contact.Email.Should().Be("jane.smith@example.com");
-        contact.Source.Should().Be(ContactSource.Referral);
-        contact.Phone.Should().Be("555-0200");
-        contact.JobTitle.Should().Be("CEO");
-        contact.CompanyId.Should().Be(newCompanyId);
-        contact.OwnerId.Should().Be(newOwnerId);
-        contact.CustomerId.Should().Be(newCustomerId);
-        contact.Notes.Should().Be("Updated notes");
+        contact.FirstName.ShouldBe("Jane");
+        contact.LastName.ShouldBe("Smith");
+        contact.Email.ShouldBe("jane.smith@example.com");
+        contact.Source.ShouldBe(ContactSource.Referral);
+        contact.Phone.ShouldBe("555-0200");
+        contact.JobTitle.ShouldBe("CEO");
+        contact.CompanyId.ShouldBe(newCompanyId);
+        contact.OwnerId.ShouldBe(newOwnerId);
+        contact.CustomerId.ShouldBe(newCustomerId);
+        contact.Notes.ShouldBe("Updated notes");
     }
 
     #endregion
@@ -171,7 +171,7 @@ public class CrmContactTests
             contact.CompanyId, contact.OwnerId, customerId, contact.Notes);
 
         // Assert
-        contact.CustomerId.Should().Be(customerId);
+        contact.CustomerId.ShouldBe(customerId);
     }
 
     #endregion
@@ -187,7 +187,7 @@ public class CrmContactTests
             ContactSource.Web, TestTenantId);
 
         // Assert
-        contact.FullName.Should().Be("John Doe");
+        contact.FullName.ShouldBe("John Doe");
     }
 
     #endregion

@@ -24,7 +24,7 @@ public class SecurityHeadersMiddlewareTests
         var middleware = new SecurityHeadersMiddleware(next);
 
         // Assert
-        middleware.Should().NotBeNull();
+        middleware.ShouldNotBeNull();
     }
 
     #endregion
@@ -43,7 +43,7 @@ public class SecurityHeadersMiddlewareTests
         await middleware.InvokeAsync(context);
 
         // Assert
-        context.Response.Headers["X-Frame-Options"].ToString().Should().Be("DENY");
+        context.Response.Headers["X-Frame-Options"].ToString().ShouldBe("DENY");
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class SecurityHeadersMiddlewareTests
         await middleware.InvokeAsync(context);
 
         // Assert
-        context.Response.Headers["X-Content-Type-Options"].ToString().Should().Be("nosniff");
+        context.Response.Headers["X-Content-Type-Options"].ToString().ShouldBe("nosniff");
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class SecurityHeadersMiddlewareTests
         await middleware.InvokeAsync(context);
 
         // Assert
-        context.Response.Headers["X-XSS-Protection"].ToString().Should().Be("1; mode=block");
+        context.Response.Headers["X-XSS-Protection"].ToString().ShouldBe("1; mode=block");
     }
 
     [Fact]
@@ -88,7 +88,7 @@ public class SecurityHeadersMiddlewareTests
         await middleware.InvokeAsync(context);
 
         // Assert
-        context.Response.Headers["Referrer-Policy"].ToString().Should().Be("strict-origin-when-cross-origin");
+        context.Response.Headers["Referrer-Policy"].ToString().ShouldBe("strict-origin-when-cross-origin");
     }
 
     [Fact]
@@ -103,7 +103,7 @@ public class SecurityHeadersMiddlewareTests
         await middleware.InvokeAsync(context);
 
         // Assert
-        context.Response.Headers["Permissions-Policy"].ToString().Should().Contain("accelerometer=()");
+        context.Response.Headers["Permissions-Policy"].ToString().ShouldContain("accelerometer=()");
     }
 
     [Fact]
@@ -118,7 +118,7 @@ public class SecurityHeadersMiddlewareTests
         await middleware.InvokeAsync(context);
 
         // Assert
-        context.Response.Headers["Content-Security-Policy"].ToString().Should().NotBeNullOrEmpty();
+        context.Response.Headers["Content-Security-Policy"].ToString().ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -135,9 +135,9 @@ public class SecurityHeadersMiddlewareTests
 
         // Assert - API endpoints get strictest CSP
         var csp = context.Response.Headers["Content-Security-Policy"].ToString();
-        csp.Should().Contain("default-src 'none'");
-        csp.Should().Contain("frame-ancestors 'none'");
-        csp.Should().NotContain("cdn.jsdelivr.net");
+        csp.ShouldContain("default-src 'none'");
+        csp.ShouldContain("frame-ancestors 'none'");
+        csp.ShouldNotContain("cdn.jsdelivr.net");
     }
 
     [Fact]
@@ -154,8 +154,8 @@ public class SecurityHeadersMiddlewareTests
 
         // Assert - Scalar docs allow CDN for scripts
         var csp = context.Response.Headers["Content-Security-Policy"].ToString();
-        csp.Should().Contain("cdn.jsdelivr.net");
-        csp.Should().Contain("fonts.googleapis.com");
+        csp.ShouldContain("cdn.jsdelivr.net");
+        csp.ShouldContain("fonts.googleapis.com");
     }
 
     [Fact]
@@ -172,7 +172,7 @@ public class SecurityHeadersMiddlewareTests
 
         // Assert - OpenAPI spec route uses Scalar CSP
         var csp = context.Response.Headers["Content-Security-Policy"].ToString();
-        csp.Should().Contain("cdn.jsdelivr.net");
+        csp.ShouldContain("cdn.jsdelivr.net");
     }
 
     [Fact]
@@ -189,9 +189,9 @@ public class SecurityHeadersMiddlewareTests
 
         // Assert - SPA routes get default CSP
         var csp = context.Response.Headers["Content-Security-Policy"].ToString();
-        csp.Should().Contain("default-src 'self'");
-        csp.Should().Contain("script-src 'self'");
-        csp.Should().NotContain("cdn.jsdelivr.net");
+        csp.ShouldContain("default-src 'self'");
+        csp.ShouldContain("script-src 'self'");
+        csp.ShouldNotContain("cdn.jsdelivr.net");
     }
 
     [Fact]
@@ -208,7 +208,7 @@ public class SecurityHeadersMiddlewareTests
 
         // Assert - Root uses SPA CSP
         var csp = context.Response.Headers["Content-Security-Policy"].ToString();
-        csp.Should().Contain("default-src 'self'");
+        csp.ShouldContain("default-src 'self'");
     }
 
     [Fact]
@@ -228,7 +228,7 @@ public class SecurityHeadersMiddlewareTests
         await middleware.InvokeAsync(context);
 
         // Assert
-        nextCalled.Should().BeTrue();
+        nextCalled.ShouldBe(true);
     }
 
     [Fact]
@@ -243,12 +243,12 @@ public class SecurityHeadersMiddlewareTests
         await middleware.InvokeAsync(context);
 
         // Assert - verify all expected headers are present
-        context.Response.Headers.Should().ContainKey("X-Frame-Options");
-        context.Response.Headers.Should().ContainKey("X-Content-Type-Options");
-        context.Response.Headers.Should().ContainKey("X-XSS-Protection");
-        context.Response.Headers.Should().ContainKey("Referrer-Policy");
-        context.Response.Headers.Should().ContainKey("Permissions-Policy");
-        context.Response.Headers.Should().ContainKey("Content-Security-Policy");
+        context.Response.Headers.ShouldContainKey("X-Frame-Options");
+        context.Response.Headers.ShouldContainKey("X-Content-Type-Options");
+        context.Response.Headers.ShouldContainKey("X-XSS-Protection");
+        context.Response.Headers.ShouldContainKey("Referrer-Policy");
+        context.Response.Headers.ShouldContainKey("Permissions-Policy");
+        context.Response.Headers.ShouldContainKey("Content-Security-Policy");
     }
 
     #endregion

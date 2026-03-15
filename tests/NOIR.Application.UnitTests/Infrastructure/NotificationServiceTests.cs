@@ -92,7 +92,7 @@ public class NotificationServiceTests
             "Test Message");
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _preferenceRepoMock.Verify(x => x.AddAsync(It.IsAny<NotificationPreference>(), It.IsAny<CancellationToken>()), Times.Once);
         _notificationRepoMock.Verify(x => x.AddAsync(It.IsAny<Notification>(), It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.AtLeastOnce);
@@ -127,7 +127,7 @@ public class NotificationServiceTests
             "Success Message");
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _notificationRepoMock.Verify(x => x.AddAsync(It.IsAny<Notification>(), It.IsAny<CancellationToken>()), Times.Once);
         _hubContextMock.Verify(x => x.SendToUserAsync(TestUserId, It.IsAny<NotificationDto>(), It.IsAny<CancellationToken>()), Times.Once);
         _hubContextMock.Verify(x => x.UpdateUnreadCountAsync(TestUserId, 5, It.IsAny<CancellationToken>()), Times.Once);
@@ -157,7 +157,7 @@ public class NotificationServiceTests
             "Integration Message");
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _notificationRepoMock.Verify(x => x.AddAsync(It.IsAny<Notification>(), It.IsAny<CancellationToken>()), Times.Never);
         _hubContextMock.Verify(x => x.SendToUserAsync(It.IsAny<string>(), It.IsAny<NotificationDto>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -190,7 +190,7 @@ public class NotificationServiceTests
             "Your account was accessed");
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _backgroundJobsMock.Verify(x => x.Enqueue(It.IsAny<Expression<Func<Task>>>()), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.AtLeast(2)); // Once for notification, once for email sent flag
     }
@@ -230,7 +230,7 @@ public class NotificationServiceTests
             actions: actions);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _notificationRepoMock.Verify(x => x.AddAsync(
             It.Is<Notification>(n => n.Actions.Count == 2),
             It.IsAny<CancellationToken>()), Times.Once);
@@ -267,7 +267,7 @@ public class NotificationServiceTests
             metadata: "{\"orderId\": \"123\"}");
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _notificationRepoMock.Verify(x => x.AddAsync(
             It.Is<Notification>(n =>
                 n.IconClass == "check-circle" &&
@@ -293,8 +293,8 @@ public class NotificationServiceTests
             "Test message");
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOTIFICATION_SEND_FAILED");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOTIFICATION_SEND_FAILED");
     }
 
     [Fact]
@@ -318,7 +318,7 @@ public class NotificationServiceTests
             ct: cts.Token);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
     }
 
     #endregion
@@ -351,8 +351,8 @@ public class NotificationServiceTests
             "Message for admins");
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(2); // Both users in the Admin role
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(2); // Both users in the Admin role
     }
 
     [Fact]
@@ -372,8 +372,8 @@ public class NotificationServiceTests
             "Message");
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(0);
     }
 
     [Fact]
@@ -393,8 +393,8 @@ public class NotificationServiceTests
             "Test message");
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOTIFICATION_ROLE_SEND_FAILED");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOTIFICATION_ROLE_SEND_FAILED");
     }
 
     #endregion
@@ -427,8 +427,8 @@ public class NotificationServiceTests
             "System will be down for maintenance");
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(2); // Only user1 and user2 are active and not deleted
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(2); // Only user1 and user2 are active and not deleted
     }
 
     [Fact]
@@ -453,8 +453,8 @@ public class NotificationServiceTests
             "Message");
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(0);
     }
 
     [Fact]
@@ -473,8 +473,8 @@ public class NotificationServiceTests
             "Test message");
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOTIFICATION_BROADCAST_FAILED");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOTIFICATION_BROADCAST_FAILED");
     }
 
     #endregion
@@ -485,14 +485,14 @@ public class NotificationServiceTests
     public void Service_ShouldImplementINotificationService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<INotificationService>();
+        _sut.ShouldBeAssignableTo<INotificationService>();
     }
 
     [Fact]
     public void Service_ShouldImplementIScopedService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IScopedService>();
+        _sut.ShouldBeAssignableTo<IScopedService>();
     }
 
     #endregion

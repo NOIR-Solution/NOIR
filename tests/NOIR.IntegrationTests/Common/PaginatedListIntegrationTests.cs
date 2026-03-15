@@ -52,12 +52,12 @@ public class PaginatedListIntegrationTests : IAsyncLifetime
             var result = await PaginatedList<RefreshToken>.CreateAsync(query, 2, 5);
 
             // Assert
-            result.Items.Should().HaveCount(5);
-            result.PageNumber.Should().Be(2);
-            result.TotalCount.Should().Be(15);
-            result.TotalPages.Should().Be(3);
-            result.HasPreviousPage.Should().BeTrue();
-            result.HasNextPage.Should().BeTrue();
+            result.Items.Count().ShouldBe(5);
+            result.PageNumber.ShouldBe(2);
+            result.TotalCount.ShouldBe(15);
+            result.TotalPages.ShouldBe(3);
+            result.HasPreviousPage.ShouldBeTrue();
+            result.HasNextPage.ShouldBeTrue();
         });
     }
 
@@ -83,9 +83,9 @@ public class PaginatedListIntegrationTests : IAsyncLifetime
             var result = await PaginatedList<RefreshToken>.CreateAsync(query, 1, 5);
 
             // Assert
-            result.HasPreviousPage.Should().BeFalse();
-            result.HasNextPage.Should().BeTrue();
-            result.PageNumber.Should().Be(1);
+            result.HasPreviousPage.ShouldBeFalse();
+            result.HasNextPage.ShouldBeTrue();
+            result.PageNumber.ShouldBe(1);
         });
     }
 
@@ -111,9 +111,9 @@ public class PaginatedListIntegrationTests : IAsyncLifetime
             var result = await PaginatedList<RefreshToken>.CreateAsync(query, 2, 5);
 
             // Assert
-            result.HasPreviousPage.Should().BeTrue();
-            result.HasNextPage.Should().BeFalse();
-            result.PageNumber.Should().Be(2);
+            result.HasPreviousPage.ShouldBeTrue();
+            result.HasNextPage.ShouldBeFalse();
+            result.PageNumber.ShouldBe(2);
         });
     }
 
@@ -132,11 +132,11 @@ public class PaginatedListIntegrationTests : IAsyncLifetime
             var result = await PaginatedList<RefreshToken>.CreateAsync(query, 1, 10);
 
             // Assert
-            result.Items.Should().BeEmpty();
-            result.TotalCount.Should().Be(0);
-            result.TotalPages.Should().Be(0);
-            result.HasPreviousPage.Should().BeFalse();
-            result.HasNextPage.Should().BeFalse();
+            result.Items.ShouldBeEmpty();
+            result.TotalCount.ShouldBe(0);
+            result.TotalPages.ShouldBe(0);
+            result.HasPreviousPage.ShouldBeFalse();
+            result.HasNextPage.ShouldBeFalse();
         });
     }
 
@@ -162,11 +162,11 @@ public class PaginatedListIntegrationTests : IAsyncLifetime
             var result = await PaginatedList<RefreshToken>.CreateAsync(query, 1, 10);
 
             // Assert
-            result.Items.Should().HaveCount(3);
-            result.TotalCount.Should().Be(3);
-            result.TotalPages.Should().Be(1);
-            result.HasPreviousPage.Should().BeFalse();
-            result.HasNextPage.Should().BeFalse();
+            result.Items.Count().ShouldBe(3);
+            result.TotalCount.ShouldBe(3);
+            result.TotalPages.ShouldBe(1);
+            result.HasPreviousPage.ShouldBeFalse();
+            result.HasNextPage.ShouldBeFalse();
         });
     }
 
@@ -190,8 +190,8 @@ public class PaginatedListIntegrationTests : IAsyncLifetime
             var result = await PaginatedList<RefreshToken>.CreateAsync(query, 1, 10, cts.Token);
 
             // Assert
-            result.Should().NotBeNull();
-            result.Items.Should().NotBeEmpty();
+            result.ShouldNotBeNull();
+            result.Items.ShouldNotBeEmpty();
         });
     }
 }

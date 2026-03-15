@@ -36,7 +36,7 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/payment-gateways");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/payment-gateways");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -64,7 +64,7 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/payment-gateways/{invalidId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -81,7 +81,7 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/payments");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -94,7 +94,7 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/payments?page=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -112,7 +112,7 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/payments/{invalidId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -139,7 +139,7 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/payment-gateways", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -162,7 +162,7 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/payment-gateways/{invalidId}", command);
 
         // Assert
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -180,7 +180,7 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync($"/api/payment-gateways/{invalidId}/test", new { });
 
         // Assert
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -198,7 +198,7 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync($"/api/payments/{invalidId}/cancel", new { });
 
         // Assert
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -223,7 +223,7 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/refunds", command);
 
         // Assert
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -240,7 +240,7 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/payments/cod/pending");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -265,7 +265,7 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/payments/manual", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -286,7 +286,7 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/payments/manual", command);
 
         // Assert
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -304,7 +304,7 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/payments/{invalidId}/details");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -322,7 +322,7 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/payments/{invalidId}/timeline");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -340,7 +340,7 @@ public class PaymentEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync($"/api/payments/{invalidId}/refresh", new { });
 
         // Assert
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
     }
 
     #endregion

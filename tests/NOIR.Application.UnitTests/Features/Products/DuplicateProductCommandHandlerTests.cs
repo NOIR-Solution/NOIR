@@ -107,11 +107,11 @@ public class DuplicateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Name.Should().Contain("(Copy)");
-        result.Value.Slug.Should().Contain("-copy-");
-        result.Value.Status.Should().Be(ProductStatus.Draft); // Duplicates always start as Draft
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Name.ShouldContain("(Copy)");
+        result.Value.Slug.ShouldContain("-copy-");
+        result.Value.Status.ShouldBe(ProductStatus.Draft); // Duplicates always start as Draft
 
         _productRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>()),
@@ -159,9 +159,9 @@ public class DuplicateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategoryId.Should().Be(categoryId);
-        result.Value.CategoryName.Should().Be("Test Category");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategoryId.ShouldBe(categoryId);
+        result.Value.CategoryName.ShouldBe("Test Category");
     }
 
     [Fact]
@@ -195,9 +195,9 @@ public class DuplicateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedProduct.Should().NotBeNull();
-        capturedProduct!.Images.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        capturedProduct.ShouldNotBeNull();
+        capturedProduct!.Images.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -236,10 +236,10 @@ public class DuplicateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedProduct.Should().NotBeNull();
-        capturedProduct!.Options.Should().HaveCount(2);
-        capturedProduct.Options.SelectMany(o => o.Values).Should().HaveCount(4);
+        result.IsSuccess.ShouldBe(true);
+        capturedProduct.ShouldNotBeNull();
+        capturedProduct!.Options.Count().ShouldBe(2);
+        capturedProduct.Options.SelectMany(o => o.Values).Count().ShouldBe(4);
     }
 
     [Fact]
@@ -273,11 +273,11 @@ public class DuplicateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedProduct.Should().NotBeNull();
-        capturedProduct!.Variants.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        capturedProduct.ShouldNotBeNull();
+        capturedProduct!.Variants.Count().ShouldBe(2);
         // SKUs should have -COPY suffix
-        capturedProduct.Variants.Should().AllSatisfy(v => v.Sku.Should().EndWith("-COPY"));
+        capturedProduct.Variants.ShouldAllBe(v => v.Sku.EndsWith("-COPY"));
     }
 
     [Fact]
@@ -309,9 +309,9 @@ public class DuplicateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedProduct.Should().NotBeNull();
-        capturedProduct!.Sku.Should().Be("SKU-001-COPY");
+        result.IsSuccess.ShouldBe(true);
+        capturedProduct.ShouldNotBeNull();
+        capturedProduct!.Sku.ShouldBe("SKU-001-COPY");
     }
 
     #endregion
@@ -335,8 +335,8 @@ public class DuplicateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-PRODUCT-060");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-060");
 
         _productRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>()),
@@ -419,8 +419,8 @@ public class DuplicateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Sku.Should().BeNull(); // Null SKU should remain null (not "null-COPY")
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Sku.ShouldBeNull(); // Null SKU should remain null (not "null-COPY")
     }
 
     [Fact]
@@ -450,11 +450,11 @@ public class DuplicateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Slug.Should().StartWith("original-product-copy-");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Slug.ShouldStartWith("original-product-copy-");
         // Slug should contain hex timestamp
         var slugSuffix = result.Value.Slug.Replace("original-product-copy-", "");
-        slugSuffix.Should().MatchRegex("^[0-9a-f]+$"); // Hex characters only
+        slugSuffix.ShouldMatch("^[0-9a-f]+$"); // Hex characters only
     }
 
     #endregion

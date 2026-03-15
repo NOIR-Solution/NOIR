@@ -105,7 +105,7 @@ public class EntityUpdateHubContextTests
         var act = () => _sut.PublishEntityUpdatedAsync(entityType, entityId, EntityOperation.Deleted, tenantId);
 
         // Assert
-        await act.Should().NotThrowAsync();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -238,14 +238,14 @@ public class EntityUpdateHubContextTests
     public void EntityUpdateHubContext_ShouldImplementIScopedService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IScopedService>();
+        _sut.ShouldBeAssignableTo<IScopedService>();
     }
 
     [Fact]
     public void EntityUpdateHubContext_ShouldImplementIEntityUpdateHubContext()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IEntityUpdateHubContext>();
+        _sut.ShouldBeAssignableTo<IEntityUpdateHubContext>();
     }
 
     #endregion

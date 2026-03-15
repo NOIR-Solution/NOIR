@@ -21,11 +21,11 @@ public class EmployeeTagAssignmentTests
         var assignment = EmployeeTagAssignment.Create(employeeId, tagId, TestTenantId);
 
         // Assert
-        assignment.Should().NotBeNull();
-        assignment.Id.Should().NotBe(Guid.Empty);
-        assignment.EmployeeId.Should().Be(employeeId);
-        assignment.EmployeeTagId.Should().Be(tagId);
-        assignment.TenantId.Should().Be(TestTenantId);
+        assignment.ShouldNotBeNull();
+        assignment.Id.ShouldNotBe(Guid.Empty);
+        assignment.EmployeeId.ShouldBe(employeeId);
+        assignment.EmployeeTagId.ShouldBe(tagId);
+        assignment.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -39,8 +39,8 @@ public class EmployeeTagAssignmentTests
 
         // Assert
         var after = DateTimeOffset.UtcNow;
-        assignment.AssignedAt.Should().BeOnOrAfter(before);
-        assignment.AssignedAt.Should().BeOnOrBefore(after);
+        assignment.AssignedAt.ShouldBeGreaterThanOrEqualTo(before);
+        assignment.AssignedAt.ShouldBeLessThanOrEqualTo(after);
     }
 
     [Fact]
@@ -51,6 +51,6 @@ public class EmployeeTagAssignmentTests
         var a2 = EmployeeTagAssignment.Create(Guid.NewGuid(), Guid.NewGuid(), TestTenantId);
 
         // Assert
-        a1.Id.Should().NotBe(a2.Id);
+        a1.Id.ShouldNotBe(a2.Id);
     }
 }

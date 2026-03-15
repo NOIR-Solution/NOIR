@@ -80,7 +80,7 @@ public class CurrentUserServiceTests
         var result = _sut.UserId;
 
         // Assert
-        result.Should().Be("user123");
+        result.ShouldBe("user123");
     }
 
     [Fact]
@@ -93,7 +93,7 @@ public class CurrentUserServiceTests
         var result = _sut.UserId;
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class CurrentUserServiceTests
         var result = _sut.UserId;
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     #endregion
@@ -124,7 +124,7 @@ public class CurrentUserServiceTests
         var result = _sut.Email;
 
         // Assert
-        result.Should().Be("test@example.com");
+        result.ShouldBe("test@example.com");
     }
 
     [Fact]
@@ -137,7 +137,7 @@ public class CurrentUserServiceTests
         var result = _sut.Email;
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     #endregion
@@ -154,7 +154,7 @@ public class CurrentUserServiceTests
         var result = _sut.TenantId;
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     #endregion
@@ -172,7 +172,7 @@ public class CurrentUserServiceTests
         var result = _sut.IsAuthenticated;
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -186,7 +186,7 @@ public class CurrentUserServiceTests
         var result = _sut.IsAuthenticated;
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -199,7 +199,7 @@ public class CurrentUserServiceTests
         var result = _sut.IsAuthenticated;
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     #endregion
@@ -217,7 +217,7 @@ public class CurrentUserServiceTests
         var result = _sut.Roles;
 
         // Assert
-        result.Should().BeEquivalentTo(new[] { "Admin", "User" });
+        result.ShouldBe(new[] { "Admin", "User" });
     }
 
     [Fact]
@@ -231,7 +231,7 @@ public class CurrentUserServiceTests
         var result = _sut.Roles;
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -244,7 +244,7 @@ public class CurrentUserServiceTests
         var result = _sut.Roles;
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     #endregion
@@ -262,7 +262,7 @@ public class CurrentUserServiceTests
         var result = _sut.IsInRole("Admin");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -276,7 +276,7 @@ public class CurrentUserServiceTests
         var result = _sut.IsInRole("Admin");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -289,7 +289,7 @@ public class CurrentUserServiceTests
         var result = _sut.IsInRole("Admin");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     #endregion

@@ -44,8 +44,8 @@ public class DeleteTaskCommentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Content.Should().Be("Test comment");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Content.ShouldBe("Test comment");
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -62,7 +62,7 @@ public class DeleteTaskCommentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -84,8 +84,8 @@ public class DeleteTaskCommentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(commentId);
-        result.Value.AuthorId.Should().Be(authorId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(commentId);
+        result.Value.AuthorId.ShouldBe(authorId);
     }
 }

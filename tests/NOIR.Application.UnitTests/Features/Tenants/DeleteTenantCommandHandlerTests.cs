@@ -64,8 +64,8 @@ public class DeleteTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
     }
 
     [Fact]
@@ -91,10 +91,10 @@ public class DeleteTenantCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        capturedTenant.Should().NotBeNull();
-        capturedTenant!.IsDeleted.Should().BeTrue();
-        capturedTenant.DeletedAt.Should().NotBeNull();
-        capturedTenant.ModifiedAt.Should().NotBeNull();
+        capturedTenant.ShouldNotBeNull();
+        capturedTenant!.IsDeleted.ShouldBe(true);
+        capturedTenant.DeletedAt.ShouldNotBeNull();
+        capturedTenant.ModifiedAt.ShouldNotBeNull();
     }
 
     #endregion
@@ -117,8 +117,8 @@ public class DeleteTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.TenantNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.TenantNotFound);
         _tenantStoreMock.Verify(
             x => x.UpdateAsync(It.IsAny<Tenant>()),
             Times.Never);
@@ -145,8 +145,8 @@ public class DeleteTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Business.InvalidState);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Business.InvalidState);
         _tenantStoreMock.Verify(
             x => x.UpdateAsync(It.IsAny<Tenant>()),
             Times.Never);
@@ -177,8 +177,8 @@ public class DeleteTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.System.InternalError);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.System.InternalError);
     }
 
     #endregion

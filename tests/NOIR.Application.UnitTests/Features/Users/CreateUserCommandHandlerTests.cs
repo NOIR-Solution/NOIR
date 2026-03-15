@@ -104,12 +104,12 @@ public class CreateUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(userId);
-        result.Value.Email.Should().Be(email);
-        result.Value.FirstName.Should().Be(firstName);
-        result.Value.LastName.Should().Be(lastName);
-        result.Value.DisplayName.Should().Be(displayName);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(userId);
+        result.Value.Email.ShouldBe(email);
+        result.Value.FirstName.ShouldBe(firstName);
+        result.Value.LastName.ShouldBe(lastName);
+        result.Value.DisplayName.ShouldBe(displayName);
     }
 
     [Fact]
@@ -147,8 +147,8 @@ public class CreateUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Roles.Should().BeEquivalentTo(roles);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Roles.ShouldBe(roles);
         _userIdentityServiceMock.Verify(
             x => x.AssignRolesAsync(userId, roles, true, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -184,7 +184,7 @@ public class CreateUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert - Just verify the result is successful; email is sent fire-and-forget
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     [Fact]
@@ -222,8 +222,8 @@ public class CreateUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert - User creation should still succeed even if role assignment fails
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(userId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(userId);
     }
 
     #endregion
@@ -247,8 +247,8 @@ public class CreateUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.DuplicateEmail);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.DuplicateEmail);
         _userIdentityServiceMock.Verify(
             x => x.CreateUserAsync(It.IsAny<CreateUserDto>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -279,8 +279,8 @@ public class CreateUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Validation.General);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Validation.General);
     }
 
     [Fact]
@@ -309,8 +309,8 @@ public class CreateUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.System.UnknownError);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.System.UnknownError);
     }
 
     #endregion
@@ -392,7 +392,7 @@ public class CreateUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     [Fact]
@@ -425,7 +425,7 @@ public class CreateUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _userIdentityServiceMock.Verify(
             x => x.AssignRolesAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
             Times.Never);

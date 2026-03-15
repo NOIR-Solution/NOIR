@@ -61,13 +61,13 @@ public class GetBrandsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.TotalCount.Should().Be(5);
-        result.Value.PageIndex.Should().Be(0); // 0-based internal index
-        result.Value.PageNumber.Should().Be(1); // 1-based user-facing page
-        result.Value.PageSize.Should().Be(10);
-        result.Value.TotalPages.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.TotalCount.ShouldBe(5);
+        result.Value.PageIndex.ShouldBe(0); // 0-based internal index
+        result.Value.PageNumber.ShouldBe(1); // 1-based user-facing page
+        result.Value.PageSize.ShouldBe(10);
+        result.Value.TotalPages.ShouldBe(1);
     }
 
     [Fact]
@@ -94,13 +94,13 @@ public class GetBrandsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(10);
-        result.Value.TotalCount.Should().Be(25);
-        result.Value.PageIndex.Should().Be(1); // 0-based internal index for page 2
-        result.Value.PageNumber.Should().Be(2); // 1-based user-facing page
-        result.Value.PageSize.Should().Be(10);
-        result.Value.TotalPages.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(10);
+        result.Value.TotalCount.ShouldBe(25);
+        result.Value.PageIndex.ShouldBe(1); // 0-based internal index for page 2
+        result.Value.PageNumber.ShouldBe(2); // 1-based user-facing page
+        result.Value.PageSize.ShouldBe(10);
+        result.Value.TotalPages.ShouldBe(3);
     }
 
     [Fact]
@@ -125,10 +125,10 @@ public class GetBrandsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
-        result.Value.TotalPages.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
+        result.Value.TotalPages.ShouldBe(0);
     }
 
     [Fact]
@@ -155,11 +155,11 @@ public class GetBrandsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var item = result.Value.Items.First();
-        item.Name.Should().Be("Featured Brand");
-        item.Slug.Should().Be("featured-brand");
-        item.IsFeatured.Should().BeTrue();
+        item.Name.ShouldBe("Featured Brand");
+        item.Slug.ShouldBe("featured-brand");
+        item.IsFeatured.ShouldBe(true);
     }
 
     #endregion

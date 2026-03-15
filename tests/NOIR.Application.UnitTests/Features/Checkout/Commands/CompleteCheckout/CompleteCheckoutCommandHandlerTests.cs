@@ -194,10 +194,10 @@ public class CompleteCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(CheckoutSessionStatus.Completed);
-        result.Value.OrderId.Should().NotBeNull();
-        result.Value.OrderNumber.Should().NotBeNullOrEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(CheckoutSessionStatus.Completed);
+        result.Value.OrderId.ShouldNotBeNull();
+        result.Value.OrderNumber.ShouldNotBeNullOrEmpty();
 
         _orderRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()),
@@ -244,8 +244,8 @@ public class CompleteCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CustomerNotes.Should().Be(customerNotes);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CustomerNotes.ShouldBe(customerNotes);
     }
 
     [Fact]
@@ -283,9 +283,9 @@ public class CompleteCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.OrderNumber.Should().StartWith("ORD-");
-        result.Value.OrderNumber.Should().EndWith("-0001"); // First order of the day
+        result.IsSuccess.ShouldBe(true);
+        result.Value.OrderNumber.ShouldStartWith("ORD-");
+        result.Value.OrderNumber.ShouldEndWith("-0001"); // First order of the day
     }
 
     [Fact]
@@ -323,8 +323,8 @@ public class CompleteCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        cart.Status.Should().Be(CartStatus.Converted);
+        result.IsSuccess.ShouldBe(true);
+        cart.Status.ShouldBe(CartStatus.Converted);
     }
 
     [Fact]
@@ -362,8 +362,8 @@ public class CompleteCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(CheckoutSessionStatus.Completed);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(CheckoutSessionStatus.Completed);
     }
 
     #endregion
@@ -388,9 +388,9 @@ public class CompleteCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-014");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-014");
+        result.Error.Message.ShouldContain("not found");
     }
 
     [Fact]
@@ -416,9 +416,9 @@ public class CompleteCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-015");
-        result.Error.Message.Should().Contain("expired");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-015");
+        result.Error.Message.ShouldContain("expired");
     }
 
     [Fact]
@@ -440,9 +440,9 @@ public class CompleteCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-016");
-        result.Error.Message.Should().Contain("Shipping address is required");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-016");
+        result.Error.Message.ShouldContain("Shipping address is required");
     }
 
     [Fact]
@@ -464,9 +464,9 @@ public class CompleteCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-017");
-        result.Error.Message.Should().Contain("Shipping method must be selected");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-017");
+        result.Error.Message.ShouldContain("Shipping method must be selected");
     }
 
     [Fact]
@@ -495,9 +495,10 @@ public class CompleteCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-018");
-        result.Error.Message.Should().Contain("Cart").And.Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-018");
+        result.Error.Message.ShouldContain("Cart");
+        result.Error.Message.ShouldContain("not found");
     }
 
     [Fact]
@@ -527,9 +528,9 @@ public class CompleteCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-019");
-        result.Error.Message.Should().Contain("empty cart");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-019");
+        result.Error.Message.ShouldContain("empty cart");
     }
 
     [Theory]
@@ -562,8 +563,8 @@ public class CompleteCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-020");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-020");
     }
 
     #endregion
@@ -605,7 +606,7 @@ public class CompleteCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     [Fact]

@@ -52,9 +52,9 @@ public class SetModuleAvailabilityCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.FeatureName.Should().Be(TestFeatureName);
-        result.Value.IsAvailable.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.FeatureName.ShouldBe(TestFeatureName);
+        result.Value.IsAvailable.ShouldBe(true);
         _dbContextMock.Verify(x => x.TenantModuleStates.AddAsync(
             It.Is<TenantModuleState>(s => s.FeatureName == TestFeatureName && s.TenantId == TestTenantId),
             It.IsAny<CancellationToken>()), Times.Once);
@@ -71,9 +71,9 @@ public class SetModuleAvailabilityCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsAvailable.Should().BeFalse();
-        result.Value.IsEffective.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsAvailable.ShouldBe(false);
+        result.Value.IsEffective.ShouldBe(false);
     }
 
     #endregion
@@ -93,8 +93,8 @@ public class SetModuleAvailabilityCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsAvailable.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsAvailable.ShouldBe(true);
         _dbContextMock.Verify(x => x.TenantModuleStates.AddAsync(
             It.IsAny<TenantModuleState>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -112,8 +112,8 @@ public class SetModuleAvailabilityCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsAvailable.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsAvailable.ShouldBe(false);
     }
 
     #endregion
@@ -133,7 +133,7 @@ public class SetModuleAvailabilityCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Value.IsEffective.Should().BeTrue();
+        result.Value.IsEffective.ShouldBe(true);
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public class SetModuleAvailabilityCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Value.IsEffective.Should().BeFalse();
+        result.Value.IsEffective.ShouldBe(false);
     }
 
     [Fact]
@@ -165,7 +165,7 @@ public class SetModuleAvailabilityCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Value.IsEffective.Should().BeFalse();
+        result.Value.IsEffective.ShouldBe(false);
     }
 
     #endregion
@@ -212,12 +212,12 @@ public class SetModuleAvailabilityCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.FeatureName.Should().Be(TestFeatureName);
-        dto.IsAvailable.Should().BeTrue();
-        dto.IsEnabled.Should().BeTrue(); // Default on new TenantModuleState
-        dto.IsEffective.Should().BeTrue(); // Available && Enabled
+        dto.FeatureName.ShouldBe(TestFeatureName);
+        dto.IsAvailable.ShouldBe(true);
+        dto.IsEnabled.ShouldBe(true); // Default on new TenantModuleState
+        dto.IsEffective.ShouldBe(true); // Available && Enabled
     }
 
     #endregion

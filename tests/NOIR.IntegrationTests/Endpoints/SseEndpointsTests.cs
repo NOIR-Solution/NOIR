@@ -33,7 +33,7 @@ public class SseEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/sse/channels/test-channel");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -54,13 +54,13 @@ public class SseEndpointsTests : IClassFixture<CustomWebApplicationFactory>
 
             // Assert - Should return 200 with text/event-stream content type
             // May also return 499 (client closed request) in some timing scenarios
-            response.StatusCode.Should().BeOneOf(
+            response.StatusCode.ShouldBeOneOf(
                 HttpStatusCode.OK,
                 (HttpStatusCode)499);
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                response.Content.Headers.ContentType?.MediaType.Should().Be("text/event-stream");
+                response.Content.Headers.ContentType?.MediaType.ShouldBe("text/event-stream");
             }
         }
         catch (TaskCanceledException)

@@ -51,7 +51,7 @@ public class DeleteCompanyCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _companyRepoMock.Verify(x => x.Remove(It.IsAny<CrmCompany>()), Times.Never);
     }
 
@@ -75,7 +75,7 @@ public class DeleteCompanyCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _companyRepoMock.Verify(x => x.Remove(company), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -94,6 +94,6 @@ public class DeleteCompanyCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 }

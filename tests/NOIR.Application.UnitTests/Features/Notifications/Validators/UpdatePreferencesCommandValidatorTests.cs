@@ -128,8 +128,8 @@ public class UpdatePreferencesCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Invalid notification category.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Invalid notification category.");
     }
 
     [Fact]
@@ -167,8 +167,8 @@ public class UpdatePreferencesCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Invalid email frequency.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Invalid email frequency.");
     }
 
     [Fact]
@@ -207,8 +207,8 @@ public class UpdatePreferencesCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Invalid notification category.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Invalid notification category.");
     }
 
     [Fact]
@@ -226,8 +226,8 @@ public class UpdatePreferencesCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Invalid notification category.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Invalid notification category.");
     }
 
     #endregion

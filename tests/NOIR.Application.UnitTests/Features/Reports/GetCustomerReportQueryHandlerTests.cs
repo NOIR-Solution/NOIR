@@ -62,10 +62,10 @@ public class GetCustomerReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.NewCustomers.Should().Be(150);
-        result.Value.ReturningCustomers.Should().Be(320);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.NewCustomers.ShouldBe(150);
+        result.Value.ReturningCustomers.ShouldBe(320);
     }
 
     #endregion
@@ -93,7 +93,7 @@ public class GetCustomerReportQueryHandlerTests
         var afterExecution = DateTimeOffset.UtcNow;
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _reportServiceMock.Verify(
             x => x.GetCustomerReportAsync(
                 It.Is<DateTimeOffset>(d => d >= beforeExecution.AddMonths(-12).AddSeconds(-1) && d <= afterExecution.AddMonths(-12).AddSeconds(1)),
@@ -124,7 +124,7 @@ public class GetCustomerReportQueryHandlerTests
         var afterExecution = DateTimeOffset.UtcNow;
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _reportServiceMock.Verify(
             x => x.GetCustomerReportAsync(
                 startDate,
@@ -155,7 +155,7 @@ public class GetCustomerReportQueryHandlerTests
         var afterExecution = DateTimeOffset.UtcNow;
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _reportServiceMock.Verify(
             x => x.GetCustomerReportAsync(
                 It.Is<DateTimeOffset>(d => d >= beforeExecution.AddMonths(-12).AddSeconds(-1) && d <= afterExecution.AddMonths(-12).AddSeconds(1)),
@@ -200,12 +200,12 @@ public class GetCustomerReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeSameAs(expectedReport);
-        result.Value.ChurnRate.Should().Be(0.12m);
-        result.Value.AcquisitionByMonth.Should().HaveCount(1);
-        result.Value.TopCustomers.Should().HaveCount(1);
-        result.Value.TopCustomers[0].Name.Should().Be("VIP Customer");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeSameAs(expectedReport);
+        result.Value.ChurnRate.ShouldBe(0.12m);
+        result.Value.AcquisitionByMonth.Count().ShouldBe(1);
+        result.Value.TopCustomers.Count().ShouldBe(1);
+        result.Value.TopCustomers[0].Name.ShouldBe("VIP Customer");
     }
 
     #endregion
@@ -273,11 +273,11 @@ public class GetCustomerReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.NewCustomers.Should().Be(0);
-        result.Value.ReturningCustomers.Should().Be(0);
-        result.Value.AcquisitionByMonth.Should().BeEmpty();
-        result.Value.TopCustomers.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.NewCustomers.ShouldBe(0);
+        result.Value.ReturningCustomers.ShouldBe(0);
+        result.Value.AcquisitionByMonth.ShouldBeEmpty();
+        result.Value.TopCustomers.ShouldBeEmpty();
     }
 
     #endregion
@@ -303,8 +303,8 @@ public class GetCustomerReportQueryHandlerTests
         var act = () => _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("Database connection failed");
+        (await Should.ThrowAsync<InvalidOperationException>(act))
+            .Message.ShouldBe("Database connection failed");
     }
 
     #endregion

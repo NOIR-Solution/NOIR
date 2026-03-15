@@ -62,8 +62,8 @@ public class RequestEmailChangeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SessionToken.Should().Be(sessionToken);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SessionToken.ShouldBe(sessionToken);
         _emailChangeServiceMock.Verify(
             x => x.RequestEmailChangeAsync(userId, newEmail, null, null, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -125,8 +125,8 @@ public class RequestEmailChangeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.Unauthorized);
         _emailChangeServiceMock.Verify(
             x => x.RequestEmailChangeAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -142,8 +142,8 @@ public class RequestEmailChangeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.Unauthorized);
     }
 
     #endregion
@@ -166,9 +166,9 @@ public class RequestEmailChangeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.TooManyRequests);
-        result.Error.Type.Should().Be(ErrorType.TooManyRequests);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.TooManyRequests);
+        result.Error.Type.ShouldBe(ErrorType.TooManyRequests);
         _emailChangeServiceMock.Verify(
             x => x.RequestEmailChangeAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -198,7 +198,7 @@ public class RequestEmailChangeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     #endregion
@@ -226,8 +226,8 @@ public class RequestEmailChangeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Message.Should().Contain("Email already in use");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Message.ShouldContain("Email already in use");
     }
 
     #endregion

@@ -18,10 +18,10 @@ public class PaginatedListTests
         var list = PaginatedList<string>.Create(items, totalCount, pageNumber, pageSize);
 
         // Assert
-        list.Items.Should().BeEquivalentTo(items);
-        list.TotalCount.Should().Be(100);
-        list.PageNumber.Should().Be(2);
-        list.TotalPages.Should().Be(10);
+        list.Items.ShouldBe(items);
+        list.TotalCount.ShouldBe(100);
+        list.PageNumber.ShouldBe(2);
+        list.TotalPages.ShouldBe(10);
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class PaginatedListTests
         var list = PaginatedList<string>.Create(items, 100, 1, 10);
 
         // Assert
-        list.HasPreviousPage.Should().BeFalse();
+        list.HasPreviousPage.ShouldBe(false);
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class PaginatedListTests
         var list = PaginatedList<string>.Create(items, 100, 2, 10);
 
         // Assert
-        list.HasPreviousPage.Should().BeTrue();
+        list.HasPreviousPage.ShouldBe(true);
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class PaginatedListTests
         var list = PaginatedList<string>.Create(items, 100, 10, 10);
 
         // Assert
-        list.HasNextPage.Should().BeFalse();
+        list.HasNextPage.ShouldBe(false);
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class PaginatedListTests
         var list = PaginatedList<string>.Create(items, 100, 1, 10);
 
         // Assert
-        list.HasNextPage.Should().BeTrue();
+        list.HasNextPage.ShouldBe(true);
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class PaginatedListTests
         var list = PaginatedList<string>.Create(items, 95, 1, 10);
 
         // Assert
-        list.TotalPages.Should().Be(10);
+        list.TotalPages.ShouldBe(10);
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public class PaginatedListTests
         var list = PaginatedList<string>.Create(items, 100, 1, 10);
 
         // Assert
-        list.TotalPages.Should().Be(10);
+        list.TotalPages.ShouldBe(10);
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class PaginatedListTests
         var list = PaginatedList<string>.Create(items, 0, 1, 10);
 
         // Assert
-        list.TotalPages.Should().Be(0);
+        list.TotalPages.ShouldBe(0);
     }
 
     [Fact]
@@ -125,8 +125,8 @@ public class PaginatedListTests
         var list = PaginatedList<string>.Create(items, 100, 5, 10);
 
         // Assert
-        list.HasPreviousPage.Should().BeTrue();
-        list.HasNextPage.Should().BeTrue();
+        list.HasPreviousPage.ShouldBe(true);
+        list.HasNextPage.ShouldBe(true);
     }
 
     [Fact]
@@ -139,9 +139,9 @@ public class PaginatedListTests
         var list = PaginatedList<string>.Create(items, 3, 1, 10);
 
         // Assert
-        list.HasPreviousPage.Should().BeFalse();
-        list.HasNextPage.Should().BeFalse();
-        list.TotalPages.Should().Be(1);
+        list.HasPreviousPage.ShouldBe(false);
+        list.HasNextPage.ShouldBe(false);
+        list.TotalPages.ShouldBe(1);
     }
 
     [Fact]
@@ -154,6 +154,6 @@ public class PaginatedListTests
         var list = PaginatedList<string>.Create(items, 2, 1, 10);
 
         // Assert
-        list.Items.Should().BeAssignableTo<IReadOnlyList<string>>();
+        list.Items.ShouldBeAssignableTo<IReadOnlyList<string>>();
     }
 }

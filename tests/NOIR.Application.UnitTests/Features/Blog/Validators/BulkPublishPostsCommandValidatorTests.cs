@@ -51,7 +51,7 @@ public class BulkPublishPostsCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     #endregion

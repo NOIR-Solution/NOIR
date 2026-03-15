@@ -115,10 +115,10 @@ public class GetUsersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.TotalCount.Should().Be(5);
-        result.Value.PageNumber.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.TotalCount.ShouldBe(5);
+        result.Value.PageNumber.ShouldBe(1);
     }
 
     [Fact]
@@ -146,8 +146,8 @@ public class GetUsersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
         _userIdentityServiceMock.Verify(
             x => x.GetUsersPaginatedAsync(TestTenantId, searchTerm, 1, 20, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<string?>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
             Times.Once);
@@ -179,9 +179,9 @@ public class GetUsersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(2);
-        result.Value.Items.All(u => u.Roles.Contains("Admin")).Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(2);
+        result.Value.Items.All(u => u.Roles.Contains("Admin")).ShouldBe(true);
 
         // Verify role filter was passed to service
         _userIdentityServiceMock.Verify(
@@ -210,9 +210,9 @@ public class GetUsersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items.Should().OnlyContain(u => u.IsLocked);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items.ShouldAllBe(u => u.IsLocked);
 
         // Verify isLocked filter was passed to service
         _userIdentityServiceMock.Verify(
@@ -242,9 +242,9 @@ public class GetUsersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(2);
-        result.Value.Items.Should().OnlyContain(u => !u.IsLocked);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(2);
+        result.Value.Items.ShouldAllBe(u => !u.IsLocked);
 
         // Verify isLocked=false filter was passed to service
         _userIdentityServiceMock.Verify(
@@ -275,10 +275,10 @@ public class GetUsersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(10);
-        result.Value.TotalCount.Should().Be(25);
-        result.Value.TotalPages.Should().Be(3); // 25 / 10 = 3 pages (rounded up)
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(10);
+        result.Value.TotalCount.ShouldBe(25);
+        result.Value.TotalPages.ShouldBe(3); // 25 / 10 = 3 pages (rounded up)
     }
 
     [Fact]
@@ -301,8 +301,8 @@ public class GetUsersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PageNumber.Should().Be(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PageNumber.ShouldBe(2);
         _userIdentityServiceMock.Verify(
             x => x.GetUsersPaginatedAsync(TestTenantId, null, page, pageSize, It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<string?>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
             Times.Once);
@@ -322,10 +322,10 @@ public class GetUsersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
-        result.Value.TotalPages.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
+        result.Value.TotalPages.ShouldBe(0);
     }
 
     #endregion
@@ -357,9 +357,9 @@ public class GetUsersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items[0].Id.Should().Be("user-2");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items[0].Id.ShouldBe("user-2");
 
         // Verify both filters were passed to service
         _userIdentityServiceMock.Verify(
@@ -392,8 +392,8 @@ public class GetUsersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
     }
 
     #endregion
@@ -422,9 +422,9 @@ public class GetUsersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items[0].DisplayName.Should().Be("Custom Display");
-        result.Value.Items[1].DisplayName.Should().Be("John Doe"); // Falls back to FullName
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items[0].DisplayName.ShouldBe("Custom Display");
+        result.Value.Items[1].DisplayName.ShouldBe("John Doe"); // Falls back to FullName
     }
 
     [Fact]
@@ -449,9 +449,9 @@ public class GetUsersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items[0].IsSystemUser.Should().BeFalse();
-        result.Value.Items[1].IsSystemUser.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items[0].IsSystemUser.ShouldBe(false);
+        result.Value.Items[1].IsSystemUser.ShouldBe(true);
     }
 
     [Fact]
@@ -476,10 +476,10 @@ public class GetUsersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // IsLocked is the inverse of IsActive
-        result.Value.Items[0].IsLocked.Should().BeFalse(); // IsActive=true means IsLocked=false
-        result.Value.Items[1].IsLocked.Should().BeTrue();  // IsActive=false means IsLocked=true
+        result.Value.Items[0].IsLocked.ShouldBe(false); // IsActive=true means IsLocked=false
+        result.Value.Items[1].IsLocked.ShouldBe(true);  // IsActive=false means IsLocked=true
     }
 
     #endregion
@@ -561,10 +561,10 @@ public class GetUsersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
         // TotalCount reflects the filtered count from service (not post-filter)
-        result.Value.TotalCount.Should().Be(12);
+        result.Value.TotalCount.ShouldBe(12);
 
         // Verify the role filter was passed to service
         _userIdentityServiceMock.Verify(

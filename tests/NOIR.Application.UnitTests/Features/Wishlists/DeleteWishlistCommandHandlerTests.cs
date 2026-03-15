@@ -56,7 +56,7 @@ public class DeleteWishlistCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         _wishlistRepositoryMock.Verify(
             x => x.Remove(existingWishlist),
@@ -84,8 +84,8 @@ public class DeleteWishlistCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("To Delete");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("To Delete");
     }
 
     #endregion
@@ -108,7 +108,7 @@ public class DeleteWishlistCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
 
         _wishlistRepositoryMock.Verify(
             x => x.Remove(It.IsAny<Wishlist>()),
@@ -140,7 +140,7 @@ public class DeleteWishlistCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
 
         _wishlistRepositoryMock.Verify(
             x => x.Remove(It.IsAny<Wishlist>()),
@@ -172,7 +172,7 @@ public class DeleteWishlistCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
 
         _wishlistRepositoryMock.Verify(
             x => x.Remove(It.IsAny<Wishlist>()),

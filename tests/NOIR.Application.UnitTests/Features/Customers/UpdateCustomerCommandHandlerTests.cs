@@ -64,11 +64,11 @@ public class UpdateCustomerCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Email.Should().Be("jane@example.com");
-        result.Value.FirstName.Should().Be("Jane");
-        result.Value.LastName.Should().Be("Smith");
-        result.Value.Phone.Should().Be("0901234567");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Email.ShouldBe("jane@example.com");
+        result.Value.FirstName.ShouldBe("Jane");
+        result.Value.LastName.ShouldBe("Smith");
+        result.Value.Phone.ShouldBe("0901234567");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -98,7 +98,7 @@ public class UpdateCustomerCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         // Should not check email uniqueness when email unchanged
         _customerRepositoryMock.Verify(
@@ -130,8 +130,8 @@ public class UpdateCustomerCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Notes.Should().Contain("New note added");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Notes.ShouldContain("New note added");
     }
 
     [Fact]
@@ -157,8 +157,8 @@ public class UpdateCustomerCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Notes.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Notes.ShouldBeNull();
     }
 
     #endregion
@@ -187,8 +187,8 @@ public class UpdateCustomerCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CUSTOMER-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CUSTOMER-002");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -231,8 +231,8 @@ public class UpdateCustomerCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CUSTOMER-001");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CUSTOMER-001");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),

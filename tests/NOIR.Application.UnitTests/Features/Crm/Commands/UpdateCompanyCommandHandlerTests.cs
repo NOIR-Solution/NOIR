@@ -50,10 +50,10 @@ public class UpdateCompanyCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        company.Name.Should().Be("Acme Corp Updated");
-        company.Industry.Should().Be("Software");
-        company.Phone.Should().Be("555-0200");
+        result.IsSuccess.ShouldBe(true);
+        company.Name.ShouldBe("Acme Corp Updated");
+        company.Industry.ShouldBe("Software");
+        company.Phone.ShouldBe("555-0200");
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -71,7 +71,7 @@ public class UpdateCompanyCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -95,7 +95,7 @@ public class UpdateCompanyCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

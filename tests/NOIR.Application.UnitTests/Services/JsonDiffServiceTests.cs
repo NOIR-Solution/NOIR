@@ -17,7 +17,7 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiff<TestDto>(null, null);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -30,9 +30,9 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiff<TestDto>(null, after);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"from\":null");
-        result.Should().Contain("\"to\":\"John\"");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"from\":null");
+        result.ShouldContain("\"to\":\"John\"");
     }
 
     [Fact]
@@ -45,9 +45,9 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiff<TestDto>(before, null);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"from\":\"John\"");
-        result.Should().Contain("\"to\":null");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"from\":\"John\"");
+        result.ShouldContain("\"to\":null");
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiff(before, after);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -75,10 +75,10 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiff(before, after);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"name\":");
-        result.Should().Contain("\"from\":\"John\"");
-        result.Should().Contain("\"to\":\"Jane\"");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"name\":");
+        result.ShouldContain("\"from\":\"John\"");
+        result.ShouldContain("\"to\":\"Jane\"");
     }
 
     [Fact]
@@ -92,9 +92,9 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiff(before, after);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"name\":");
-        result.Should().Contain("\"age\":");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"name\":");
+        result.ShouldContain("\"age\":");
     }
 
     [Fact]
@@ -108,9 +108,9 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiff(before, after);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"email\":");
-        result.Should().Contain("\"to\":\"john@example.com\"");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"email\":");
+        result.ShouldContain("\"to\":\"john@example.com\"");
     }
 
     #endregion
@@ -124,7 +124,7 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromJson(null, null);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -137,9 +137,9 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromJson(null, afterJson);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"from\":null");
-        result.Should().Contain("\"to\":\"John\"");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"from\":null");
+        result.ShouldContain("\"to\":\"John\"");
     }
 
     [Fact]
@@ -152,9 +152,9 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromJson(beforeJson, null);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"from\":\"John\"");
-        result.Should().Contain("\"to\":null");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"from\":\"John\"");
+        result.ShouldContain("\"to\":null");
     }
 
     [Fact]
@@ -167,7 +167,7 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromJson(json, json);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -181,9 +181,9 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromJson(beforeJson, afterJson);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"from\":\"John\"");
-        result.Should().Contain("\"to\":\"Jane\"");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"from\":\"John\"");
+        result.ShouldContain("\"to\":\"Jane\"");
     }
 
     [Fact]
@@ -197,10 +197,10 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromJson(beforeJson, afterJson);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"email\":");
-        result.Should().Contain("\"from\":\"john@test.com\"");
-        result.Should().Contain("\"to\":null");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"email\":");
+        result.ShouldContain("\"from\":\"john@test.com\"");
+        result.ShouldContain("\"to\":null");
     }
 
     [Fact]
@@ -214,10 +214,10 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromJson(beforeJson, afterJson);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"email\":");
-        result.Should().Contain("\"from\":null");
-        result.Should().Contain("\"to\":\"john@test.com\"");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"email\":");
+        result.ShouldContain("\"from\":null");
+        result.ShouldContain("\"to\":\"john@test.com\"");
     }
 
     #endregion
@@ -231,7 +231,7 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromDictionaries(null, null);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -245,7 +245,7 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromDictionaries(before, after);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -259,10 +259,10 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromDictionaries(before, after);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"Name\":");
-        result.Should().Contain("\"from\":\"John\"");
-        result.Should().Contain("\"to\":\"Jane\"");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"Name\":");
+        result.ShouldContain("\"from\":\"John\"");
+        result.ShouldContain("\"to\":\"Jane\"");
     }
 
     [Fact]
@@ -276,10 +276,10 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromDictionaries(before, after);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"Age\":");
-        result.Should().Contain("\"from\":null");
-        result.Should().Contain("\"to\":30");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"Age\":");
+        result.ShouldContain("\"from\":null");
+        result.ShouldContain("\"to\":30");
     }
 
     [Fact]
@@ -293,10 +293,10 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromDictionaries(before, after);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"Age\":");
-        result.Should().Contain("\"from\":30");
-        result.Should().Contain("\"to\":null");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"Age\":");
+        result.ShouldContain("\"from\":30");
+        result.ShouldContain("\"to\":null");
     }
 
     [Fact]
@@ -310,9 +310,9 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromDictionaries(before, after);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"from\":null");
-        result.Should().Contain("\"to\":\"John\"");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"from\":null");
+        result.ShouldContain("\"to\":\"John\"");
     }
 
     [Fact]
@@ -326,9 +326,9 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromDictionaries(before, after);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"from\":\"John\"");
-        result.Should().Contain("\"to\":null");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"from\":\"John\"");
+        result.ShouldContain("\"to\":null");
     }
 
     [Fact]
@@ -341,9 +341,9 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromDictionaries(null, after);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"from\":null");
-        result.Should().Contain("\"to\":\"John\"");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"from\":null");
+        result.ShouldContain("\"to\":\"John\"");
     }
 
     [Fact]
@@ -356,9 +356,9 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromDictionaries(before, null);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"from\":\"John\"");
-        result.Should().Contain("\"to\":null");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"from\":\"John\"");
+        result.ShouldContain("\"to\":null");
     }
 
     #endregion
@@ -384,11 +384,11 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiff(before, after);
 
         // Assert
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
         // Nested path uses dot notation: address.city
-        result.Should().Contain("\"address.city\":");
-        result.Should().Contain("\"from\":\"New York\"");
-        result.Should().Contain("\"to\":\"Los Angeles\"");
+        result.ShouldContain("\"address.city\":");
+        result.ShouldContain("\"from\":\"New York\"");
+        result.ShouldContain("\"to\":\"Los Angeles\"");
     }
 
     [Fact]
@@ -402,11 +402,11 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromJson(beforeJson, afterJson);
 
         // Assert
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
         // Nested path uses dot notation: level1.level2.level3.value
-        result.Should().Contain("\"level1.level2.level3.value\":");
-        result.Should().Contain("\"from\":\"old\"");
-        result.Should().Contain("\"to\":\"new\"");
+        result.ShouldContain("\"level1.level2.level3.value\":");
+        result.ShouldContain("\"from\":\"old\"");
+        result.ShouldContain("\"to\":\"new\"");
     }
 
     #endregion
@@ -424,7 +424,7 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiff(before, after);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -434,7 +434,7 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromJson("{}", "{}");
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -448,10 +448,10 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiff(before, after);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"tags\":");
-        result.Should().Contain("\"from\":");
-        result.Should().Contain("\"to\":");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"tags\":");
+        result.ShouldContain("\"from\":");
+        result.ShouldContain("\"to\":");
     }
 
     [Fact]
@@ -465,10 +465,10 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiff(before, after);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"isActive\":");
-        result.Should().Contain("\"from\":true");
-        result.Should().Contain("\"to\":false");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"isActive\":");
+        result.ShouldContain("\"from\":true");
+        result.ShouldContain("\"to\":false");
     }
 
     [Fact]
@@ -482,10 +482,10 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiff(before, after);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"age\":");
-        result.Should().Contain("\"from\":30");
-        result.Should().Contain("\"to\":31");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"age\":");
+        result.ShouldContain("\"from\":30");
+        result.ShouldContain("\"to\":31");
     }
 
     [Fact]
@@ -502,10 +502,10 @@ public class JsonDiffServiceTests
         var result = _sut.CreateDiffFromDictionaries(before, after);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"Address\":");
-        result.Should().Contain("\"from\":");
-        result.Should().Contain("\"to\":");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"Address\":");
+        result.ShouldContain("\"from\":");
+        result.ShouldContain("\"to\":");
     }
 
     #endregion

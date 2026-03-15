@@ -27,13 +27,13 @@ public class PromotionUsageTests
         var usage = new PromotionUsage(id, promotionId, userId, orderId, discountAmount, TestTenantId);
 
         // Assert
-        usage.Id.Should().Be(id);
-        usage.PromotionId.Should().Be(promotionId);
-        usage.UserId.Should().Be(userId);
-        usage.OrderId.Should().Be(orderId);
-        usage.DiscountAmount.Should().Be(discountAmount);
-        usage.TenantId.Should().Be(TestTenantId);
-        usage.UsedAt.Should().BeOnOrAfter(beforeCreate);
+        usage.Id.ShouldBe(id);
+        usage.PromotionId.ShouldBe(promotionId);
+        usage.UserId.ShouldBe(userId);
+        usage.OrderId.ShouldBe(orderId);
+        usage.DiscountAmount.ShouldBe(discountAmount);
+        usage.TenantId.ShouldBe(TestTenantId);
+        usage.UsedAt.ShouldBeGreaterThanOrEqualTo(beforeCreate);
     }
 
     [Fact]
@@ -48,8 +48,8 @@ public class PromotionUsageTests
 
         // Assert
         var afterCreate = DateTimeOffset.UtcNow;
-        usage.UsedAt.Should().BeOnOrAfter(beforeCreate);
-        usage.UsedAt.Should().BeOnOrBefore(afterCreate);
+        usage.UsedAt.ShouldBeGreaterThanOrEqualTo(beforeCreate);
+        usage.UsedAt.ShouldBeLessThanOrEqualTo(afterCreate);
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class PromotionUsageTests
             Guid.NewGuid(), Guid.NewGuid(), "user-1", Guid.NewGuid(), 100m, null);
 
         // Assert
-        usage.TenantId.Should().BeNull();
+        usage.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class PromotionUsageTests
             Guid.NewGuid(), Guid.NewGuid(), "user-1", Guid.NewGuid(), 0m, TestTenantId);
 
         // Assert
-        usage.DiscountAmount.Should().Be(0m);
+        usage.DiscountAmount.ShouldBe(0m);
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class PromotionUsageTests
             Guid.NewGuid(), Guid.NewGuid(), "user-1", Guid.NewGuid(), 10_000_000m, TestTenantId);
 
         // Assert
-        usage.DiscountAmount.Should().Be(10_000_000m);
+        usage.DiscountAmount.ShouldBe(10_000_000m);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class PromotionUsageTests
             Guid.NewGuid(), Guid.NewGuid(), "user-2", Guid.NewGuid(), 200m, TestTenantId);
 
         // Assert
-        usage1.UsedAt.Should().BeOnOrBefore(usage2.UsedAt);
+        usage1.UsedAt.ShouldBeLessThanOrEqualTo(usage2.UsedAt);
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class PromotionUsageTests
             Guid.NewGuid(), Guid.NewGuid(), "specific-user-id", Guid.NewGuid(), 100m, TestTenantId);
 
         // Assert
-        usage.UserId.Should().Be("specific-user-id");
+        usage.UserId.ShouldBe("specific-user-id");
     }
 
     #endregion

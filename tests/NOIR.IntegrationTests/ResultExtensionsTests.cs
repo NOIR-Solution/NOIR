@@ -17,7 +17,7 @@ public class ResultExtensionsTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeOfType<Ok>();
+        httpResult.ShouldBeOfType<Ok>();
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class ResultExtensionsTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeAssignableTo<ProblemHttpResult>();
+        httpResult.ShouldBeAssignableTo<ProblemHttpResult>();
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class ResultExtensionsTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeAssignableTo<ProblemHttpResult>();
+        httpResult.ShouldBeAssignableTo<ProblemHttpResult>();
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class ResultExtensionsTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeAssignableTo<ProblemHttpResult>();
+        httpResult.ShouldBeAssignableTo<ProblemHttpResult>();
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class ResultExtensionsTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeAssignableTo<ProblemHttpResult>();
+        httpResult.ShouldBeAssignableTo<ProblemHttpResult>();
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class ResultExtensionsTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeAssignableTo<ProblemHttpResult>();
+        httpResult.ShouldBeAssignableTo<ProblemHttpResult>();
     }
 
     #endregion
@@ -99,9 +99,9 @@ public class ResultExtensionsTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeOfType<Ok<string>>();
+        httpResult.ShouldBeOfType<Ok<string>>();
         var okResult = (Ok<string>)httpResult;
-        okResult.Value.Should().Be("test-value");
+        okResult.Value.ShouldBe("test-value");
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class ResultExtensionsTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeAssignableTo<ProblemHttpResult>();
+        httpResult.ShouldBeAssignableTo<ProblemHttpResult>();
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public class ResultExtensionsTests
         var httpResult = result.ToHttpResult(value => Results.Created($"/api/items/{value}", value));
 
         // Assert
-        httpResult.Should().BeOfType<Created<string>>();
+        httpResult.ShouldBeOfType<Created<string>>();
     }
 
     [Fact]
@@ -140,7 +140,7 @@ public class ResultExtensionsTests
         var httpResult = result.ToHttpResult(value => Results.Created($"/api/items/{value}", value));
 
         // Assert
-        httpResult.Should().BeAssignableTo<ProblemHttpResult>();
+        httpResult.ShouldBeAssignableTo<ProblemHttpResult>();
     }
 
     #endregion
@@ -159,9 +159,9 @@ public class ResultExtensionsTests
             error => Results.Problem(error.Message));
 
         // Assert
-        httpResult.Should().BeOfType<Ok<int>>();
+        httpResult.ShouldBeOfType<Ok<int>>();
         var okResult = (Ok<int>)httpResult;
-        okResult.Value.Should().Be(84);
+        okResult.Value.ShouldBe(84);
     }
 
     [Fact]
@@ -177,7 +177,7 @@ public class ResultExtensionsTests
             err => Results.Problem(err.Message));
 
         // Assert
-        httpResult.Should().BeAssignableTo<ProblemHttpResult>();
+        httpResult.ShouldBeAssignableTo<ProblemHttpResult>();
     }
 
     #endregion
@@ -200,9 +200,9 @@ public class ResultExtensionsTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeOfType<Ok<AuthResponse>>();
+        httpResult.ShouldBeOfType<Ok<AuthResponse>>();
         var okResult = (Ok<AuthResponse>)httpResult;
-        okResult.Value.Should().Be(authResponse);
+        okResult.Value.ShouldBe(authResponse);
     }
 
     #endregion

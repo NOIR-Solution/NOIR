@@ -148,12 +148,12 @@ public class RequestRefundCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.RefundNumber.Should().Be(TestRefundNumber);
-        result.Value.Amount.Should().Be(100000m);
-        result.Value.Reason.Should().Be(RefundReason.CustomerRequest);
-        result.Value.RequestedBy.Should().Be(TestUserId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.RefundNumber.ShouldBe(TestRefundNumber);
+        result.Value.Amount.ShouldBe(100000m);
+        result.Value.Reason.ShouldBe(RefundReason.CustomerRequest);
+        result.Value.RequestedBy.ShouldBe(TestUserId);
 
         _refundRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Refund>(), It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -198,9 +198,9 @@ public class RequestRefundCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(RefundStatus.Approved);
-        result.Value.ApprovedBy.Should().Be(TestUserId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(RefundStatus.Approved);
+        result.Value.ApprovedBy.ShouldBe(TestUserId);
         _paymentServiceMock.Verify(x => x.ProcessRefundAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -222,9 +222,9 @@ public class RequestRefundCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.TransactionNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.TransactionNotFound);
 
         _refundRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Refund>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -244,10 +244,10 @@ public class RequestRefundCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.InvalidStatusTransition);
-        result.Error.Message.Should().Contain("paid");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.InvalidStatusTransition);
+        result.Error.Message.ShouldContain("paid");
     }
 
     [Fact]
@@ -265,10 +265,10 @@ public class RequestRefundCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.RefundWindowExpired);
-        result.Error.Message.Should().Contain("30 days");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.RefundWindowExpired);
+        result.Error.Message.ShouldContain("30 days");
     }
 
     [Fact]
@@ -290,9 +290,9 @@ public class RequestRefundCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.RefundAmountExceedsBalance);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.RefundAmountExceedsBalance);
     }
 
     [Fact]
@@ -326,9 +326,9 @@ public class RequestRefundCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.RefundAmountExceedsBalance);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.RefundAmountExceedsBalance);
     }
 
     [Fact]
@@ -350,9 +350,9 @@ public class RequestRefundCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.InvalidRequesterId);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.InvalidRequesterId);
     }
 
     #endregion

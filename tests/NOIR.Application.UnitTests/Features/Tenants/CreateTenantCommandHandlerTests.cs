@@ -65,10 +65,10 @@ public class CreateTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Identifier.Should().Be(identifier.ToLowerInvariant());
-        result.Value.Name.Should().Be(name);
-        result.Value.IsActive.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Identifier.ShouldBe(identifier.ToLowerInvariant());
+        result.Value.Name.ShouldBe(name);
+        result.Value.IsActive.ShouldBe(true);
     }
 
     [Fact]
@@ -92,8 +92,8 @@ public class CreateTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(false);
     }
 
     [Fact]
@@ -117,8 +117,8 @@ public class CreateTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Identifier.Should().Be("new-tenant");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Identifier.ShouldBe("new-tenant");
     }
 
     #endregion
@@ -142,8 +142,8 @@ public class CreateTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Business.AlreadyExists);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Business.AlreadyExists);
         _tenantStoreMock.Verify(
             x => x.AddAsync(It.IsAny<Tenant>()),
             Times.Never);
@@ -174,8 +174,8 @@ public class CreateTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.System.InternalError);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.System.InternalError);
     }
 
     #endregion

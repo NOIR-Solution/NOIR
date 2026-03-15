@@ -54,23 +54,23 @@ public class ProductMapperTests
         var dto = ProductMapper.ToDto(product, categoryName, categorySlug, variants, images);
 
         // Assert
-        dto.Id.Should().Be(product.Id);
-        dto.Name.Should().Be("Test Product");
-        dto.Slug.Should().Be("test-product");
-        dto.Description.Should().Be("Description");
-        dto.DescriptionHtml.Should().Be("<p>HTML</p>");
-        dto.BasePrice.Should().Be(99.99m);
-        dto.Currency.Should().Be("VND");
-        dto.CategoryName.Should().Be(categoryName);
-        dto.CategorySlug.Should().Be(categorySlug);
-        dto.Brand.Should().Be("TestBrand");
-        dto.Sku.Should().Be("SKU-001");
-        dto.Barcode.Should().Be("BARCODE-001");
-        dto.TrackInventory.Should().BeTrue();
-        dto.MetaTitle.Should().Be("Meta Title");
-        dto.MetaDescription.Should().Be("Meta Description");
-        dto.Variants.Should().BeSameAs(variants);
-        dto.Images.Should().BeSameAs(images);
+        dto.Id.ShouldBe(product.Id);
+        dto.Name.ShouldBe("Test Product");
+        dto.Slug.ShouldBe("test-product");
+        dto.Description.ShouldBe("Description");
+        dto.DescriptionHtml.ShouldBe("<p>HTML</p>");
+        dto.BasePrice.ShouldBe(99.99m);
+        dto.Currency.ShouldBe("VND");
+        dto.CategoryName.ShouldBe(categoryName);
+        dto.CategorySlug.ShouldBe(categorySlug);
+        dto.Brand.ShouldBe("TestBrand");
+        dto.Sku.ShouldBe("SKU-001");
+        dto.Barcode.ShouldBe("BARCODE-001");
+        dto.TrackInventory.ShouldBe(true);
+        dto.MetaTitle.ShouldBe("Meta Title");
+        dto.MetaDescription.ShouldBe("Meta Description");
+        dto.Variants.ShouldBeSameAs(variants);
+        dto.Images.ShouldBeSameAs(images);
     }
 
     [Fact]
@@ -85,9 +85,9 @@ public class ProductMapperTests
         var dto = ProductMapper.ToDto(product, null, null, variants, images);
 
         // Assert
-        dto.CategoryId.Should().BeNull();
-        dto.CategoryName.Should().BeNull();
-        dto.CategorySlug.Should().BeNull();
+        dto.CategoryId.ShouldBeNull();
+        dto.CategoryName.ShouldBeNull();
+        dto.CategorySlug.ShouldBeNull();
     }
 
     [Fact]
@@ -102,11 +102,11 @@ public class ProductMapperTests
         var dto = ProductMapper.ToDto(product);
 
         // Assert
-        dto.Id.Should().Be(product.Id);
-        dto.Variants.Should().HaveCount(1);
-        dto.Variants[0].Name.Should().Be("Default");
-        dto.Images.Should().HaveCount(1);
-        dto.Images[0].Url.Should().Be("https://example.com/img.jpg");
+        dto.Id.ShouldBe(product.Id);
+        dto.Variants.Count().ShouldBe(1);
+        dto.Variants[0].Name.ShouldBe("Default");
+        dto.Images.Count().ShouldBe(1);
+        dto.Images[0].Url.ShouldBe("https://example.com/img.jpg");
     }
 
     [Fact]
@@ -125,10 +125,10 @@ public class ProductMapperTests
         var dto = ProductMapper.ToDto(product);
 
         // Assert
-        dto.Variants.Should().HaveCount(3);
-        dto.Variants[0].Name.Should().Be("First");
-        dto.Variants[1].Name.Should().Be("Second");
-        dto.Variants[2].Name.Should().Be("Third");
+        dto.Variants.Count().ShouldBe(3);
+        dto.Variants[0].Name.ShouldBe("First");
+        dto.Variants[1].Name.ShouldBe("Second");
+        dto.Variants[2].Name.ShouldBe("Third");
     }
 
     [Fact]
@@ -147,10 +147,10 @@ public class ProductMapperTests
         var dto = ProductMapper.ToDto(product);
 
         // Assert
-        dto.Images.Should().HaveCount(3);
-        dto.Images[0].AltText.Should().Be("First");
-        dto.Images[1].AltText.Should().Be("Second");
-        dto.Images[2].AltText.Should().Be("Third");
+        dto.Images.Count().ShouldBe(3);
+        dto.Images[0].AltText.ShouldBe("First");
+        dto.Images[1].AltText.ShouldBe("Second");
+        dto.Images[2].AltText.ShouldBe("Third");
     }
 
     [Fact]
@@ -166,10 +166,10 @@ public class ProductMapperTests
         var dto = ProductMapper.ToDtoWithCollections(product, "Category", "category-slug");
 
         // Assert
-        dto.CategoryName.Should().Be("Category");
-        dto.CategorySlug.Should().Be("category-slug");
-        dto.Variants.Should().HaveCount(2);
-        dto.Images.Should().HaveCount(1);
+        dto.CategoryName.ShouldBe("Category");
+        dto.CategorySlug.ShouldBe("category-slug");
+        dto.Variants.Count().ShouldBe(2);
+        dto.Images.Count().ShouldBe(1);
     }
 
     #endregion
@@ -188,13 +188,13 @@ public class ProductMapperTests
         var dto = ProductMapper.ToListDto(product);
 
         // Assert
-        dto.Id.Should().Be(product.Id);
-        dto.Name.Should().Be("List Product");
-        dto.Slug.Should().Be("list-product");
-        dto.BasePrice.Should().Be(199.99m);
-        dto.Currency.Should().Be("USD");
-        dto.Brand.Should().Be("ListBrand");
-        dto.Sku.Should().Be("LIST-SKU");
+        dto.Id.ShouldBe(product.Id);
+        dto.Name.ShouldBe("List Product");
+        dto.Slug.ShouldBe("list-product");
+        dto.BasePrice.ShouldBe(199.99m);
+        dto.Currency.ShouldBe("USD");
+        dto.Brand.ShouldBe("ListBrand");
+        dto.Sku.ShouldBe("LIST-SKU");
     }
 
     [Fact]
@@ -209,7 +209,7 @@ public class ProductMapperTests
         var dto = ProductMapper.ToListDto(product);
 
         // Assert
-        dto.PrimaryImageUrl.Should().Be("https://example.com/primary.jpg");
+        dto.PrimaryImageUrl.ShouldBe("https://example.com/primary.jpg");
     }
 
     [Fact]
@@ -224,7 +224,7 @@ public class ProductMapperTests
         var dto = ProductMapper.ToListDto(product);
 
         // Assert
-        dto.PrimaryImageUrl.Should().Be("https://example.com/first.jpg");
+        dto.PrimaryImageUrl.ShouldBe("https://example.com/first.jpg");
     }
 
     [Fact]
@@ -237,7 +237,7 @@ public class ProductMapperTests
         var dto = ProductMapper.ToListDto(product);
 
         // Assert
-        dto.PrimaryImageUrl.Should().BeNull();
+        dto.PrimaryImageUrl.ShouldBeNull();
     }
 
     #endregion
@@ -262,17 +262,19 @@ public class ProductMapperTests
         var dto = ProductMapper.ToDto(variant);
 
         // Assert
-        dto.Id.Should().Be(variant.Id);
-        dto.Name.Should().Be("Large Red");
-        dto.Sku.Should().Be("VAR-001");
-        dto.Price.Should().Be(149.99m);
-        dto.CompareAtPrice.Should().Be(199.99m);
-        dto.StockQuantity.Should().Be(50);
-        dto.InStock.Should().BeTrue();
-        dto.OnSale.Should().BeTrue();
-        dto.SortOrder.Should().Be(2);
-        dto.Options.Should().ContainKey("Size").WhoseValue.Should().Be("Large");
-        dto.Options.Should().ContainKey("Color").WhoseValue.Should().Be("Red");
+        dto.Id.ShouldBe(variant.Id);
+        dto.Name.ShouldBe("Large Red");
+        dto.Sku.ShouldBe("VAR-001");
+        dto.Price.ShouldBe(149.99m);
+        dto.CompareAtPrice.ShouldBe(199.99m);
+        dto.StockQuantity.ShouldBe(50);
+        dto.InStock.ShouldBe(true);
+        dto.OnSale.ShouldBe(true);
+        dto.SortOrder.ShouldBe(2);
+        dto.Options.ShouldContainKey("Size");
+        dto.Options["Size"].ShouldBe("Large");
+        dto.Options.ShouldContainKey("Color");
+        dto.Options["Color"].ShouldBe("Red");
     }
 
     [Fact]
@@ -287,8 +289,8 @@ public class ProductMapperTests
         var dto = ProductMapper.ToDto(variant);
 
         // Assert
-        dto.InStock.Should().BeTrue();
-        dto.LowStock.Should().BeTrue();
+        dto.InStock.ShouldBe(true);
+        dto.LowStock.ShouldBe(true);
     }
 
     [Fact]
@@ -303,8 +305,8 @@ public class ProductMapperTests
         var dto = ProductMapper.ToDto(variant);
 
         // Assert
-        dto.InStock.Should().BeFalse();
-        dto.StockQuantity.Should().Be(0);
+        dto.InStock.ShouldBe(false);
+        dto.StockQuantity.ShouldBe(0);
     }
 
     #endregion
@@ -323,11 +325,11 @@ public class ProductMapperTests
         var dto = ProductMapper.ToDto(image);
 
         // Assert
-        dto.Id.Should().Be(image.Id);
-        dto.Url.Should().Be("https://cdn.example.com/product/image.jpg");
-        dto.AltText.Should().Be("Product image");
-        dto.IsPrimary.Should().BeTrue();
-        dto.SortOrder.Should().Be(1);
+        dto.Id.ShouldBe(image.Id);
+        dto.Url.ShouldBe("https://cdn.example.com/product/image.jpg");
+        dto.AltText.ShouldBe("Product image");
+        dto.IsPrimary.ShouldBe(true);
+        dto.SortOrder.ShouldBe(1);
     }
 
     [Fact]
@@ -341,8 +343,8 @@ public class ProductMapperTests
         var dto = ProductMapper.ToDto(image);
 
         // Assert
-        dto.AltText.Should().BeNull();
-        dto.IsPrimary.Should().BeFalse();
+        dto.AltText.ShouldBeNull();
+        dto.IsPrimary.ShouldBe(false);
     }
 
     #endregion
@@ -363,17 +365,17 @@ public class ProductMapperTests
         var dto = ProductMapper.ToDto(category, "Parent Category");
 
         // Assert
-        dto.Id.Should().Be(category.Id);
-        dto.Name.Should().Be("Child Category");
-        dto.Slug.Should().Be("child-category");
-        dto.Description.Should().Be("A child category");
-        dto.ImageUrl.Should().Be("https://example.com/img.jpg");
-        dto.MetaTitle.Should().Be("Child Meta");
-        dto.MetaDescription.Should().Be("Child Meta Description");
-        dto.SortOrder.Should().Be(5);
-        dto.ParentId.Should().Be(parentId);
-        dto.ParentName.Should().Be("Parent Category");
-        dto.Children.Should().BeNull(); // Children not loaded in command context
+        dto.Id.ShouldBe(category.Id);
+        dto.Name.ShouldBe("Child Category");
+        dto.Slug.ShouldBe("child-category");
+        dto.Description.ShouldBe("A child category");
+        dto.ImageUrl.ShouldBe("https://example.com/img.jpg");
+        dto.MetaTitle.ShouldBe("Child Meta");
+        dto.MetaDescription.ShouldBe("Child Meta Description");
+        dto.SortOrder.ShouldBe(5);
+        dto.ParentId.ShouldBe(parentId);
+        dto.ParentName.ShouldBe("Parent Category");
+        dto.Children.ShouldBeNull(); // Children not loaded in command context
     }
 
     [Fact]
@@ -386,8 +388,8 @@ public class ProductMapperTests
         var dto = ProductMapper.ToDto(category, null);
 
         // Assert
-        dto.ParentId.Should().BeNull();
-        dto.ParentName.Should().BeNull();
+        dto.ParentId.ShouldBeNull();
+        dto.ParentName.ShouldBeNull();
     }
 
     [Fact]
@@ -403,9 +405,9 @@ public class ProductMapperTests
         var dto = ProductMapper.ToDtoWithChildren(parent, children);
 
         // Assert
-        dto.Children.Should().HaveCount(2);
-        dto.Children.Should().Contain(c => c.Name == "Child 1");
-        dto.Children.Should().Contain(c => c.Name == "Child 2");
+        dto.Children.Count().ShouldBe(2);
+        dto.Children.ShouldContain(c => c.Name == "Child 1");
+        dto.Children.ShouldContain(c => c.Name == "Child 2");
     }
 
     [Fact]
@@ -418,7 +420,7 @@ public class ProductMapperTests
         var dto = ProductMapper.ToDtoWithChildren(category, null);
 
         // Assert
-        dto.Children.Should().BeNull();
+        dto.Children.ShouldBeNull();
     }
 
     #endregion
@@ -437,15 +439,15 @@ public class ProductMapperTests
         var dto = ProductMapper.ToListDto(category);
 
         // Assert
-        dto.Id.Should().Be(category.Id);
-        dto.Name.Should().Be("List Category");
-        dto.Slug.Should().Be("list-category");
-        dto.Description.Should().Be("Description");
-        dto.SortOrder.Should().Be(10);
-        dto.ProductCount.Should().Be(0);
-        dto.ParentId.Should().BeNull();
-        dto.ParentName.Should().BeNull();
-        dto.ChildCount.Should().Be(0);
+        dto.Id.ShouldBe(category.Id);
+        dto.Name.ShouldBe("List Category");
+        dto.Slug.ShouldBe("list-category");
+        dto.Description.ShouldBe("Description");
+        dto.SortOrder.ShouldBe(10);
+        dto.ProductCount.ShouldBe(0);
+        dto.ParentId.ShouldBeNull();
+        dto.ParentName.ShouldBeNull();
+        dto.ChildCount.ShouldBe(0);
     }
 
     #endregion

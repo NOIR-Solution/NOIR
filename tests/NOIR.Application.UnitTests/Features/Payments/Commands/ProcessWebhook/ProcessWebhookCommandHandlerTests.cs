@@ -154,12 +154,12 @@ public class ProcessWebhookCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Provider.Should().Be(TestProvider);
-        result.Value.EventType.Should().Be("payment.success");
-        result.Value.SignatureValid.Should().BeTrue();
-        result.Value.ProcessingStatus.Should().Be(WebhookProcessingStatus.Processed);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Provider.ShouldBe(TestProvider);
+        result.Value.EventType.ShouldBe("payment.success");
+        result.Value.SignatureValid.ShouldBe(true);
+        result.Value.ProcessingStatus.ShouldBe(WebhookProcessingStatus.Processed);
 
         _webhookLogRepositoryMock.Verify(x => x.AddAsync(It.IsAny<PaymentWebhookLog>(), It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -205,9 +205,9 @@ public class ProcessWebhookCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.GatewayEventId.Should().Be(TestGatewayEventId);
-        result.Value.ProcessingStatus.Should().Be(WebhookProcessingStatus.Processed);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.GatewayEventId.ShouldBe(TestGatewayEventId);
+        result.Value.ProcessingStatus.ShouldBe(WebhookProcessingStatus.Processed);
 
         // Should not add new log when duplicate
         _webhookLogRepositoryMock.Verify(x => x.AddAsync(It.IsAny<PaymentWebhookLog>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -231,9 +231,9 @@ public class ProcessWebhookCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.ProviderNotConfigured);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.ProviderNotConfigured);
 
         _gatewayRepositoryMock.Verify(x => x.FirstOrDefaultAsync(
             It.IsAny<PaymentGatewayByProviderSpec>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -257,9 +257,9 @@ public class ProcessWebhookCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.GatewayNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.GatewayNotFound);
     }
 
     [Fact]
@@ -302,9 +302,9 @@ public class ProcessWebhookCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.InvalidWebhookSignature);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.InvalidWebhookSignature);
 
         // Should still save the failed webhook log
         _webhookLogRepositoryMock.Verify(x => x.AddAsync(
@@ -360,9 +360,9 @@ public class ProcessWebhookCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PaymentTransactionId.Should().BeNull();
-        result.Value.ProcessingStatus.Should().Be(WebhookProcessingStatus.Processed);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PaymentTransactionId.ShouldBeNull();
+        result.Value.ProcessingStatus.ShouldBe(WebhookProcessingStatus.Processed);
     }
 
     #endregion

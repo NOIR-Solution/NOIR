@@ -82,7 +82,7 @@ public class BulkOperationsLocalDbTests : IAsyncLifetime
 
             // Assert
             var count = await context.RefreshTokens.CountAsync();
-            count.Should().Be(100);
+            count.ShouldBe(100);
         });
     }
 
@@ -101,7 +101,7 @@ public class BulkOperationsLocalDbTests : IAsyncLifetime
             await context.BulkInsertAsync(tokens, config);
 
             // Assert - All tokens should have non-empty IDs
-            tokens.Should().AllSatisfy(t => t.Id.Should().NotBe(Guid.Empty));
+            tokens.ShouldAllBe(t => t.Id != Guid.Empty);
         });
     }
 
@@ -113,10 +113,8 @@ public class BulkOperationsLocalDbTests : IAsyncLifetime
             var context = sp.GetRequiredService<ApplicationDbContext>();
 
             // Act
-            var act = async () => await context.BulkInsertAsync(new List<RefreshToken>());
-
-            // Assert
-            await act.Should().NotThrowAsync();
+            // Assert - Should not throw
+            await context.BulkInsertAsync(new List<RefreshToken>());
         });
     }
 
@@ -150,11 +148,7 @@ public class BulkOperationsLocalDbTests : IAsyncLifetime
                 .Where(t => t.UserId.StartsWith("update-user-"))
                 .ToListAsync();
 
-            updated.Should().AllSatisfy(t =>
-            {
-                t.IsRevoked.Should().BeTrue();
-                t.RevokedByIp.Should().Be("192.168.1.1");
-            });
+            updated.ShouldAllBe(t => t.IsRevoked && t.RevokedByIp == "192.168.1.1");
         });
     }
 
@@ -183,14 +177,14 @@ public class BulkOperationsLocalDbTests : IAsyncLifetime
             // Assert
             context.ChangeTracker.Clear();
             var count = await context.RefreshTokens.CountAsync();
-            count.Should().Be(2);
+            count.ShouldBe(2);
 
             var updated = await context.RefreshTokens.FindAsync(existingToken.Id);
-            updated!.IsRevoked.Should().BeTrue();
+            updated!.IsRevoked.ShouldBeTrue();
 
             var inserted = await context.RefreshTokens
                 .FirstOrDefaultAsync(t => t.UserId == "upsert-new-user");
-            inserted.Should().NotBeNull();
+            inserted.ShouldNotBeNull();
         });
     }
 
@@ -214,7 +208,7 @@ public class BulkOperationsLocalDbTests : IAsyncLifetime
             var countBefore = await context.RefreshTokens
                 .Where(t => t.UserId.StartsWith("delete-user-"))
                 .CountAsync();
-            countBefore.Should().Be(5);
+            countBefore.ShouldBe(5);
 
             // Act - Delete 3 of them
             var tokensToDelete = tokens.Take(3).ToList();
@@ -225,13 +219,13 @@ public class BulkOperationsLocalDbTests : IAsyncLifetime
             var countAfter = await context.RefreshTokens
                 .Where(t => t.UserId.StartsWith("delete-user-"))
                 .CountAsync();
-            countAfter.Should().Be(2);
+            countAfter.ShouldBe(2);
 
             // Verify they're truly gone (not soft deleted)
             var deletedCount = await context.RefreshTokens
                 .IgnoreQueryFilters()
                 .CountAsync(t => tokensToDelete.Select(d => d.Id).Contains(t.Id));
-            deletedCount.Should().Be(0, "bulk delete should hard delete, not soft delete");
+            deletedCount.ShouldBe(0, "bulk delete should hard delete, not soft delete");
         });
     }
 
@@ -267,8 +261,8 @@ public class BulkOperationsLocalDbTests : IAsyncLifetime
             await context.BulkReadAsync(lookups);
 
             // Assert
-            lookups.Should().HaveCount(5);
-            lookups.Should().AllSatisfy(r => r.UserId.Should().StartWith("read-user-"));
+            lookups.Count().ShouldBe(5);
+            lookups.ShouldAllBe(r => r.UserId.StartsWith("read-user-"));
         });
     }
 
@@ -294,7 +288,7 @@ public class BulkOperationsLocalDbTests : IAsyncLifetime
 
                 // Verify they exist in transaction context
                 var countInTx = await context.RefreshTokens.CountAsync();
-                countInTx.Should().Be(10);
+                countInTx.ShouldBe(10);
 
                 // Rollback
                 await transaction.RollbackAsync();
@@ -308,7 +302,7 @@ public class BulkOperationsLocalDbTests : IAsyncLifetime
             // After rollback, data should be gone
             context.ChangeTracker.Clear();
             var countAfter = await context.RefreshTokens.CountAsync();
-            countAfter.Should().Be(0);
+            countAfter.ShouldBe(0);
         });
     }
 
@@ -349,7 +343,7 @@ public class BulkOperationsLocalDbTests : IAsyncLifetime
 
             // Assert - Bulk should be significantly faster
             // (At least 2x faster for 500 records, typically much more)
-            bulkDuration.Should().BeLessThan(standardDuration,
+            bulkDuration.ShouldBeLessThan(standardDuration,
                 $"Bulk insert ({bulkDuration.TotalMilliseconds}ms) should be faster than " +
                 $"AddRange ({standardDuration.TotalMilliseconds}ms)");
         });

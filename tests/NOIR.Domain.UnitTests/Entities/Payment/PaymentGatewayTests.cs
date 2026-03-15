@@ -35,12 +35,12 @@ public class PaymentGatewayTests
         var gateway = PaymentGateway.Create(TestProvider, TestDisplayName, GatewayEnvironment.Sandbox, TestTenantId);
 
         // Assert
-        gateway.Should().NotBeNull();
-        gateway.Id.Should().NotBe(Guid.Empty);
-        gateway.Provider.Should().Be(TestProvider);
-        gateway.DisplayName.Should().Be(TestDisplayName);
-        gateway.Environment.Should().Be(GatewayEnvironment.Sandbox);
-        gateway.TenantId.Should().Be(TestTenantId);
+        gateway.ShouldNotBeNull();
+        gateway.Id.ShouldNotBe(Guid.Empty);
+        gateway.Provider.ShouldBe(TestProvider);
+        gateway.DisplayName.ShouldBe(TestDisplayName);
+        gateway.Environment.ShouldBe(GatewayEnvironment.Sandbox);
+        gateway.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class PaymentGatewayTests
         var gateway = CreateTestGateway();
 
         // Assert
-        gateway.IsActive.Should().BeFalse();
+        gateway.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class PaymentGatewayTests
         var gateway = CreateTestGateway();
 
         // Assert
-        gateway.HealthStatus.Should().Be(GatewayHealthStatus.Unknown);
+        gateway.HealthStatus.ShouldBe(GatewayHealthStatus.Unknown);
     }
 
     [Fact]
@@ -70,12 +70,12 @@ public class PaymentGatewayTests
         var gateway = CreateTestGateway();
 
         // Assert
-        gateway.EncryptedCredentials.Should().BeNull();
-        gateway.WebhookSecret.Should().BeNull();
-        gateway.WebhookUrl.Should().BeNull();
-        gateway.MinAmount.Should().BeNull();
-        gateway.MaxAmount.Should().BeNull();
-        gateway.LastHealthCheck.Should().BeNull();
+        gateway.EncryptedCredentials.ShouldBeNull();
+        gateway.WebhookSecret.ShouldBeNull();
+        gateway.WebhookUrl.ShouldBeNull();
+        gateway.MinAmount.ShouldBeNull();
+        gateway.MaxAmount.ShouldBeNull();
+        gateway.LastHealthCheck.ShouldBeNull();
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class PaymentGatewayTests
         var gateway = CreateTestGateway();
 
         // Assert
-        gateway.SupportedCurrencies.Should().Be("[]");
+        gateway.SupportedCurrencies.ShouldBe("[]");
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class PaymentGatewayTests
         var gateway = CreateTestGateway();
 
         // Assert
-        gateway.SortOrder.Should().Be(0);
+        gateway.SortOrder.ShouldBe(0);
     }
 
     [Fact]
@@ -105,13 +105,13 @@ public class PaymentGatewayTests
         var gateway = CreateTestGateway();
 
         // Assert
-        gateway.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PaymentGatewayCreatedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                GatewayId = gateway.Id,
-                Provider = TestProvider
-            });
+        var __evt = gateway.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<PaymentGatewayCreatedEvent>();
+
+        __evt.GatewayId.ShouldBe(gateway.Id);
+
+        __evt.Provider.ShouldBe(TestProvider);
     }
 
     [Fact]
@@ -121,7 +121,7 @@ public class PaymentGatewayTests
         var gateway = PaymentGateway.Create(TestProvider, TestDisplayName, GatewayEnvironment.Sandbox, tenantId: null);
 
         // Assert
-        gateway.TenantId.Should().BeNull();
+        gateway.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -131,7 +131,7 @@ public class PaymentGatewayTests
         var gateway = CreateTestGateway(environment: GatewayEnvironment.Production);
 
         // Assert
-        gateway.Environment.Should().Be(GatewayEnvironment.Production);
+        gateway.Environment.ShouldBe(GatewayEnvironment.Production);
     }
 
     [Fact]
@@ -142,7 +142,7 @@ public class PaymentGatewayTests
         var gateway2 = CreateTestGateway(provider: "momo");
 
         // Assert
-        gateway1.Id.Should().NotBe(gateway2.Id);
+        gateway1.Id.ShouldNotBe(gateway2.Id);
     }
 
     #endregion
@@ -159,8 +159,8 @@ public class PaymentGatewayTests
         gateway.Configure("encrypted-json-data", "webhook-secret-123");
 
         // Assert
-        gateway.EncryptedCredentials.Should().Be("encrypted-json-data");
-        gateway.WebhookSecret.Should().Be("webhook-secret-123");
+        gateway.EncryptedCredentials.ShouldBe("encrypted-json-data");
+        gateway.WebhookSecret.ShouldBe("webhook-secret-123");
     }
 
     [Fact]
@@ -173,8 +173,8 @@ public class PaymentGatewayTests
         gateway.Configure("encrypted-json-data", null);
 
         // Assert
-        gateway.EncryptedCredentials.Should().Be("encrypted-json-data");
-        gateway.WebhookSecret.Should().BeNull();
+        gateway.EncryptedCredentials.ShouldBe("encrypted-json-data");
+        gateway.WebhookSecret.ShouldBeNull();
     }
 
     [Fact]
@@ -188,8 +188,8 @@ public class PaymentGatewayTests
         gateway.Configure("second-creds", "second-secret");
 
         // Assert
-        gateway.EncryptedCredentials.Should().Be("second-creds");
-        gateway.WebhookSecret.Should().Be("second-secret");
+        gateway.EncryptedCredentials.ShouldBe("second-creds");
+        gateway.WebhookSecret.ShouldBe("second-secret");
     }
 
     #endregion
@@ -206,7 +206,7 @@ public class PaymentGatewayTests
         gateway.SetWebhookUrl("https://api.example.com/webhooks/vnpay");
 
         // Assert
-        gateway.WebhookUrl.Should().Be("https://api.example.com/webhooks/vnpay");
+        gateway.WebhookUrl.ShouldBe("https://api.example.com/webhooks/vnpay");
     }
 
     [Fact]
@@ -220,7 +220,7 @@ public class PaymentGatewayTests
         gateway.SetWebhookUrl("https://new-url.com");
 
         // Assert
-        gateway.WebhookUrl.Should().Be("https://new-url.com");
+        gateway.WebhookUrl.ShouldBe("https://new-url.com");
     }
 
     #endregion
@@ -237,8 +237,8 @@ public class PaymentGatewayTests
         gateway.SetAmountLimits(10_000m, 50_000_000m);
 
         // Assert
-        gateway.MinAmount.Should().Be(10_000m);
-        gateway.MaxAmount.Should().Be(50_000_000m);
+        gateway.MinAmount.ShouldBe(10_000m);
+        gateway.MaxAmount.ShouldBe(50_000_000m);
     }
 
     [Fact]
@@ -251,8 +251,8 @@ public class PaymentGatewayTests
         gateway.SetAmountLimits(null, null);
 
         // Assert
-        gateway.MinAmount.Should().BeNull();
-        gateway.MaxAmount.Should().BeNull();
+        gateway.MinAmount.ShouldBeNull();
+        gateway.MaxAmount.ShouldBeNull();
     }
 
     [Fact]
@@ -265,8 +265,8 @@ public class PaymentGatewayTests
         gateway.SetAmountLimits(5_000m, null);
 
         // Assert
-        gateway.MinAmount.Should().Be(5_000m);
-        gateway.MaxAmount.Should().BeNull();
+        gateway.MinAmount.ShouldBe(5_000m);
+        gateway.MaxAmount.ShouldBeNull();
     }
 
     [Fact]
@@ -280,8 +280,8 @@ public class PaymentGatewayTests
         gateway.SetAmountLimits(5_000m, 200_000m);
 
         // Assert
-        gateway.MinAmount.Should().Be(5_000m);
-        gateway.MaxAmount.Should().Be(200_000m);
+        gateway.MinAmount.ShouldBe(5_000m);
+        gateway.MaxAmount.ShouldBe(200_000m);
     }
 
     #endregion
@@ -298,7 +298,7 @@ public class PaymentGatewayTests
         gateway.SetSupportedCurrencies("[\"VND\",\"USD\"]");
 
         // Assert
-        gateway.SupportedCurrencies.Should().Be("[\"VND\",\"USD\"]");
+        gateway.SupportedCurrencies.ShouldBe("[\"VND\",\"USD\"]");
     }
 
     [Fact]
@@ -312,7 +312,7 @@ public class PaymentGatewayTests
         gateway.SetSupportedCurrencies("[\"VND\",\"USD\",\"EUR\"]");
 
         // Assert
-        gateway.SupportedCurrencies.Should().Be("[\"VND\",\"USD\",\"EUR\"]");
+        gateway.SupportedCurrencies.ShouldBe("[\"VND\",\"USD\",\"EUR\"]");
     }
 
     #endregion
@@ -329,7 +329,7 @@ public class PaymentGatewayTests
         gateway.SetSortOrder(5);
 
         // Assert
-        gateway.SortOrder.Should().Be(5);
+        gateway.SortOrder.ShouldBe(5);
     }
 
     [Fact]
@@ -343,7 +343,7 @@ public class PaymentGatewayTests
         gateway.SetSortOrder(10);
 
         // Assert
-        gateway.SortOrder.Should().Be(10);
+        gateway.SortOrder.ShouldBe(10);
     }
 
     #endregion
@@ -360,7 +360,7 @@ public class PaymentGatewayTests
         gateway.UpdateDisplayName("Updated VNPay");
 
         // Assert
-        gateway.DisplayName.Should().Be("Updated VNPay");
+        gateway.DisplayName.ShouldBe("Updated VNPay");
     }
 
     [Fact]
@@ -373,7 +373,7 @@ public class PaymentGatewayTests
         gateway.UpdateDisplayName("New Name");
 
         // Assert
-        gateway.DisplayName.Should().Be("New Name");
+        gateway.DisplayName.ShouldBe("New Name");
     }
 
     #endregion
@@ -390,7 +390,7 @@ public class PaymentGatewayTests
         gateway.UpdateEnvironment(GatewayEnvironment.Production);
 
         // Assert
-        gateway.Environment.Should().Be(GatewayEnvironment.Production);
+        gateway.Environment.ShouldBe(GatewayEnvironment.Production);
     }
 
     [Fact]
@@ -403,7 +403,7 @@ public class PaymentGatewayTests
         gateway.UpdateEnvironment(GatewayEnvironment.Sandbox);
 
         // Assert
-        gateway.Environment.Should().Be(GatewayEnvironment.Sandbox);
+        gateway.Environment.ShouldBe(GatewayEnvironment.Sandbox);
     }
 
     #endregion
@@ -421,7 +421,7 @@ public class PaymentGatewayTests
         gateway.UpdateCredentials("new-encrypted-creds");
 
         // Assert
-        gateway.EncryptedCredentials.Should().Be("new-encrypted-creds");
+        gateway.EncryptedCredentials.ShouldBe("new-encrypted-creds");
     }
 
     [Fact]
@@ -435,8 +435,8 @@ public class PaymentGatewayTests
         gateway.UpdateCredentials("new-creds");
 
         // Assert
-        gateway.EncryptedCredentials.Should().Be("new-creds");
-        gateway.WebhookSecret.Should().Be("my-secret");
+        gateway.EncryptedCredentials.ShouldBe("new-creds");
+        gateway.WebhookSecret.ShouldBe("my-secret");
     }
 
     #endregion
@@ -448,13 +448,13 @@ public class PaymentGatewayTests
     {
         // Arrange
         var gateway = CreateTestGateway();
-        gateway.IsActive.Should().BeFalse();
+        gateway.IsActive.ShouldBeFalse();
 
         // Act
         gateway.Activate();
 
         // Assert
-        gateway.IsActive.Should().BeTrue();
+        gateway.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -468,7 +468,7 @@ public class PaymentGatewayTests
         gateway.Activate();
 
         // Assert
-        gateway.IsActive.Should().BeTrue();
+        gateway.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -477,13 +477,13 @@ public class PaymentGatewayTests
         // Arrange
         var gateway = CreateTestGateway();
         gateway.Activate();
-        gateway.IsActive.Should().BeTrue();
+        gateway.IsActive.ShouldBeTrue();
 
         // Act
         gateway.Deactivate();
 
         // Assert
-        gateway.IsActive.Should().BeFalse();
+        gateway.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -496,7 +496,7 @@ public class PaymentGatewayTests
         gateway.Deactivate();
 
         // Assert
-        gateway.IsActive.Should().BeFalse();
+        gateway.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -507,13 +507,13 @@ public class PaymentGatewayTests
 
         // Act & Assert
         gateway.Activate();
-        gateway.IsActive.Should().BeTrue();
+        gateway.IsActive.ShouldBeTrue();
 
         gateway.Deactivate();
-        gateway.IsActive.Should().BeFalse();
+        gateway.IsActive.ShouldBeFalse();
 
         gateway.Activate();
-        gateway.IsActive.Should().BeTrue();
+        gateway.IsActive.ShouldBeTrue();
     }
 
     #endregion
@@ -531,9 +531,9 @@ public class PaymentGatewayTests
         gateway.UpdateHealthStatus(GatewayHealthStatus.Healthy);
 
         // Assert
-        gateway.HealthStatus.Should().Be(GatewayHealthStatus.Healthy);
-        gateway.LastHealthCheck.Should().NotBeNull();
-        gateway.LastHealthCheck.Should().BeOnOrAfter(beforeUpdate);
+        gateway.HealthStatus.ShouldBe(GatewayHealthStatus.Healthy);
+        gateway.LastHealthCheck.ShouldNotBeNull();
+        gateway.LastHealthCheck!.Value.ShouldBeGreaterThanOrEqualTo(beforeUpdate);
     }
 
     [Fact]
@@ -546,7 +546,7 @@ public class PaymentGatewayTests
         gateway.UpdateHealthStatus(GatewayHealthStatus.Degraded);
 
         // Assert
-        gateway.HealthStatus.Should().Be(GatewayHealthStatus.Degraded);
+        gateway.HealthStatus.ShouldBe(GatewayHealthStatus.Degraded);
     }
 
     [Fact]
@@ -559,7 +559,7 @@ public class PaymentGatewayTests
         gateway.UpdateHealthStatus(GatewayHealthStatus.Unhealthy);
 
         // Assert
-        gateway.HealthStatus.Should().Be(GatewayHealthStatus.Unhealthy);
+        gateway.HealthStatus.ShouldBe(GatewayHealthStatus.Unhealthy);
     }
 
     [Fact]
@@ -576,8 +576,8 @@ public class PaymentGatewayTests
         var secondCheck = gateway.LastHealthCheck;
 
         // Assert
-        gateway.HealthStatus.Should().Be(GatewayHealthStatus.Degraded);
-        secondCheck.Should().BeOnOrAfter(firstCheck!.Value);
+        gateway.HealthStatus.ShouldBe(GatewayHealthStatus.Degraded);
+        secondCheck!.Value.ShouldBeGreaterThanOrEqualTo(firstCheck!.Value);
     }
 
     #endregion
@@ -598,19 +598,19 @@ public class PaymentGatewayTests
         gateway.UpdateHealthStatus(GatewayHealthStatus.Healthy);
 
         // Assert
-        gateway.Provider.Should().Be("momo");
-        gateway.DisplayName.Should().Be("MoMo Wallet");
-        gateway.Environment.Should().Be(GatewayEnvironment.Production);
-        gateway.EncryptedCredentials.Should().Be("encrypted-api-key-json");
-        gateway.WebhookSecret.Should().Be("momo-webhook-secret");
-        gateway.WebhookUrl.Should().Be("https://api.example.com/webhooks/momo");
-        gateway.MinAmount.Should().Be(10_000m);
-        gateway.MaxAmount.Should().Be(20_000_000m);
-        gateway.SupportedCurrencies.Should().Be("[\"VND\"]");
-        gateway.SortOrder.Should().Be(2);
-        gateway.IsActive.Should().BeTrue();
-        gateway.HealthStatus.Should().Be(GatewayHealthStatus.Healthy);
-        gateway.LastHealthCheck.Should().NotBeNull();
+        gateway.Provider.ShouldBe("momo");
+        gateway.DisplayName.ShouldBe("MoMo Wallet");
+        gateway.Environment.ShouldBe(GatewayEnvironment.Production);
+        gateway.EncryptedCredentials.ShouldBe("encrypted-api-key-json");
+        gateway.WebhookSecret.ShouldBe("momo-webhook-secret");
+        gateway.WebhookUrl.ShouldBe("https://api.example.com/webhooks/momo");
+        gateway.MinAmount.ShouldBe(10_000m);
+        gateway.MaxAmount.ShouldBe(20_000_000m);
+        gateway.SupportedCurrencies.ShouldBe("[\"VND\"]");
+        gateway.SortOrder.ShouldBe(2);
+        gateway.IsActive.ShouldBeTrue();
+        gateway.HealthStatus.ShouldBe(GatewayHealthStatus.Healthy);
+        gateway.LastHealthCheck.ShouldNotBeNull();
     }
 
     #endregion

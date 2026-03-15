@@ -40,15 +40,15 @@ public class UpdateSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Host.Should().Be("smtp.example.com");
-        result.Value.Port.Should().Be(587);
-        result.Value.Username.Should().Be("user@example.com");
-        result.Value.HasPassword.Should().BeTrue();
-        result.Value.FromEmail.Should().Be("noreply@example.com");
-        result.Value.FromName.Should().Be("NOIR System");
-        result.Value.UseSsl.Should().BeTrue();
-        result.Value.IsConfigured.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Host.ShouldBe("smtp.example.com");
+        result.Value.Port.ShouldBe(587);
+        result.Value.Username.ShouldBe("user@example.com");
+        result.Value.HasPassword.ShouldBe(true);
+        result.Value.FromEmail.ShouldBe("noreply@example.com");
+        result.Value.FromName.ShouldBe("NOIR System");
+        result.Value.UseSsl.ShouldBe(true);
+        result.Value.IsConfigured.ShouldBe(true);
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class UpdateSmtpSettingsCommandHandlerTests
 
         // Assert
         _settingsServiceMock.Verify(x => x.SetSettingAsync(null, "smtp:password", "", "string", It.IsAny<CancellationToken>()), Times.Once);
-        result.Value.HasPassword.Should().BeFalse();
+        result.Value.HasPassword.ShouldBe(false);
     }
 
     [Fact]
@@ -153,7 +153,7 @@ public class UpdateSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Value.HasPassword.Should().BeTrue();
+        result.Value.HasPassword.ShouldBe(true);
     }
 
     [Theory]

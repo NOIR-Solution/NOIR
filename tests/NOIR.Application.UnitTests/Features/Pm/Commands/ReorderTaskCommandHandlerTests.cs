@@ -46,9 +46,9 @@ public class ReorderTaskCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        task.SortOrder.Should().Be(5.5);
-        task.ColumnId.Should().Be(columnId); // Column should remain the same
+        result.IsSuccess.ShouldBe(true);
+        task.SortOrder.ShouldBe(5.5);
+        task.ColumnId.ShouldBe(columnId); // Column should remain the same
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -66,7 +66,7 @@ public class ReorderTaskCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -92,8 +92,8 @@ public class ReorderTaskCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        task.ColumnId.Should().Be(columnId);
+        result.IsSuccess.ShouldBe(true);
+        task.ColumnId.ShouldBe(columnId);
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class ReorderTaskCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

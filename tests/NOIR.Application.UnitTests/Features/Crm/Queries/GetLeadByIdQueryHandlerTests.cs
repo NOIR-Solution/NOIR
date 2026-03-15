@@ -35,12 +35,12 @@ public class GetLeadByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(lead.Id);
-        result.Value.Title.Should().Be("Enterprise Deal");
-        result.Value.Value.Should().Be(50000);
-        result.Value.Currency.Should().Be("USD");
-        result.Value.Status.Should().Be(LeadStatus.Active);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(lead.Id);
+        result.Value.Title.ShouldBe("Enterprise Deal");
+        result.Value.Value.ShouldBe(50000);
+        result.Value.Currency.ShouldBe("USD");
+        result.Value.Status.ShouldBe(LeadStatus.Active);
     }
 
     [Fact]
@@ -57,6 +57,6 @@ public class GetLeadByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 }

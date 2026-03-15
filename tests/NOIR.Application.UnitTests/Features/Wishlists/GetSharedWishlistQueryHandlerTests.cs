@@ -48,8 +48,8 @@ public class GetSharedWishlistQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Holiday Gifts");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Holiday Gifts");
     }
 
     [Fact]
@@ -71,8 +71,8 @@ public class GetSharedWishlistQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ItemCount.Should().Be(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ItemCount.ShouldBe(2);
     }
 
     #endregion
@@ -95,7 +95,7 @@ public class GetSharedWishlistQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
     }
 
     #endregion

@@ -62,11 +62,11 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var token = await service.CreateTokenAsync(userId);
 
             // Assert
-            token.Should().NotBeNull();
-            token.UserId.Should().Be(userId);
-            token.Token.Should().NotBeNullOrEmpty();
-            token.IsActive.Should().BeTrue();
-            token.ExpiresAt.Should().BeAfter(DateTimeOffset.UtcNow);
+            token.ShouldNotBeNull();
+            token.UserId.ShouldBe(userId);
+            token.Token.ShouldNotBeNullOrEmpty();
+            token.IsActive.ShouldBeTrue();
+            token.ExpiresAt.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
         });
     }
 
@@ -83,7 +83,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var token = await service.CreateTokenAsync(userId, tenantId);
 
             // Assert
-            token.TenantId.Should().Be(tenantId);
+            token.TenantId.ShouldBe(tenantId);
         });
     }
 
@@ -104,10 +104,10 @@ public class RefreshTokenServiceTests : IAsyncLifetime
                 deviceName: "Test Device");
 
             // Assert
-            token.CreatedByIp.Should().Be("192.168.1.1");
-            token.DeviceFingerprint.Should().Be("test-fingerprint");
-            token.UserAgent.Should().Be("Test Browser");
-            token.DeviceName.Should().Be("Test Device");
+            token.CreatedByIp.ShouldBe("192.168.1.1");
+            token.DeviceFingerprint.ShouldBe("test-fingerprint");
+            token.UserAgent.ShouldBe("Test Browser");
+            token.DeviceName.ShouldBe("Test Device");
         });
     }
 
@@ -128,8 +128,8 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var validatedToken = await service.ValidateTokenAsync(createdToken.Token);
 
             // Assert
-            validatedToken.Should().NotBeNull();
-            validatedToken!.Id.Should().Be(createdToken.Id);
+            validatedToken.ShouldNotBeNull();
+            validatedToken!.Id.ShouldBe(createdToken.Id);
         });
     }
 
@@ -144,7 +144,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var result = await service.ValidateTokenAsync("non-existent-token");
 
             // Assert
-            result.Should().BeNull();
+            result.ShouldBeNull();
         });
     }
 
@@ -162,7 +162,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var result = await service.ValidateTokenAsync(token.Token);
 
             // Assert
-            result.Should().BeNull();
+            result.ShouldBeNull();
         });
     }
 
@@ -183,10 +183,10 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var newToken = await service.RotateTokenAsync(originalToken.Token);
 
             // Assert
-            newToken.Should().NotBeNull();
-            newToken!.Token.Should().NotBe(originalToken.Token);
-            newToken.UserId.Should().Be(userId);
-            newToken.TokenFamily.Should().Be(originalToken.TokenFamily);
+            newToken.ShouldNotBeNull();
+            newToken!.Token.ShouldNotBe(originalToken.Token);
+            newToken.UserId.ShouldBe(userId);
+            newToken.TokenFamily.ShouldBe(originalToken.TokenFamily);
         });
     }
 
@@ -207,9 +207,9 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             // Assert
             var oldToken = await context.RefreshTokens
                 .FirstOrDefaultAsync(t => t.Token == originalTokenValue);
-            oldToken.Should().NotBeNull();
-            oldToken!.IsRevoked.Should().BeTrue();
-            oldToken.ReplacedByToken.Should().NotBeNull();
+            oldToken.ShouldNotBeNull();
+            oldToken!.IsRevoked.ShouldBeTrue();
+            oldToken.ReplacedByToken.ShouldNotBeNull();
         });
     }
 
@@ -224,7 +224,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var result = await service.RotateTokenAsync("non-existent-token");
 
             // Assert
-            result.Should().BeNull();
+            result.ShouldBeNull();
         });
     }
 
@@ -242,7 +242,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var result = await service.RotateTokenAsync(token.Token);
 
             // Assert
-            result.Should().BeNull();
+            result.ShouldBeNull();
         });
     }
 
@@ -265,10 +265,10 @@ public class RefreshTokenServiceTests : IAsyncLifetime
 
             // Assert
             var revokedToken = await context.RefreshTokens.FindAsync(token.Id);
-            revokedToken.Should().NotBeNull();
-            revokedToken!.IsRevoked.Should().BeTrue();
-            revokedToken.RevokedByIp.Should().Be("127.0.0.1");
-            revokedToken.ReasonRevoked.Should().Be("User logout");
+            revokedToken.ShouldNotBeNull();
+            revokedToken!.IsRevoked.ShouldBeTrue();
+            revokedToken.RevokedByIp.ShouldBe("127.0.0.1");
+            revokedToken.ReasonRevoked.ShouldBe("User logout");
         });
     }
 
@@ -283,7 +283,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var act = () => service.RevokeTokenAsync("non-existent-token");
 
             // Assert
-            await act.Should().NotThrowAsync();
+            await act();
         });
     }
 
@@ -307,7 +307,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
 
             // Assert
             var activeCount = await service.GetActiveSessionCountAsync(userId);
-            activeCount.Should().Be(0);
+            activeCount.ShouldBe(0);
         });
     }
 
@@ -335,8 +335,8 @@ public class RefreshTokenServiceTests : IAsyncLifetime
                 .Where(t => t.TokenFamily == token1.TokenFamily)
                 .ToListAsync();
 
-            familyTokens.Should().HaveCountGreaterThanOrEqualTo(3);
-            familyTokens.Should().OnlyContain(t => t.IsRevoked);
+            familyTokens.Count().ShouldBeGreaterThanOrEqualTo(3);
+            familyTokens.ShouldAllBe(t => t.IsRevoked);
         });
     }
 
@@ -360,8 +360,8 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var sessions = await service.GetActiveSessionsAsync(userId);
 
             // Assert
-            sessions.Should().HaveCount(2);
-            sessions.Should().OnlyContain(t => !t.RevokedAt.HasValue);
+            sessions.Count().ShouldBe(2);
+            sessions.ShouldAllBe(t => !t.RevokedAt.HasValue);
         });
     }
 
@@ -383,7 +383,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var count = await service.GetActiveSessionCountAsync(userId);
 
             // Assert
-            count.Should().Be(2);
+            count.ShouldBe(2);
         });
     }
 
@@ -407,13 +407,13 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var result = await service.RotateTokenAsync(token1Value);
 
             // Assert
-            result.Should().BeNull();
+            result.ShouldBeNull();
 
             // The entire family should be revoked
             var familyTokens = await context.RefreshTokens
                 .Where(t => t.TokenFamily == token1.TokenFamily)
                 .ToListAsync();
-            familyTokens.Should().OnlyContain(t => t.IsRevoked);
+            familyTokens.ShouldAllBe(t => t.IsRevoked);
         });
     }
 
@@ -446,12 +446,12 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var token3 = await service.CreateTokenAsync(userId);
 
             // Assert
-            token3.Should().NotBeNull();
+            token3.ShouldNotBeNull();
 
             // Reload token1 from database
             var reloadedToken1 = await context.RefreshTokens.FindAsync(token1.Id);
-            reloadedToken1!.IsRevoked.Should().BeTrue();
-            reloadedToken1.ReasonRevoked.Should().Contain("Session limit reached");
+            reloadedToken1!.IsRevoked.ShouldBeTrue();
+            reloadedToken1.ReasonRevoked.ShouldContain("Session limit reached");
         });
     }
 
@@ -483,7 +483,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var activeCount = await service.GetActiveSessionCountAsync(userId);
 
             // Assert - All 10 should be active
-            activeCount.Should().Be(10);
+            activeCount.ShouldBe(10);
         });
     }
 
@@ -519,7 +519,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
                 deviceFingerprint: "different-fingerprint");
 
             // Assert
-            result.Should().BeNull();
+            result.ShouldBeNull();
         });
     }
 
@@ -549,8 +549,8 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var result = await service.ValidateTokenAsync(token.Token, fingerprint);
 
             // Assert
-            result.Should().NotBeNull();
-            result!.Id.Should().Be(token.Id);
+            result.ShouldNotBeNull();
+            result!.Id.ShouldBe(token.Id);
         });
     }
 
@@ -582,12 +582,12 @@ public class RefreshTokenServiceTests : IAsyncLifetime
                 deviceFingerprint: "different-fingerprint");
 
             // Assert
-            result.Should().BeNull();
+            result.ShouldBeNull();
 
             // Token should be revoked with specific reason
             var revokedToken = await context.RefreshTokens.FindAsync(token.Id);
-            revokedToken!.IsRevoked.Should().BeTrue();
-            revokedToken.ReasonRevoked.Should().Contain("fingerprint mismatch");
+            revokedToken!.IsRevoked.ShouldBeTrue();
+            revokedToken.ReasonRevoked.ShouldContain("fingerprint mismatch");
         });
     }
 
@@ -614,7 +614,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var result = await service.ValidateTokenAsync(token.Token, "any-fingerprint");
 
             // Assert
-            result.Should().NotBeNull();
+            result.ShouldNotBeNull();
         });
     }
 
@@ -645,7 +645,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
                 deviceFingerprint: "different-fingerprint");
 
             // Assert - Should succeed because fingerprinting is disabled
-            result.Should().NotBeNull();
+            result.ShouldNotBeNull();
         });
     }
 
@@ -683,7 +683,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var deletedToken = await context.RefreshTokens
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(t => t.Id == tokenId);
-            deletedToken.Should().BeNull();
+            deletedToken.ShouldBeNull();
         });
     }
 
@@ -703,7 +703,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
 
             // Assert - Token should still exist
             var existingToken = await service.ValidateTokenAsync(token.Token);
-            existingToken.Should().NotBeNull();
+            existingToken.ShouldNotBeNull();
         });
     }
 
@@ -735,7 +735,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var deletedToken = await context.RefreshTokens
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(t => t.Id == tokenId);
-            deletedToken.Should().BeNull();
+            deletedToken.ShouldBeNull();
         });
     }
 
@@ -759,7 +759,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var act = () => service.RevokeTokenAsync(token.Token);
 
             // Assert - Should not throw
-            await act.Should().NotThrowAsync();
+            await act();
         });
     }
 
@@ -778,7 +778,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
 
             // Assert
             var revokedToken = await context.RefreshTokens.FindAsync(token.Id);
-            revokedToken!.ReasonRevoked.Should().Be("Manually revoked");
+            revokedToken!.ReasonRevoked.ShouldBe("Manually revoked");
         });
     }
 
@@ -798,7 +798,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var act = () => service.RevokeAllUserTokensAsync(userId);
 
             // Assert
-            await act.Should().NotThrowAsync();
+            await act();
         });
     }
 
@@ -817,7 +817,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
 
             // Assert
             var revokedToken = await context.RefreshTokens.FindAsync(token.Id);
-            revokedToken!.ReasonRevoked.Should().Be("All sessions revoked");
+            revokedToken!.ReasonRevoked.ShouldBe("All sessions revoked");
         });
     }
 
@@ -836,7 +836,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
             var act = () => service.RevokeTokenFamilyAsync(Guid.NewGuid());
 
             // Assert
-            await act.Should().NotThrowAsync();
+            await act();
         });
     }
 
@@ -855,7 +855,7 @@ public class RefreshTokenServiceTests : IAsyncLifetime
 
             // Assert
             var revokedToken = await context.RefreshTokens.FindAsync(token.Id);
-            revokedToken!.ReasonRevoked.Should().Be("Token family revoked");
+            revokedToken!.ReasonRevoked.ShouldBe("Token family revoked");
         });
     }
 

@@ -79,12 +79,12 @@ public class CreateTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be(name);
-        result.Value.Slug.Should().Be(slug.ToLowerInvariant());
-        result.Value.Description.Should().Be(description);
-        result.Value.Color.Should().Be(color);
-        result.Value.PostCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe(name);
+        result.Value.Slug.ShouldBe(slug.ToLowerInvariant());
+        result.Value.Description.ShouldBe(description);
+        result.Value.Color.ShouldBe(color);
+        result.Value.PostCount.ShouldBe(0);
 
         _tagRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<PostTag>(), It.IsAny<CancellationToken>()),
@@ -121,11 +121,11 @@ public class CreateTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be(name);
-        result.Value.Slug.Should().Be(slug.ToLowerInvariant());
-        result.Value.Description.Should().BeNull();
-        result.Value.Color.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe(name);
+        result.Value.Slug.ShouldBe(slug.ToLowerInvariant());
+        result.Value.Description.ShouldBeNull();
+        result.Value.Color.ShouldBeNull();
     }
 
     [Fact]
@@ -155,8 +155,8 @@ public class CreateTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Slug.Should().Be(slug.ToLowerInvariant());
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Slug.ShouldBe(slug.ToLowerInvariant());
     }
 
     #endregion
@@ -183,9 +183,9 @@ public class CreateTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Conflict);
-        result.Error.Code.Should().Be("NOIR-BLOG-011");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Conflict);
+        result.Error.Code.ShouldBe("NOIR-BLOG-011");
 
         _tagRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<PostTag>(), It.IsAny<CancellationToken>()),
@@ -214,8 +214,8 @@ public class CreateTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Conflict);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Conflict);
     }
 
     #endregion
@@ -251,8 +251,8 @@ public class CreateTagCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        capturedTag.Should().NotBeNull();
-        capturedTag!.TenantId.Should().Be(customTenantId);
+        capturedTag.ShouldNotBeNull();
+        capturedTag!.TenantId.ShouldBe(customTenantId);
     }
 
     #endregion
@@ -321,8 +321,8 @@ public class CreateTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ModifiedAt.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ModifiedAt.ShouldBeNull();
     }
 
     #endregion

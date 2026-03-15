@@ -19,12 +19,12 @@ public class TenantSettingTests
         var setting = TenantSetting.CreatePlatformDefault(key, value);
 
         // Assert
-        setting.Should().NotBeNull();
-        setting.Id.Should().NotBe(Guid.Empty);
-        setting.Key.Should().Be("max_users");
-        setting.Value.Should().Be(value);
-        setting.TenantId.Should().BeNull();
-        setting.DataType.Should().Be("string");
+        setting.ShouldNotBeNull();
+        setting.Id.ShouldNotBe(Guid.Empty);
+        setting.Key.ShouldBe("max_users");
+        setting.Value.ShouldBe(value);
+        setting.TenantId.ShouldBeNull();
+        setting.DataType.ShouldBe("string");
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class TenantSettingTests
         var setting = TenantSetting.CreatePlatformDefault("  MAX_USERS  ", "100");
 
         // Assert
-        setting.Key.Should().Be("max_users");
+        setting.Key.ShouldBe("max_users");
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class TenantSettingTests
         var setting = TenantSetting.CreatePlatformDefault("max_users", "100", "int");
 
         // Assert
-        setting.DataType.Should().Be("int");
+        setting.DataType.ShouldBe("int");
     }
 
     [Fact]
@@ -57,8 +57,8 @@ public class TenantSettingTests
             "limits");
 
         // Assert
-        setting.Description.Should().Be("Maximum number of users allowed");
-        setting.Category.Should().Be("limits");
+        setting.Description.ShouldBe("Maximum number of users allowed");
+        setting.Category.ShouldBe("limits");
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class TenantSettingTests
             "setting", "value", category: "  SECURITY  ");
 
         // Assert
-        setting.Category.Should().Be("security");
+        setting.Category.ShouldBe("security");
     }
 
     [Fact]
@@ -79,8 +79,8 @@ public class TenantSettingTests
         var setting = TenantSetting.CreatePlatformDefault("key", "value");
 
         // Assert
-        setting.IsPlatformDefault.Should().BeTrue();
-        setting.IsTenantOverride.Should().BeFalse();
+        setting.IsPlatformDefault.ShouldBeTrue();
+        setting.IsTenantOverride.ShouldBeFalse();
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class TenantSettingTests
         var act = () => TenantSetting.CreatePlatformDefault(null!, "value");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class TenantSettingTests
         var act = () => TenantSetting.CreatePlatformDefault("", "value");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public class TenantSettingTests
         var act = () => TenantSetting.CreatePlatformDefault("key", null!);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>();
+        Should.Throw<ArgumentNullException>(act);
     }
 
     #endregion
@@ -129,10 +129,10 @@ public class TenantSettingTests
         var setting = TenantSetting.CreateTenantOverride(tenantId, key, value);
 
         // Assert
-        setting.Should().NotBeNull();
-        setting.TenantId.Should().Be(tenantId);
-        setting.Key.Should().Be("max_users");
-        setting.Value.Should().Be(value);
+        setting.ShouldNotBeNull();
+        setting.TenantId.ShouldBe(tenantId);
+        setting.Key.ShouldBe("max_users");
+        setting.Value.ShouldBe(value);
     }
 
     [Fact]
@@ -142,8 +142,8 @@ public class TenantSettingTests
         var setting = TenantSetting.CreateTenantOverride("tenant-123", "key", "value");
 
         // Assert
-        setting.IsTenantOverride.Should().BeTrue();
-        setting.IsPlatformDefault.Should().BeFalse();
+        setting.IsTenantOverride.ShouldBeTrue();
+        setting.IsPlatformDefault.ShouldBeFalse();
     }
 
     [Fact]
@@ -153,7 +153,7 @@ public class TenantSettingTests
         var act = () => TenantSetting.CreateTenantOverride(null!, "key", "value");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -163,7 +163,7 @@ public class TenantSettingTests
         var act = () => TenantSetting.CreateTenantOverride("", "key", "value");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -174,8 +174,8 @@ public class TenantSettingTests
             "tenant-123", "MAX_USERS", "100", category: "LIMITS");
 
         // Assert
-        setting.Key.Should().Be("max_users");
-        setting.Category.Should().Be("limits");
+        setting.Key.ShouldBe("max_users");
+        setting.Category.ShouldBe("limits");
     }
 
     #endregion
@@ -192,7 +192,7 @@ public class TenantSettingTests
         setting.UpdateValue("200");
 
         // Assert
-        setting.Value.Should().Be("200");
+        setting.Value.ShouldBe("200");
     }
 
     [Fact]
@@ -205,7 +205,7 @@ public class TenantSettingTests
         var act = () => setting.UpdateValue(null!);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>();
+        Should.Throw<ArgumentNullException>(act);
     }
 
     [Fact]
@@ -218,7 +218,7 @@ public class TenantSettingTests
         setting.UpdateValue("");
 
         // Assert
-        setting.Value.Should().BeEmpty();
+        setting.Value.ShouldBeEmpty();
     }
 
     #endregion
@@ -235,8 +235,8 @@ public class TenantSettingTests
         setting.UpdateMetadata("New description", "new_category");
 
         // Assert
-        setting.Description.Should().Be("New description");
-        setting.Category.Should().Be("new_category");
+        setting.Description.ShouldBe("New description");
+        setting.Category.ShouldBe("new_category");
     }
 
     [Fact]
@@ -249,7 +249,7 @@ public class TenantSettingTests
         setting.UpdateMetadata("Description", "  NEW_CATEGORY  ");
 
         // Assert
-        setting.Category.Should().Be("new_category");
+        setting.Category.ShouldBe("new_category");
     }
 
     [Fact]
@@ -262,8 +262,8 @@ public class TenantSettingTests
         setting.UpdateMetadata(null, null);
 
         // Assert
-        setting.Description.Should().BeNull();
-        setting.Category.Should().BeNull();
+        setting.Description.ShouldBeNull();
+        setting.Category.ShouldBeNull();
     }
 
     #endregion
@@ -280,7 +280,7 @@ public class TenantSettingTests
         var result = setting.GetStringValue();
 
         // Assert
-        result.Should().Be("test value");
+        result.ShouldBe("test value");
     }
 
     [Fact]
@@ -293,7 +293,7 @@ public class TenantSettingTests
         var result = setting.GetIntValue();
 
         // Assert
-        result.Should().Be(100);
+        result.ShouldBe(100);
     }
 
     [Fact]
@@ -303,10 +303,10 @@ public class TenantSettingTests
         var setting = TenantSetting.CreatePlatformDefault("key", "not-a-number");
 
         // Act
-        var act = () => setting.GetIntValue();
+        var act = () => { setting.GetIntValue(); };
 
         // Assert
-        act.Should().Throw<FormatException>();
+        Should.Throw<FormatException>(act);
     }
 
     [Fact]
@@ -319,7 +319,7 @@ public class TenantSettingTests
         var result = setting.GetBoolValue();
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBeTrue();
     }
 
     [Fact]
@@ -332,7 +332,7 @@ public class TenantSettingTests
         var result = setting.GetBoolValue();
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBeFalse();
     }
 
     [Fact]
@@ -345,7 +345,7 @@ public class TenantSettingTests
         var result = setting.GetDecimalValue();
 
         // Assert
-        result.Should().Be(99.99m);
+        result.ShouldBe(99.99m);
     }
 
     [Fact]
@@ -358,8 +358,8 @@ public class TenantSettingTests
         var success = setting.TryGetValue<int>(out var result);
 
         // Assert
-        success.Should().BeTrue();
-        result.Should().Be(42);
+        success.ShouldBeTrue();
+        result.ShouldBe(42);
     }
 
     [Fact]
@@ -372,7 +372,7 @@ public class TenantSettingTests
         var success = setting.TryGetValue<int>(out _);
 
         // Assert
-        success.Should().BeFalse();
+        success.ShouldBeFalse();
     }
 
     #endregion
@@ -386,9 +386,9 @@ public class TenantSettingTests
         var setting = TenantSetting.CreatePlatformDefault("key", "value");
 
         // Assert
-        setting.IsDeleted.Should().BeFalse();
-        setting.DeletedAt.Should().BeNull();
-        setting.DeletedBy.Should().BeNull();
+        setting.IsDeleted.ShouldBeFalse();
+        setting.DeletedAt.ShouldBeNull();
+        setting.DeletedBy.ShouldBeNull();
     }
 
     #endregion

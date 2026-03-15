@@ -163,11 +163,11 @@ public class CreateShippingOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.TrackingNumber.Should().Be(trackingNumber);
-        result.Value.ProviderCode.Should().Be(command.ProviderCode);
-        result.Value.Status.Should().Be(ShippingStatus.AwaitingPickup);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.TrackingNumber.ShouldBe(trackingNumber);
+        result.Value.ProviderCode.ShouldBe(command.ProviderCode);
+        result.Value.Status.ShouldBe(ShippingStatus.AwaitingPickup);
 
         _orderRepositoryMock.Verify(x => x.AddAsync(It.IsAny<ShippingOrder>(), It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Exactly(2));
@@ -191,9 +191,9 @@ public class CreateShippingOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain("not configured or inactive");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Message.ShouldContain("not configured or inactive");
 
         _providerFactoryMock.Verify(x => x.GetProvider(It.IsAny<ShippingProviderCode>()), Times.Never);
         _orderRepositoryMock.Verify(x => x.AddAsync(It.IsAny<ShippingOrder>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -214,9 +214,9 @@ public class CreateShippingOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain("not configured or inactive");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Message.ShouldContain("not configured or inactive");
     }
 
     [Fact]
@@ -238,9 +238,9 @@ public class CreateShippingOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Shipping.ProviderNotConfigured);
-        result.Error.Message.Should().Contain("No implementation available");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Shipping.ProviderNotConfigured);
+        result.Error.Message.ShouldContain("No implementation available");
     }
 
     [Fact]
@@ -278,8 +278,8 @@ public class CreateShippingOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Message.Should().Be(providerError.Message);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Message.ShouldBe(providerError.Message);
 
         // Verify draft order was created then cancelled
         _orderRepositoryMock.Verify(x => x.AddAsync(It.IsAny<ShippingOrder>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -333,9 +333,9 @@ public class CreateShippingOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProviderCode.Should().Be(ShippingProviderCode.GHN);
-        result.Value.TrackingNumber.Should().Be(trackingNumber);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProviderCode.ShouldBe(ShippingProviderCode.GHN);
+        result.Value.TrackingNumber.ShouldBe(trackingNumber);
 
         _providerFactoryMock.Verify(x => x.GetProvider(ShippingProviderCode.GHN), Times.Once);
     }
@@ -398,9 +398,9 @@ public class CreateShippingOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CodAmount.Should().Be(codAmount);
-        result.Value.CodFee.Should().Be(3500m);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CodAmount.ShouldBe(codAmount);
+        result.Value.CodFee.ShouldBe(3500m);
 
         _shippingProviderMock.Verify(x => x.CreateOrderAsync(
             It.Is<CreateShippingOrderRequest>(r => r.CodAmount == codAmount),

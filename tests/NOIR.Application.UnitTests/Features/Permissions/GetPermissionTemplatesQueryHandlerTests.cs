@@ -68,9 +68,9 @@ public class GetPermissionTemplatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(3);
-        result.Value.Should().BeEquivalentTo(templates);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(3);
+        result.Value.ShouldBe(templates);
     }
 
     [Fact]
@@ -94,8 +94,8 @@ public class GetPermissionTemplatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
         _queryServiceMock.Verify(x => x.GetAllAsync(tenantId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -119,10 +119,10 @@ public class GetPermissionTemplatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
-        result.Value.First().Permissions.Should().HaveCount(3);
-        result.Value.First().Permissions.Should().Contain("users.read");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
+        result.Value.First().Permissions.Count().ShouldBe(3);
+        result.Value.First().Permissions.ShouldContain("users.read");
     }
 
     #endregion
@@ -143,9 +143,9 @@ public class GetPermissionTemplatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.ShouldBeEmpty();
     }
 
     [Fact]
@@ -164,8 +164,8 @@ public class GetPermissionTemplatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     #endregion
@@ -223,15 +223,15 @@ public class GetPermissionTemplatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var template = result.Value.First();
-        template.Id.Should().Be(templateId);
-        template.Name.Should().Be("Complete Template");
-        template.Description.Should().Be("A complete template");
-        template.IsSystem.Should().BeTrue();
-        template.IconName.Should().Be("shield-check");
-        template.Color.Should().Be("#4CAF50");
-        template.SortOrder.Should().Be(5);
+        template.Id.ShouldBe(templateId);
+        template.Name.ShouldBe("Complete Template");
+        template.Description.ShouldBe("A complete template");
+        template.IsSystem.ShouldBe(true);
+        template.IconName.ShouldBe("shield-check");
+        template.Color.ShouldBe("#4CAF50");
+        template.SortOrder.ShouldBe(5);
     }
 
     [Fact]
@@ -255,9 +255,9 @@ public class GetPermissionTemplatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(3);
-        result.Value.Select(t => t.Name).Should().ContainInOrder("First", "Second", "Third");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(3);
+        result.Value.Select(t => t.Name).ShouldBe(new[] { "First", "Second", "Third" });
     }
 
     #endregion

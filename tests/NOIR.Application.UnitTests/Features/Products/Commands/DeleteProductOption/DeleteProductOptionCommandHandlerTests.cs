@@ -86,9 +86,9 @@ public class DeleteProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
-        existingProduct.Options.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
+        existingProduct.Options.Count().ShouldBe(1);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -120,8 +120,8 @@ public class DeleteProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Options.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Options.ShouldBeEmpty();
     }
 
     [Fact]
@@ -152,8 +152,8 @@ public class DeleteProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Options.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Options.ShouldBeEmpty();
     }
 
     #endregion
@@ -176,11 +176,11 @@ public class DeleteProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-021");
-        result.Error.Message.Should().Contain("Product");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-021");
+        result.Error.Message.ShouldContain("Product");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -208,11 +208,11 @@ public class DeleteProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-051");
-        result.Error.Message.Should().Contain("Option");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-051");
+        result.Error.Message.ShouldContain("Option");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -240,9 +240,9 @@ public class DeleteProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-051");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-051");
     }
 
     #endregion
@@ -313,9 +313,9 @@ public class DeleteProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Options.Should().HaveCount(2);
-        existingProduct.Options.Should().NotContain(o => o.Id == optionToDelete.Id);
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Options.Count().ShouldBe(2);
+        existingProduct.Options.ShouldNotContain(o => o.Id == optionToDelete.Id);
     }
 
     [Fact]
@@ -344,7 +344,7 @@ public class DeleteProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     #endregion

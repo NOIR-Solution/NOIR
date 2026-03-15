@@ -77,10 +77,10 @@ public class GetPaymentTransactionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.TotalCount.Should().Be(5);
-        result.Value.PageNumber.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.TotalCount.ShouldBe(5);
+        result.Value.PageNumber.ShouldBe(1);
     }
 
     [Fact]
@@ -107,11 +107,11 @@ public class GetPaymentTransactionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(10);
-        result.Value.TotalCount.Should().Be(25);
-        result.Value.PageNumber.Should().Be(2);
-        result.Value.TotalPages.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(10);
+        result.Value.TotalCount.ShouldBe(25);
+        result.Value.PageNumber.ShouldBe(2);
+        result.Value.TotalPages.ShouldBe(3);
     }
 
     [Fact]
@@ -139,16 +139,16 @@ public class GetPaymentTransactionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value.Items[0];
-        dto.Id.Should().Be(transaction.Id);
-        dto.TransactionNumber.Should().Be("TXN-001");
-        dto.Provider.Should().Be("momo");
-        dto.Amount.Should().Be(250000m);
-        dto.Currency.Should().Be("VND");
-        dto.Status.Should().Be(PaymentStatus.Paid);
-        dto.PaymentMethod.Should().Be(PaymentMethod.EWallet);
-        dto.PaidAt.Should().NotBeNull();
+        dto.Id.ShouldBe(transaction.Id);
+        dto.TransactionNumber.ShouldBe("TXN-001");
+        dto.Provider.ShouldBe("momo");
+        dto.Amount.ShouldBe(250000m);
+        dto.Currency.ShouldBe("VND");
+        dto.Status.ShouldBe(PaymentStatus.Paid);
+        dto.PaymentMethod.ShouldBe(PaymentMethod.EWallet);
+        dto.PaidAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -285,10 +285,10 @@ public class GetPaymentTransactionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
-        result.Value.TotalPages.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
+        result.Value.TotalPages.ShouldBe(0);
     }
 
     #endregion

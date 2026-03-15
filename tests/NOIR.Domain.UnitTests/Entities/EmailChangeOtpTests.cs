@@ -28,13 +28,13 @@ public class EmailChangeOtpTests
             DefaultExpiryMinutes);
 
         // Assert
-        otp.Should().NotBeNull();
-        otp.Id.Should().NotBe(Guid.Empty);
-        otp.UserId.Should().Be(ValidUserId);
-        otp.CurrentEmail.Should().Be(ValidCurrentEmail.ToLowerInvariant());
-        otp.NewEmail.Should().Be(ValidNewEmail.ToLowerInvariant());
-        otp.OtpHash.Should().Be(ValidOtpHash);
-        otp.SessionToken.Should().Be(ValidSessionToken);
+        otp.ShouldNotBeNull();
+        otp.Id.ShouldNotBe(Guid.Empty);
+        otp.UserId.ShouldBe(ValidUserId);
+        otp.CurrentEmail.ShouldBe(ValidCurrentEmail.ToLowerInvariant());
+        otp.NewEmail.ShouldBe(ValidNewEmail.ToLowerInvariant());
+        otp.OtpHash.ShouldBe(ValidOtpHash);
+        otp.SessionToken.ShouldBe(ValidSessionToken);
     }
 
     [Theory]
@@ -53,8 +53,8 @@ public class EmailChangeOtpTests
             DefaultExpiryMinutes);
 
         // Assert
-        otp.CurrentEmail.Should().Be(expectedCurrent);
-        otp.NewEmail.Should().Be(expectedNew);
+        otp.CurrentEmail.ShouldBe(expectedCurrent);
+        otp.NewEmail.ShouldBe(expectedNew);
     }
 
     [Fact]
@@ -77,7 +77,10 @@ public class EmailChangeOtpTests
         var expectedMin = beforeCreate.AddMinutes(DefaultExpiryMinutes);
         var expectedMax = afterCreate.AddMinutes(DefaultExpiryMinutes);
 
-        otp.ExpiresAt.Should().BeOnOrAfter(expectedMin).And.BeOnOrBefore(expectedMax);
+        otp.ExpiresAt.ShouldBeGreaterThanOrEqualTo(expectedMin);
+
+
+        otp.ExpiresAt.ShouldBeLessThanOrEqualTo(expectedMax);
     }
 
     [Fact]
@@ -97,7 +100,7 @@ public class EmailChangeOtpTests
             tenantId: tenantId);
 
         // Assert
-        otp.TenantId.Should().Be(tenantId);
+        otp.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -117,7 +120,7 @@ public class EmailChangeOtpTests
             ipAddress: ipAddress);
 
         // Assert
-        otp.CreatedByIp.Should().Be(ipAddress);
+        otp.CreatedByIp.ShouldBe(ipAddress);
     }
 
     [Fact]
@@ -133,11 +136,11 @@ public class EmailChangeOtpTests
             DefaultExpiryMinutes);
 
         // Assert
-        otp.IsUsed.Should().BeFalse();
-        otp.UsedAt.Should().BeNull();
-        otp.AttemptCount.Should().Be(0);
-        otp.ResendCount.Should().Be(0);
-        otp.LastResendAt.Should().BeNull();
+        otp.IsUsed.ShouldBeFalse();
+        otp.UsedAt.ShouldBeNull();
+        otp.AttemptCount.ShouldBe(0);
+        otp.ResendCount.ShouldBe(0);
+        otp.LastResendAt.ShouldBeNull();
     }
 
     [Theory]
@@ -157,7 +160,7 @@ public class EmailChangeOtpTests
             DefaultExpiryMinutes);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -177,7 +180,7 @@ public class EmailChangeOtpTests
             DefaultExpiryMinutes);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -197,7 +200,7 @@ public class EmailChangeOtpTests
             DefaultExpiryMinutes);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -217,7 +220,7 @@ public class EmailChangeOtpTests
             DefaultExpiryMinutes);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -241,7 +244,7 @@ public class EmailChangeOtpTests
 
         // Assert
         var expectedMin = before.AddMinutes(minutes);
-        otp.ExpiresAt.Should().BeCloseTo(expectedMin, TimeSpan.FromSeconds(5));
+        otp.ExpiresAt.ShouldBe(expectedMin, TimeSpan.FromSeconds(5));
     }
 
     #endregion
@@ -261,7 +264,7 @@ public class EmailChangeOtpTests
             DefaultExpiryMinutes);
 
         // Act & Assert
-        otp.IsExpired.Should().BeFalse();
+        otp.IsExpired.ShouldBeFalse();
     }
 
     [Fact]
@@ -280,7 +283,7 @@ public class EmailChangeOtpTests
         Thread.Sleep(10);
 
         // Act & Assert
-        otp.IsExpired.Should().BeTrue();
+        otp.IsExpired.ShouldBeTrue();
     }
 
     #endregion
@@ -300,7 +303,7 @@ public class EmailChangeOtpTests
             DefaultExpiryMinutes);
 
         // Act & Assert
-        otp.IsValid.Should().BeTrue();
+        otp.IsValid.ShouldBeTrue();
     }
 
     [Fact]
@@ -317,7 +320,7 @@ public class EmailChangeOtpTests
         otp.MarkAsUsed();
 
         // Act & Assert
-        otp.IsValid.Should().BeFalse();
+        otp.IsValid.ShouldBeFalse();
     }
 
     [Fact]
@@ -336,7 +339,7 @@ public class EmailChangeOtpTests
         Thread.Sleep(10);
 
         // Act & Assert
-        otp.IsValid.Should().BeFalse();
+        otp.IsValid.ShouldBeFalse();
     }
 
     #endregion
@@ -354,13 +357,13 @@ public class EmailChangeOtpTests
             ValidOtpHash,
             ValidSessionToken,
             DefaultExpiryMinutes);
-        otp.AttemptCount.Should().Be(0);
+        otp.AttemptCount.ShouldBe(0);
 
         // Act
         otp.RecordFailedAttempt();
 
         // Assert
-        otp.AttemptCount.Should().Be(1);
+        otp.AttemptCount.ShouldBe(1);
     }
 
     [Fact]
@@ -381,7 +384,7 @@ public class EmailChangeOtpTests
         otp.RecordFailedAttempt();
 
         // Assert
-        otp.AttemptCount.Should().Be(3);
+        otp.AttemptCount.ShouldBe(3);
     }
 
     #endregion
@@ -404,7 +407,7 @@ public class EmailChangeOtpTests
         otp.MarkAsUsed();
 
         // Assert
-        otp.IsUsed.Should().BeTrue();
+        otp.IsUsed.ShouldBeTrue();
     }
 
     [Fact]
@@ -425,8 +428,10 @@ public class EmailChangeOtpTests
 
         // Assert
         var afterUse = DateTimeOffset.UtcNow;
-        otp.UsedAt.Should().NotBeNull();
-        otp.UsedAt.Should().BeOnOrAfter(beforeUse).And.BeOnOrBefore(afterUse);
+        otp.UsedAt.ShouldNotBeNull();
+        otp.UsedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeUse);
+
+        otp.UsedAt!.Value.ShouldBeLessThanOrEqualTo(afterUse);
     }
 
     #endregion
@@ -451,7 +456,7 @@ public class EmailChangeOtpTests
 
         // Assert
         // Cannot resend immediately after creation - must wait for cooldown
-        canResend.Should().BeFalse();
+        canResend.ShouldBeFalse();
     }
 
     [Fact]
@@ -471,7 +476,7 @@ public class EmailChangeOtpTests
         var canResend = otp.CanResend(cooldownSeconds: 0, maxResendCount: 3);
 
         // Assert
-        canResend.Should().BeTrue();
+        canResend.ShouldBeTrue();
     }
 
     [Fact]
@@ -495,7 +500,7 @@ public class EmailChangeOtpTests
         var canResend = otp.CanResend(cooldownSeconds: 0, maxResendCount: 3);
 
         // Assert
-        canResend.Should().BeFalse();
+        canResend.ShouldBeFalse();
     }
 
     [Fact]
@@ -515,7 +520,7 @@ public class EmailChangeOtpTests
         var canResend = otp.CanResend(cooldownSeconds: 60, maxResendCount: 3);
 
         // Assert
-        canResend.Should().BeFalse();
+        canResend.ShouldBeFalse();
     }
 
     [Fact]
@@ -535,7 +540,7 @@ public class EmailChangeOtpTests
         var canResend = otp.CanResend(cooldownSeconds: 0, maxResendCount: 3);
 
         // Assert
-        canResend.Should().BeTrue();
+        canResend.ShouldBeTrue();
     }
 
     #endregion
@@ -560,7 +565,7 @@ public class EmailChangeOtpTests
 
         // Assert
         // Should return approximately 60 seconds (allow 2 seconds tolerance for test execution time)
-        remaining.Should().BeCloseTo(60, 2);
+        Math.Abs(remaining - 60).ShouldBeLessThanOrEqualTo(2);
     }
 
     [Fact]
@@ -580,7 +585,7 @@ public class EmailChangeOtpTests
         var remaining = otp.GetRemainingCooldownSeconds(cooldownSeconds: 60);
 
         // Assert
-        remaining.Should().BeCloseTo(60, 2); // Allow 2 seconds tolerance
+        Math.Abs(remaining - 60).ShouldBeLessThanOrEqualTo(2); // Allow 2 seconds tolerance
     }
 
     [Fact]
@@ -600,7 +605,7 @@ public class EmailChangeOtpTests
         var remaining = otp.GetRemainingCooldownSeconds(cooldownSeconds: 0);
 
         // Assert
-        remaining.Should().Be(0);
+        remaining.ShouldBe(0);
     }
 
     #endregion
@@ -624,7 +629,7 @@ public class EmailChangeOtpTests
         otp.Resend(newHash, DefaultExpiryMinutes);
 
         // Assert
-        otp.OtpHash.Should().Be(newHash);
+        otp.OtpHash.ShouldBe(newHash);
     }
 
     [Fact]
@@ -638,13 +643,13 @@ public class EmailChangeOtpTests
             ValidOtpHash,
             ValidSessionToken,
             DefaultExpiryMinutes);
-        otp.ResendCount.Should().Be(0);
+        otp.ResendCount.ShouldBe(0);
 
         // Act
         otp.Resend("new-hash", DefaultExpiryMinutes);
 
         // Assert
-        otp.ResendCount.Should().Be(1);
+        otp.ResendCount.ShouldBe(1);
     }
 
     [Fact]
@@ -665,8 +670,10 @@ public class EmailChangeOtpTests
 
         // Assert
         var afterResend = DateTimeOffset.UtcNow;
-        otp.LastResendAt.Should().NotBeNull();
-        otp.LastResendAt.Should().BeOnOrAfter(beforeResend).And.BeOnOrBefore(afterResend);
+        otp.LastResendAt.ShouldNotBeNull();
+        otp.LastResendAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeResend);
+
+        otp.LastResendAt!.Value.ShouldBeLessThanOrEqualTo(afterResend);
     }
 
     [Fact]
@@ -691,8 +698,8 @@ public class EmailChangeOtpTests
 
         // Assert
         var expectedMin = beforeResend.AddMinutes(10);
-        otp.ExpiresAt.Should().BeOnOrAfter(expectedMin);
-        otp.ExpiresAt.Should().BeAfter(originalExpiry);
+        otp.ExpiresAt.ShouldBeGreaterThanOrEqualTo(expectedMin);
+        otp.ExpiresAt.ShouldBeGreaterThan(originalExpiry);
     }
 
     [Fact]
@@ -708,13 +715,13 @@ public class EmailChangeOtpTests
             DefaultExpiryMinutes);
         otp.RecordFailedAttempt();
         otp.RecordFailedAttempt();
-        otp.AttemptCount.Should().Be(2);
+        otp.AttemptCount.ShouldBe(2);
 
         // Act
         otp.Resend("new-hash", DefaultExpiryMinutes);
 
         // Assert
-        otp.AttemptCount.Should().Be(0);
+        otp.AttemptCount.ShouldBe(0);
     }
 
     [Fact]
@@ -735,7 +742,7 @@ public class EmailChangeOtpTests
         otp.Resend("hash3", DefaultExpiryMinutes);
 
         // Assert
-        otp.ResendCount.Should().Be(3);
+        otp.ResendCount.ShouldBe(3);
     }
 
     #endregion
@@ -755,8 +762,8 @@ public class EmailChangeOtpTests
             DefaultExpiryMinutes);
 
         // Assert
-        otp.SessionToken.Should().Be(ValidSessionToken);
-        otp.SessionToken.Should().NotBeNullOrWhiteSpace();
+        otp.SessionToken.ShouldBe(ValidSessionToken);
+        otp.SessionToken.ShouldNotBeNullOrWhiteSpace();
     }
 
     [Fact]
@@ -779,8 +786,8 @@ public class EmailChangeOtpTests
             DefaultExpiryMinutes);
 
         // Assert
-        otp1.SessionToken.Should().NotBe(otp2.SessionToken);
-        otp1.Id.Should().NotBe(otp2.Id);
+        otp1.SessionToken.ShouldNotBe(otp2.SessionToken);
+        otp1.Id.ShouldNotBe(otp2.Id);
     }
 
     #endregion
@@ -804,9 +811,9 @@ public class EmailChangeOtpTests
             DefaultExpiryMinutes);
 
         // Assert
-        otp.CurrentEmail.Should().Be(currentEmail);
-        otp.NewEmail.Should().Be(newEmail);
-        otp.CurrentEmail.Should().NotBe(otp.NewEmail);
+        otp.CurrentEmail.ShouldBe(currentEmail);
+        otp.NewEmail.ShouldBe(newEmail);
+        otp.CurrentEmail.ShouldNotBe(otp.NewEmail);
     }
 
     [Fact]
@@ -825,7 +832,7 @@ public class EmailChangeOtpTests
             DefaultExpiryMinutes);
 
         // Assert
-        otp.UserId.Should().Be(userId);
+        otp.UserId.ShouldBe(userId);
     }
 
     #endregion

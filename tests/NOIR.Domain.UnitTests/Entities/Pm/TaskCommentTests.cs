@@ -21,13 +21,13 @@ public class TaskCommentTests
         var comment = TaskComment.Create(TestTaskId, TestAuthorId, "This is a comment", TestTenantId);
 
         // Assert
-        comment.Should().NotBeNull();
-        comment.Id.Should().NotBe(Guid.Empty);
-        comment.TaskId.Should().Be(TestTaskId);
-        comment.AuthorId.Should().Be(TestAuthorId);
-        comment.Content.Should().Be("This is a comment");
-        comment.IsEdited.Should().BeFalse();
-        comment.TenantId.Should().Be(TestTenantId);
+        comment.ShouldNotBeNull();
+        comment.Id.ShouldNotBe(Guid.Empty);
+        comment.TaskId.ShouldBe(TestTaskId);
+        comment.AuthorId.ShouldBe(TestAuthorId);
+        comment.Content.ShouldBe("This is a comment");
+        comment.IsEdited.ShouldBeFalse();
+        comment.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class TaskCommentTests
     {
         // Act & Assert
         var act = () => TaskComment.Create(TestTaskId, TestAuthorId, "", TestTenantId);
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class TaskCommentTests
         var comment = TaskComment.Create(TestTaskId, TestAuthorId, "  Padded content  ", TestTenantId);
 
         // Assert
-        comment.Content.Should().Be("Padded content");
+        comment.Content.ShouldBe("Padded content");
     }
 
     #endregion
@@ -62,8 +62,8 @@ public class TaskCommentTests
         comment.Edit("Updated content");
 
         // Assert
-        comment.Content.Should().Be("Updated content");
-        comment.IsEdited.Should().BeTrue();
+        comment.Content.ShouldBe("Updated content");
+        comment.IsEdited.ShouldBeTrue();
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class TaskCommentTests
 
         // Act & Assert
         var act = () => comment.Edit("");
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -87,7 +87,7 @@ public class TaskCommentTests
         comment.Edit("  Edited  ");
 
         // Assert
-        comment.Content.Should().Be("Edited");
+        comment.Content.ShouldBe("Edited");
     }
 
     #endregion

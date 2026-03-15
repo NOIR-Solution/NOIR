@@ -44,8 +44,8 @@ public class MergeCartCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.MergedItemCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.MergedItemCount.ShouldBe(0);
     }
 
     [Fact]
@@ -71,12 +71,12 @@ public class MergeCartCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.MergedItemCount.Should().Be(2);
-        result.Value.TotalItemCount.Should().Be(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.MergedItemCount.ShouldBe(2);
+        result.Value.TotalItemCount.ShouldBe(2);
 
-        guestCart.UserId.Should().Be(TestUserId);
-        guestCart.SessionId.Should().BeNull();
+        guestCart.UserId.ShouldBe(TestUserId);
+        guestCart.SessionId.ShouldBeNull();
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -110,12 +110,12 @@ public class MergeCartCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.MergedItemCount.Should().Be(1);
-        result.Value.TotalItemCount.Should().Be(3); // 2 from user + 1 from guest
+        result.IsSuccess.ShouldBe(true);
+        result.Value.MergedItemCount.ShouldBe(1);
+        result.Value.TotalItemCount.ShouldBe(3); // 2 from user + 1 from guest
 
-        guestCart.Status.Should().Be(CartStatus.Merged);
-        userCart.ItemCount.Should().Be(3);
+        guestCart.Status.ShouldBe(CartStatus.Merged);
+        userCart.ItemCount.ShouldBe(3);
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.AtLeast(1));
     }
@@ -147,7 +147,7 @@ public class MergeCartCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TotalItemCount.Should().Be(5); // 3 + 2 combined
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TotalItemCount.ShouldBe(5); // 3 + 2 combined
     }
 }

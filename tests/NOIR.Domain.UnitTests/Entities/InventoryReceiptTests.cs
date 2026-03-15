@@ -19,14 +19,14 @@ public class InventoryReceiptTests
         var receipt = InventoryReceipt.Create("RCV-20260218-0001", InventoryReceiptType.StockIn, "Test notes", TestTenantId);
 
         // Assert
-        receipt.Should().NotBeNull();
-        receipt.Id.Should().NotBe(Guid.Empty);
-        receipt.ReceiptNumber.Should().Be("RCV-20260218-0001");
-        receipt.Type.Should().Be(InventoryReceiptType.StockIn);
-        receipt.Status.Should().Be(InventoryReceiptStatus.Draft);
-        receipt.Notes.Should().Be("Test notes");
-        receipt.TenantId.Should().Be(TestTenantId);
-        receipt.Items.Should().BeEmpty();
+        receipt.ShouldNotBeNull();
+        receipt.Id.ShouldNotBe(Guid.Empty);
+        receipt.ReceiptNumber.ShouldBe("RCV-20260218-0001");
+        receipt.Type.ShouldBe(InventoryReceiptType.StockIn);
+        receipt.Status.ShouldBe(InventoryReceiptStatus.Draft);
+        receipt.Notes.ShouldBe("Test notes");
+        receipt.TenantId.ShouldBe(TestTenantId);
+        receipt.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -36,8 +36,8 @@ public class InventoryReceiptTests
         var receipt = InventoryReceipt.Create("SHP-20260218-0001", InventoryReceiptType.StockOut, tenantId: TestTenantId);
 
         // Assert
-        receipt.Type.Should().Be(InventoryReceiptType.StockOut);
-        receipt.Status.Should().Be(InventoryReceiptStatus.Draft);
+        receipt.Type.ShouldBe(InventoryReceiptType.StockOut);
+        receipt.Status.ShouldBe(InventoryReceiptStatus.Draft);
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class InventoryReceiptTests
         var receipt = InventoryReceipt.Create("RCV-20260218-0001", InventoryReceiptType.StockIn, tenantId: TestTenantId);
 
         // Assert
-        receipt.Notes.Should().BeNull();
+        receipt.Notes.ShouldBeNull();
     }
 
     #endregion
@@ -66,16 +66,16 @@ public class InventoryReceiptTests
         var item = receipt.AddItem(variantId, productId, "Test Product", "Size: M", "SKU-001", 10, 25.00m);
 
         // Assert
-        item.Should().NotBeNull();
-        receipt.Items.Should().HaveCount(1);
-        item.ProductVariantId.Should().Be(variantId);
-        item.ProductId.Should().Be(productId);
-        item.ProductName.Should().Be("Test Product");
-        item.VariantName.Should().Be("Size: M");
-        item.Sku.Should().Be("SKU-001");
-        item.Quantity.Should().Be(10);
-        item.UnitCost.Should().Be(25.00m);
-        item.LineTotal.Should().Be(250.00m);
+        item.ShouldNotBeNull();
+        receipt.Items.Count().ShouldBe(1);
+        item.ProductVariantId.ShouldBe(variantId);
+        item.ProductId.ShouldBe(productId);
+        item.ProductName.ShouldBe("Test Product");
+        item.VariantName.ShouldBe("Size: M");
+        item.Sku.ShouldBe("SKU-001");
+        item.Quantity.ShouldBe(10);
+        item.UnitCost.ShouldBe(25.00m);
+        item.LineTotal.ShouldBe(250.00m);
     }
 
     [Fact]
@@ -89,9 +89,9 @@ public class InventoryReceiptTests
         receipt.AddItem(Guid.NewGuid(), Guid.NewGuid(), "Product 2", "Variant 2", "SKU-002", 5, 50.00m);
 
         // Assert
-        receipt.Items.Should().HaveCount(2);
-        receipt.TotalQuantity.Should().Be(15);
-        receipt.TotalCost.Should().Be(500.00m); // (10*25) + (5*50)
+        receipt.Items.Count().ShouldBe(2);
+        receipt.TotalQuantity.ShouldBe(15);
+        receipt.TotalCost.ShouldBe(500.00m); // (10*25) + (5*50)
     }
 
     [Fact]
@@ -104,8 +104,8 @@ public class InventoryReceiptTests
 
         // Act & Assert
         var act = () => receipt.AddItem(Guid.NewGuid(), Guid.NewGuid(), "Product 2", "Variant 2", "SKU-002", 5, 50.00m);
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot add items to a non-draft receipt.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot add items to a non-draft receipt.");
     }
 
     [Fact]
@@ -117,8 +117,8 @@ public class InventoryReceiptTests
 
         // Act & Assert
         var act = () => receipt.AddItem(Guid.NewGuid(), Guid.NewGuid(), "Product", "Variant", "SKU", 10, 25.00m);
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot add items to a non-draft receipt.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot add items to a non-draft receipt.");
     }
 
     #endregion
@@ -137,10 +137,10 @@ public class InventoryReceiptTests
         receipt.Confirm("admin-user");
 
         // Assert
-        receipt.Status.Should().Be(InventoryReceiptStatus.Confirmed);
-        receipt.ConfirmedBy.Should().Be("admin-user");
-        receipt.ConfirmedAt.Should().NotBeNull();
-        receipt.ConfirmedAt.Should().BeOnOrAfter(beforeConfirm);
+        receipt.Status.ShouldBe(InventoryReceiptStatus.Confirmed);
+        receipt.ConfirmedBy.ShouldBe("admin-user");
+        receipt.ConfirmedAt.ShouldNotBeNull();
+        receipt.ConfirmedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeConfirm);
     }
 
     [Fact]
@@ -151,8 +151,8 @@ public class InventoryReceiptTests
 
         // Act & Assert
         var act = () => receipt.Confirm("admin-user");
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot confirm an empty receipt.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot confirm an empty receipt.");
     }
 
     [Fact]
@@ -165,8 +165,8 @@ public class InventoryReceiptTests
 
         // Act & Assert
         var act = () => receipt.Confirm("user-2");
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot confirm receipt in Confirmed status.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot confirm receipt in Confirmed status.");
     }
 
     [Fact]
@@ -178,8 +178,8 @@ public class InventoryReceiptTests
 
         // Act & Assert
         var act = () => receipt.Confirm("user-2");
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot confirm receipt in Cancelled status.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot confirm receipt in Cancelled status.");
     }
 
     #endregion
@@ -197,11 +197,11 @@ public class InventoryReceiptTests
         receipt.Cancel("admin-user", "No longer needed");
 
         // Assert
-        receipt.Status.Should().Be(InventoryReceiptStatus.Cancelled);
-        receipt.CancelledBy.Should().Be("admin-user");
-        receipt.CancelledAt.Should().NotBeNull();
-        receipt.CancelledAt.Should().BeOnOrAfter(beforeCancel);
-        receipt.CancellationReason.Should().Be("No longer needed");
+        receipt.Status.ShouldBe(InventoryReceiptStatus.Cancelled);
+        receipt.CancelledBy.ShouldBe("admin-user");
+        receipt.CancelledAt.ShouldNotBeNull();
+        receipt.CancelledAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeCancel);
+        receipt.CancellationReason.ShouldBe("No longer needed");
     }
 
     [Fact]
@@ -214,8 +214,8 @@ public class InventoryReceiptTests
         receipt.Cancel("admin-user");
 
         // Assert
-        receipt.Status.Should().Be(InventoryReceiptStatus.Cancelled);
-        receipt.CancellationReason.Should().BeNull();
+        receipt.Status.ShouldBe(InventoryReceiptStatus.Cancelled);
+        receipt.CancellationReason.ShouldBeNull();
     }
 
     [Fact]
@@ -228,8 +228,8 @@ public class InventoryReceiptTests
 
         // Act & Assert
         var act = () => receipt.Cancel("user-2", "Changed mind");
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot cancel receipt in Confirmed status.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot cancel receipt in Confirmed status.");
     }
 
     [Fact]
@@ -241,8 +241,8 @@ public class InventoryReceiptTests
 
         // Act & Assert
         var act = () => receipt.Cancel("user-2");
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot cancel receipt in Cancelled status.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot cancel receipt in Cancelled status.");
     }
 
     #endregion
@@ -259,7 +259,7 @@ public class InventoryReceiptTests
         receipt.AddItem(Guid.NewGuid(), Guid.NewGuid(), "P3", "V3", "S3", 30, 30.00m);
 
         // Act & Assert
-        receipt.TotalQuantity.Should().Be(60);
+        receipt.TotalQuantity.ShouldBe(60);
     }
 
     [Fact]
@@ -272,7 +272,7 @@ public class InventoryReceiptTests
         receipt.AddItem(Guid.NewGuid(), Guid.NewGuid(), "P3", "V3", "S3", 3, 50.00m);  // 150
 
         // Act & Assert
-        receipt.TotalCost.Should().Be(350.00m);
+        receipt.TotalCost.ShouldBe(350.00m);
     }
 
     [Fact]
@@ -282,8 +282,8 @@ public class InventoryReceiptTests
         var receipt = InventoryReceipt.Create("RCV-20260218-0001", InventoryReceiptType.StockIn, tenantId: TestTenantId);
 
         // Act & Assert
-        receipt.TotalQuantity.Should().Be(0);
-        receipt.TotalCost.Should().Be(0m);
+        receipt.TotalQuantity.ShouldBe(0);
+        receipt.TotalCost.ShouldBe(0m);
     }
 
     #endregion

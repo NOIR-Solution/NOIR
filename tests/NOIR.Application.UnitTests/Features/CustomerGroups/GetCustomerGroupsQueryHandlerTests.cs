@@ -1,4 +1,3 @@
-using FluentAssertions;
 using Moq;
 using NOIR.Application.Common.Interfaces;
 using NOIR.Application.Common.Models;
@@ -61,11 +60,11 @@ public class GetCustomerGroupsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(3);
-        result.Value.TotalCount.Should().Be(3);
-        result.Value.PageIndex.Should().Be(0);
-        result.Value.PageNumber.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(3);
+        result.Value.TotalCount.ShouldBe(3);
+        result.Value.PageIndex.ShouldBe(0);
+        result.Value.PageNumber.ShouldBe(1);
     }
 
     [Fact]
@@ -86,9 +85,9 @@ public class GetCustomerGroupsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
     }
 
     [Fact]
@@ -110,10 +109,10 @@ public class GetCustomerGroupsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PageIndex.Should().Be(1); // 0-based
-        result.Value.PageNumber.Should().Be(2); // 1-based
-        result.Value.TotalPages.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PageIndex.ShouldBe(1); // 0-based
+        result.Value.PageNumber.ShouldBe(2); // 1-based
+        result.Value.TotalPages.ShouldBe(3);
     }
 
     [Fact]
@@ -135,12 +134,12 @@ public class GetCustomerGroupsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var item = result.Value.Items.First();
-        item.Name.Should().Be("VIP Customers");
-        item.Slug.Should().Be("vip-customers");
-        item.IsActive.Should().BeTrue();
-        item.MemberCount.Should().Be(0);
+        item.Name.ShouldBe("VIP Customers");
+        item.Slug.ShouldBe("vip-customers");
+        item.IsActive.ShouldBe(true);
+        item.MemberCount.ShouldBe(0);
     }
 
     #endregion

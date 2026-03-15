@@ -104,8 +104,8 @@ public class DeleteCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
 
         _categoryRepositoryMock.Verify(
             x => x.Remove(existingCategory),
@@ -150,8 +150,8 @@ public class DeleteCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
     }
 
     #endregion
@@ -175,9 +175,9 @@ public class DeleteCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-BLOG-007");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-BLOG-007");
+        result.Error.Message.ShouldContain("not found");
 
         _categoryRepositoryMock.Verify(
             x => x.Remove(It.IsAny<PostCategory>()),
@@ -215,9 +215,9 @@ public class DeleteCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-BLOG-009");
-        result.Error.Message.Should().Contain("child categories");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-BLOG-009");
+        result.Error.Message.ShouldContain("child categories");
 
         _categoryRepositoryMock.Verify(
             x => x.Remove(It.IsAny<PostCategory>()),
@@ -257,9 +257,9 @@ public class DeleteCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-BLOG-010");
-        result.Error.Message.Should().Contain("has posts");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-BLOG-010");
+        result.Error.Message.ShouldContain("has posts");
 
         _categoryRepositoryMock.Verify(
             x => x.Remove(It.IsAny<PostCategory>()),
@@ -293,8 +293,8 @@ public class DeleteCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert - Should fail on children check first
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-BLOG-009");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-BLOG-009");
 
         // Posts should not be checked since children check fails first
         _postRepositoryMock.Verify(
@@ -395,9 +395,9 @@ public class DeleteCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        removedCategory.Should().NotBeNull();
-        removedCategory.Should().BeSameAs(existingCategory);
+        result.IsSuccess.ShouldBe(true);
+        removedCategory.ShouldNotBeNull();
+        removedCategory.ShouldBeSameAs(existingCategory);
     }
 
     [Fact]
@@ -434,8 +434,8 @@ public class DeleteCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
     }
 
     [Fact]
@@ -473,7 +473,7 @@ public class DeleteCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     #endregion

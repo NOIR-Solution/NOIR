@@ -87,10 +87,10 @@ public class ReorderProductImagesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Images.First(i => i.Id == imageIds[0]).SortOrder.Should().Be(2);
-        existingProduct.Images.First(i => i.Id == imageIds[1]).SortOrder.Should().Be(0);
-        existingProduct.Images.First(i => i.Id == imageIds[2]).SortOrder.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Images.First(i => i.Id == imageIds[0]).SortOrder.ShouldBe(2);
+        existingProduct.Images.First(i => i.Id == imageIds[1]).SortOrder.ShouldBe(0);
+        existingProduct.Images.First(i => i.Id == imageIds[2]).SortOrder.ShouldBe(1);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -126,8 +126,8 @@ public class ReorderProductImagesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Images.First(i => i.Id == imageIds[0]).SortOrder.Should().Be(5);
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Images.First(i => i.Id == imageIds[0]).SortOrder.ShouldBe(5);
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public class ReorderProductImagesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     [Fact]
@@ -186,7 +186,7 @@ public class ReorderProductImagesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     #endregion
@@ -209,10 +209,10 @@ public class ReorderProductImagesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-026");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-026");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -247,10 +247,10 @@ public class ReorderProductImagesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-033");
-        result.Error.Message.Should().Contain("Invalid image IDs");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-033");
+        result.Error.Message.ShouldContain("Invalid image IDs");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -283,9 +283,9 @@ public class ReorderProductImagesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-033");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-033");
     }
 
     #endregion
@@ -353,8 +353,8 @@ public class ReorderProductImagesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Images.First(i => i.Id == imageId).SortOrder.Should().Be(-1);
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Images.First(i => i.Id == imageId).SortOrder.ShouldBe(-1);
     }
 
     [Fact]
@@ -385,8 +385,8 @@ public class ReorderProductImagesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Images.First(i => i.Id == imageId).SortOrder.Should().Be(int.MaxValue);
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Images.First(i => i.Id == imageId).SortOrder.ShouldBe(int.MaxValue);
     }
 
     #endregion

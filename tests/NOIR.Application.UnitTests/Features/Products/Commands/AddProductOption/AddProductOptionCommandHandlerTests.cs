@@ -83,9 +83,9 @@ public class AddProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("size");
-        result.Value.DisplayName.Should().Be("Size");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("size");
+        result.Value.DisplayName.ShouldBe("Size");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -122,10 +122,10 @@ public class AddProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Values.Should().HaveCount(2);
-        result.Value.Values.Should().Contain(v => v.Value == "red");
-        result.Value.Values.Should().Contain(v => v.Value == "blue");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Values.Count().ShouldBe(2);
+        result.Value.Values.ShouldContain(v => v.Value == "red");
+        result.Value.Values.ShouldContain(v => v.Value == "blue");
     }
 
     [Fact]
@@ -157,10 +157,10 @@ public class AddProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var redValue = result.Value.Values.First();
-        redValue.ColorCode.Should().Be("#FF0000");
-        redValue.SwatchUrl.Should().Be("https://example.com/red-swatch.jpg");
+        redValue.ColorCode.ShouldBe("#FF0000");
+        redValue.SwatchUrl.ShouldBe("https://example.com/red-swatch.jpg");
     }
 
     [Fact]
@@ -188,8 +188,8 @@ public class AddProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Values.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Values.ShouldBeEmpty();
     }
 
     [Fact]
@@ -217,9 +217,9 @@ public class AddProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("product_size");
-        result.Value.DisplayName.Should().Be("Product Size");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("product_size");
+        result.Value.DisplayName.ShouldBe("Product Size");
     }
 
     #endregion
@@ -242,10 +242,10 @@ public class AddProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-021");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-021");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -279,10 +279,10 @@ public class AddProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-050");
-        result.Error.Message.Should().Contain("already exists");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-050");
+        result.Error.Message.ShouldContain("already exists");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -315,8 +315,8 @@ public class AddProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Options.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Options.Count().ShouldBe(2);
     }
 
     #endregion
@@ -380,8 +380,8 @@ public class AddProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Values.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Values.ShouldBeEmpty();
     }
 
     #endregion

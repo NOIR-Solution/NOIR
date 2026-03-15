@@ -60,9 +60,9 @@ public class GetProductCategoryByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be(existingCategory.Name);
-        result.Value.Slug.Should().Be(existingCategory.Slug);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe(existingCategory.Name);
+        result.Value.Slug.ShouldBe(existingCategory.Slug);
     }
 
     [Fact]
@@ -86,15 +86,15 @@ public class GetProductCategoryByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Name.Should().Be("Full Category");
-        dto.Slug.Should().Be("full-category");
-        dto.Description.Should().Be("Description");
-        dto.ImageUrl.Should().Be("https://example.com/img.jpg");
-        dto.MetaTitle.Should().Be("SEO Title");
-        dto.MetaDescription.Should().Be("SEO Description");
-        dto.SortOrder.Should().Be(5);
+        dto.Name.ShouldBe("Full Category");
+        dto.Slug.ShouldBe("full-category");
+        dto.Description.ShouldBe("Description");
+        dto.ImageUrl.ShouldBe("https://example.com/img.jpg");
+        dto.MetaTitle.ShouldBe("SEO Title");
+        dto.MetaDescription.ShouldBe("SEO Description");
+        dto.SortOrder.ShouldBe(5);
     }
 
     [Fact]
@@ -116,9 +116,9 @@ public class GetProductCategoryByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Children collection should be mapped (empty in this case since no children on category)
-        result.Value.Children.Should().BeNullOrEmpty();
+        result.Value.Children.ShouldBeEmpty();
     }
 
     #endregion
@@ -142,10 +142,10 @@ public class GetProductCategoryByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-003");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-003");
+        result.Error.Message.ShouldContain("not found");
     }
 
     #endregion
@@ -196,8 +196,8 @@ public class GetProductCategoryByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProductCount.Should().Be(10);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProductCount.ShouldBe(10);
     }
 
     [Fact]
@@ -219,8 +219,8 @@ public class GetProductCategoryByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Description.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Description.ShouldBeNull();
     }
 
     [Fact]
@@ -241,9 +241,9 @@ public class GetProductCategoryByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ParentId.Should().BeNull();
-        result.Value.ParentName.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ParentId.ShouldBeNull();
+        result.Value.ParentName.ShouldBeNull();
     }
 
     [Fact]
@@ -264,9 +264,9 @@ public class GetProductCategoryByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // CreatedAt should be set by the entity
-        result.Value.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
+        result.Value.CreatedAt.ShouldBe(DateTime.UtcNow, TimeSpan.FromSeconds(5));
     }
 
     #endregion

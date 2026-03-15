@@ -184,8 +184,8 @@ public class ManualCreateOrderCommandValidatorTests
         var badItem = new ManualOrderItemDto(Guid.Empty, 1);
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Product variant ID is required.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Product variant ID is required.");
     }
 
     [Fact]
@@ -194,8 +194,8 @@ public class ManualCreateOrderCommandValidatorTests
         var badItem = new ManualOrderItemDto(Guid.NewGuid(), 0);
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Quantity must be greater than zero.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Quantity must be greater than zero.");
     }
 
     [Fact]
@@ -204,8 +204,8 @@ public class ManualCreateOrderCommandValidatorTests
         var badItem = new ManualOrderItemDto(Guid.NewGuid(), -1);
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Quantity must be greater than zero.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Quantity must be greater than zero.");
     }
 
     [Fact]
@@ -214,8 +214,8 @@ public class ManualCreateOrderCommandValidatorTests
         var badItem = new ManualOrderItemDto(Guid.NewGuid(), 1001);
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Quantity cannot exceed 1000.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Quantity cannot exceed 1000.");
     }
 
     [Fact]
@@ -224,8 +224,8 @@ public class ManualCreateOrderCommandValidatorTests
         var badItem = new ManualOrderItemDto(Guid.NewGuid(), 1, UnitPrice: -1m);
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Unit price must be non-negative.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Unit price must be non-negative.");
     }
 
     [Fact]
@@ -234,8 +234,8 @@ public class ManualCreateOrderCommandValidatorTests
         var badItem = new ManualOrderItemDto(Guid.NewGuid(), 1, DiscountAmount: -5m);
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Item discount amount must be non-negative.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Item discount amount must be non-negative.");
     }
 
     // --- Amounts ---
@@ -344,8 +344,8 @@ public class ManualCreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { FullName = "" };
         var command = CreateValidCommand() with { ShippingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Full name is required.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Full name is required.");
     }
 
     [Fact]
@@ -362,8 +362,8 @@ public class ManualCreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { FullName = "" };
         var command = CreateValidCommand() with { BillingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Full name is required.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Full name is required.");
     }
 
     [Fact]

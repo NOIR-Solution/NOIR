@@ -35,11 +35,11 @@ public class GetContactByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(contact.Id);
-        result.Value.FirstName.Should().Be("John");
-        result.Value.LastName.Should().Be("Doe");
-        result.Value.Email.Should().Be("john@example.com");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(contact.Id);
+        result.Value.FirstName.ShouldBe("John");
+        result.Value.LastName.ShouldBe("Doe");
+        result.Value.Email.ShouldBe("john@example.com");
     }
 
     [Fact]
@@ -56,6 +56,6 @@ public class GetContactByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 }

@@ -97,11 +97,11 @@ public class UpdateCartItemCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
         var updatedItem = result.Value.Items.FirstOrDefault(i => i.Id == itemId);
-        updatedItem.Should().NotBeNull();
-        updatedItem!.Quantity.Should().Be(5);
+        updatedItem.ShouldNotBeNull();
+        updatedItem!.Quantity.ShouldBe(5);
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -129,9 +129,9 @@ public class UpdateCartItemCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().NotContain(i => i.Id == itemId);
-        result.Value.IsEmpty.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldNotContain(i => i.Id == itemId);
+        result.Value.IsEmpty.ShouldBe(true);
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -159,10 +159,10 @@ public class UpdateCartItemCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var updatedItem = result.Value.Items.First(i => i.Id == itemId);
-        updatedItem.Quantity.Should().Be(10);
-        updatedItem.LineTotal.Should().Be(1000m); // 10 * 100
+        updatedItem.Quantity.ShouldBe(10);
+        updatedItem.LineTotal.ShouldBe(1000m); // 10 * 100
     }
 
     [Fact]
@@ -188,9 +188,9 @@ public class UpdateCartItemCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var updatedItem = result.Value.Items.First(i => i.Id == itemId);
-        updatedItem.Quantity.Should().Be(3);
+        updatedItem.Quantity.ShouldBe(3);
     }
 
     [Fact]
@@ -216,9 +216,9 @@ public class UpdateCartItemCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var updatedItem = result.Value.Items.First(i => i.Id == itemId);
-        updatedItem.Quantity.Should().Be(5);
+        updatedItem.Quantity.ShouldBe(5);
     }
 
     #endregion
@@ -242,9 +242,9 @@ public class UpdateCartItemCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain("Cart");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Message.ShouldContain("Cart");
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -268,9 +268,9 @@ public class UpdateCartItemCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.Forbidden);
-        result.Error.Message.Should().Contain("Cart");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.Forbidden);
+        result.Error.Message.ShouldContain("Cart");
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -294,8 +294,8 @@ public class UpdateCartItemCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.Validation);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -320,8 +320,8 @@ public class UpdateCartItemCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.Validation);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -386,13 +386,13 @@ public class UpdateCartItemCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(cartId);
-        result.Value.UserId.Should().Be(TestUserId);
-        result.Value.Status.Should().Be(CartStatus.Active);
-        result.Value.Currency.Should().Be("VND");
-        result.Value.ItemCount.Should().Be(5);
-        result.Value.Subtotal.Should().Be(500m); // 5 * 100
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(cartId);
+        result.Value.UserId.ShouldBe(TestUserId);
+        result.Value.Status.ShouldBe(CartStatus.Active);
+        result.Value.Currency.ShouldBe("VND");
+        result.Value.ItemCount.ShouldBe(5);
+        result.Value.Subtotal.ShouldBe(500m); // 5 * 100
     }
 
     [Fact]
@@ -420,12 +420,12 @@ public class UpdateCartItemCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var targetItem = result.Value.Items.First(i => i.Id == targetItemId);
         var otherItem = result.Value.Items.First(i => i.Id == otherItemId);
 
-        targetItem.Quantity.Should().Be(10);
-        otherItem.Quantity.Should().Be(3); // Unchanged
+        targetItem.Quantity.ShouldBe(10);
+        otherItem.Quantity.ShouldBe(3); // Unchanged
     }
 
     #endregion

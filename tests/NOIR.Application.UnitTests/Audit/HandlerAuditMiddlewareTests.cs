@@ -29,10 +29,10 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeAndSerialize(input);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"email\":\"test@example.com\"");
-        result.Should().Contain("[REDACTED]");
-        result.Should().NotContain("secret123");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"email\":\"test@example.com\"");
+        result.ShouldContain("[REDACTED]");
+        result.ShouldNotContain("secret123");
     }
 
     [Fact]
@@ -45,10 +45,10 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeAndSerialize(input);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"userId\":\"123\"");
-        result.Should().Contain("[REDACTED]");
-        result.Should().NotContain("sk-12345abcdef");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"userId\":\"123\"");
+        result.ShouldContain("[REDACTED]");
+        result.ShouldNotContain("sk-12345abcdef");
     }
 
     [Fact]
@@ -61,10 +61,10 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeAndSerialize(input);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"name\":\"Test\"");
-        result.Should().Contain("[REDACTED]");
-        result.Should().NotContain("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"name\":\"Test\"");
+        result.ShouldContain("[REDACTED]");
+        result.ShouldNotContain("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9");
     }
 
     [Fact]
@@ -84,9 +84,9 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeAndSerialize(input);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("[REDACTED]");
-        result.Should().NotContain("hashed_password_here");
+        result.ShouldNotBeNull();
+        result.ShouldContain("[REDACTED]");
+        result.ShouldNotContain("hashed_password_here");
     }
 
     [Fact]
@@ -106,10 +106,10 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeAndSerialize(input);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"email\":\"test@example.com\"");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"email\":\"test@example.com\"");
         var redactedCount = result!.Split("[REDACTED]").Length - 1;
-        redactedCount.Should().Be(4); // Password, Secret, ApiKey, Token
+        redactedCount.ShouldBe(4); // Password, Secret, ApiKey, Token
     }
 
     [Fact]
@@ -127,10 +127,10 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeAndSerialize(input);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"orderId\":\"ORD-123\"");
-        result.Should().NotContain("4111-1111-1111-1111");
-        result.Should().NotContain("\"cvv\":\"123\"");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"orderId\":\"ORD-123\"");
+        result.ShouldNotContain("4111-1111-1111-1111");
+        result.ShouldNotContain("\"cvv\":\"123\"");
     }
 
     [Fact]
@@ -149,12 +149,12 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeAndSerialize(input);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"id\":123");
-        result.Should().Contain("\"name\":\"John Doe\"");
-        result.Should().Contain("\"email\":\"john@example.com\"");
-        result.Should().Contain("\"isActive\":true");
-        result.Should().NotContain("[REDACTED]");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"id\":123");
+        result.ShouldContain("\"name\":\"John Doe\"");
+        result.ShouldContain("\"email\":\"john@example.com\"");
+        result.ShouldContain("\"isActive\":true");
+        result.ShouldNotContain("[REDACTED]");
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeAndSerialize(null);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -177,8 +177,8 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeAndSerialize(input);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"tags\":[\"tag1\",\"tag2\",\"tag3\"]");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"tags\":[\"tag1\",\"tag2\",\"tag3\"]");
     }
 
     #endregion
@@ -196,9 +196,9 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeExceptionMessage(exception);
 
         // Assert
-        result.Should().Contain("InvalidOperationException");
-        result.Should().Contain("[CONNECTION STRING REDACTED]");
-        result.Should().NotContain("secret123");
+        result.ShouldContain("InvalidOperationException");
+        result.ShouldContain("[CONNECTION STRING REDACTED]");
+        result.ShouldNotContain("secret123");
     }
 
     [Fact]
@@ -211,8 +211,8 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeExceptionMessage(exception);
 
         // Assert
-        result.Should().Contain("Password=[REDACTED]");
-        result.Should().NotContain("secret123");
+        result.ShouldContain("Password=[REDACTED]");
+        result.ShouldNotContain("secret123");
     }
 
     [Fact]
@@ -225,8 +225,8 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeExceptionMessage(exception);
 
         // Assert
-        result.Should().Contain("Bearer [REDACTED]");
-        result.Should().NotContain("eyJhbGciOiJIUzI1NiJ9");
+        result.ShouldContain("Bearer [REDACTED]");
+        result.ShouldNotContain("eyJhbGciOiJIUzI1NiJ9");
     }
 
     [Fact]
@@ -239,8 +239,8 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeExceptionMessage(exception);
 
         // Assert
-        result.Should().Contain("ApiKey=[REDACTED]");
-        result.Should().NotContain("sk-1234567890abcdef");
+        result.ShouldContain("ApiKey=[REDACTED]");
+        result.ShouldNotContain("sk-1234567890abcdef");
     }
 
     [Fact]
@@ -254,8 +254,8 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeExceptionMessage(exception);
 
         // Assert
-        result.Should().Contain("[TRUNCATED]");
-        result.Length.Should().BeLessThan(600); // 500 chars + exception type + "[TRUNCATED]"
+        result.ShouldContain("[TRUNCATED]");
+        result.Length.ShouldBeLessThan(600); // 500 chars + exception type + "[TRUNCATED]"
     }
 
     [Fact]
@@ -268,8 +268,8 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeExceptionMessage(exception);
 
         // Assert
-        result.Should().Contain("ArgumentException: Value cannot be null");
-        result.Should().NotContain("[TRUNCATED]");
+        result.ShouldContain("ArgumentException: Value cannot be null");
+        result.ShouldNotContain("[TRUNCATED]");
     }
 
     [Fact]
@@ -283,8 +283,8 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeExceptionMessage(exception);
 
         // Assert
-        result.Should().Contain("[REDACTED]");
-        result.Should().NotContain("secret");
+        result.ShouldContain("[REDACTED]");
+        result.ShouldNotContain("secret");
     }
 
     [Fact]
@@ -297,7 +297,7 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeExceptionMessage(exception);
 
         // Assert
-        result.Should().Contain("[CONNECTION STRING REDACTED]");
+        result.ShouldContain("[CONNECTION STRING REDACTED]");
     }
 
     #endregion
@@ -313,9 +313,9 @@ public class HandlerAuditMiddlewareTests
         var method = typeof(HandlerAuditMiddleware)
             .GetMethod("GetTargetDtoType", BindingFlags.NonPublic | BindingFlags.Static);
 
-        method.Should().NotBeNull();
-        method!.GetParameters().Should().HaveCount(1);
-        method.GetParameters()[0].ParameterType.Should().Be(typeof(Type));
+        method.ShouldNotBeNull();
+        method!.GetParameters().Count().ShouldBe(1);
+        method.GetParameters()[0].ParameterType.ShouldBe(typeof(Type));
     }
 
     #endregion
@@ -351,9 +351,9 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeJson(json);
 
         // Assert
-        result.Should().Contain("[REDACTED]");
-        result.Should().NotContain("sensitive value");
-        result.Should().Contain("safe value");
+        result.ShouldContain("[REDACTED]");
+        result.ShouldNotContain("sensitive value");
+        result.ShouldContain("safe value");
     }
 
     [Theory]
@@ -374,8 +374,8 @@ public class HandlerAuditMiddlewareTests
         var result = InvokeSanitizeJson(json);
 
         // Assert
-        result.Should().Contain("[REDACTED]");
-        result.Should().NotContain("sensitive value");
+        result.ShouldContain("[REDACTED]");
+        result.ShouldNotContain("sensitive value");
     }
 
     #endregion
@@ -393,11 +393,11 @@ public class HandlerAuditMiddlewareTests
         var diff = InvokeComputeDtoDiff(before, after);
 
         // Assert
-        diff.Should().NotBeNull();
+        diff.ShouldNotBeNull();
         // Properties are camelCase in JSON
-        diff.Should().Contain("name");
-        diff.Should().Contain("Before");
-        diff.Should().Contain("After");
+        diff.ShouldContain("name");
+        diff.ShouldContain("Before");
+        diff.ShouldContain("After");
     }
 
     [Fact]
@@ -414,7 +414,7 @@ public class HandlerAuditMiddlewareTests
         // When there are no changes, diff should be null or empty array
         if (diff is not null)
         {
-            diff.Should().Contain("[]");
+            diff.ShouldContain("[]");
         }
     }
 
@@ -430,13 +430,13 @@ public class HandlerAuditMiddlewareTests
         var diff = InvokeComputeDtoDiff(before, after);
 
         // Assert
-        diff.Should().NotBeNull();
+        diff.ShouldNotBeNull();
         // Sensitive values should NOT appear in the diff
-        diff.Should().NotContain("secret1");
-        diff.Should().NotContain("secret2");
+        diff.ShouldNotContain("secret1");
+        diff.ShouldNotContain("secret2");
         // Only the Name change should be in the diff (password is redacted on both sides,
         // so appears as no change since [REDACTED] == [REDACTED])
-        diff.Should().Contain("name");
+        diff.ShouldContain("name");
     }
 
     #endregion
@@ -453,8 +453,8 @@ public class HandlerAuditMiddlewareTests
         var dtoType = InvokeGetTargetDtoTypeFromInterface(commandType);
 
         // Assert
-        dtoType.Should().NotBeNull();
-        dtoType!.Name.Should().Be("TestDto");
+        dtoType.ShouldNotBeNull();
+        dtoType!.Name.ShouldBe("TestDto");
     }
 
     [Fact]
@@ -467,7 +467,7 @@ public class HandlerAuditMiddlewareTests
         var dtoType = InvokeGetTargetDtoTypeFromInterface(commandType);
 
         // Assert
-        dtoType.Should().BeNull();
+        dtoType.ShouldBeNull();
     }
 
     #endregion

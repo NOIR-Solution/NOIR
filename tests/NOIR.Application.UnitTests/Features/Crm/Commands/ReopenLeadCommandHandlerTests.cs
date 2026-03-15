@@ -49,11 +49,11 @@ public class ReopenLeadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        lead.Status.Should().Be(LeadStatus.Active);
-        lead.WonAt.Should().BeNull();
-        lead.LostAt.Should().BeNull();
-        lead.LostReason.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        lead.Status.ShouldBe(LeadStatus.Active);
+        lead.WonAt.ShouldBeNull();
+        lead.LostAt.ShouldBeNull();
+        lead.LostReason.ShouldBeNull();
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -74,11 +74,11 @@ public class ReopenLeadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        lead.Status.Should().Be(LeadStatus.Active);
-        lead.WonAt.Should().BeNull();
-        lead.LostAt.Should().BeNull();
-        lead.LostReason.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        lead.Status.ShouldBe(LeadStatus.Active);
+        lead.WonAt.ShouldBeNull();
+        lead.LostAt.ShouldBeNull();
+        lead.LostReason.ShouldBeNull();
     }
 
     [Fact]
@@ -97,8 +97,8 @@ public class ReopenLeadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.Validation);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
     }
 
     [Fact]
@@ -115,6 +115,6 @@ public class ReopenLeadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 }

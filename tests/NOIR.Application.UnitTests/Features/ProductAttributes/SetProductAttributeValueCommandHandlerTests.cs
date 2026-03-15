@@ -80,9 +80,9 @@ public class SetProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(ErrorCodes.Product.NotFound);
-        result.Error.Message.Should().Contain(productId.ToString());
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe(ErrorCodes.Product.NotFound);
+        result.Error.Message.ShouldContain(productId.ToString());
     }
 
     #endregion
@@ -114,8 +114,8 @@ public class SetProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(ErrorCodes.Attribute.NotFound);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe(ErrorCodes.Attribute.NotFound);
     }
 
     #endregion
@@ -150,11 +150,11 @@ public class SetProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.AttributeCode.Should().Be("description");
-        result.Value.AttributeName.Should().Be("Description");
-        result.Value.DisplayValue.Should().Be(textValue);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.AttributeCode.ShouldBe("description");
+        result.Value.AttributeName.ShouldBe("Description");
+        result.Value.DisplayValue.ShouldBe(textValue);
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -188,8 +188,8 @@ public class SetProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Message.Should().Contain("maximum length");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Message.ShouldContain("maximum length");
     }
 
     #endregion
@@ -224,8 +224,8 @@ public class SetProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.DisplayValue.Should().Be("5.5 kg");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.DisplayValue.ShouldBe("5.5 kg");
     }
 
     [Fact]
@@ -256,8 +256,8 @@ public class SetProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Message.Should().Contain("at least");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Message.ShouldContain("at least");
     }
 
     #endregion
@@ -291,8 +291,8 @@ public class SetProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.DisplayValue.Should().Be("Yes");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.DisplayValue.ShouldBe("Yes");
     }
 
     #endregion
@@ -327,8 +327,8 @@ public class SetProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.DisplayValue.Should().Be("Red");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.DisplayValue.ShouldBe("Red");
     }
 
     [Fact]
@@ -360,8 +360,8 @@ public class SetProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Message.Should().Contain("not found for this attribute");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Message.ShouldContain("not found for this attribute");
     }
 
     #endregion
@@ -395,8 +395,8 @@ public class SetProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.DisplayValue.Should().Be("#FF5733");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.DisplayValue.ShouldBe("#FF5733");
     }
 
     [Fact]
@@ -426,8 +426,8 @@ public class SetProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Message.Should().Contain("Invalid color format");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Message.ShouldContain("Invalid color format");
     }
 
     #endregion
@@ -461,7 +461,7 @@ public class SetProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -495,8 +495,8 @@ public class SetProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(ErrorCodes.Product.VariantNotFound);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe(ErrorCodes.Product.VariantNotFound);
     }
 
     #endregion

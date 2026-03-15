@@ -29,7 +29,7 @@ public class FileEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync($"/media/{path}");
 
         // Assert - Should return 404 (file not found), not 403 (forbidden)
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Theory]
@@ -43,7 +43,7 @@ public class FileEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync($"/media/{path}");
 
         // Assert - Should return 404 for security (don't expose folder restrictions)
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Theory]
@@ -56,7 +56,7 @@ public class FileEndpointsTests : IClassFixture<CustomWebApplicationFactory>
 
         // Assert - Path traversal at root level is handled by ASP.NET Core
         // May return 200 (route not matched) or 404 depending on routing
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.OK, HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.OK, HttpStatusCode.BadRequest);
     }
 
     [Theory]
@@ -69,7 +69,7 @@ public class FileEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync($"/media/{path}");
 
         // Assert - Should allow case-insensitive folder matching (404 = file not found, not blocked)
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -87,7 +87,7 @@ public class FileEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Assert - Path traversal attempts are handled by ASP.NET Core routing
         // The endpoint receives a normalized path and applies folder security checks
         // Result will be NotFound if resolved path doesn't match allowed folders
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.OK);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.OK);
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class FileEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync($"/media/{path}");
 
         // Assert - Path doesn't start with allowed prefix after normalization
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -128,7 +128,7 @@ public class FileEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync($"/media/{path}");
 
         // Assert - Should reach the endpoint (404 = file not found, endpoint works)
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -142,7 +142,7 @@ public class FileEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/media/");
 
         // Assert - Empty path returns 400 BadRequest (route parameter required)
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public class FileEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/media/avatars/");
 
         // Assert - Folder path with trailing slash returns 404 (no file)
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
     }
 
     [Theory]
@@ -164,7 +164,7 @@ public class FileEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync($"/media/{path}");
 
         // Assert - Should handle URL-encoded paths
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion

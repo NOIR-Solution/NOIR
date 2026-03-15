@@ -1,4 +1,3 @@
-using FluentAssertions;
 using Moq;
 using NOIR.Application.Common.Interfaces;
 using NOIR.Application.Common.Models;
@@ -67,9 +66,9 @@ public class UpdateCustomerGroupCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Updated Group");
-        result.Value.Description.Should().Be("Updated description");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Updated Group");
+        result.Value.Description.ShouldBe("Updated description");
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -88,7 +87,7 @@ public class UpdateCustomerGroupCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _repositoryMock.Verify(x => x.FirstOrDefaultAsync(
             It.IsAny<CustomerGroupNameExistsSpec>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -112,8 +111,8 @@ public class UpdateCustomerGroupCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(false);
     }
 
     #endregion
@@ -133,8 +132,8 @@ public class UpdateCustomerGroupCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(ErrorCodes.CustomerGroup.NotFound);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe(ErrorCodes.CustomerGroup.NotFound);
     }
 
     #endregion
@@ -161,8 +160,8 @@ public class UpdateCustomerGroupCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(ErrorCodes.CustomerGroup.DuplicateName);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe(ErrorCodes.CustomerGroup.DuplicateName);
     }
 
     #endregion

@@ -44,10 +44,10 @@ public class GetActivitiesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items[0].Subject.Should().Be("Follow-up");
-        result.Value.Items[0].Type.Should().Be(ActivityType.Call);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items[0].Subject.ShouldBe("Follow-up");
+        result.Value.Items[0].Type.ShouldBe(ActivityType.Call);
     }
 
     [Fact]
@@ -76,10 +76,10 @@ public class GetActivitiesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items[0].Subject.Should().Be("Deal review");
-        result.Value.Items[0].Type.Should().Be(ActivityType.Meeting);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items[0].Subject.ShouldBe("Deal review");
+        result.Value.Items[0].Type.ShouldBe(ActivityType.Meeting);
     }
 
     [Fact]
@@ -100,8 +100,8 @@ public class GetActivitiesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
     }
 }

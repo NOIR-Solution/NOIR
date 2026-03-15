@@ -1,4 +1,3 @@
-using FluentAssertions;
 using FluentValidation.TestHelper;
 using NOIR.Application.Features.CustomerGroups.Commands.CreateCustomerGroup;
 

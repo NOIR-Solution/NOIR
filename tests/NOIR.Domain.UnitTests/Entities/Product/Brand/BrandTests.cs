@@ -33,11 +33,11 @@ public class BrandTests
         var brand = CreateTestBrand();
 
         // Assert
-        brand.Should().NotBeNull();
-        brand.Id.Should().NotBe(Guid.Empty);
-        brand.Name.Should().Be("Nike");
-        brand.Slug.Should().Be("nike");
-        brand.TenantId.Should().Be(TestTenantId);
+        brand.ShouldNotBeNull();
+        brand.Id.ShouldNotBe(Guid.Empty);
+        brand.Name.ShouldBe("Nike");
+        brand.Slug.ShouldBe("nike");
+        brand.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -47,16 +47,16 @@ public class BrandTests
         var brand = CreateTestBrand();
 
         // Assert
-        brand.IsActive.Should().BeTrue();
-        brand.IsFeatured.Should().BeFalse();
-        brand.SortOrder.Should().Be(0);
-        brand.ProductCount.Should().Be(0);
-        brand.LogoUrl.Should().BeNull();
-        brand.BannerUrl.Should().BeNull();
-        brand.Description.Should().BeNull();
-        brand.Website.Should().BeNull();
-        brand.MetaTitle.Should().BeNull();
-        brand.MetaDescription.Should().BeNull();
+        brand.IsActive.ShouldBeTrue();
+        brand.IsFeatured.ShouldBeFalse();
+        brand.SortOrder.ShouldBe(0);
+        brand.ProductCount.ShouldBe(0);
+        brand.LogoUrl.ShouldBeNull();
+        brand.BannerUrl.ShouldBeNull();
+        brand.Description.ShouldBeNull();
+        brand.Website.ShouldBeNull();
+        brand.MetaTitle.ShouldBeNull();
+        brand.MetaDescription.ShouldBeNull();
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public class BrandTests
         var brand = Domain.Entities.Product.Brand.Create("Nike", "NIKE-Brand");
 
         // Assert
-        brand.Slug.Should().Be("nike-brand");
+        brand.Slug.ShouldBe("nike-brand");
     }
 
     [Fact]
@@ -76,9 +76,9 @@ public class BrandTests
         var brand = CreateTestBrand();
 
         // Assert
-        brand.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<BrandCreatedEvent>()
-            .Which.BrandId.Should().Be(brand.Id);
+        brand.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<BrandCreatedEvent>()
+            .BrandId.ShouldBe(brand.Id);
     }
 
     [Fact]
@@ -89,8 +89,8 @@ public class BrandTests
 
         // Assert
         var domainEvent = brand.DomainEvents.Single() as BrandCreatedEvent;
-        domainEvent!.Name.Should().Be("Adidas");
-        domainEvent.Slug.Should().Be("adidas");
+        domainEvent!.Name.ShouldBe("Adidas");
+        domainEvent.Slug.ShouldBe("adidas");
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class BrandTests
         var brand = Domain.Entities.Product.Brand.Create("Global Brand", "global-brand", null);
 
         // Assert
-        brand.TenantId.Should().BeNull();
+        brand.TenantId.ShouldBeNull();
     }
 
     #endregion
@@ -118,10 +118,10 @@ public class BrandTests
         brand.UpdateDetails("Adidas", "adidas", "Sportswear brand", "https://adidas.com");
 
         // Assert
-        brand.Name.Should().Be("Adidas");
-        brand.Slug.Should().Be("adidas");
-        brand.Description.Should().Be("Sportswear brand");
-        brand.Website.Should().Be("https://adidas.com");
+        brand.Name.ShouldBe("Adidas");
+        brand.Slug.ShouldBe("adidas");
+        brand.Description.ShouldBe("Sportswear brand");
+        brand.Website.ShouldBe("https://adidas.com");
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public class BrandTests
         brand.UpdateDetails("Adidas", "ADIDAS-Brand", null, null);
 
         // Assert
-        brand.Slug.Should().Be("adidas-brand");
+        brand.Slug.ShouldBe("adidas-brand");
     }
 
     [Fact]
@@ -148,9 +148,9 @@ public class BrandTests
         brand.UpdateDetails("Updated", "updated", null, null);
 
         // Assert
-        brand.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<BrandUpdatedEvent>()
-            .Which.Name.Should().Be("Updated");
+        brand.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<BrandUpdatedEvent>()
+            .Name.ShouldBe("Updated");
     }
 
     [Fact]
@@ -164,8 +164,8 @@ public class BrandTests
         brand.UpdateDetails("Brand", "brand", null, null);
 
         // Assert
-        brand.Description.Should().BeNull();
-        brand.Website.Should().BeNull();
+        brand.Description.ShouldBeNull();
+        brand.Website.ShouldBeNull();
     }
 
     #endregion
@@ -182,8 +182,8 @@ public class BrandTests
         brand.UpdateBranding("https://logo.png", "https://banner.jpg");
 
         // Assert
-        brand.LogoUrl.Should().Be("https://logo.png");
-        brand.BannerUrl.Should().Be("https://banner.jpg");
+        brand.LogoUrl.ShouldBe("https://logo.png");
+        brand.BannerUrl.ShouldBe("https://banner.jpg");
     }
 
     [Fact]
@@ -197,8 +197,8 @@ public class BrandTests
         brand.UpdateBranding(null, null);
 
         // Assert
-        brand.LogoUrl.Should().BeNull();
-        brand.BannerUrl.Should().BeNull();
+        brand.LogoUrl.ShouldBeNull();
+        brand.BannerUrl.ShouldBeNull();
     }
 
     #endregion
@@ -215,8 +215,8 @@ public class BrandTests
         brand.UpdateSeo("Nike - Best Shoes", "Official Nike brand page");
 
         // Assert
-        brand.MetaTitle.Should().Be("Nike - Best Shoes");
-        brand.MetaDescription.Should().Be("Official Nike brand page");
+        brand.MetaTitle.ShouldBe("Nike - Best Shoes");
+        brand.MetaDescription.ShouldBe("Official Nike brand page");
     }
 
     [Fact]
@@ -230,8 +230,8 @@ public class BrandTests
         brand.UpdateSeo(null, null);
 
         // Assert
-        brand.MetaTitle.Should().BeNull();
-        brand.MetaDescription.Should().BeNull();
+        brand.MetaTitle.ShouldBeNull();
+        brand.MetaDescription.ShouldBeNull();
     }
 
     #endregion
@@ -248,7 +248,7 @@ public class BrandTests
         brand.SetFeatured(true);
 
         // Assert
-        brand.IsFeatured.Should().BeTrue();
+        brand.IsFeatured.ShouldBeTrue();
     }
 
     [Fact]
@@ -262,7 +262,7 @@ public class BrandTests
         brand.SetFeatured(false);
 
         // Assert
-        brand.IsFeatured.Should().BeFalse();
+        brand.IsFeatured.ShouldBeFalse();
     }
 
     #endregion
@@ -274,13 +274,13 @@ public class BrandTests
     {
         // Arrange
         var brand = CreateTestBrand();
-        brand.IsActive.Should().BeTrue();
+        brand.IsActive.ShouldBeTrue();
 
         // Act
         brand.SetActive(false);
 
         // Assert
-        brand.IsActive.Should().BeFalse();
+        brand.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -294,7 +294,7 @@ public class BrandTests
         brand.SetActive(true);
 
         // Assert
-        brand.IsActive.Should().BeTrue();
+        brand.IsActive.ShouldBeTrue();
     }
 
     #endregion
@@ -311,7 +311,7 @@ public class BrandTests
         brand.UpdateProductCount(42);
 
         // Assert
-        brand.ProductCount.Should().Be(42);
+        brand.ProductCount.ShouldBe(42);
     }
 
     [Fact]
@@ -326,7 +326,7 @@ public class BrandTests
         brand.IncrementProductCount();
 
         // Assert
-        brand.ProductCount.Should().Be(3);
+        brand.ProductCount.ShouldBe(3);
     }
 
     [Fact]
@@ -340,7 +340,7 @@ public class BrandTests
         brand.DecrementProductCount();
 
         // Assert
-        brand.ProductCount.Should().Be(4);
+        brand.ProductCount.ShouldBe(4);
     }
 
     [Fact]
@@ -348,13 +348,13 @@ public class BrandTests
     {
         // Arrange
         var brand = CreateTestBrand();
-        brand.ProductCount.Should().Be(0);
+        brand.ProductCount.ShouldBe(0);
 
         // Act
         brand.DecrementProductCount();
 
         // Assert
-        brand.ProductCount.Should().Be(0);
+        brand.ProductCount.ShouldBe(0);
     }
 
     #endregion
@@ -371,7 +371,7 @@ public class BrandTests
         brand.SetSortOrder(10);
 
         // Assert
-        brand.SortOrder.Should().Be(10);
+        brand.SortOrder.ShouldBe(10);
     }
 
     #endregion
@@ -389,9 +389,9 @@ public class BrandTests
         brand.MarkAsDeleted();
 
         // Assert
-        brand.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<BrandDeletedEvent>()
-            .Which.BrandId.Should().Be(brand.Id);
+        brand.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<BrandDeletedEvent>()
+            .BrandId.ShouldBe(brand.Id);
     }
 
     #endregion

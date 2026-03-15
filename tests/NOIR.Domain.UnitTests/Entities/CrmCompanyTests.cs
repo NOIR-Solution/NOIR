@@ -28,19 +28,19 @@ public class CrmCompanyTests
             notes: "Key account");
 
         // Assert
-        company.Should().NotBeNull();
-        company.Id.Should().NotBe(Guid.Empty);
-        company.Name.Should().Be("Acme Corp");
-        company.Domain.Should().Be("acme.com"); // lowercased
-        company.Industry.Should().Be("Technology");
-        company.Address.Should().Be("123 Main St");
-        company.Phone.Should().Be("555-0100");
-        company.Website.Should().Be("https://acme.com");
-        company.OwnerId.Should().Be(ownerId);
-        company.TaxId.Should().Be("TAX-123");
-        company.EmployeeCount.Should().Be(500);
-        company.Notes.Should().Be("Key account");
-        company.TenantId.Should().Be(TestTenantId);
+        company.ShouldNotBeNull();
+        company.Id.ShouldNotBe(Guid.Empty);
+        company.Name.ShouldBe("Acme Corp");
+        company.Domain.ShouldBe("acme.com"); // lowercased
+        company.Industry.ShouldBe("Technology");
+        company.Address.ShouldBe("123 Main St");
+        company.Phone.ShouldBe("555-0100");
+        company.Website.ShouldBe("https://acme.com");
+        company.OwnerId.ShouldBe(ownerId);
+        company.TaxId.ShouldBe("TAX-123");
+        company.EmployeeCount.ShouldBe(500);
+        company.Notes.ShouldBe("Key account");
+        company.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -50,15 +50,15 @@ public class CrmCompanyTests
         var company = CrmCompany.Create("Acme Corp", TestTenantId);
 
         // Assert
-        company.Domain.Should().BeNull();
-        company.Industry.Should().BeNull();
-        company.Address.Should().BeNull();
-        company.Phone.Should().BeNull();
-        company.Website.Should().BeNull();
-        company.OwnerId.Should().BeNull();
-        company.TaxId.Should().BeNull();
-        company.EmployeeCount.Should().BeNull();
-        company.Notes.Should().BeNull();
+        company.Domain.ShouldBeNull();
+        company.Industry.ShouldBeNull();
+        company.Address.ShouldBeNull();
+        company.Phone.ShouldBeNull();
+        company.Website.ShouldBeNull();
+        company.OwnerId.ShouldBeNull();
+        company.TaxId.ShouldBeNull();
+        company.EmployeeCount.ShouldBeNull();
+        company.Notes.ShouldBeNull();
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public class CrmCompanyTests
     {
         // Act & Assert
         var act = () => CrmCompany.Create("", TestTenantId);
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -78,8 +78,8 @@ public class CrmCompanyTests
             domain: " ACME.COM ");
 
         // Assert
-        company.Name.Should().Be("Acme");
-        company.Domain.Should().Be("acme.com");
+        company.Name.ShouldBe("Acme");
+        company.Domain.ShouldBe("acme.com");
     }
 
     #endregion
@@ -100,16 +100,16 @@ public class CrmCompanyTests
             newOwnerId, "TAX-456", 1000, "Updated notes");
 
         // Assert
-        company.Name.Should().Be("New Name");
-        company.Domain.Should().Be("newdomain.com");
-        company.Industry.Should().Be("Finance");
-        company.Address.Should().Be("456 Elm St");
-        company.Phone.Should().Be("555-0200");
-        company.Website.Should().Be("https://new.com");
-        company.OwnerId.Should().Be(newOwnerId);
-        company.TaxId.Should().Be("TAX-456");
-        company.EmployeeCount.Should().Be(1000);
-        company.Notes.Should().Be("Updated notes");
+        company.Name.ShouldBe("New Name");
+        company.Domain.ShouldBe("newdomain.com");
+        company.Industry.ShouldBe("Finance");
+        company.Address.ShouldBe("456 Elm St");
+        company.Phone.ShouldBe("555-0200");
+        company.Website.ShouldBe("https://new.com");
+        company.OwnerId.ShouldBe(newOwnerId);
+        company.TaxId.ShouldBe("TAX-456");
+        company.EmployeeCount.ShouldBe(1000);
+        company.Notes.ShouldBe("Updated notes");
     }
 
     [Fact]
@@ -125,9 +125,9 @@ public class CrmCompanyTests
         company.Update("Acme", null, null, null, null, null, null, null, null, null);
 
         // Assert
-        company.Domain.Should().BeNull();
-        company.Industry.Should().BeNull();
-        company.Notes.Should().BeNull();
+        company.Domain.ShouldBeNull();
+        company.Industry.ShouldBeNull();
+        company.Notes.ShouldBeNull();
     }
 
     #endregion

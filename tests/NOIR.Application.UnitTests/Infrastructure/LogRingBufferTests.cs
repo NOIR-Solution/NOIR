@@ -49,7 +49,7 @@ public class LogRingBufferTests
         var sut = CreateSut();
 
         // Assert
-        sut.Should().NotBeNull();
+        sut.ShouldNotBeNull();
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class LogRingBufferTests
         var sut = CreateSut();
 
         // Assert
-        sut.Should().BeAssignableTo<ILogRingBuffer>();
+        sut.ShouldBeAssignableTo<ILogRingBuffer>();
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class LogRingBufferTests
         var sut = CreateSut();
 
         // Assert
-        sut.Should().BeAssignableTo<ISingletonService>();
+        sut.ShouldBeAssignableTo<ISingletonService>();
     }
 
     [Fact]
@@ -80,8 +80,8 @@ public class LogRingBufferTests
         var stats = sut.GetStats();
 
         // Assert
-        stats.TotalEntries.Should().Be(0);
-        stats.MaxCapacity.Should().Be(100);
+        stats.TotalEntries.ShouldBe(0);
+        stats.MaxCapacity.ShouldBe(100);
     }
 
     #endregion
@@ -100,7 +100,7 @@ public class LogRingBufferTests
 
         // Assert
         var stats = sut.GetStats();
-        stats.TotalEntries.Should().Be(1);
+        stats.TotalEntries.ShouldBe(1);
     }
 
     [Fact]
@@ -116,10 +116,10 @@ public class LogRingBufferTests
 
         // Assert
         var entries = sut.GetRecentEntries(3).ToList();
-        entries.Should().HaveCount(3);
-        entries[0].Id.Should().Be(3);
-        entries[1].Id.Should().Be(2);
-        entries[2].Id.Should().Be(1);
+        entries.Count().ShouldBe(3);
+        entries[0].Id.ShouldBe(3);
+        entries[1].Id.ShouldBe(2);
+        entries[2].Id.ShouldBe(1);
     }
 
     [Fact]
@@ -136,9 +136,9 @@ public class LogRingBufferTests
 
         // Assert
         var stats = sut.GetStats();
-        stats.EntriesByLevel["Information"].Should().Be(1);
-        stats.EntriesByLevel["Warning"].Should().Be(1);
-        stats.EntriesByLevel["Error"].Should().Be(2);
+        stats.EntriesByLevel["Information"].ShouldBe(1);
+        stats.EntriesByLevel["Warning"].ShouldBe(1);
+        stats.EntriesByLevel["Error"].ShouldBe(2);
     }
 
     [Fact]
@@ -155,8 +155,8 @@ public class LogRingBufferTests
         sut.Add(newEntry);
 
         // Assert
-        receivedEntry.Should().NotBeNull();
-        receivedEntry!.Message.Should().Be("Event test");
+        receivedEntry.ShouldNotBeNull();
+        receivedEntry!.Message.ShouldBe("Event test");
     }
 
     [Fact]
@@ -173,7 +173,7 @@ public class LogRingBufferTests
         var statsAfterSecond = sut.GetStats();
 
         // Assert
-        statsAfterSecond.MemoryUsageBytes.Should().BeGreaterThan(statsAfterFirst.MemoryUsageBytes);
+        statsAfterSecond.MemoryUsageBytes.ShouldBeGreaterThan(statsAfterFirst.MemoryUsageBytes);
     }
 
     #endregion
@@ -195,12 +195,12 @@ public class LogRingBufferTests
 
         // Assert
         var stats = sut.GetStats();
-        stats.TotalEntries.Should().Be(3);
+        stats.TotalEntries.ShouldBe(3);
 
         var entries = sut.GetRecentEntries(10).ToList();
-        entries.Should().HaveCount(3);
-        entries.Select(e => e.Message).Should().NotContain("Entry 1");
-        entries.Select(e => e.Message).Should().Contain("Entry 4");
+        entries.Count().ShouldBe(3);
+        entries.Select(e => e.Message).ShouldNotContain("Entry 1");
+        entries.Select(e => e.Message).ShouldContain("Entry 4");
     }
 
     [Fact]
@@ -215,16 +215,16 @@ public class LogRingBufferTests
         sut.Add(CreateLogEntry(DevLogLevel.Warning, "Warning 1"));
 
         var statsBefore = sut.GetStats();
-        statsBefore.EntriesByLevel["Error"].Should().Be(1);
+        statsBefore.EntriesByLevel["Error"].ShouldBe(1);
 
         // Overwrite the error entry
         sut.Add(CreateLogEntry(DevLogLevel.Information, "Info 1"));
 
         // Assert
         var statsAfter = sut.GetStats();
-        statsAfter.EntriesByLevel.Should().NotContainKey("Error");
-        statsAfter.EntriesByLevel["Information"].Should().Be(1);
-        statsAfter.EntriesByLevel["Warning"].Should().Be(1);
+        statsAfter.EntriesByLevel.ShouldNotContainKey("Error");
+        statsAfter.EntriesByLevel["Information"].ShouldBe(1);
+        statsAfter.EntriesByLevel["Warning"].ShouldBe(1);
     }
 
     [Fact]
@@ -242,10 +242,10 @@ public class LogRingBufferTests
 
         // Assert - Should have entries 3, 4, 5 (newest first when retrieved)
         var entries = sut.GetRecentEntries(10).ToList();
-        entries.Should().HaveCount(3);
-        entries[0].Message.Should().Be("Entry 5");
-        entries[1].Message.Should().Be("Entry 4");
-        entries[2].Message.Should().Be("Entry 3");
+        entries.Count().ShouldBe(3);
+        entries[0].Message.ShouldBe("Entry 5");
+        entries[1].Message.ShouldBe("Entry 4");
+        entries[2].Message.ShouldBe("Entry 3");
     }
 
     #endregion
@@ -262,7 +262,7 @@ public class LogRingBufferTests
         var entries = sut.GetRecentEntries(10);
 
         // Assert
-        entries.Should().BeEmpty();
+        entries.ShouldBeEmpty();
     }
 
     [Fact]
@@ -278,9 +278,9 @@ public class LogRingBufferTests
         var entries = sut.GetRecentEntries(10).ToList();
 
         // Assert
-        entries[0].Message.Should().Be("Third");
-        entries[1].Message.Should().Be("Second");
-        entries[2].Message.Should().Be("First");
+        entries[0].Message.ShouldBe("Third");
+        entries[1].Message.ShouldBe("Second");
+        entries[2].Message.ShouldBe("First");
     }
 
     [Fact]
@@ -297,7 +297,7 @@ public class LogRingBufferTests
         var entries = sut.GetRecentEntries(3);
 
         // Assert
-        entries.Should().HaveCount(3);
+        entries.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -312,7 +312,7 @@ public class LogRingBufferTests
         var entries = sut.GetRecentEntries(100);
 
         // Assert
-        entries.Should().HaveCount(2);
+        entries.Count().ShouldBe(2);
     }
 
     #endregion
@@ -329,7 +329,7 @@ public class LogRingBufferTests
         var entries = sut.GetEntriesBefore(100, 10);
 
         // Assert
-        entries.Should().BeEmpty();
+        entries.ShouldBeEmpty();
     }
 
     [Fact]
@@ -346,8 +346,8 @@ public class LogRingBufferTests
         var entries = sut.GetEntriesBefore(3, 10).ToList();
 
         // Assert
-        entries.Should().HaveCount(2);
-        entries.All(e => e.Id < 3).Should().BeTrue();
+        entries.Count().ShouldBe(2);
+        entries.All(e => e.Id < 3).ShouldBe(true);
     }
 
     [Fact]
@@ -364,7 +364,7 @@ public class LogRingBufferTests
         var entries = sut.GetEntriesBefore(10, 3);
 
         // Assert
-        entries.Should().HaveCount(3);
+        entries.Count().ShouldBe(3);
     }
 
     #endregion
@@ -384,7 +384,7 @@ public class LogRingBufferTests
         var entries = sut.GetFiltered();
 
         // Assert
-        entries.Should().HaveCount(3);
+        entries.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -401,8 +401,8 @@ public class LogRingBufferTests
         var entries = sut.GetFiltered(minLevel: DevLogLevel.Warning);
 
         // Assert
-        entries.Should().HaveCount(2);
-        entries.All(e => e.Level >= DevLogLevel.Warning).Should().BeTrue();
+        entries.Count().ShouldBe(2);
+        entries.All(e => e.Level >= DevLogLevel.Warning).ShouldBe(true);
     }
 
     [Fact]
@@ -439,8 +439,8 @@ public class LogRingBufferTests
         var entries = sut.GetFiltered(sources: new[] { "NOIR.Application" });
 
         // Assert
-        entries.Should().HaveCount(1);
-        entries.First().SourceContext.Should().StartWith("NOIR.Application");
+        entries.Count().ShouldBe(1);
+        entries.First().SourceContext.ShouldStartWith("NOIR.Application");
     }
 
     [Fact]
@@ -456,7 +456,7 @@ public class LogRingBufferTests
         var entries = sut.GetFiltered(searchPattern: "logged");
 
         // Assert
-        entries.Should().HaveCount(2);
+        entries.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -472,7 +472,7 @@ public class LogRingBufferTests
         var entries = sut.GetFiltered(searchPattern: @"User \d+ logged");
 
         // Assert
-        entries.Should().HaveCount(2);
+        entries.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -486,7 +486,7 @@ public class LogRingBufferTests
         var entries = sut.GetFiltered(searchPattern: "[invalid");
 
         // Assert
-        entries.Should().HaveCount(1);
+        entries.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -503,8 +503,8 @@ public class LogRingBufferTests
         var entries = sut.GetFiltered(exceptionsOnly: true);
 
         // Assert
-        entries.Should().HaveCount(1);
-        entries.First().Exception.Should().NotBeNull();
+        entries.Count().ShouldBe(1);
+        entries.First().Exception.ShouldNotBeNull();
     }
 
     [Fact]
@@ -521,7 +521,7 @@ public class LogRingBufferTests
         var entries = sut.GetFiltered(maxCount: 5);
 
         // Assert
-        entries.Should().HaveCount(5);
+        entries.Count().ShouldBe(5);
     }
 
     [Fact]
@@ -538,7 +538,7 @@ public class LogRingBufferTests
         var entries = sut.GetFiltered(searchPattern: "cannot be null");
 
         // Assert
-        entries.Should().HaveCount(1);
+        entries.Count().ShouldBe(1);
     }
 
     #endregion
@@ -556,7 +556,7 @@ public class LogRingBufferTests
         var clusters = sut.GetErrorClusters();
 
         // Assert
-        clusters.Should().BeEmpty();
+        clusters.ShouldBeEmpty();
     }
 
     [Fact]
@@ -573,8 +573,8 @@ public class LogRingBufferTests
         var clusters = sut.GetErrorClusters().ToList();
 
         // Assert
-        clusters.Should().HaveCount(1);
-        clusters[0].Count.Should().Be(2);
+        clusters.Count().ShouldBe(1);
+        clusters[0].Count.ShouldBe(2);
     }
 
     [Fact]
@@ -593,8 +593,8 @@ public class LogRingBufferTests
         var clusters = sut.GetErrorClusters(maxClusters: 5);
 
         // Assert - Clustering may group similar patterns, so result count may be <= limit
-        clusters.Should().HaveCountLessThanOrEqualTo(5);
-        clusters.Should().NotBeEmpty();
+        clusters.Count().ShouldBeLessThanOrEqualTo(5);
+        clusters.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -613,8 +613,8 @@ public class LogRingBufferTests
         var clusters = sut.GetErrorClusters().ToList();
 
         // Assert
-        clusters[0].Pattern.Should().Contain("Common");
-        clusters[0].Count.Should().BeGreaterThan(clusters[1].Count);
+        clusters[0].Pattern.ShouldContain("Common");
+        clusters[0].Count.ShouldBeGreaterThan(clusters[1].Count);
     }
 
     [Fact]
@@ -633,7 +633,7 @@ public class LogRingBufferTests
         var clusters = sut.GetErrorClusters().ToList();
 
         // Assert
-        clusters[0].Severity.Should().Be("low"); // count <= 5
+        clusters[0].Severity.ShouldBe("low"); // count <= 5
     }
 
     [Fact]
@@ -650,7 +650,7 @@ public class LogRingBufferTests
         var clusters = sut.GetErrorClusters().ToList();
 
         // Assert
-        clusters[0].FirstSeen.Should().BeBefore(clusters[0].LastSeen);
+        clusters[0].FirstSeen.ShouldBeLessThan(clusters[0].LastSeen);
     }
 
     [Fact]
@@ -668,7 +668,7 @@ public class LogRingBufferTests
         var clusters = sut.GetErrorClusters().ToList();
 
         // Assert
-        clusters[0].Samples.Should().HaveCountLessThanOrEqualTo(5);
+        clusters[0].Samples.Count().ShouldBeLessThanOrEqualTo(5);
     }
 
     #endregion
@@ -685,11 +685,11 @@ public class LogRingBufferTests
         var stats = sut.GetStats();
 
         // Assert
-        stats.TotalEntries.Should().Be(0);
-        stats.MaxCapacity.Should().Be(100);
-        stats.MemoryUsageBytes.Should().Be(0);
-        stats.OldestEntry.Should().BeNull();
-        stats.NewestEntry.Should().BeNull();
+        stats.TotalEntries.ShouldBe(0);
+        stats.MaxCapacity.ShouldBe(100);
+        stats.MemoryUsageBytes.ShouldBe(0);
+        stats.OldestEntry.ShouldBeNull();
+        stats.NewestEntry.ShouldBeNull();
     }
 
     [Fact]
@@ -705,7 +705,7 @@ public class LogRingBufferTests
         var stats = sut.GetStats();
 
         // Assert
-        stats.TotalEntries.Should().Be(3);
+        stats.TotalEntries.ShouldBe(3);
     }
 
     [Fact]
@@ -720,9 +720,9 @@ public class LogRingBufferTests
         var stats = sut.GetStats();
 
         // Assert
-        stats.OldestEntry.Should().NotBeNull();
-        stats.NewestEntry.Should().NotBeNull();
-        stats.OldestEntry.Should().BeOnOrBefore(stats.NewestEntry!.Value);
+        stats.OldestEntry.ShouldNotBeNull();
+        stats.NewestEntry.ShouldNotBeNull();
+        stats.OldestEntry!.Value.ShouldBeLessThanOrEqualTo(stats.NewestEntry!.Value);
     }
 
     [Fact]
@@ -737,9 +737,9 @@ public class LogRingBufferTests
         var stats = sut.GetStats();
 
         // Assert
-        stats.EntriesByLevel.Should().ContainKey("Information");
-        stats.EntriesByLevel.Should().ContainKey("Error");
-        stats.EntriesByLevel.Should().NotContainKey("Debug");
+        stats.EntriesByLevel.ShouldContainKey("Information");
+        stats.EntriesByLevel.ShouldContainKey("Error");
+        stats.EntriesByLevel.ShouldNotContainKey("Debug");
     }
 
     #endregion
@@ -760,7 +760,7 @@ public class LogRingBufferTests
 
         // Assert
         var stats = sut.GetStats();
-        stats.TotalEntries.Should().Be(0);
+        stats.TotalEntries.ShouldBe(0);
     }
 
     [Fact]
@@ -776,7 +776,7 @@ public class LogRingBufferTests
 
         // Assert
         var stats = sut.GetStats();
-        stats.EntriesByLevel.Values.Should().AllBeEquivalentTo(0);
+        stats.EntriesByLevel.Values.ShouldAllBe(v => v == 0);
     }
 
     [Fact]
@@ -791,7 +791,7 @@ public class LogRingBufferTests
 
         // Assert
         var stats = sut.GetStats();
-        stats.MemoryUsageBytes.Should().Be(0);
+        stats.MemoryUsageBytes.ShouldBe(0);
     }
 
     [Fact]
@@ -806,7 +806,7 @@ public class LogRingBufferTests
 
         // Assert
         var clusters = sut.GetErrorClusters();
-        clusters.Should().BeEmpty();
+        clusters.ShouldBeEmpty();
     }
 
     [Fact]
@@ -822,10 +822,10 @@ public class LogRingBufferTests
 
         // Assert
         var stats = sut.GetStats();
-        stats.TotalEntries.Should().Be(1);
+        stats.TotalEntries.ShouldBe(1);
 
         var entries = sut.GetRecentEntries(10).ToList();
-        entries[0].Message.Should().Be("After clear");
+        entries[0].Message.ShouldBe("After clear");
     }
 
     #endregion
@@ -856,7 +856,7 @@ public class LogRingBufferTests
 
         // Assert
         var stats = sut.GetStats();
-        stats.TotalEntries.Should().Be(100);
+        stats.TotalEntries.ShouldBe(100);
     }
 
     [Fact]
@@ -892,7 +892,7 @@ public class LogRingBufferTests
         foreach (var task in tasks)
         {
             var result = await task;
-            result.Should().NotBeNull();
+            result.ShouldNotBeNull();
         }
     }
 

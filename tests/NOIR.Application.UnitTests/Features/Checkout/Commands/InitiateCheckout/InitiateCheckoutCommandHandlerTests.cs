@@ -115,10 +115,10 @@ public class InitiateCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CartId.Should().Be(cartId);
-        result.Value.CustomerEmail.Should().Be(TestCustomerEmail);
-        result.Value.Status.Should().Be(CheckoutSessionStatus.Started);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CartId.ShouldBe(cartId);
+        result.Value.CustomerEmail.ShouldBe(TestCustomerEmail);
+        result.Value.Status.ShouldBe(CheckoutSessionStatus.Started);
 
         _checkoutRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<CheckoutSession>(), It.IsAny<CancellationToken>()),
@@ -164,8 +164,8 @@ public class InitiateCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(existingSession.Id);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(existingSession.Id);
 
         _checkoutRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<CheckoutSession>(), It.IsAny<CancellationToken>()),
@@ -209,9 +209,9 @@ public class InitiateCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CustomerName.Should().Be(TestCustomerName);
-        result.Value.CustomerPhone.Should().Be(TestCustomerPhone);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CustomerName.ShouldBe(TestCustomerName);
+        result.Value.CustomerPhone.ShouldBe(TestCustomerPhone);
     }
 
     #endregion
@@ -238,9 +238,9 @@ public class InitiateCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-001");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-001");
+        result.Error.Message.ShouldContain("not found");
     }
 
     [Fact]
@@ -264,9 +264,9 @@ public class InitiateCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-002");
-        result.Error.Message.Should().Contain("empty cart");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-002");
+        result.Error.Message.ShouldContain("empty cart");
     }
 
     [Theory]
@@ -294,9 +294,9 @@ public class InitiateCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-003");
-        result.Error.Message.Should().Contain(status.ToString());
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-003");
+        result.Error.Message.ShouldContain(status.ToString());
     }
 
     #endregion
@@ -351,8 +351,8 @@ public class InitiateCheckoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().NotBe(expiredSession.Id);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldNotBe(expiredSession.Id);
 
         _checkoutRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<CheckoutSession>(), It.IsAny<CancellationToken>()),

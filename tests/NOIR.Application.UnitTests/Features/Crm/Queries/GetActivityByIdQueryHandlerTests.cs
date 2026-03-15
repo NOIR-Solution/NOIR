@@ -37,11 +37,11 @@ public class GetActivityByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(activity.Id);
-        result.Value.Subject.Should().Be("Follow-up call");
-        result.Value.Type.Should().Be(ActivityType.Call);
-        result.Value.DurationMinutes.Should().Be(30);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(activity.Id);
+        result.Value.Subject.ShouldBe("Follow-up call");
+        result.Value.Type.ShouldBe(ActivityType.Call);
+        result.Value.DurationMinutes.ShouldBe(30);
     }
 
     [Fact]
@@ -58,6 +58,6 @@ public class GetActivityByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 }

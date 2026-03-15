@@ -11,7 +11,7 @@
 |---------|---------|
 | xUnit | Test framework |
 | Moq | Mocking |
-| FluentAssertions | Fluent assertions |
+| Shouldly | Assertion library |
 | Bogus | Fake data generation |
 | Microsoft.AspNetCore.Mvc.Testing | Integration tests |
 
@@ -58,7 +58,7 @@ public class CreateUserHandlerTests
         var result = await CreateUserHandler.Handle(command, _mockRepo.Object, CancellationToken.None);
         
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBeTrue();
     }
 }
 ```
@@ -73,7 +73,7 @@ public void ActiveCustomersSpec_FiltersInactiveCustomers()
     
     var result = customers.AsQueryable().Where(spec.WhereExpressions.First()).ToList();
     
-    result.Should().ContainSingle().Which.Should().Be(active);
+    result.ShouldHaveSingleItem().ShouldBe(active);
 }
 ```
 

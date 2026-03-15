@@ -77,8 +77,8 @@ public class BulkUpdateProductAttributesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(ErrorCodes.Product.NotFound);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe(ErrorCodes.Product.NotFound);
     }
 
     #endregion
@@ -107,8 +107,8 @@ public class BulkUpdateProductAttributesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(ErrorCodes.Product.VariantNotFound);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe(ErrorCodes.Product.VariantNotFound);
     }
 
     #endregion
@@ -136,8 +136,8 @@ public class BulkUpdateProductAttributesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     [Fact]
@@ -161,8 +161,8 @@ public class BulkUpdateProductAttributesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     #endregion
@@ -213,8 +213,8 @@ public class BulkUpdateProductAttributesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
         _messageBusMock.Verify(x => x.InvokeAsync<Result<ProductAttributeAssignmentDto>>(
             It.IsAny<SetProductAttributeValueCommand>(),
             It.IsAny<CancellationToken>(),
@@ -269,8 +269,8 @@ public class BulkUpdateProductAttributesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert - should fail fast on first error
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Message.Should().Contain("Invalid color value");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Message.ShouldContain("Invalid color value");
 
         // Verify second attribute was never processed (fail-fast behavior)
         _messageBusMock.Verify(x => x.InvokeAsync<Result<ProductAttributeAssignmentDto>>(
@@ -315,8 +315,8 @@ public class BulkUpdateProductAttributesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Message.Should().Contain("Invalid value");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Message.ShouldContain("Invalid value");
         // With fail-fast, only first attribute is processed
         _messageBusMock.Verify(x => x.InvokeAsync<Result<ProductAttributeAssignmentDto>>(
             It.IsAny<SetProductAttributeValueCommand>(),
@@ -364,8 +364,8 @@ public class BulkUpdateProductAttributesCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        capturedCommand.Should().NotBeNull();
-        capturedCommand!.UserId.Should().Be(userId);
+        capturedCommand.ShouldNotBeNull();
+        capturedCommand!.UserId.ShouldBe(userId);
     }
 
     #endregion

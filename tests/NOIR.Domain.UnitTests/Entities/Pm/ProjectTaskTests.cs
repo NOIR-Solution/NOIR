@@ -37,23 +37,23 @@ public class ProjectTaskTests
             columnId: columnId, sortOrder: 2.5);
 
         // Assert
-        task.Should().NotBeNull();
-        task.Id.Should().NotBe(Guid.Empty);
-        task.ProjectId.Should().Be(TestProjectId);
-        task.TaskNumber.Should().Be("PRJ-42");
-        task.Title.Should().Be("Implement Feature");
-        task.Description.Should().Be("Build the thing");
-        task.Status.Should().Be(ProjectTaskStatus.Todo);
-        task.Priority.Should().Be(TaskPriority.High);
-        task.AssigneeId.Should().Be(assigneeId);
-        task.ReporterId.Should().Be(reporterId);
-        task.DueDate.Should().NotBeNull();
-        task.EstimatedHours.Should().Be(8m);
-        task.ParentTaskId.Should().Be(parentTaskId);
-        task.ColumnId.Should().Be(columnId);
-        task.SortOrder.Should().Be(2.5);
-        task.CompletedAt.Should().BeNull();
-        task.TenantId.Should().Be(TestTenantId);
+        task.ShouldNotBeNull();
+        task.Id.ShouldNotBe(Guid.Empty);
+        task.ProjectId.ShouldBe(TestProjectId);
+        task.TaskNumber.ShouldBe("PRJ-42");
+        task.Title.ShouldBe("Implement Feature");
+        task.Description.ShouldBe("Build the thing");
+        task.Status.ShouldBe(ProjectTaskStatus.Todo);
+        task.Priority.ShouldBe(TaskPriority.High);
+        task.AssigneeId.ShouldBe(assigneeId);
+        task.ReporterId.ShouldBe(reporterId);
+        task.DueDate.ShouldNotBeNull();
+        task.EstimatedHours.ShouldBe(8m);
+        task.ParentTaskId.ShouldBe(parentTaskId);
+        task.ColumnId.ShouldBe(columnId);
+        task.SortOrder.ShouldBe(2.5);
+        task.CompletedAt.ShouldBeNull();
+        task.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -63,16 +63,16 @@ public class ProjectTaskTests
         var task = ProjectTask.Create(TestProjectId, "PRJ-1", "Simple Task", TestTenantId);
 
         // Assert
-        task.Status.Should().Be(ProjectTaskStatus.Todo);
-        task.Priority.Should().Be(TaskPriority.Medium);
-        task.Description.Should().BeNull();
-        task.AssigneeId.Should().BeNull();
-        task.ReporterId.Should().BeNull();
-        task.DueDate.Should().BeNull();
-        task.EstimatedHours.Should().BeNull();
-        task.ParentTaskId.Should().BeNull();
-        task.ColumnId.Should().BeNull();
-        task.SortOrder.Should().Be(0);
+        task.Status.ShouldBe(ProjectTaskStatus.Todo);
+        task.Priority.ShouldBe(TaskPriority.Medium);
+        task.Description.ShouldBeNull();
+        task.AssigneeId.ShouldBeNull();
+        task.ReporterId.ShouldBeNull();
+        task.DueDate.ShouldBeNull();
+        task.EstimatedHours.ShouldBeNull();
+        task.ParentTaskId.ShouldBeNull();
+        task.ColumnId.ShouldBeNull();
+        task.SortOrder.ShouldBe(0);
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class ProjectTaskTests
     {
         // Act & Assert
         var act = () => ProjectTask.Create(TestProjectId, "PRJ-1", "", TestTenantId);
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -88,7 +88,7 @@ public class ProjectTaskTests
     {
         // Act & Assert
         var act = () => ProjectTask.Create(TestProjectId, "", "Title", TestTenantId);
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public class ProjectTaskTests
             assigneeId: assigneeId);
 
         // Assert
-        task.DomainEvents.Should().ContainSingle(e => e is Events.Pm.TaskAssignedEvent);
+        task.DomainEvents.ShouldContain(e => e is Events.Pm.TaskAssignedEvent);
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class ProjectTaskTests
         var task = ProjectTask.Create(TestProjectId, "PRJ-1", "Task", TestTenantId);
 
         // Assert
-        task.DomainEvents.Should().BeEmpty();
+        task.DomainEvents.ShouldBeEmpty();
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public class ProjectTaskTests
         var task = ProjectTask.Create(TestProjectId, "PRJ-1", "  Padded Title  ", TestTenantId);
 
         // Assert
-        task.Title.Should().Be("Padded Title");
+        task.Title.ShouldBe("Padded Title");
     }
 
     #endregion
@@ -143,12 +143,12 @@ public class ProjectTaskTests
             DateTimeOffset.UtcNow.AddDays(14), 16m, 4m);
 
         // Assert
-        task.Title.Should().Be("Updated Title");
-        task.Description.Should().Be("New description");
-        task.Priority.Should().Be(TaskPriority.Urgent);
-        task.AssigneeId.Should().Be(assigneeId);
-        task.EstimatedHours.Should().Be(16m);
-        task.ActualHours.Should().Be(4m);
+        task.Title.ShouldBe("Updated Title");
+        task.Description.ShouldBe("New description");
+        task.Priority.ShouldBe(TaskPriority.Urgent);
+        task.AssigneeId.ShouldBe(assigneeId);
+        task.EstimatedHours.ShouldBe(16m);
+        task.ActualHours.ShouldBe(4m);
     }
 
     [Fact]
@@ -162,7 +162,7 @@ public class ProjectTaskTests
         task.Update("Title", null, TaskPriority.Medium, newAssigneeId, null, null, null, null);
 
         // Assert
-        task.DomainEvents.Should().ContainSingle(e => e is Events.Pm.TaskAssignedEvent);
+        task.DomainEvents.ShouldContain(e => e is Events.Pm.TaskAssignedEvent);
     }
 
     [Fact]
@@ -178,7 +178,7 @@ public class ProjectTaskTests
         task.Update("Title", null, TaskPriority.Medium, assigneeId, null, null, null, null);
 
         // Assert
-        task.DomainEvents.Should().BeEmpty();
+        task.DomainEvents.ShouldBeEmpty();
     }
 
     #endregion
@@ -196,8 +196,8 @@ public class ProjectTaskTests
         task.MoveToColumn(newColumnId, 5.0);
 
         // Assert
-        task.ColumnId.Should().Be(newColumnId);
-        task.SortOrder.Should().Be(5.0);
+        task.ColumnId.ShouldBe(newColumnId);
+        task.SortOrder.ShouldBe(5.0);
     }
 
     #endregion
@@ -215,10 +215,10 @@ public class ProjectTaskTests
         task.ChangeStatus(ProjectTaskStatus.Done);
 
         // Assert
-        task.Status.Should().Be(ProjectTaskStatus.Done);
-        task.CompletedAt.Should().NotBeNull();
-        task.CompletedAt.Should().BeOnOrAfter(beforeChange);
-        task.DomainEvents.Should().ContainSingle(e => e is Events.Pm.TaskCompletedEvent);
+        task.Status.ShouldBe(ProjectTaskStatus.Done);
+        task.CompletedAt.ShouldNotBeNull();
+        task.CompletedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeChange);
+        task.DomainEvents.ShouldContain(e => e is Events.Pm.TaskCompletedEvent);
     }
 
     [Fact]
@@ -233,8 +233,8 @@ public class ProjectTaskTests
         task.ChangeStatus(ProjectTaskStatus.InProgress);
 
         // Assert
-        task.Status.Should().Be(ProjectTaskStatus.InProgress);
-        task.CompletedAt.Should().BeNull();
+        task.Status.ShouldBe(ProjectTaskStatus.InProgress);
+        task.CompletedAt.ShouldBeNull();
     }
 
     #endregion
@@ -252,10 +252,10 @@ public class ProjectTaskTests
         task.Complete();
 
         // Assert
-        task.Status.Should().Be(ProjectTaskStatus.Done);
-        task.CompletedAt.Should().NotBeNull();
-        task.CompletedAt.Should().BeOnOrAfter(beforeComplete);
-        task.DomainEvents.Should().ContainSingle(e => e is Events.Pm.TaskCompletedEvent);
+        task.Status.ShouldBe(ProjectTaskStatus.Done);
+        task.CompletedAt.ShouldNotBeNull();
+        task.CompletedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeComplete);
+        task.DomainEvents.ShouldContain(e => e is Events.Pm.TaskCompletedEvent);
     }
 
     [Fact]
@@ -267,8 +267,8 @@ public class ProjectTaskTests
 
         // Act & Assert
         var act = () => task.Complete();
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Task is already completed.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Task is already completed.");
     }
 
     #endregion
@@ -285,7 +285,7 @@ public class ProjectTaskTests
         task.Cancel();
 
         // Assert
-        task.Status.Should().Be(ProjectTaskStatus.Cancelled);
+        task.Status.ShouldBe(ProjectTaskStatus.Cancelled);
     }
 
     [Fact]
@@ -297,8 +297,8 @@ public class ProjectTaskTests
 
         // Act & Assert
         var act = () => task.Cancel();
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Task is already cancelled.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Task is already cancelled.");
     }
 
     [Fact]
@@ -311,8 +311,8 @@ public class ProjectTaskTests
         // Act — Complete() only guards against Done status, not Cancelled
         // So this should succeed per current domain logic
         var act = () => task.Complete();
-        act.Should().NotThrow();
-        task.Status.Should().Be(ProjectTaskStatus.Done);
+        act.ShouldNotThrow();
+        task.Status.ShouldBe(ProjectTaskStatus.Done);
     }
 
     [Fact]
@@ -324,8 +324,8 @@ public class ProjectTaskTests
 
         // Act — Cancel() only guards against Cancelled status, not Done
         var act = () => task.Cancel();
-        act.Should().NotThrow();
-        task.Status.Should().Be(ProjectTaskStatus.Cancelled);
+        act.ShouldNotThrow();
+        task.Status.ShouldBe(ProjectTaskStatus.Cancelled);
     }
 
     #endregion

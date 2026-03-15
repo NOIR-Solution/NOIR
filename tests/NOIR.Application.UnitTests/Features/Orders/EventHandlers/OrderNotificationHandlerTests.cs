@@ -91,7 +91,7 @@ public class OrderNotificationHandlerTests
         var act = async () => await _sut.Handle(evt, CancellationToken.None);
 
         // Assert — must not throw
-        await act.Should().NotThrowAsync();
+        act.ShouldNotThrow();
         _logger.Verify(
             x => x.Log(
                 LogLevel.Warning,
@@ -172,7 +172,7 @@ public class OrderNotificationHandlerTests
             .ThrowsAsync(new TimeoutException("Timeout"));
 
         // Act & Assert
-        await ((Func<Task>)(() => _sut.Handle(evt, CancellationToken.None))).Should().NotThrowAsync();
+        await _sut.Handle(evt, CancellationToken.None);
     }
 
     #endregion

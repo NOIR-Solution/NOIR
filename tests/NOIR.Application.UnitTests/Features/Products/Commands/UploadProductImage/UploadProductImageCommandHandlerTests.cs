@@ -172,13 +172,13 @@ public class UploadProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Url.Should().Contain("webp");
-        result.Value.AltText.Should().Be("Test Image");
-        result.Value.ThumbHash.Should().NotBeNullOrEmpty();
-        result.Value.DominantColor.Should().Be("#3366CC");
-        result.Value.Message.Should().Contain("successfully");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Url.ShouldContain("webp");
+        result.Value.AltText.ShouldBe("Test Image");
+        result.Value.ThumbHash.ShouldNotBeNullOrEmpty();
+        result.Value.DominantColor.ShouldBe("#3366CC");
+        result.Value.Message.ShouldContain("successfully");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -220,8 +220,8 @@ public class UploadProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsPrimary.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsPrimary.ShouldBe(true);
 
         // Two-save pattern: expect 2 calls when isPrimary=true
         _unitOfWorkMock.Verify(
@@ -264,8 +264,8 @@ public class UploadProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.AltText.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.AltText.ShouldBeNull();
     }
 
     [Fact]
@@ -303,10 +303,10 @@ public class UploadProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ThumbUrl.Should().Contain("thumb");
-        result.Value.MediumUrl.Should().Contain("medium");
-        result.Value.LargeUrl.Should().Contain("large");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ThumbUrl.ShouldContain("thumb");
+        result.Value.MediumUrl.ShouldContain("medium");
+        result.Value.LargeUrl.ShouldContain("large");
     }
 
     [Fact]
@@ -344,9 +344,9 @@ public class UploadProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Width.Should().Be(1920);
-        result.Value.Height.Should().Be(1080);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Width.ShouldBe(1920);
+        result.Value.Height.ShouldBe(1080);
     }
 
     #endregion
@@ -369,11 +369,11 @@ public class UploadProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-026");
-        result.Error.Message.Should().Contain("Product");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-026");
+        result.Error.Message.ShouldContain("Product");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -407,10 +407,10 @@ public class UploadProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-030");
-        result.Error.Message.Should().Contain("Invalid image");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-030");
+        result.Error.Message.ShouldContain("Invalid image");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -452,9 +452,9 @@ public class UploadProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-PRODUCT-031");
-        result.Error.Message.Should().Contain("Processing failed");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-031");
+        result.Error.Message.ShouldContain("Processing failed");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -496,9 +496,9 @@ public class UploadProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-PRODUCT-032");
-        result.Error.Message.Should().Contain("variant");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-032");
+        result.Error.Message.ShouldContain("variant");
     }
 
     #endregion
@@ -635,7 +635,7 @@ public class UploadProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Stream position should have been reset before processing
     }
 
@@ -674,9 +674,9 @@ public class UploadProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // New image should be added at the end (sort order 1 since there's already one image)
-        result.Value.SortOrder.Should().BeGreaterThanOrEqualTo(1);
+        result.Value.SortOrder.ShouldBeGreaterThanOrEqualTo(1);
     }
 
     #endregion

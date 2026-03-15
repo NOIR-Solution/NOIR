@@ -56,13 +56,13 @@ public class GetProductStatsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Total.Should().Be(100);
-        result.Value.Active.Should().Be(25);
-        result.Value.Draft.Should().Be(25);
-        result.Value.Archived.Should().Be(25);
-        result.Value.OutOfStock.Should().Be(25);
-        result.Value.LowStock.Should().Be(8);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Total.ShouldBe(100);
+        result.Value.Active.ShouldBe(25);
+        result.Value.Draft.ShouldBe(25);
+        result.Value.Archived.ShouldBe(25);
+        result.Value.OutOfStock.ShouldBe(25);
+        result.Value.LowStock.ShouldBe(8);
     }
 
     [Fact]
@@ -91,13 +91,13 @@ public class GetProductStatsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Total.Should().Be(0);
-        result.Value.Active.Should().Be(0);
-        result.Value.Draft.Should().Be(0);
-        result.Value.Archived.Should().Be(0);
-        result.Value.OutOfStock.Should().Be(0);
-        result.Value.LowStock.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Total.ShouldBe(0);
+        result.Value.Active.ShouldBe(0);
+        result.Value.Draft.ShouldBe(0);
+        result.Value.Archived.ShouldBe(0);
+        result.Value.OutOfStock.ShouldBe(0);
+        result.Value.LowStock.ShouldBe(0);
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public class GetProductStatsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // All count calls should be made (6 total: 1 total + 4 status + 1 low stock)
         _repositoryMock.Verify(
             x => x.CountAsync(It.IsAny<CancellationToken>()),
@@ -219,8 +219,8 @@ public class GetProductStatsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.Should().BeOfType<Result<ProductStatsDto>>();
-        result.Value.Should().BeOfType<ProductStatsDto>();
+        result.ShouldBeOfType<Result<ProductStatsDto>>();
+        result.Value.ShouldBeOfType<ProductStatsDto>();
     }
 
     [Fact]
@@ -250,16 +250,16 @@ public class GetProductStatsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         var stats = result.Value;
         // Verify the DTO has all expected properties
-        stats.Total.Should().Be(100);
-        stats.Active.Should().Be(20);
-        stats.Draft.Should().Be(20);
-        stats.Archived.Should().Be(20);
-        stats.OutOfStock.Should().Be(20);
-        stats.LowStock.Should().Be(12);
+        stats.Total.ShouldBe(100);
+        stats.Active.ShouldBe(20);
+        stats.Draft.ShouldBe(20);
+        stats.Archived.ShouldBe(20);
+        stats.OutOfStock.ShouldBe(20);
+        stats.LowStock.ShouldBe(12);
     }
 
     #endregion

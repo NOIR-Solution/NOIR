@@ -91,8 +91,8 @@ public class ArchiveProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(ProductStatus.Archived);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(ProductStatus.Archived);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -121,8 +121,8 @@ public class ArchiveProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(ProductStatus.Archived);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(ProductStatus.Archived);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -151,8 +151,8 @@ public class ArchiveProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(ProductStatus.Archived);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(ProductStatus.Archived);
     }
 
     [Fact]
@@ -186,10 +186,10 @@ public class ArchiveProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategoryId.Should().Be(categoryId);
-        result.Value.CategoryName.Should().Be(category.Name);
-        result.Value.CategorySlug.Should().Be(category.Slug);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategoryId.ShouldBe(categoryId);
+        result.Value.CategoryName.ShouldBe(category.Name);
+        result.Value.CategorySlug.ShouldBe(category.Slug);
     }
 
     #endregion
@@ -212,10 +212,10 @@ public class ArchiveProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-012");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-012");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -281,9 +281,9 @@ public class ArchiveProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategoryId.Should().BeNull();
-        result.Value.CategoryName.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategoryId.ShouldBeNull();
+        result.Value.CategoryName.ShouldBeNull();
 
         _categoryRepositoryMock.Verify(
             x => x.FirstOrDefaultAsync(It.IsAny<ProductCategoryByIdSpec>(), It.IsAny<CancellationToken>()),
@@ -315,11 +315,11 @@ public class ArchiveProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Variants.Should().HaveCount(1);
-        result.Value.Variants.First().Name.Should().Be("Test Variant");
-        result.Value.Images.Should().HaveCount(1);
-        result.Value.Images.First().Url.Should().Be("https://example.com/image.jpg");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Variants.Count().ShouldBe(1);
+        result.Value.Variants.First().Name.ShouldBe("Test Variant");
+        result.Value.Images.Count().ShouldBe(1);
+        result.Value.Images.First().Url.ShouldBe("https://example.com/image.jpg");
     }
 
     [Fact]
@@ -353,17 +353,17 @@ public class ArchiveProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Specific Product");
-        result.Value.Slug.Should().Be("specific-product");
-        result.Value.Description.Should().Be("Product description");
-        result.Value.DescriptionHtml.Should().Be("<p>HTML description</p>");
-        result.Value.Brand.Should().Be("Test Brand");
-        result.Value.Sku.Should().Be("SKU-001");
-        result.Value.Barcode.Should().Be("BARCODE-001");
-        result.Value.MetaTitle.Should().Be("SEO Title");
-        result.Value.MetaDescription.Should().Be("SEO Description");
-        result.Value.Status.Should().Be(ProductStatus.Archived);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Specific Product");
+        result.Value.Slug.ShouldBe("specific-product");
+        result.Value.Description.ShouldBe("Product description");
+        result.Value.DescriptionHtml.ShouldBe("<p>HTML description</p>");
+        result.Value.Brand.ShouldBe("Test Brand");
+        result.Value.Sku.ShouldBe("SKU-001");
+        result.Value.Barcode.ShouldBe("BARCODE-001");
+        result.Value.MetaTitle.ShouldBe("SEO Title");
+        result.Value.MetaDescription.ShouldBe("SEO Description");
+        result.Value.Status.ShouldBe(ProductStatus.Archived);
     }
 
     #endregion

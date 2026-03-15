@@ -39,8 +39,8 @@ public class VerifyPasswordResetOtpCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ResetToken.Should().Be(resetToken);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ResetToken.ShouldBe(resetToken);
     }
 
     [Fact]
@@ -87,8 +87,8 @@ public class VerifyPasswordResetOtpCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Message.Should().Contain("Invalid OTP");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Message.ShouldContain("Invalid OTP");
     }
 
     [Fact]
@@ -109,8 +109,8 @@ public class VerifyPasswordResetOtpCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
     }
 
     [Fact]
@@ -131,8 +131,8 @@ public class VerifyPasswordResetOtpCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.TooManyRequests);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.TooManyRequests);
     }
 
     #endregion

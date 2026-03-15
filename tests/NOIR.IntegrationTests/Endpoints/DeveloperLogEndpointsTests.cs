@@ -76,11 +76,11 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await adminClient.GetAsync("/api/admin/developer-logs/level");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<LogLevelResponse>();
-        result.Should().NotBeNull();
-        result!.Level.Should().NotBeNullOrEmpty();
-        result.AvailableLevels.Should().NotBeEmpty();
+        result.ShouldNotBeNull();
+        result!.Level.ShouldNotBeNullOrEmpty();
+        result.AvailableLevels.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await _client.GetAsync("/api/admin/developer-logs/level");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await userClient.GetAsync("/api/admin/developer-logs/level");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -122,10 +122,10 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await adminClient.PutAsJsonAsync("/api/admin/developer-logs/level", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<LogLevelResponse>();
-        result.Should().NotBeNull();
-        result!.Level.Should().Be("Information");
+        result.ShouldNotBeNull();
+        result!.Level.ShouldBe("Information");
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await adminClient.PutAsJsonAsync("/api/admin/developer-logs/level", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await _client.PutAsJsonAsync("/api/admin/developer-logs/level", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -167,7 +167,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await userClient.PutAsJsonAsync("/api/admin/developer-logs/level", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -184,10 +184,10 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await adminClient.GetAsync("/api/admin/developer-logs/level/overrides");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<LogLevelOverridesResponse>();
-        result.Should().NotBeNull();
-        result!.GlobalLevel.Should().NotBeNullOrEmpty();
+        result.ShouldNotBeNull();
+        result!.GlobalLevel.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -197,7 +197,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await _client.GetAsync("/api/admin/developer-logs/level/overrides");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -218,7 +218,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
             request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -235,7 +235,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
             request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -250,7 +250,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
             request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -269,7 +269,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
             $"/api/admin/developer-logs/level/overrides/{Uri.EscapeDataString(sourcePrefix)}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -280,7 +280,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
             "/api/admin/developer-logs/level/overrides/Microsoft.AspNetCore");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -297,10 +297,10 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await adminClient.GetAsync("/api/admin/developer-logs/buffer/stats");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<LogBufferStatsDto>();
-        result.Should().NotBeNull();
-        result!.MaxCapacity.Should().BeGreaterThan(0);
+        result.ShouldNotBeNull();
+        result!.MaxCapacity.ShouldBeGreaterThan(0);
     }
 
     [Fact]
@@ -310,7 +310,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await _client.GetAsync("/api/admin/developer-logs/buffer/stats");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -324,7 +324,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await userClient.GetAsync("/api/admin/developer-logs/buffer/stats");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -341,9 +341,9 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await adminClient.GetAsync("/api/admin/developer-logs/buffer/entries?count=50");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<IEnumerable<LogEntryDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -357,10 +357,10 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
             "/api/admin/developer-logs/buffer/entries?count=50&minLevel=Warning");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<IEnumerable<LogEntryDto>>();
-        result.Should().NotBeNull();
-        result.Should().OnlyContain(e => e.Level >= DevLogLevel.Warning);
+        result.ShouldNotBeNull();
+        result.ShouldAllBe(e => e.Level >= DevLogLevel.Warning);
     }
 
     [Fact]
@@ -374,7 +374,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
             "/api/admin/developer-logs/buffer/entries?count=50&search=error");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -388,10 +388,10 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
             "/api/admin/developer-logs/buffer/entries?count=50&exceptionsOnly=true");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<IEnumerable<LogEntryDto>>();
-        result.Should().NotBeNull();
-        result.Should().OnlyContain(e => e.Exception != null);
+        result.ShouldNotBeNull();
+        result.ShouldAllBe(e => e.Exception != null);
     }
 
     [Fact]
@@ -401,7 +401,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await _client.GetAsync("/api/admin/developer-logs/buffer/entries?count=50");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -418,9 +418,9 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await adminClient.GetAsync("/api/admin/developer-logs/buffer/errors?maxClusters=10");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<IEnumerable<ErrorClusterDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -430,7 +430,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await _client.GetAsync("/api/admin/developer-logs/buffer/errors?maxClusters=10");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -447,7 +447,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await adminClient.DeleteAsync("/api/admin/developer-logs/buffer");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
     }
 
     [Fact]
@@ -457,7 +457,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await _client.DeleteAsync("/api/admin/developer-logs/buffer");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -471,7 +471,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await userClient.DeleteAsync("/api/admin/developer-logs/buffer");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -488,9 +488,9 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await adminClient.GetAsync("/api/admin/developer-logs/history/dates");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<IEnumerable<string>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -500,7 +500,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await _client.GetAsync("/api/admin/developer-logs/history/dates");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -519,9 +519,9 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
             $"/api/admin/developer-logs/history/{today}?page=1&pageSize=50");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<LogEntriesPagedResponse>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -535,7 +535,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
             "/api/admin/developer-logs/history/invalid-date?page=1&pageSize=50");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -546,7 +546,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
             "/api/admin/developer-logs/history/2024-01-01?page=1&pageSize=50");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -567,9 +567,9 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
             $"/api/admin/developer-logs/history/search?fromDate={fromDate}&toDate={toDate}&page=1&pageSize=50");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<LogEntriesPagedResponse>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -586,7 +586,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
             $"/api/admin/developer-logs/history/search?fromDate={fromDate}&toDate={toDate}&page=1&pageSize=50");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -600,7 +600,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
             "/api/admin/developer-logs/history/search?fromDate=invalid&toDate=2024-01-01&page=1&pageSize=50");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -611,7 +611,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
             "/api/admin/developer-logs/history/search?fromDate=2024-01-01&toDate=2024-01-07&page=1&pageSize=50");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -632,7 +632,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
             $"/api/admin/developer-logs/history/size?fromDate={fromDate}&toDate={toDate}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -646,7 +646,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
             "/api/admin/developer-logs/history/size?fromDate=invalid&toDate=2024-01-01");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -657,7 +657,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
             "/api/admin/developer-logs/history/size?fromDate=2024-01-01&toDate=2024-01-07");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -685,7 +685,7 @@ public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFact
         foreach (var (url, _) in endpoints)
         {
             var response = await userClient.GetAsync(url);
-            response.StatusCode.Should().Be(HttpStatusCode.Forbidden,
+            response.StatusCode.ShouldBe(HttpStatusCode.Forbidden,
                 $"Endpoint {url} should return Forbidden for non-admin user");
         }
     }

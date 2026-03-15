@@ -58,14 +58,14 @@ public class GetReviewByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rating.Should().Be(4);
-        result.Value.Title.Should().Be("Great Product");
-        result.Value.Content.Should().Be("This product is really excellent and works well.");
-        result.Value.Status.Should().Be(ReviewStatus.Pending);
-        result.Value.HelpfulVotes.Should().Be(0);
-        result.Value.NotHelpfulVotes.Should().Be(0);
-        result.Value.AdminResponse.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rating.ShouldBe(4);
+        result.Value.Title.ShouldBe("Great Product");
+        result.Value.Content.ShouldBe("This product is really excellent and works well.");
+        result.Value.Status.ShouldBe(ReviewStatus.Pending);
+        result.Value.HelpfulVotes.ShouldBe(0);
+        result.Value.NotHelpfulVotes.ShouldBe(0);
+        result.Value.AdminResponse.ShouldBeNull();
     }
 
     [Fact]
@@ -86,9 +86,9 @@ public class GetReviewByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Title.Should().BeNull();
-        result.Value.Content.Should().Be("This product is really excellent and works well.");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Title.ShouldBeNull();
+        result.Value.Content.ShouldBe("This product is really excellent and works well.");
     }
 
     #endregion
@@ -113,8 +113,8 @@ public class GetReviewByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-REVIEW-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-REVIEW-002");
     }
 
     #endregion

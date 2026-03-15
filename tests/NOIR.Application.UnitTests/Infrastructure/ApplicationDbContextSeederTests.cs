@@ -416,7 +416,7 @@ public class ApplicationDbContextSeederTests
         var act = () => UserSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
 
         // Assert
-        await act.Should().NotThrowAsync();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -479,7 +479,7 @@ public class ApplicationDbContextSeederTests
         var act = () => RoleSeeder.SeedRolePermissionsAsync(
             roleManager, role, permissions, _loggerMock.Object);
 
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        await Should.ThrowAsync<InvalidOperationException>(act);
     }
 
     [Fact]
@@ -521,7 +521,7 @@ public class ApplicationDbContextSeederTests
         var act = () => UserSeeder.SeedTenantAdminUserAsync(userManager, "test-tenant-id", settings, _loggerMock.Object);
 
         // Assert - Should throw since role assignment is part of the flow
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        await Should.ThrowAsync<InvalidOperationException>(act);
     }
 
     [Fact]

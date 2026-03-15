@@ -53,9 +53,9 @@ public class ShareWishlistCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingWishlist.ShareToken.Should().NotBeNullOrEmpty();
-        existingWishlist.IsPublic.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        existingWishlist.ShareToken.ShouldNotBeNullOrEmpty();
+        existingWishlist.IsPublic.ShouldBe(true);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -79,9 +79,9 @@ public class ShareWishlistCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ShareUrl.Should().NotBeNullOrEmpty();
-        result.Value.ShareUrl.Should().StartWith("/wishlists/shared/");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShareUrl.ShouldNotBeNullOrEmpty();
+        result.Value.ShareUrl.ShouldStartWith("/wishlists/shared/");
     }
 
     #endregion
@@ -104,7 +104,7 @@ public class ShareWishlistCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -132,7 +132,7 @@ public class ShareWishlistCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),

@@ -181,10 +181,10 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.CustomerEmail.Should().Be("customer@example.com");
-        result.Value.Status.Should().Be(OrderStatus.Pending);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.CustomerEmail.ShouldBe("customer@example.com");
+        result.Value.Status.ShouldBe(OrderStatus.Pending);
 
         _orderRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -225,9 +225,9 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.Items.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.Items.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -256,9 +256,9 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.Items.First().UnitPrice.Should().Be(75m);
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.Items.First().UnitPrice.ShouldBe(75m);
     }
 
     [Fact]
@@ -287,9 +287,9 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.Items.First().UnitPrice.Should().Be(200m);
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.Items.First().UnitPrice.ShouldBe(200m);
     }
 
     [Fact]
@@ -319,13 +319,13 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.ShippingAddress.Should().NotBeNull();
-        capturedOrder.ShippingAddress!.FullName.Should().Be("Tran Thi B");
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.ShippingAddress.ShouldNotBeNull();
+        capturedOrder.ShippingAddress!.FullName.ShouldBe("Tran Thi B");
         // Billing should be same as shipping when not provided
-        capturedOrder.BillingAddress.Should().NotBeNull();
-        capturedOrder.BillingAddress!.FullName.Should().Be("Tran Thi B");
+        capturedOrder.BillingAddress.ShouldNotBeNull();
+        capturedOrder.BillingAddress!.FullName.ShouldBe("Tran Thi B");
     }
 
     [Fact]
@@ -359,10 +359,10 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.ShippingAddress!.FullName.Should().Be("Shipping Person");
-        capturedOrder.BillingAddress!.FullName.Should().Be("Billing Person");
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.ShippingAddress!.FullName.ShouldBe("Shipping Person");
+        capturedOrder.BillingAddress!.FullName.ShouldBe("Billing Person");
     }
 
     [Fact]
@@ -394,10 +394,10 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.DiscountAmount.Should().Be(20m);
-        capturedOrder.CouponCode.Should().Be("SAVE20");
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.DiscountAmount.ShouldBe(20m);
+        capturedOrder.CouponCode.ShouldBe("SAVE20");
     }
 
     [Fact]
@@ -429,10 +429,10 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.ShippingMethod.Should().Be("Express");
-        capturedOrder.ShippingAmount.Should().Be(30m);
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.ShippingMethod.ShouldBe("Express");
+        capturedOrder.ShippingAmount.ShouldBe(30m);
     }
 
     [Fact]
@@ -463,9 +463,9 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.Status.Should().Be(OrderStatus.Confirmed);
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.Status.ShouldBe(OrderStatus.Confirmed);
     }
 
     [Fact]
@@ -496,9 +496,9 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.CustomerNotes.Should().Be("Please deliver after 5 PM");
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.CustomerNotes.ShouldBe("Please deliver after 5 PM");
     }
 
     [Fact]
@@ -529,10 +529,10 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.InternalNotes.Should().Contain("VIP customer - priority processing");
-        capturedOrder.InternalNotes.Should().Contain($"Order manually created by {TestEmail}");
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.InternalNotes.ShouldContain("VIP customer - priority processing");
+        capturedOrder.InternalNotes.ShouldContain($"Order manually created by {TestEmail}");
     }
 
     [Fact]
@@ -560,10 +560,10 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SubTotal.Should().Be(300m); // 3 * 100
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SubTotal.ShouldBe(300m); // 3 * 100
         // Grand total = 300 - 50 + 30 + 25 = 305
-        result.Value.GrandTotal.Should().Be(305m);
+        result.Value.GrandTotal.ShouldBe(305m);
     }
 
     [Fact]
@@ -596,8 +596,8 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.OrderNumber.Should().EndWith("0006");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.OrderNumber.ShouldEndWith("0006");
         _orderNumberGeneratorMock.Verify(
             x => x.GenerateNextAsync(TestTenantId, It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -627,9 +627,9 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.InternalNotes.Should().Contain($"Order manually created by {TestEmail}");
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.InternalNotes.ShouldContain($"Order manually created by {TestEmail}");
     }
 
     #endregion
@@ -650,8 +650,8 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(rawCommand, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Order.MustHaveItems);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.MustHaveItems);
 
         _orderRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -667,8 +667,8 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Order.MustHaveItems);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.MustHaveItems);
 
         _orderRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -690,8 +690,8 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Product.VariantNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Product.VariantNotFound);
 
         _orderRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -715,8 +715,8 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Product.InvalidStatus);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Product.InvalidStatus);
 
         _orderRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -759,16 +759,16 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
 
         // SubTotal = sum of UnitPrice * Quantity (before item discounts)
-        capturedOrder!.SubTotal.Should().Be(200m);
+        capturedOrder!.SubTotal.ShouldBe(200m);
 
         // Item-level discount is set on the OrderItem
         var orderItem = capturedOrder.Items.First();
-        orderItem.DiscountAmount.Should().Be(10m);
-        orderItem.LineTotal.Should().Be(190m); // (100*2) - 10
+        orderItem.DiscountAmount.ShouldBe(10m);
+        orderItem.LineTotal.ShouldBe(190m); // (100*2) - 10
     }
 
     [Fact]
@@ -826,9 +826,9 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.Status.Should().Be(OrderStatus.Pending);
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.Status.ShouldBe(OrderStatus.Pending);
     }
 
     [Fact]
@@ -861,11 +861,11 @@ public class ManualCreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.CustomerId.Should().Be(customerId);
-        capturedOrder.CustomerName.Should().Be("Test Customer");
-        capturedOrder.CustomerPhone.Should().Be("0909090909");
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.CustomerId.ShouldBe(customerId);
+        capturedOrder.CustomerName.ShouldBe("Test Customer");
+        capturedOrder.CustomerPhone.ShouldBe("0909090909");
     }
 
     #endregion

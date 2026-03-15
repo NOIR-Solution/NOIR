@@ -158,11 +158,11 @@ public class CalculateShippingRatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Rates.Should().HaveCount(2);
-        result.Value.RecommendedRate.Should().NotBeNull();
-        result.Value.RecommendedRate!.ProviderCode.Should().Be(ShippingProviderCode.GHTK); // Cheapest
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Rates.Count().ShouldBe(2);
+        result.Value.RecommendedRate.ShouldNotBeNull();
+        result.Value.RecommendedRate!.ProviderCode.ShouldBe(ShippingProviderCode.GHTK); // Cheapest
     }
 
     [Fact]
@@ -195,9 +195,9 @@ public class CalculateShippingRatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rates.Should().HaveCount(1);
-        result.Value.Rates.All(r => r.ProviderCode == ShippingProviderCode.GHTK).Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rates.Count().ShouldBe(1);
+        result.Value.Rates.All(r => r.ProviderCode == ShippingProviderCode.GHTK).ShouldBe(true);
 
         // GHN should not be called
         _providerFactoryMock.Verify(x => x.GetProvider(ShippingProviderCode.GHN), Times.Never);
@@ -246,9 +246,9 @@ public class CalculateShippingRatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rates.First().ProviderCode.Should().Be(ShippingProviderCode.GHN); // Cheapest first
-        result.Value.RecommendedRate!.ProviderCode.Should().Be(ShippingProviderCode.GHN);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rates.First().ProviderCode.ShouldBe(ShippingProviderCode.GHN); // Cheapest first
+        result.Value.RecommendedRate!.ProviderCode.ShouldBe(ShippingProviderCode.GHN);
     }
 
     #endregion
@@ -269,8 +269,8 @@ public class CalculateShippingRatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
     }
 
     [Fact]
@@ -301,8 +301,8 @@ public class CalculateShippingRatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Shipping.RateCalculationFailed);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Shipping.RateCalculationFailed);
     }
 
     [Fact]
@@ -347,9 +347,9 @@ public class CalculateShippingRatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rates.Should().HaveCount(1);
-        result.Value.Rates.First().ProviderCode.Should().Be(ShippingProviderCode.GHN);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rates.Count().ShouldBe(1);
+        result.Value.Rates.First().ProviderCode.ShouldBe(ShippingProviderCode.GHN);
     }
 
     #endregion
@@ -391,9 +391,9 @@ public class CalculateShippingRatesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rates.Should().HaveCount(1);
-        result.Value.Rates.First().ProviderCode.Should().Be(ShippingProviderCode.GHN);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rates.Count().ShouldBe(1);
+        result.Value.Rates.First().ProviderCode.ShouldBe(ShippingProviderCode.GHN);
     }
 
     #endregion

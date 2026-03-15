@@ -55,8 +55,8 @@ public class DeleteDepartmentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
 
         _departmentRepositoryMock.Verify(x => x.Remove(department), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -76,8 +76,8 @@ public class DeleteDepartmentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-HR-022");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-HR-022");
     }
 
     [Fact]
@@ -100,9 +100,9 @@ public class DeleteDepartmentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-HR-023");
-        result.Error.Message.Should().Contain("has employees");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-HR-023");
+        result.Error.Message.ShouldContain("has employees");
 
         _departmentRepositoryMock.Verify(x => x.Remove(It.IsAny<Department>()), Times.Never);
     }
@@ -131,9 +131,9 @@ public class DeleteDepartmentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-HR-024");
-        result.Error.Message.Should().Contain("sub-departments");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-HR-024");
+        result.Error.Message.ShouldContain("sub-departments");
 
         _departmentRepositoryMock.Verify(x => x.Remove(It.IsAny<Department>()), Times.Never);
     }

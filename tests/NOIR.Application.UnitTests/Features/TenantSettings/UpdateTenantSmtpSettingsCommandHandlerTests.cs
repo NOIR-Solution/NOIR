@@ -74,7 +74,7 @@ public class UpdateTenantSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _settingsServiceMock.Verify(x => x.SetSettingAsync(TestTenantId, "smtp:host", "smtp.example.com", "string", It.IsAny<CancellationToken>()), Times.Once);
         _settingsServiceMock.Verify(x => x.SetSettingAsync(TestTenantId, "smtp:port", "587", "int", It.IsAny<CancellationToken>()), Times.Once);
         _settingsServiceMock.Verify(x => x.SetSettingAsync(TestTenantId, "smtp:from_email", "noreply@example.com", "string", It.IsAny<CancellationToken>()), Times.Once);
@@ -99,17 +99,17 @@ public class UpdateTenantSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Host.Should().Be("mail.company.com");
-        dto.Port.Should().Be(465);
-        dto.Username.Should().Be("admin@company.com");
-        dto.HasPassword.Should().BeTrue();
-        dto.FromEmail.Should().Be("alerts@company.com");
-        dto.FromName.Should().Be("Company Alerts");
-        dto.UseSsl.Should().BeTrue();
-        dto.IsConfigured.Should().BeTrue();
-        dto.IsInherited.Should().BeFalse();
+        dto.Host.ShouldBe("mail.company.com");
+        dto.Port.ShouldBe(465);
+        dto.Username.ShouldBe("admin@company.com");
+        dto.HasPassword.ShouldBe(true);
+        dto.FromEmail.ShouldBe("alerts@company.com");
+        dto.FromName.ShouldBe("Company Alerts");
+        dto.UseSsl.ShouldBe(true);
+        dto.IsConfigured.ShouldBe(true);
+        dto.IsInherited.ShouldBe(false);
     }
 
     [Fact]
@@ -122,11 +122,11 @@ public class UpdateTenantSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _settingsServiceMock.Verify(
             x => x.SetSettingAsync(TestTenantId, "smtp:use_ssl", "false", "bool", It.IsAny<CancellationToken>()),
             Times.Once);
-        result.Value.UseSsl.Should().BeFalse();
+        result.Value.UseSsl.ShouldBe(false);
     }
 
     #endregion
@@ -143,7 +143,7 @@ public class UpdateTenantSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _settingsServiceMock.Verify(
             x => x.SetSettingAsync(TestTenantId, "smtp:username", It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -164,7 +164,7 @@ public class UpdateTenantSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _settingsServiceMock.Verify(
             x => x.SetSettingAsync(TestTenantId, "smtp:password", It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -184,8 +184,8 @@ public class UpdateTenantSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.HasPassword.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.HasPassword.ShouldBe(true);
     }
 
     [Fact]
@@ -198,11 +198,11 @@ public class UpdateTenantSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _settingsServiceMock.Verify(
             x => x.SetSettingAsync(TestTenantId, "smtp:password", "", "string", It.IsAny<CancellationToken>()),
             Times.Once);
-        result.Value.HasPassword.Should().BeFalse();
+        result.Value.HasPassword.ShouldBe(false);
     }
 
     [Fact]
@@ -215,11 +215,11 @@ public class UpdateTenantSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _settingsServiceMock.Verify(
             x => x.SetSettingAsync(TestTenantId, "smtp:password", "new-password", "string", It.IsAny<CancellationToken>()),
             Times.Once);
-        result.Value.HasPassword.Should().BeTrue();
+        result.Value.HasPassword.ShouldBe(true);
     }
 
     #endregion
@@ -237,8 +237,8 @@ public class UpdateTenantSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
     }
 
     [Fact]
@@ -252,8 +252,8 @@ public class UpdateTenantSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
     }
 
     #endregion

@@ -63,11 +63,11 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/roles");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<PaginatedList<RoleListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeEmpty();
-        result.Items.Should().Contain(r => r.Name == "Admin");
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeEmpty();
+        result.Items.ShouldContain(r => r.Name == "Admin");
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/roles");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -90,11 +90,11 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/roles?pageNumber=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<PaginatedList<RoleListDto>>();
-        result.Should().NotBeNull();
-        result!.PageNumber.Should().Be(1);
-        result.Items.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.PageNumber.ShouldBe(1);
+        result.Items.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     #endregion
@@ -116,10 +116,10 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/roles/{roleId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var role = await response.Content.ReadFromJsonAsync<RoleDto>();
-        role.Should().NotBeNull();
-        role!.Id.Should().Be(roleId);
+        role.ShouldNotBeNull();
+        role!.Id.ShouldBe(roleId);
     }
 
     [Fact]
@@ -132,7 +132,7 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/roles/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -151,10 +151,10 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/roles", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var role = await response.Content.ReadFromJsonAsync<RoleDto>();
-        role.Should().NotBeNull();
-        role!.Name.Should().Be(roleName);
+        role.ShouldNotBeNull();
+        role!.Name.ShouldBe(roleName);
     }
 
     [Fact]
@@ -170,10 +170,10 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/roles", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var role = await response.Content.ReadFromJsonAsync<RoleDto>();
-        role.Should().NotBeNull();
-        role!.Permissions.Should().BeEquivalentTo(permissions);
+        role.ShouldNotBeNull();
+        role!.Permissions.ShouldBe(permissions);
     }
 
     [Fact]
@@ -191,7 +191,7 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/roles", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 
     [Fact]
@@ -205,7 +205,7 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/roles", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -218,7 +218,7 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/roles", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -245,10 +245,10 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/roles/{createdRole.Id}", updateCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updatedRole = await response.Content.ReadFromJsonAsync<RoleDto>();
-        updatedRole.Should().NotBeNull();
-        updatedRole!.Name.Should().Be(newName);
+        updatedRole.ShouldNotBeNull();
+        updatedRole!.Name.ShouldBe(newName);
     }
 
     [Fact]
@@ -263,7 +263,7 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/roles/{invalidId}", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -285,7 +285,7 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/roles/{createdRole.Id}", updateCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -308,11 +308,11 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/roles/{createdRole!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Verify it's deleted
         var getResponse = await adminClient.GetAsync($"/api/roles/{createdRole.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -325,7 +325,7 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/roles/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -347,7 +347,7 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/roles/{adminRole.Id}");
 
         // Assert - Should not allow deleting Admin role
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -371,10 +371,10 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/roles/{createdRole!.Id}/permissions");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var resultPermissions = await response.Content.ReadFromJsonAsync<IReadOnlyList<string>>();
-        resultPermissions.Should().NotBeNull();
-        resultPermissions.Should().BeEquivalentTo(permissions);
+        resultPermissions.ShouldNotBeNull();
+        resultPermissions.ShouldBe(permissions);
     }
 
     [Fact]
@@ -397,9 +397,9 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/roles/{createdRole.Id}/permissions", assignCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var resultPermissions = await response.Content.ReadFromJsonAsync<IReadOnlyList<string>>();
-        resultPermissions.Should().BeEquivalentTo(permissions);
+        resultPermissions.ShouldBe(permissions);
     }
 
     [Fact]
@@ -426,11 +426,11 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var resultPermissions = await response.Content.ReadFromJsonAsync<IReadOnlyList<string>>();
-        resultPermissions.Should().NotContain(Permissions.UsersUpdate);
-        resultPermissions.Should().Contain(Permissions.UsersRead);
-        resultPermissions.Should().Contain(Permissions.RolesRead);
+        resultPermissions.ShouldNotContain(Permissions.UsersUpdate);
+        resultPermissions.ShouldContain(Permissions.UsersRead);
+        resultPermissions.ShouldContain(Permissions.RolesRead);
     }
 
     #endregion
@@ -448,7 +448,7 @@ public class RoleEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await userClient.GetAsync("/api/roles");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion

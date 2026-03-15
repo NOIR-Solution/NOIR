@@ -80,8 +80,8 @@ public class MarkAllAsReadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.Unauthorized);
     }
 
     #endregion
@@ -103,8 +103,8 @@ public class MarkAllAsReadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(0);
     }
 
     [Fact]
@@ -123,9 +123,9 @@ public class MarkAllAsReadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(3);
-        notifications.Should().AllSatisfy(n => n.ReadAt.Should().NotBeNull());
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(3);
+        notifications.ShouldAllBe(n => n.ReadAt != null);
     }
 
     [Fact]

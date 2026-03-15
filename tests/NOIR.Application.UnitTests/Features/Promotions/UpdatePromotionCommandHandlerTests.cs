@@ -107,9 +107,9 @@ public class UpdatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Updated Promo");
-        result.Value.Code.Should().Be("TESTCODE");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Updated Promo");
+        result.Value.Code.ShouldBe("TESTCODE");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -135,7 +135,7 @@ public class UpdatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         _promotionRepositoryMock.Verify(
             x => x.FirstOrDefaultAsync(It.IsAny<PromotionByCodeSpec>(), It.IsAny<CancellationToken>()),
@@ -167,8 +167,8 @@ public class UpdatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Code.Should().Be("NEWCODE");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Code.ShouldBe("NEWCODE");
     }
 
     [Fact]
@@ -216,19 +216,19 @@ public class UpdatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Flash Sale");
-        result.Value.Code.Should().Be("FLASH2026");
-        result.Value.Description.Should().Be("Flash sale description");
-        result.Value.PromotionType.Should().Be(PromotionType.FlashSale);
-        result.Value.DiscountType.Should().Be(DiscountType.FixedAmount);
-        result.Value.DiscountValue.Should().Be(100000m);
-        result.Value.ApplyLevel.Should().Be(PromotionApplyLevel.Product);
-        result.Value.MaxDiscountAmount.Should().Be(50000m);
-        result.Value.MinOrderValue.Should().Be(200000m);
-        result.Value.MinItemQuantity.Should().Be(1);
-        result.Value.UsageLimitTotal.Should().Be(500);
-        result.Value.UsageLimitPerUser.Should().Be(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Flash Sale");
+        result.Value.Code.ShouldBe("FLASH2026");
+        result.Value.Description.ShouldBe("Flash sale description");
+        result.Value.PromotionType.ShouldBe(PromotionType.FlashSale);
+        result.Value.DiscountType.ShouldBe(DiscountType.FixedAmount);
+        result.Value.DiscountValue.ShouldBe(100000m);
+        result.Value.ApplyLevel.ShouldBe(PromotionApplyLevel.Product);
+        result.Value.MaxDiscountAmount.ShouldBe(50000m);
+        result.Value.MinOrderValue.ShouldBe(200000m);
+        result.Value.MinItemQuantity.ShouldBe(1);
+        result.Value.UsageLimitTotal.ShouldBe(500);
+        result.Value.UsageLimitPerUser.ShouldBe(2);
     }
 
     [Fact]
@@ -254,8 +254,8 @@ public class UpdatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProductIds.Should().Contain(newProductId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProductIds.ShouldContain(newProductId);
     }
 
     [Fact]
@@ -281,8 +281,8 @@ public class UpdatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategoryIds.Should().Contain(newCategoryId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategoryIds.ShouldContain(newCategoryId);
     }
 
     #endregion
@@ -307,8 +307,8 @@ public class UpdatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-PROMO-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-PROMO-002");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -345,8 +345,8 @@ public class UpdatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-PROMO-001");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-PROMO-001");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -416,8 +416,8 @@ public class UpdatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProductIds.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProductIds.ShouldBeEmpty();
     }
 
     #endregion

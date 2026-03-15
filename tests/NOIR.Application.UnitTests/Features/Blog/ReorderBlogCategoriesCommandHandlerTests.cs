@@ -82,9 +82,9 @@ public class ReorderBlogCategoriesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
-        result.Value[0].Name.Should().Be("Category A");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
+        result.Value[0].Name.ShouldBe("Category A");
     }
 
     [Fact]
@@ -111,8 +111,8 @@ public class ReorderBlogCategoriesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -139,9 +139,9 @@ public class ReorderBlogCategoriesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Verify the child category's parent was set
-        childCategory.ParentId.Should().Be(parentCategory.Id);
+        childCategory.ParentId.ShouldBe(parentCategory.Id);
     }
 
     [Fact]
@@ -166,8 +166,8 @@ public class ReorderBlogCategoriesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        childCategory.ParentId.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        childCategory.ParentId.ShouldBeNull();
     }
 
     #endregion
@@ -190,10 +190,10 @@ public class ReorderBlogCategoriesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-BLOG-CATEGORY-010");
-        result.Error.Message.Should().Contain(invalidId.ToString());
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-BLOG-CATEGORY-010");
+        result.Error.Message.ShouldContain(invalidId.ToString());
     }
 
     [Fact]
@@ -212,10 +212,10 @@ public class ReorderBlogCategoriesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-BLOG-CATEGORY-011");
-        result.Error.Message.Should().Contain("cannot be its own parent");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-BLOG-CATEGORY-011");
+        result.Error.Message.ShouldContain("cannot be its own parent");
     }
 
     [Fact]
@@ -239,10 +239,10 @@ public class ReorderBlogCategoriesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-BLOG-CATEGORY-010");
-        result.Error.Message.Should().Contain(invalidId1.ToString());
-        result.Error.Message.Should().Contain(invalidId2.ToString());
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-BLOG-CATEGORY-010");
+        result.Error.Message.ShouldContain(invalidId1.ToString());
+        result.Error.Message.ShouldContain(invalidId2.ToString());
     }
 
     [Fact]
@@ -338,10 +338,10 @@ public class ReorderBlogCategoriesCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        parentCategory.SortOrder.Should().Be(10);
-        parentCategory.ParentId.Should().BeNull();
-        childCategory.SortOrder.Should().Be(20);
-        childCategory.ParentId.Should().Be(parentCategory.Id);
+        parentCategory.SortOrder.ShouldBe(10);
+        parentCategory.ParentId.ShouldBeNull();
+        childCategory.SortOrder.ShouldBe(20);
+        childCategory.ParentId.ShouldBe(parentCategory.Id);
     }
 
     #endregion
@@ -362,8 +362,8 @@ public class ReorderBlogCategoriesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     [Fact]
@@ -429,11 +429,11 @@ public class ReorderBlogCategoriesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var childDto = result.Value.FirstOrDefault(c => c.Id == childCategory.Id);
-        childDto.Should().NotBeNull();
-        childDto!.ParentId.Should().Be(parentCategory.Id);
-        childDto.ParentName.Should().Be("Technology");
+        childDto.ShouldNotBeNull();
+        childDto!.ParentId.ShouldBe(parentCategory.Id);
+        childDto.ParentName.ShouldBe("Technology");
     }
 
     [Fact]
@@ -460,10 +460,10 @@ public class ReorderBlogCategoriesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var parentDto = result.Value.FirstOrDefault(c => c.Id == parentCategory.Id);
-        parentDto.Should().NotBeNull();
-        parentDto!.ChildCount.Should().Be(2);
+        parentDto.ShouldNotBeNull();
+        parentDto!.ChildCount.ShouldBe(2);
     }
 
     [Fact]
@@ -490,9 +490,9 @@ public class ReorderBlogCategoriesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value.First();
-        dto.PostCount.Should().Be(3);
+        dto.PostCount.ShouldBe(3);
     }
 
     #endregion

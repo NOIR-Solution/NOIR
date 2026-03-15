@@ -58,7 +58,7 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/reports/revenue");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/reports/best-sellers");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/reports/inventory");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -88,7 +88,7 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/reports/customers");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -105,7 +105,7 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await userClient.GetAsync("/api/reports/revenue");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -118,7 +118,7 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await userClient.GetAsync("/api/reports/best-sellers");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -131,7 +131,7 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await userClient.GetAsync("/api/reports/inventory");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -144,7 +144,7 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await userClient.GetAsync("/api/reports/customers");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -161,14 +161,14 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/reports/revenue");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<RevenueReportDto>();
-        result.Should().NotBeNull();
-        result!.Period.Should().NotBeNullOrEmpty();
-        result.RevenueByDay.Should().NotBeNull();
-        result.RevenueByCategory.Should().NotBeNull();
-        result.RevenueByPaymentMethod.Should().NotBeNull();
-        result.ComparedToPreviousPeriod.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Period.ShouldNotBeNullOrEmpty();
+        result.RevenueByDay.ShouldNotBeNull();
+        result.RevenueByCategory.ShouldNotBeNull();
+        result.RevenueByPaymentMethod.ShouldNotBeNull();
+        result.ComparedToPreviousPeriod.ShouldNotBeNull();
     }
 
     [Fact]
@@ -181,9 +181,9 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/reports/revenue?period=weekly");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<RevenueReportDto>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -199,9 +199,9 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/reports/revenue?startDate={Uri.EscapeDataString(startDate)}&endDate={Uri.EscapeDataString(endDate)}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<RevenueReportDto>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     #endregion
@@ -218,11 +218,11 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/reports/best-sellers");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<BestSellersReportDto>();
-        result.Should().NotBeNull();
-        result!.Products.Should().NotBeNull();
-        result.Period.Should().NotBeNullOrEmpty();
+        result.ShouldNotBeNull();
+        result!.Products.ShouldNotBeNull();
+        result.Period.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -235,10 +235,10 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/reports/best-sellers?topN=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<BestSellersReportDto>();
-        result.Should().NotBeNull();
-        result!.Products.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.Products.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     #endregion
@@ -255,10 +255,10 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/reports/inventory");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<InventoryReportDto>();
-        result.Should().NotBeNull();
-        result!.LowStockProducts.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.LowStockProducts.ShouldNotBeNull();
     }
 
     [Fact]
@@ -271,9 +271,9 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/reports/inventory?lowStockThreshold=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<InventoryReportDto>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     #endregion
@@ -290,11 +290,11 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/reports/customers");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<CustomerReportDto>();
-        result.Should().NotBeNull();
-        result!.AcquisitionByMonth.Should().NotBeNull();
-        result.TopCustomers.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.AcquisitionByMonth.ShouldNotBeNull();
+        result.TopCustomers.ShouldNotBeNull();
     }
 
     [Fact]
@@ -310,9 +310,9 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/reports/customers?startDate={Uri.EscapeDataString(startDate)}&endDate={Uri.EscapeDataString(endDate)}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<CustomerReportDto>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     #endregion
@@ -326,7 +326,7 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/reports/export?reportType=Revenue");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -339,8 +339,8 @@ public class ReportEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/reports/export?reportType=Revenue&format=CSV");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        response.Content.Headers.ContentType.Should().NotBeNull();
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.Content.Headers.ContentType.ShouldNotBeNull();
     }
 
     #endregion

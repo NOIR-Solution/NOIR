@@ -105,10 +105,10 @@ public class GetPublicLegalPageQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Title.Should().Be("Tenant Terms"); // Tenant page takes priority
-        result.Value.Slug.Should().Be("terms-of-service");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Title.ShouldBe("Tenant Terms"); // Tenant page takes priority
+        result.Value.Slug.ShouldBe("terms-of-service");
     }
 
     [Fact]
@@ -124,8 +124,8 @@ public class GetPublicLegalPageQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Title.Should().Be("Platform Privacy");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Title.ShouldBe("Platform Privacy");
     }
 
     [Fact]
@@ -142,8 +142,8 @@ public class GetPublicLegalPageQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Title.Should().Be("Platform Terms"); // Not the other tenant's page
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Title.ShouldBe("Platform Terms"); // Not the other tenant's page
     }
 
     #endregion
@@ -163,9 +163,9 @@ public class GetPublicLegalPageQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be("NOIR-LEGAL-002");
-        result.Error.Type.Should().Be(ErrorType.NotFound);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe("NOIR-LEGAL-002");
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
     }
 
     [Fact]
@@ -182,8 +182,8 @@ public class GetPublicLegalPageQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Title.Should().Be("Platform Terms"); // Falls back to platform since tenant is inactive
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Title.ShouldBe("Platform Terms"); // Falls back to platform since tenant is inactive
     }
 
     #endregion
@@ -201,10 +201,10 @@ public class GetPublicLegalPageQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be("NOIR-LEGAL-002");
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain("non-existent-page");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe("NOIR-LEGAL-002");
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Message.ShouldContain("non-existent-page");
     }
 
     [Fact]
@@ -219,8 +219,8 @@ public class GetPublicLegalPageQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
     }
 
     #endregion
@@ -244,16 +244,16 @@ public class GetPublicLegalPageQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Slug.Should().Be("terms-of-service");
-        dto.Title.Should().Be("Terms of Service");
-        dto.HtmlContent.Should().Be("<h1>Terms</h1>");
-        dto.MetaTitle.Should().Be("Meta Title");
-        dto.MetaDescription.Should().Be("Meta Description");
-        dto.CanonicalUrl.Should().Be("https://example.com/terms-of-service");
-        dto.AllowIndexing.Should().BeTrue();
-        dto.LastModified.Should().NotBe(default);
+        dto.Slug.ShouldBe("terms-of-service");
+        dto.Title.ShouldBe("Terms of Service");
+        dto.HtmlContent.ShouldBe("<h1>Terms</h1>");
+        dto.MetaTitle.ShouldBe("Meta Title");
+        dto.MetaDescription.ShouldBe("Meta Description");
+        dto.CanonicalUrl.ShouldBe("https://example.com/terms-of-service");
+        dto.AllowIndexing.ShouldBe(true);
+        dto.LastModified.ShouldNotBe(default);
     }
 
     #endregion
@@ -276,8 +276,8 @@ public class GetPublicLegalPageQueryHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Title.Should().Be("Platform Terms");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Title.ShouldBe("Platform Terms");
     }
 
     #endregion

@@ -76,8 +76,8 @@ public class GetCategoryAttributeByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
     }
 
     [Fact]
@@ -103,16 +103,16 @@ public class GetCategoryAttributeByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Id.Should().Be(categoryAttribute.Id);
-        dto.CategoryId.Should().Be(categoryId);
-        dto.CategoryName.Should().Be("Clothing");
-        dto.AttributeId.Should().Be(attributeId);
-        dto.AttributeName.Should().Be("Size");
-        dto.AttributeCode.Should().Be("size");
-        dto.IsRequired.Should().BeTrue();
-        dto.SortOrder.Should().Be(5);
+        dto.Id.ShouldBe(categoryAttribute.Id);
+        dto.CategoryId.ShouldBe(categoryId);
+        dto.CategoryName.ShouldBe("Clothing");
+        dto.AttributeId.ShouldBe(attributeId);
+        dto.AttributeName.ShouldBe("Size");
+        dto.AttributeCode.ShouldBe("size");
+        dto.IsRequired.ShouldBe(true);
+        dto.SortOrder.ShouldBe(5);
     }
 
     [Fact]
@@ -130,8 +130,8 @@ public class GetCategoryAttributeByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(target.Id);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(target.Id);
     }
 
     [Fact]
@@ -147,8 +147,8 @@ public class GetCategoryAttributeByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsRequired.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsRequired.ShouldBe(false);
     }
 
     #endregion
@@ -168,10 +168,10 @@ public class GetCategoryAttributeByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-CAT-ATTR-001");
-        result.Error.Message.Should().Contain(nonExistentId.ToString());
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-CAT-ATTR-001");
+        result.Error.Message.ShouldContain(nonExistentId.ToString());
     }
 
     [Fact]
@@ -186,8 +186,8 @@ public class GetCategoryAttributeByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CAT-ATTR-001");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CAT-ATTR-001");
     }
 
     [Fact]
@@ -204,9 +204,9 @@ public class GetCategoryAttributeByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Message.Should().Contain(differentId.ToString());
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Message.ShouldContain(differentId.ToString());
+        result.Error.Message.ShouldContain("not found");
     }
 
     #endregion
@@ -229,7 +229,7 @@ public class GetCategoryAttributeByIdQueryHandlerTests
         var result = await _handler.Handle(query, token);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     #endregion

@@ -105,11 +105,11 @@ public class RevertLegalPageToDefaultCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Title.Should().Be("Platform Terms");
-        result.Value.IsInherited.Should().BeTrue();
-        result.Value.Id.Should().Be(platformPage.Id);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Title.ShouldBe("Platform Terms");
+        result.Value.IsInherited.ShouldBe(true);
+        result.Value.Id.ShouldBe(platformPage.Id);
 
         // Should soft delete the tenant page
         _repositoryMock.Verify(x => x.Remove(tenantPage), Times.Once);
@@ -137,10 +137,10 @@ public class RevertLegalPageToDefaultCommandHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be("NOIR-LEGAL-003");
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Message.Should().Contain("Only tenant users");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe("NOIR-LEGAL-003");
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Message.ShouldContain("Only tenant users");
     }
 
     [Fact]
@@ -160,8 +160,8 @@ public class RevertLegalPageToDefaultCommandHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be("NOIR-LEGAL-003");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe("NOIR-LEGAL-003");
     }
 
     #endregion
@@ -179,9 +179,9 @@ public class RevertLegalPageToDefaultCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be("NOIR-LEGAL-001");
-        result.Error.Type.Should().Be(ErrorType.NotFound);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe("NOIR-LEGAL-001");
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
     }
 
     [Fact]
@@ -199,8 +199,8 @@ public class RevertLegalPageToDefaultCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be("NOIR-LEGAL-001");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe("NOIR-LEGAL-001");
     }
 
     #endregion
@@ -227,9 +227,9 @@ public class RevertLegalPageToDefaultCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         // Platform page won't match TenantId filter, so returns not found
-        result.Error.Code.Should().Be("NOIR-LEGAL-001");
+        result.Error.Code.ShouldBe("NOIR-LEGAL-001");
     }
 
     #endregion
@@ -253,10 +253,10 @@ public class RevertLegalPageToDefaultCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be("NOIR-LEGAL-005");
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain("custom-page");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe("NOIR-LEGAL-005");
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Message.ShouldContain("custom-page");
     }
 
     #endregion

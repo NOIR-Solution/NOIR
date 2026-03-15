@@ -55,7 +55,7 @@ public class ExceptionHandlingMiddlewareTests
         await middleware.InvokeAsync(context);
 
         // Assert
-        nextCalled.Should().BeTrue();
+        nextCalled.ShouldBe(true);
     }
 
     #endregion
@@ -81,7 +81,7 @@ public class ExceptionHandlingMiddlewareTests
         await middleware.InvokeAsync(context);
 
         // Assert
-        context.Response.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        context.Response.StatusCode.ShouldBe(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public class ExceptionHandlingMiddlewareTests
         await middleware.InvokeAsync(context);
 
         // Assert
-        context.Response.ContentType.Should().Be("application/problem+json");
+        context.Response.ContentType.ShouldBe("application/problem+json");
     }
 
     [Fact]
@@ -118,7 +118,7 @@ public class ExceptionHandlingMiddlewareTests
         var body = await ReadResponseBody(context);
 
         // Assert
-        body.Should().Contain("test-trace-id");
+        body.ShouldContain("test-trace-id");
     }
 
     #endregion
@@ -139,7 +139,7 @@ public class ExceptionHandlingMiddlewareTests
         await middleware.InvokeAsync(context);
 
         // Assert
-        context.Response.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+        context.Response.StatusCode.ShouldBe(StatusCodes.Status404NotFound);
     }
 
     [Fact]
@@ -157,7 +157,7 @@ public class ExceptionHandlingMiddlewareTests
         var body = await ReadResponseBody(context);
 
         // Assert
-        body.Should().Contain("Not Found");
+        body.ShouldContain("Not Found");
     }
 
     #endregion
@@ -178,7 +178,7 @@ public class ExceptionHandlingMiddlewareTests
         await middleware.InvokeAsync(context);
 
         // Assert
-        context.Response.StatusCode.Should().Be(StatusCodes.Status403Forbidden);
+        context.Response.StatusCode.ShouldBe(StatusCodes.Status403Forbidden);
     }
 
     [Fact]
@@ -196,7 +196,7 @@ public class ExceptionHandlingMiddlewareTests
         var body = await ReadResponseBody(context);
 
         // Assert
-        body.Should().Contain("Forbidden");
+        body.ShouldContain("Forbidden");
     }
 
     #endregion
@@ -217,7 +217,7 @@ public class ExceptionHandlingMiddlewareTests
         await middleware.InvokeAsync(context);
 
         // Assert
-        context.Response.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
+        context.Response.StatusCode.ShouldBe(StatusCodes.Status401Unauthorized);
     }
 
     [Fact]
@@ -235,7 +235,7 @@ public class ExceptionHandlingMiddlewareTests
         var body = await ReadResponseBody(context);
 
         // Assert
-        body.Should().Contain("Unauthorized");
+        body.ShouldContain("Unauthorized");
     }
 
     #endregion
@@ -256,7 +256,7 @@ public class ExceptionHandlingMiddlewareTests
         await middleware.InvokeAsync(context);
 
         // Assert
-        context.Response.StatusCode.Should().Be(499); // Client Closed Request
+        context.Response.StatusCode.ShouldBe(499); // Client Closed Request
     }
 
     [Fact]
@@ -274,7 +274,7 @@ public class ExceptionHandlingMiddlewareTests
         var body = await ReadResponseBody(context);
 
         // Assert
-        body.Should().Contain("Client Closed Request");
+        body.ShouldContain("Client Closed Request");
     }
 
     #endregion
@@ -295,7 +295,7 @@ public class ExceptionHandlingMiddlewareTests
         await middleware.InvokeAsync(context);
 
         // Assert
-        context.Response.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
+        context.Response.StatusCode.ShouldBe(StatusCodes.Status500InternalServerError);
     }
 
     [Fact]
@@ -313,7 +313,7 @@ public class ExceptionHandlingMiddlewareTests
         var body = await ReadResponseBody(context);
 
         // Assert
-        body.Should().Contain("Internal Server Error");
+        body.ShouldContain("Internal Server Error");
     }
 
     [Fact]
@@ -356,7 +356,7 @@ public class ExceptionHandlingMiddlewareTests
         var body = await ReadResponseBody(context);
 
         // Assert
-        body.Should().Contain("stackTrace");
+        body.ShouldContain("stackTrace");
     }
 
     [Fact]
@@ -375,7 +375,7 @@ public class ExceptionHandlingMiddlewareTests
         var body = await ReadResponseBody(context);
 
         // Assert
-        body.Should().NotContain("stackTrace");
+        body.ShouldNotContain("stackTrace");
     }
 
     #endregion
@@ -396,7 +396,7 @@ public class ExceptionHandlingMiddlewareTests
         await middleware.InvokeAsync(context);
 
         // Assert
-        context.Response.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        context.Response.StatusCode.ShouldBe(StatusCodes.Status400BadRequest);
     }
 
     [Fact]
@@ -414,7 +414,7 @@ public class ExceptionHandlingMiddlewareTests
         var body = await ReadResponseBody(context);
 
         // Assert
-        body.Should().Contain("Validation Error");
+        body.ShouldContain("Validation Error");
     }
 
     [Fact]
@@ -562,8 +562,8 @@ public class ExceptionHandlingMiddlewareTests
         var body = await ReadResponseBody(context);
 
         // Assert
-        body.Should().Contain("exceptionType");
-        body.Should().Contain("InvalidOperationException");
+        body.ShouldContain("exceptionType");
+        body.ShouldContain("InvalidOperationException");
     }
 
     [Fact]
@@ -582,7 +582,7 @@ public class ExceptionHandlingMiddlewareTests
         var body = await ReadResponseBody(context);
 
         // Assert - 404 should not include stack trace even in development
-        body.Should().NotContain("stackTrace");
+        body.ShouldNotContain("stackTrace");
     }
 
     #endregion

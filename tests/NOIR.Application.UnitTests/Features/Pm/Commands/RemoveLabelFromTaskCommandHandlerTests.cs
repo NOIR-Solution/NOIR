@@ -45,8 +45,8 @@ public class RemoveLabelFromTaskCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Bug");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Bug");
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -63,7 +63,7 @@ public class RemoveLabelFromTaskCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -87,8 +87,8 @@ public class RemoveLabelFromTaskCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(labelId);
-        result.Value.Name.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(labelId);
+        result.Value.Name.ShouldBeEmpty();
     }
 }

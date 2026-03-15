@@ -36,9 +36,9 @@ public class RepositoryPatternTests : IAsyncLifetime
             var result = await context.RefreshTokens.FindAsync(token.Id);
 
             // Assert
-            result.Should().NotBeNull();
-            result!.Id.Should().Be(token.Id);
-            result.UserId.Should().Be("test-user");
+            result.ShouldNotBeNull();
+            result!.Id.ShouldBe(token.Id);
+            result.UserId.ShouldBe("test-user");
         });
     }
 
@@ -53,7 +53,7 @@ public class RepositoryPatternTests : IAsyncLifetime
             var result = await context.RefreshTokens.FindAsync(Guid.NewGuid());
 
             // Assert
-            result.Should().BeNull();
+            result.ShouldBeNull();
         });
     }
 
@@ -77,7 +77,7 @@ public class RepositoryPatternTests : IAsyncLifetime
             var result = await context.RefreshTokens.AsNoTracking().ToListAsync();
 
             // Assert
-            result.Should().HaveCount(3);
+            result.Count().ShouldBe(3);
         });
     }
 
@@ -100,7 +100,7 @@ public class RepositoryPatternTests : IAsyncLifetime
             var exists = await context.RefreshTokens.AnyAsync(t => t.Id == token.Id);
 
             // Assert
-            exists.Should().BeTrue();
+            exists.ShouldBeTrue();
         });
     }
 
@@ -115,7 +115,7 @@ public class RepositoryPatternTests : IAsyncLifetime
             var exists = await context.RefreshTokens.AnyAsync(t => t.Id == Guid.NewGuid());
 
             // Assert
-            exists.Should().BeFalse();
+            exists.ShouldBeFalse();
         });
     }
 
@@ -140,7 +140,7 @@ public class RepositoryPatternTests : IAsyncLifetime
             var count = await context.RefreshTokens.CountAsync();
 
             // Assert
-            count.Should().Be(initialCount + 2);
+            count.ShouldBe(initialCount + 2);
         });
     }
 
@@ -161,7 +161,7 @@ public class RepositoryPatternTests : IAsyncLifetime
             var count = await context.RefreshTokens.CountAsync(t => t.UserId == userId);
 
             // Assert
-            count.Should().Be(2);
+            count.ShouldBe(2);
         });
     }
 
@@ -187,8 +187,8 @@ public class RepositoryPatternTests : IAsyncLifetime
                 .FirstOrDefaultAsync(t => t.UserId == userId);
 
             // Assert
-            result.Should().NotBeNull();
-            result!.UserId.Should().Be(userId);
+            result.ShouldNotBeNull();
+            result!.UserId.ShouldBe(userId);
         });
     }
 
@@ -205,7 +205,7 @@ public class RepositoryPatternTests : IAsyncLifetime
                 .FirstOrDefaultAsync(t => t.UserId == "non-existent-xyz");
 
             // Assert
-            result.Should().BeNull();
+            result.ShouldBeNull();
         });
     }
 
@@ -230,8 +230,8 @@ public class RepositoryPatternTests : IAsyncLifetime
                 .SingleOrDefaultAsync(t => t.Id == token.Id);
 
             // Assert
-            result.Should().NotBeNull();
-            result!.Id.Should().Be(token.Id);
+            result.ShouldNotBeNull();
+            result!.Id.ShouldBe(token.Id);
         });
     }
 
@@ -259,8 +259,8 @@ public class RepositoryPatternTests : IAsyncLifetime
                 .ToListAsync();
 
             // Assert
-            result.Should().HaveCount(2);
-            result.Should().AllSatisfy(t => t.UserId.Should().Be(userId));
+            result.Count().ShouldBe(2);
+            result.ShouldAllBe(t => t.UserId == userId);
         });
     }
 
@@ -283,7 +283,7 @@ public class RepositoryPatternTests : IAsyncLifetime
 
             // Assert
             var saved = await context.RefreshTokens.FindAsync(token.Id);
-            saved.Should().NotBeNull();
+            saved.ShouldNotBeNull();
         });
     }
 
@@ -309,7 +309,7 @@ public class RepositoryPatternTests : IAsyncLifetime
             foreach (var token in tokens)
             {
                 var saved = await context.RefreshTokens.FindAsync(token.Id);
-                saved.Should().NotBeNull();
+                saved.ShouldNotBeNull();
             }
         });
     }
@@ -336,8 +336,8 @@ public class RepositoryPatternTests : IAsyncLifetime
             // Assert
             context.ChangeTracker.Clear();
             var updated = await context.RefreshTokens.FindAsync(token.Id);
-            updated!.IsRevoked.Should().BeTrue();
-            updated.RevokedByIp.Should().Be("127.0.0.1");
+            updated!.IsRevoked.ShouldBeTrue();
+            updated.RevokedByIp.ShouldBe("127.0.0.1");
         });
     }
 
@@ -365,14 +365,14 @@ public class RepositoryPatternTests : IAsyncLifetime
             // Assert - Normal query should not find it
             var normalQuery = await context.RefreshTokens
                 .FirstOrDefaultAsync(t => t.Id == tokenId);
-            normalQuery.Should().BeNull();
+            normalQuery.ShouldBeNull();
 
             // But IgnoreQueryFilters should find it with IsDeleted = true
             var withFiltersIgnored = await context.RefreshTokens
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(t => t.Id == tokenId);
-            withFiltersIgnored.Should().NotBeNull();
-            withFiltersIgnored!.IsDeleted.Should().BeTrue();
+            withFiltersIgnored.ShouldNotBeNull();
+            withFiltersIgnored!.IsDeleted.ShouldBeTrue();
         });
     }
 
@@ -402,8 +402,8 @@ public class RepositoryPatternTests : IAsyncLifetime
                 .ToListAsync();
 
             // Assert
-            deletedIncluded.Should().HaveCount(1);
-            deletedIncluded[0].IsDeleted.Should().BeTrue();
+            deletedIncluded.Count().ShouldBe(1);
+            deletedIncluded[0].IsDeleted.ShouldBeTrue();
         });
     }
 
@@ -422,7 +422,7 @@ public class RepositoryPatternTests : IAsyncLifetime
             var any = await context.RefreshTokens.AnyAsync(t => t.UserId == "never-exists-xyz");
 
             // Assert
-            any.Should().BeFalse();
+            any.ShouldBeFalse();
         });
     }
 
@@ -441,7 +441,7 @@ public class RepositoryPatternTests : IAsyncLifetime
             var any = await context.RefreshTokens.AnyAsync(t => t.UserId == "any-test");
 
             // Assert
-            any.Should().BeTrue();
+            any.ShouldBeTrue();
         });
     }
 

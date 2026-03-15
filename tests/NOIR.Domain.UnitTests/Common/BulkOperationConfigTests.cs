@@ -15,19 +15,19 @@ public class BulkOperationConfigTests
         var config = new BulkOperationConfig();
 
         // Assert
-        config.BatchSize.Should().Be(2000);
-        config.BulkCopyTimeout.Should().BeNull();
-        config.SetOutputIdentity.Should().BeFalse();
-        config.PreserveInsertOrder.Should().BeTrue();
-        config.PropertiesToInclude.Should().BeNull();
-        config.PropertiesToExclude.Should().BeNull();
-        config.UpdateByProperties.Should().BeNull();
-        config.CalculateStats.Should().BeFalse();
-        config.Stats.Should().BeNull();
-        config.WithHoldlock.Should().BeTrue();
-        config.IncludeGraph.Should().BeFalse();
-        config.ConfirmSyncWillDeleteMissingRecords.Should().BeFalse();
-        config.ConfirmSyncWithEmptyCollection.Should().BeFalse();
+        config.BatchSize.ShouldBe(2000);
+        config.BulkCopyTimeout.ShouldBeNull();
+        config.SetOutputIdentity.ShouldBeFalse();
+        config.PreserveInsertOrder.ShouldBeTrue();
+        config.PropertiesToInclude.ShouldBeNull();
+        config.PropertiesToExclude.ShouldBeNull();
+        config.UpdateByProperties.ShouldBeNull();
+        config.CalculateStats.ShouldBeFalse();
+        config.Stats.ShouldBeNull();
+        config.WithHoldlock.ShouldBeTrue();
+        config.IncludeGraph.ShouldBeFalse();
+        config.ConfirmSyncWillDeleteMissingRecords.ShouldBeFalse();
+        config.ConfirmSyncWithEmptyCollection.ShouldBeFalse();
     }
 
     #endregion
@@ -41,9 +41,9 @@ public class BulkOperationConfigTests
         var config = BulkOperationConfig.Default;
 
         // Assert
-        config.Should().NotBeNull();
-        config.BatchSize.Should().Be(2000);
-        config.SetOutputIdentity.Should().BeFalse();
+        config.ShouldNotBeNull();
+        config.BatchSize.ShouldBe(2000);
+        config.SetOutputIdentity.ShouldBeFalse();
     }
 
     [Fact]
@@ -53,8 +53,8 @@ public class BulkOperationConfigTests
         var config = BulkOperationConfig.WithOutputIdentity;
 
         // Assert
-        config.SetOutputIdentity.Should().BeTrue();
-        config.PreserveInsertOrder.Should().BeTrue();
+        config.SetOutputIdentity.ShouldBeTrue();
+        config.PreserveInsertOrder.ShouldBeTrue();
     }
 
     [Fact]
@@ -64,8 +64,8 @@ public class BulkOperationConfigTests
         var config = BulkOperationConfig.LargeBatch;
 
         // Assert
-        config.BatchSize.Should().Be(5000);
-        config.BulkCopyTimeout.Should().Be(120);
+        config.BatchSize.ShouldBe(5000);
+        config.BulkCopyTimeout.ShouldBe(120);
     }
 
     #endregion
@@ -79,7 +79,7 @@ public class BulkOperationConfigTests
         var config = new BulkOperationConfig().WithBatchSize(3000);
 
         // Assert
-        config.BatchSize.Should().Be(3000);
+        config.BatchSize.ShouldBe(3000);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public class BulkOperationConfigTests
         var result = config.WithBatchSize(3000);
 
         // Assert
-        result.Should().BeSameAs(config);
+        result.ShouldBeSameAs(config);
     }
 
     [Fact]
@@ -102,8 +102,8 @@ public class BulkOperationConfigTests
         var config = new BulkOperationConfig().WithIdentityOutput();
 
         // Assert
-        config.SetOutputIdentity.Should().BeTrue();
-        config.PreserveInsertOrder.Should().BeTrue();
+        config.SetOutputIdentity.ShouldBeTrue();
+        config.PreserveInsertOrder.ShouldBeTrue();
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class BulkOperationConfigTests
             .IncludeProperties("Name", "Email", "Phone");
 
         // Assert
-        config.PropertiesToInclude.Should().BeEquivalentTo(["Name", "Email", "Phone"]);
+        config.PropertiesToInclude.ShouldBe(["Name", "Email", "Phone"]);
     }
 
     [Fact]
@@ -125,7 +125,7 @@ public class BulkOperationConfigTests
             .ExcludeProperties("CreatedAt", "CreatedBy");
 
         // Assert
-        config.PropertiesToExclude.Should().BeEquivalentTo(["CreatedAt", "CreatedBy"]);
+        config.PropertiesToExclude.ShouldBe(["CreatedAt", "CreatedBy"]);
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public class BulkOperationConfigTests
             .UpdateBy("Sku", "TenantId");
 
         // Assert
-        config.UpdateByProperties.Should().BeEquivalentTo(["Sku", "TenantId"]);
+        config.UpdateByProperties.ShouldBe(["Sku", "TenantId"]);
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class BulkOperationConfigTests
         var config = new BulkOperationConfig().WithStats();
 
         // Assert
-        config.CalculateStats.Should().BeTrue();
+        config.CalculateStats.ShouldBeTrue();
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class BulkOperationConfigTests
         var config = new BulkOperationConfig().WithTimeout(180);
 
         // Assert
-        config.BulkCopyTimeout.Should().Be(180);
+        config.BulkCopyTimeout.ShouldBe(180);
     }
 
     [Fact]
@@ -166,7 +166,7 @@ public class BulkOperationConfigTests
         var config = new BulkOperationConfig().WithoutHoldlock();
 
         // Assert
-        config.WithHoldlock.Should().BeFalse();
+        config.WithHoldlock.ShouldBeFalse();
     }
 
     [Fact]
@@ -176,9 +176,9 @@ public class BulkOperationConfigTests
         var config = new BulkOperationConfig().ConfirmSyncDeletion();
 
         // Assert
-        config.ConfirmSyncWillDeleteMissingRecords.Should().BeTrue();
+        config.ConfirmSyncWillDeleteMissingRecords.ShouldBeTrue();
         // Note: ConfirmSyncWithEmptyCollection must be set separately for empty collection syncs
-        config.ConfirmSyncWithEmptyCollection.Should().BeFalse();
+        config.ConfirmSyncWithEmptyCollection.ShouldBeFalse();
     }
 
     [Fact]
@@ -192,8 +192,8 @@ public class BulkOperationConfigTests
         };
 
         // Assert
-        config.ConfirmSyncWillDeleteMissingRecords.Should().BeTrue();
-        config.ConfirmSyncWithEmptyCollection.Should().BeTrue();
+        config.ConfirmSyncWillDeleteMissingRecords.ShouldBeTrue();
+        config.ConfirmSyncWithEmptyCollection.ShouldBeTrue();
     }
 
     [Fact]
@@ -211,17 +211,17 @@ public class BulkOperationConfigTests
             .ConfirmSyncDeletion();
 
         // Assert
-        config.BatchSize.Should().Be(5000);
-        config.BulkCopyTimeout.Should().Be(120);
-        config.SetOutputIdentity.Should().BeTrue();
-        config.PreserveInsertOrder.Should().BeTrue();
-        config.UpdateByProperties.Should().BeEquivalentTo(["Sku"]);
-        config.PropertiesToExclude.Should().BeEquivalentTo(["CreatedAt"]);
-        config.CalculateStats.Should().BeTrue();
-        config.WithHoldlock.Should().BeFalse();
-        config.ConfirmSyncWillDeleteMissingRecords.Should().BeTrue();
+        config.BatchSize.ShouldBe(5000);
+        config.BulkCopyTimeout.ShouldBe(120);
+        config.SetOutputIdentity.ShouldBeTrue();
+        config.PreserveInsertOrder.ShouldBeTrue();
+        config.UpdateByProperties.ShouldBe(["Sku"]);
+        config.PropertiesToExclude.ShouldBe(["CreatedAt"]);
+        config.CalculateStats.ShouldBeTrue();
+        config.WithHoldlock.ShouldBeFalse();
+        config.ConfirmSyncWillDeleteMissingRecords.ShouldBeTrue();
         // ConfirmSyncDeletion only sets ConfirmSyncWillDeleteMissingRecords
-        config.ConfirmSyncWithEmptyCollection.Should().BeFalse();
+        config.ConfirmSyncWithEmptyCollection.ShouldBeFalse();
     }
 
     #endregion
@@ -244,7 +244,7 @@ public class BulkOperationStatsTests
         };
 
         // Act & Assert
-        stats.TotalRowsAffected.Should().Be(175);
+        stats.TotalRowsAffected.ShouldBe(175);
     }
 
     [Fact]
@@ -254,12 +254,12 @@ public class BulkOperationStatsTests
         var stats = new BulkOperationStats();
 
         // Assert
-        stats.RowsInserted.Should().Be(0);
-        stats.RowsUpdated.Should().Be(0);
-        stats.RowsDeleted.Should().Be(0);
-        stats.TotalRowsAffected.Should().Be(0);
-        stats.Duration.Should().Be(TimeSpan.Zero);
-        stats.BatchesProcessed.Should().Be(0);
+        stats.RowsInserted.ShouldBe(0);
+        stats.RowsUpdated.ShouldBe(0);
+        stats.RowsDeleted.ShouldBe(0);
+        stats.TotalRowsAffected.ShouldBe(0);
+        stats.Duration.ShouldBe(TimeSpan.Zero);
+        stats.BatchesProcessed.ShouldBe(0);
     }
 
     [Fact]
@@ -272,6 +272,6 @@ public class BulkOperationStatsTests
         var stats = new BulkOperationStats { Duration = duration };
 
         // Assert
-        stats.Duration.Should().Be(duration);
+        stats.Duration.ShouldBe(duration);
     }
 }

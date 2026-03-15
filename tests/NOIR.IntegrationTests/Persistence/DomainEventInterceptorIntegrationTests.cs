@@ -37,7 +37,7 @@ public class DomainEventInterceptorIntegrationTests : IAsyncLifetime
 
             // Assert
             var saved = await context.RefreshTokens.FindAsync(token.Id);
-            saved.Should().NotBeNull();
+            saved.ShouldNotBeNull();
         });
     }
 
@@ -62,12 +62,12 @@ public class DomainEventInterceptorIntegrationTests : IAsyncLifetime
             var result = await context.SaveChangesAsync();
 
             // Assert
-            result.Should().BeGreaterThan(0);
+            result.ShouldBeGreaterThan(0);
 
             foreach (var token in tokens)
             {
                 var saved = await context.RefreshTokens.FindAsync(token.Id);
-                saved.Should().NotBeNull();
+                saved.ShouldNotBeNull();
             }
         });
     }
@@ -87,11 +87,11 @@ public class DomainEventInterceptorIntegrationTests : IAsyncLifetime
             context.RefreshTokens.Add(token);
 
             // Act
-            var act = () => context.SaveChanges();
+            Action act = () => context.SaveChanges();
 
             // Assert - The DomainEventInterceptor throws on sync SaveChanges
-            act.Should().Throw<InvalidOperationException>()
-                .WithMessage("*SaveChangesAsync*");
+            Should.Throw<InvalidOperationException>(act)
+                .Message.ShouldContain("SaveChangesAsync");
 
             await Task.CompletedTask;
         });
@@ -113,14 +113,14 @@ public class DomainEventInterceptorIntegrationTests : IAsyncLifetime
 
             // Before save - Added state
             var entryBefore = context.Entry(token);
-            entryBefore.State.Should().Be(EntityState.Added);
+            entryBefore.State.ShouldBe(EntityState.Added);
 
             // Act
             await context.SaveChangesAsync();
 
             // After save - Unchanged state
             var entryAfter = context.Entry(token);
-            entryAfter.State.Should().Be(EntityState.Unchanged);
+            entryAfter.State.ShouldBe(EntityState.Unchanged);
         });
     }
 
@@ -140,14 +140,14 @@ public class DomainEventInterceptorIntegrationTests : IAsyncLifetime
 
             // Before save - Modified state
             var entryBefore = context.Entry(token);
-            entryBefore.State.Should().Be(EntityState.Modified);
+            entryBefore.State.ShouldBe(EntityState.Modified);
 
             // Act
             await context.SaveChangesAsync();
 
             // After save - Unchanged state
             var entryAfter = context.Entry(token);
-            entryAfter.State.Should().Be(EntityState.Unchanged);
+            entryAfter.State.ShouldBe(EntityState.Unchanged);
         });
     }
 
@@ -170,7 +170,7 @@ public class DomainEventInterceptorIntegrationTests : IAsyncLifetime
             var result = await context.SaveChangesAsync();
 
             // Assert - Should return count of affected entities
-            result.Should().BeGreaterThanOrEqualTo(2);
+            result.ShouldBeGreaterThanOrEqualTo(2);
         });
     }
 
@@ -194,7 +194,7 @@ public class DomainEventInterceptorIntegrationTests : IAsyncLifetime
             var result = await context.SaveChangesAsync(cts.Token);
 
             // Assert
-            result.Should().BeGreaterThan(0);
+            result.ShouldBeGreaterThan(0);
         });
     }
 
@@ -215,7 +215,7 @@ public class DomainEventInterceptorIntegrationTests : IAsyncLifetime
             var act = async () => await context.SaveChangesAsync(cts.Token);
 
             // Assert
-            await act.Should().ThrowAsync<OperationCanceledException>();
+            await Should.ThrowAsync<OperationCanceledException>(act);
         });
     }
 

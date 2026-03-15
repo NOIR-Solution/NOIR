@@ -70,10 +70,10 @@ public class LegalPageEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.GetAsync("/api/legal-pages");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<List<LegalPageListDto>>();
-        result.Should().NotBeNull();
-        result.Should().NotBeEmpty(); // Seeded legal pages should exist
+        result.ShouldNotBeNull();
+        result.ShouldNotBeEmpty(); // Seeded legal pages should exist
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class LegalPageEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await _client.GetAsync("/api/legal-pages");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class LegalPageEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await userClient.GetAsync("/api/legal-pages");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -114,7 +114,7 @@ public class LegalPageEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var listResponse = await adminClient.GetAsync("/api/legal-pages");
         listResponse.EnsureSuccessStatusCode();
         var pages = await listResponse.Content.ReadFromJsonAsync<List<LegalPageListDto>>();
-        pages.Should().NotBeEmpty();
+        pages.ShouldNotBeEmpty();
 
         var pageId = pages!.First().Id;
 
@@ -122,12 +122,12 @@ public class LegalPageEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.GetAsync($"/api/legal-pages/{pageId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var page = await response.Content.ReadFromJsonAsync<LegalPageDto>();
-        page.Should().NotBeNull();
-        page!.Id.Should().Be(pageId);
-        page.Title.Should().NotBeNullOrEmpty();
-        page.HtmlContent.Should().NotBeNull();
+        page.ShouldNotBeNull();
+        page!.Id.ShouldBe(pageId);
+        page.Title.ShouldNotBeNullOrEmpty();
+        page.HtmlContent.ShouldNotBeNull();
     }
 
     [Fact]
@@ -140,7 +140,7 @@ public class LegalPageEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.GetAsync($"/api/legal-pages/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -150,7 +150,7 @@ public class LegalPageEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await _client.GetAsync($"/api/legal-pages/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class LegalPageEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await userClient.GetAsync($"/api/legal-pages/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -194,11 +194,11 @@ public class LegalPageEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.PutAsJsonAsync($"/api/legal-pages/{pageId}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updatedPage = await response.Content.ReadFromJsonAsync<LegalPageDto>();
-        updatedPage.Should().NotBeNull();
-        updatedPage!.Title.Should().Be("Updated Terms of Service");
-        updatedPage.HtmlContent.Should().Contain("Updated Terms");
+        updatedPage.ShouldNotBeNull();
+        updatedPage!.Title.ShouldBe("Updated Terms of Service");
+        updatedPage.HtmlContent.ShouldContain("Updated Terms");
     }
 
     [Fact]
@@ -218,7 +218,7 @@ public class LegalPageEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.PutAsJsonAsync($"/api/legal-pages/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -237,7 +237,7 @@ public class LegalPageEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await _client.PutAsJsonAsync($"/api/legal-pages/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -258,7 +258,7 @@ public class LegalPageEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await userClient.PutAsJsonAsync($"/api/legal-pages/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -275,7 +275,7 @@ public class LegalPageEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.PostAsync($"/api/legal-pages/{Guid.NewGuid()}/revert", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -285,7 +285,7 @@ public class LegalPageEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await _client.PostAsync($"/api/legal-pages/{Guid.NewGuid()}/revert", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -299,7 +299,7 @@ public class LegalPageEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await userClient.PostAsync($"/api/legal-pages/{Guid.NewGuid()}/revert", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -333,7 +333,7 @@ public class LegalPageEndpointsTests : IClassFixture<CustomWebApplicationFactory
         // Assert - Should succeed (either reverted or already at default)
         // The endpoint returns OK (reverted), BadRequest (already at default/no tenant override),
         // or NotFound (platform admin has no tenant override concept)
-        revertResponse.StatusCode.Should().BeOneOf(
+        revertResponse.StatusCode.ShouldBeOneOf(
             HttpStatusCode.OK, HttpStatusCode.BadRequest, HttpStatusCode.NotFound);
     }
 

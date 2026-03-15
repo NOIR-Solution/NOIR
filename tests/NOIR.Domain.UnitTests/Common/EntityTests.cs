@@ -39,7 +39,7 @@ public class EntityTests
         var entity2 = new TestEntity(id);
 
         // Act & Assert
-        entity1.Equals(entity2).Should().BeTrue();
+        entity1.Equals(entity2).ShouldBeTrue();
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class EntityTests
         var entity2 = new TestEntity(Guid.NewGuid());
 
         // Act & Assert
-        entity1.Equals(entity2).Should().BeFalse();
+        entity1.Equals(entity2).ShouldBeFalse();
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class EntityTests
         var entity2 = new OtherTestEntity(id);
 
         // Act & Assert
-        entity1.Equals(entity2).Should().BeFalse();
+        entity1.Equals(entity2).ShouldBeFalse();
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class EntityTests
         var entity = new TestEntity(Guid.NewGuid());
 
         // Act & Assert
-        entity.Equals(null).Should().BeFalse();
+        entity.Equals(null).ShouldBeFalse();
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class EntityTests
         var entity = new TestEntity(Guid.NewGuid());
 
         // Act & Assert
-        entity.Equals(entity).Should().BeTrue();
+        entity.Equals(entity).ShouldBeTrue();
     }
 
     [Fact]
@@ -94,7 +94,7 @@ public class EntityTests
         object entity2 = new TestEntity(id);
 
         // Act & Assert
-        entity1.Equals(entity2).Should().BeTrue();
+        entity1.Equals(entity2).ShouldBeTrue();
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class EntityTests
         var notAnEntity = "not an entity";
 
         // Act & Assert
-        entity.Equals(notAnEntity).Should().BeFalse();
+        entity.Equals(notAnEntity).ShouldBeFalse();
     }
 
     #endregion
@@ -121,7 +121,7 @@ public class EntityTests
         var entity2 = new TestEntity(id);
 
         // Act & Assert
-        entity1.GetHashCode().Should().Be(entity2.GetHashCode());
+        entity1.GetHashCode().ShouldBe(entity2.GetHashCode());
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public class EntityTests
         // Act & Assert
         // Note: Different IDs typically produce different hashes, but collisions are possible
         // We test the typical case
-        entity1.GetHashCode().Should().NotBe(entity2.GetHashCode());
+        entity1.GetHashCode().ShouldNotBe(entity2.GetHashCode());
     }
 
     [Fact]
@@ -149,7 +149,9 @@ public class EntityTests
         var hash3 = entity.GetHashCode();
 
         // Assert
-        hash1.Should().Be(hash2).And.Be(hash3);
+        hash1.ShouldBe(hash2);
+
+        hash1.ShouldBe(hash3);
     }
 
     #endregion
@@ -165,7 +167,7 @@ public class EntityTests
         var entity2 = new TestEntity(id);
 
         // Act & Assert
-        (entity1 == entity2).Should().BeTrue();
+        (entity1 == entity2).ShouldBeTrue();
     }
 
     [Fact]
@@ -176,7 +178,7 @@ public class EntityTests
         var entity2 = new TestEntity(Guid.NewGuid());
 
         // Act & Assert
-        (entity1 == entity2).Should().BeFalse();
+        (entity1 == entity2).ShouldBeFalse();
     }
 
     [Fact]
@@ -187,7 +189,7 @@ public class EntityTests
         TestEntity? entity2 = null;
 
         // Act & Assert
-        (entity1 == entity2).Should().BeTrue();
+        (entity1 == entity2).ShouldBeTrue();
     }
 
     [Fact]
@@ -198,7 +200,7 @@ public class EntityTests
         var entity2 = new TestEntity(Guid.NewGuid());
 
         // Act & Assert
-        (entity1 == entity2).Should().BeFalse();
+        (entity1 == entity2).ShouldBeFalse();
     }
 
     [Fact]
@@ -209,7 +211,7 @@ public class EntityTests
         TestEntity? entity2 = null;
 
         // Act & Assert
-        (entity1 == entity2).Should().BeFalse();
+        (entity1 == entity2).ShouldBeFalse();
     }
 
     [Fact]
@@ -220,7 +222,7 @@ public class EntityTests
         var entity2 = new TestEntity(Guid.NewGuid());
 
         // Act & Assert
-        (entity1 != entity2).Should().BeTrue();
+        (entity1 != entity2).ShouldBeTrue();
     }
 
     [Fact]
@@ -232,7 +234,7 @@ public class EntityTests
         var entity2 = new TestEntity(id);
 
         // Act & Assert
-        (entity1 != entity2).Should().BeFalse();
+        (entity1 != entity2).ShouldBeFalse();
     }
 
     #endregion
@@ -250,7 +252,9 @@ public class EntityTests
 
         // Assert
         var after = DateTimeOffset.UtcNow;
-        entity.CreatedAt.Should().BeOnOrAfter(before).And.BeOnOrBefore(after);
+        entity.CreatedAt.ShouldBeGreaterThanOrEqualTo(before);
+
+        entity.CreatedAt.ShouldBeLessThanOrEqualTo(after);
     }
 
     [Fact]
@@ -260,7 +264,7 @@ public class EntityTests
         var entity = new TestEntity();
 
         // Assert
-        entity.ModifiedAt.Should().BeNull();
+        entity.ModifiedAt.ShouldBeNull();
     }
 
     [Fact]
@@ -273,7 +277,7 @@ public class EntityTests
         var entity = new TestEntity(id);
 
         // Assert
-        entity.Id.Should().Be(id);
+        entity.Id.ShouldBe(id);
     }
 
     [Fact]
@@ -283,7 +287,7 @@ public class EntityTests
         var entity = new TestEntity();
 
         // Assert
-        entity.Id.Should().Be(Guid.Empty);
+        entity.Id.ShouldBe(Guid.Empty);
     }
 
     #endregion
@@ -298,7 +302,7 @@ public class EntityTests
         var entity2 = new StringIdEntity("user-123");
 
         // Act & Assert
-        entity1.Equals(entity2).Should().BeTrue();
+        entity1.Equals(entity2).ShouldBeTrue();
     }
 
     [Fact]
@@ -309,7 +313,7 @@ public class EntityTests
         var entity2 = new StringIdEntity("user-456");
 
         // Act & Assert
-        entity1.Equals(entity2).Should().BeFalse();
+        entity1.Equals(entity2).ShouldBeFalse();
     }
 
     [Theory]
@@ -324,7 +328,7 @@ public class EntityTests
         var entity2 = new StringIdEntity(id2);
 
         // Act & Assert
-        entity1.Equals(entity2).Should().Be(expected);
+        entity1.Equals(entity2).ShouldBe(expected);
     }
 
     #endregion

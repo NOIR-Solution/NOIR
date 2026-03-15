@@ -65,10 +65,10 @@ public class GetProductByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be(existingProduct.Name);
-        result.Value.Slug.Should().Be(existingProduct.Slug);
-        result.Value.BasePrice.Should().Be(existingProduct.BasePrice);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe(existingProduct.Name);
+        result.Value.Slug.ShouldBe(existingProduct.Slug);
+        result.Value.BasePrice.ShouldBe(existingProduct.BasePrice);
     }
 
     [Fact]
@@ -93,9 +93,9 @@ public class GetProductByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Variants.Should().HaveCount(2);
-        result.Value.Images.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Variants.Count().ShouldBe(2);
+        result.Value.Images.Count().ShouldBe(2);
     }
 
     #endregion
@@ -119,9 +119,9 @@ public class GetProductByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be(existingProduct.Name);
-        result.Value.Slug.Should().Be(existingProduct.Slug);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe(existingProduct.Name);
+        result.Value.Slug.ShouldBe(existingProduct.Slug);
     }
 
     [Fact]
@@ -164,10 +164,10 @@ public class GetProductByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-012");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-012");
+        result.Error.Message.ShouldContain("not found");
     }
 
     [Fact]
@@ -186,10 +186,10 @@ public class GetProductByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-012");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-012");
+        result.Error.Message.ShouldContain("not found");
     }
 
     #endregion
@@ -206,10 +206,10 @@ public class GetProductByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-014");
-        result.Error.Message.Should().Contain("ID or Slug");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-014");
+        result.Error.Message.ShouldContain("ID or Slug");
     }
 
     [Fact]
@@ -222,9 +222,9 @@ public class GetProductByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-014");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-014");
     }
 
     [Fact]
@@ -237,9 +237,9 @@ public class GetProductByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-014");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-014");
     }
 
     #endregion
@@ -289,7 +289,7 @@ public class GetProductByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         // Should use ID spec, not slug spec
         _productRepositoryMock.Verify(
@@ -323,18 +323,18 @@ public class GetProductByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Name.Should().Be("Full Product");
-        dto.Slug.Should().Be("full-product");
-        dto.Description.Should().Be("Description");
-        dto.DescriptionHtml.Should().Be("<p>HTML</p>");
-        dto.Brand.Should().Be("Test Brand");
-        dto.Sku.Should().Be("SKU-001");
-        dto.Barcode.Should().Be("BARCODE-001");
-        dto.TrackInventory.Should().BeTrue();
-        dto.MetaTitle.Should().Be("SEO Title");
-        dto.MetaDescription.Should().Be("SEO Description");
+        dto.Name.ShouldBe("Full Product");
+        dto.Slug.ShouldBe("full-product");
+        dto.Description.ShouldBe("Description");
+        dto.DescriptionHtml.ShouldBe("<p>HTML</p>");
+        dto.Brand.ShouldBe("Test Brand");
+        dto.Sku.ShouldBe("SKU-001");
+        dto.Barcode.ShouldBe("BARCODE-001");
+        dto.TrackInventory.ShouldBe(true);
+        dto.MetaTitle.ShouldBe("SEO Title");
+        dto.MetaDescription.ShouldBe("SEO Description");
     }
 
     #endregion

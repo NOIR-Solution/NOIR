@@ -53,16 +53,16 @@ public class RefundTests
             "admin-user", TestTenantId);
 
         // Assert
-        refund.Should().NotBeNull();
-        refund.Id.Should().NotBe(Guid.Empty);
-        refund.RefundNumber.Should().Be("REF-001");
-        refund.PaymentTransactionId.Should().Be(transactionId);
-        refund.Amount.Should().Be(500_000m);
-        refund.Currency.Should().Be("VND");
-        refund.Reason.Should().Be(RefundReason.Defective);
-        refund.ReasonDetail.Should().Be("Product was broken");
-        refund.RequestedBy.Should().Be("admin-user");
-        refund.TenantId.Should().Be(TestTenantId);
+        refund.ShouldNotBeNull();
+        refund.Id.ShouldNotBe(Guid.Empty);
+        refund.RefundNumber.ShouldBe("REF-001");
+        refund.PaymentTransactionId.ShouldBe(transactionId);
+        refund.Amount.ShouldBe(500_000m);
+        refund.Currency.ShouldBe("VND");
+        refund.Reason.ShouldBe(RefundReason.Defective);
+        refund.ReasonDetail.ShouldBe("Product was broken");
+        refund.RequestedBy.ShouldBe("admin-user");
+        refund.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class RefundTests
         var refund = CreateTestRefund();
 
         // Assert
-        refund.Status.Should().Be(RefundStatus.Pending);
+        refund.Status.ShouldBe(RefundStatus.Pending);
     }
 
     [Fact]
@@ -82,10 +82,10 @@ public class RefundTests
         var refund = CreateTestRefund();
 
         // Assert
-        refund.GatewayRefundId.Should().BeNull();
-        refund.ApprovedBy.Should().BeNull();
-        refund.ProcessedAt.Should().BeNull();
-        refund.GatewayResponseJson.Should().BeNull();
+        refund.GatewayRefundId.ShouldBeNull();
+        refund.ApprovedBy.ShouldBeNull();
+        refund.ProcessedAt.ShouldBeNull();
+        refund.GatewayResponseJson.ShouldBeNull();
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class RefundTests
         var refund = CreateTestRefund(reasonDetail: null);
 
         // Assert
-        refund.ReasonDetail.Should().BeNull();
+        refund.ReasonDetail.ShouldBeNull();
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class RefundTests
         var refund = CreateTestRefund(tenantId: null);
 
         // Assert
-        refund.TenantId.Should().BeNull();
+        refund.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -115,15 +115,17 @@ public class RefundTests
         var refund = CreateTestRefund(amount: 300_000m, reason: RefundReason.WrongItem);
 
         // Assert
-        refund.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<RefundRequestedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                RefundId = refund.Id,
-                TransactionId = TestTransactionId,
-                Amount = 300_000m,
-                Reason = RefundReason.WrongItem
-            });
+        var __evt = refund.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<RefundRequestedEvent>();
+
+        __evt.RefundId.ShouldBe(refund.Id);
+
+        __evt.TransactionId.ShouldBe(TestTransactionId);
+
+        __evt.Amount.ShouldBe(300_000m);
+
+        __evt.Reason.ShouldBe(RefundReason.WrongItem);
     }
 
     [Fact]
@@ -134,7 +136,7 @@ public class RefundTests
         var refund2 = CreateTestRefund(refundNumber: "REF-002");
 
         // Assert
-        refund1.Id.Should().NotBe(refund2.Id);
+        refund1.Id.ShouldNotBe(refund2.Id);
     }
 
     #endregion
@@ -154,7 +156,7 @@ public class RefundTests
         var refund = CreateTestRefund(reason: reason);
 
         // Assert
-        refund.Reason.Should().Be(reason);
+        refund.Reason.ShouldBe(reason);
     }
 
     #endregion
@@ -171,7 +173,7 @@ public class RefundTests
         refund.Approve("admin-approver");
 
         // Assert
-        refund.Status.Should().Be(RefundStatus.Approved);
+        refund.Status.ShouldBe(RefundStatus.Approved);
     }
 
     [Fact]
@@ -184,7 +186,7 @@ public class RefundTests
         refund.Approve("admin-approver-123");
 
         // Assert
-        refund.ApprovedBy.Should().Be("admin-approver-123");
+        refund.ApprovedBy.ShouldBe("admin-approver-123");
     }
 
     [Fact]
@@ -199,10 +201,10 @@ public class RefundTests
         refund.Approve("admin");
 
         // Assert
-        refund.Amount.Should().Be(originalAmount);
-        refund.Reason.Should().Be(originalReason);
-        refund.ProcessedAt.Should().BeNull();
-        refund.GatewayRefundId.Should().BeNull();
+        refund.Amount.ShouldBe(originalAmount);
+        refund.Reason.ShouldBe(originalReason);
+        refund.ProcessedAt.ShouldBeNull();
+        refund.GatewayRefundId.ShouldBeNull();
     }
 
     #endregion
@@ -220,7 +222,7 @@ public class RefundTests
         refund.MarkAsProcessing();
 
         // Assert
-        refund.Status.Should().Be(RefundStatus.Processing);
+        refund.Status.ShouldBe(RefundStatus.Processing);
     }
 
     #endregion
@@ -239,7 +241,7 @@ public class RefundTests
         refund.Complete("gw-refund-12345");
 
         // Assert
-        refund.Status.Should().Be(RefundStatus.Completed);
+        refund.Status.ShouldBe(RefundStatus.Completed);
     }
 
     [Fact]
@@ -254,7 +256,7 @@ public class RefundTests
         refund.Complete("gw-refund-67890");
 
         // Assert
-        refund.GatewayRefundId.Should().Be("gw-refund-67890");
+        refund.GatewayRefundId.ShouldBe("gw-refund-67890");
     }
 
     [Fact]
@@ -270,8 +272,8 @@ public class RefundTests
         refund.Complete("gw-refund-001");
 
         // Assert
-        refund.ProcessedAt.Should().NotBeNull();
-        refund.ProcessedAt.Should().BeOnOrAfter(beforeComplete);
+        refund.ProcessedAt.ShouldNotBeNull();
+        refund.ProcessedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeComplete);
     }
 
     [Fact]
@@ -287,14 +289,15 @@ public class RefundTests
         refund.Complete("gw-001");
 
         // Assert
-        refund.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<RefundCompletedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                RefundId = refund.Id,
-                TransactionId = TestTransactionId,
-                Amount = 200_000m
-            });
+        var __evt = refund.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<RefundCompletedEvent>();
+
+        __evt.RefundId.ShouldBe(refund.Id);
+
+        __evt.TransactionId.ShouldBe(TestTransactionId);
+
+        __evt.Amount.ShouldBe(200_000m);
     }
 
     #endregion
@@ -311,7 +314,7 @@ public class RefundTests
         refund.Reject("Insufficient evidence");
 
         // Assert
-        refund.Status.Should().Be(RefundStatus.Rejected);
+        refund.Status.ShouldBe(RefundStatus.Rejected);
     }
 
     [Fact]
@@ -324,7 +327,7 @@ public class RefundTests
         refund.Reject("Policy violation - item used beyond return window");
 
         // Assert
-        refund.ReasonDetail.Should().Be("Policy violation - item used beyond return window");
+        refund.ReasonDetail.ShouldBe("Policy violation - item used beyond return window");
     }
 
     [Fact]
@@ -337,7 +340,7 @@ public class RefundTests
         refund.Reject("New rejection reason");
 
         // Assert
-        refund.ReasonDetail.Should().Be("New rejection reason");
+        refund.ReasonDetail.ShouldBe("New rejection reason");
     }
 
     #endregion
@@ -356,7 +359,7 @@ public class RefundTests
         refund.MarkAsFailed("{\"error\":\"Gateway timeout\"}");
 
         // Assert
-        refund.Status.Should().Be(RefundStatus.Failed);
+        refund.Status.ShouldBe(RefundStatus.Failed);
     }
 
     [Fact]
@@ -372,7 +375,7 @@ public class RefundTests
         refund.MarkAsFailed(responseJson);
 
         // Assert
-        refund.GatewayResponseJson.Should().Be(responseJson);
+        refund.GatewayResponseJson.ShouldBe(responseJson);
     }
 
     #endregion
@@ -384,22 +387,22 @@ public class RefundTests
     {
         // Arrange
         var refund = CreateTestRefund();
-        refund.Status.Should().Be(RefundStatus.Pending);
+        refund.Status.ShouldBe(RefundStatus.Pending);
 
         // Act - Approve
         refund.Approve("admin-user");
-        refund.Status.Should().Be(RefundStatus.Approved);
-        refund.ApprovedBy.Should().Be("admin-user");
+        refund.Status.ShouldBe(RefundStatus.Approved);
+        refund.ApprovedBy.ShouldBe("admin-user");
 
         // Act - Processing
         refund.MarkAsProcessing();
-        refund.Status.Should().Be(RefundStatus.Processing);
+        refund.Status.ShouldBe(RefundStatus.Processing);
 
         // Act - Complete
         refund.Complete("gw-final-id");
-        refund.Status.Should().Be(RefundStatus.Completed);
-        refund.GatewayRefundId.Should().Be("gw-final-id");
-        refund.ProcessedAt.Should().NotBeNull();
+        refund.Status.ShouldBe(RefundStatus.Completed);
+        refund.GatewayRefundId.ShouldBe("gw-final-id");
+        refund.ProcessedAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -412,8 +415,8 @@ public class RefundTests
         refund.Reject("Fraudulent request");
 
         // Assert
-        refund.Status.Should().Be(RefundStatus.Rejected);
-        refund.ReasonDetail.Should().Be("Fraudulent request");
+        refund.Status.ShouldBe(RefundStatus.Rejected);
+        refund.ReasonDetail.ShouldBe("Fraudulent request");
     }
 
     [Fact]
@@ -428,8 +431,8 @@ public class RefundTests
         refund.MarkAsFailed("{\"error\":\"Insufficient funds in merchant account\"}");
 
         // Assert
-        refund.Status.Should().Be(RefundStatus.Failed);
-        refund.GatewayResponseJson.Should().Contain("Insufficient funds");
+        refund.Status.ShouldBe(RefundStatus.Failed);
+        refund.GatewayResponseJson.ShouldContain("Insufficient funds");
     }
 
     [Fact]
@@ -445,9 +448,9 @@ public class RefundTests
         refund.Complete("gw-001");
 
         // Assert - RefundRequested + RefundCompleted
-        refund.DomainEvents.Should().HaveCount(2);
-        refund.DomainEvents.Should().ContainSingle(e => e is RefundRequestedEvent);
-        refund.DomainEvents.Should().ContainSingle(e => e is RefundCompletedEvent);
+        refund.DomainEvents.Count().ShouldBe(2);
+        refund.DomainEvents.ShouldContain(e => e is RefundRequestedEvent);
+        refund.DomainEvents.ShouldContain(e => e is RefundCompletedEvent);
     }
 
     [Fact]
@@ -455,13 +458,13 @@ public class RefundTests
     {
         // Arrange
         var refund = CreateTestRefund();
-        refund.DomainEvents.Should().HaveCount(1);
+        refund.DomainEvents.Count().ShouldBe(1);
 
         // Act
         refund.ClearDomainEvents();
 
         // Assert
-        refund.DomainEvents.Should().BeEmpty();
+        refund.DomainEvents.ShouldBeEmpty();
     }
 
     #endregion
@@ -478,7 +481,7 @@ public class RefundTests
         var refund = CreateTestRefund(currency: currency);
 
         // Assert
-        refund.Currency.Should().Be(currency);
+        refund.Currency.ShouldBe(currency);
     }
 
     #endregion

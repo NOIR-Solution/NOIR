@@ -69,9 +69,9 @@ public class RemoveProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
-        attribute.Values.Should().NotContain(v => v.Value == "red");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
+        attribute.Values.ShouldNotContain(v => v.Value == "red");
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -99,7 +99,7 @@ public class RemoveProductAttributeValueCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        command.GetTargetDisplayName().Should().Be("Blue");
+        command.GetTargetDisplayName().ShouldBe("Blue");
     }
 
     [Fact]
@@ -127,10 +127,10 @@ public class RemoveProductAttributeValueCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        attribute.Values.Count.Should().Be(initialCount - 1);
-        attribute.Values.Should().Contain(v => v.Value == "red");
-        attribute.Values.Should().Contain(v => v.Value == "blue");
-        attribute.Values.Should().NotContain(v => v.Value == "green");
+        attribute.Values.Count.ShouldBe(initialCount - 1);
+        attribute.Values.ShouldContain(v => v.Value == "red");
+        attribute.Values.ShouldContain(v => v.Value == "blue");
+        attribute.Values.ShouldNotContain(v => v.Value == "green");
     }
 
     #endregion
@@ -156,8 +156,8 @@ public class RemoveProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Attribute.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Attribute.NotFound);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -180,8 +180,8 @@ public class RemoveProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Attribute.ValueNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Attribute.ValueNotFound);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -244,8 +244,8 @@ public class RemoveProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        attribute.Values.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        attribute.Values.ShouldBeEmpty();
     }
 
     #endregion

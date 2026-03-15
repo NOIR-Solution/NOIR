@@ -111,14 +111,14 @@ public class SetCheckoutAddressCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ShippingAddress.Should().NotBeNull();
-        result.Value.ShippingAddress!.FullName.Should().Be("Nguyen Van A");
-        result.Value.ShippingAddress.Phone.Should().Be("0901234567");
-        result.Value.ShippingAddress.AddressLine1.Should().Be("123 Nguyen Hue");
-        result.Value.ShippingAddress.District.Should().Be("District 1");
-        result.Value.ShippingAddress.Province.Should().Be("Ho Chi Minh City");
-        result.Value.Status.Should().Be(CheckoutSessionStatus.AddressComplete);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShippingAddress.ShouldNotBeNull();
+        result.Value.ShippingAddress!.FullName.ShouldBe("Nguyen Van A");
+        result.Value.ShippingAddress.Phone.ShouldBe("0901234567");
+        result.Value.ShippingAddress.AddressLine1.ShouldBe("123 Nguyen Hue");
+        result.Value.ShippingAddress.District.ShouldBe("District 1");
+        result.Value.ShippingAddress.Province.ShouldBe("Ho Chi Minh City");
+        result.Value.Status.ShouldBe(CheckoutSessionStatus.AddressComplete);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -148,8 +148,8 @@ public class SetCheckoutAddressCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.BillingSameAsShipping.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.BillingSameAsShipping.ShouldBe(true);
     }
 
     #endregion
@@ -179,7 +179,7 @@ public class SetCheckoutAddressCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -225,8 +225,8 @@ public class SetCheckoutAddressCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.BillingSameAsShipping.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.BillingSameAsShipping.ShouldBe(true);
     }
 
     #endregion
@@ -251,9 +251,9 @@ public class SetCheckoutAddressCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-004");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-004");
+        result.Error.Message.ShouldContain("not found");
     }
 
     [Fact]
@@ -279,9 +279,9 @@ public class SetCheckoutAddressCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-005");
-        result.Error.Message.Should().Contain("expired");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-005");
+        result.Error.Message.ShouldContain("expired");
     }
 
     [Fact]
@@ -315,9 +315,10 @@ public class SetCheckoutAddressCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-006");
-        result.Error.Message.Should().Contain("Shipping").And.Contain("Billing");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-006");
+        result.Error.Message.ShouldContain("Shipping");
+        result.Error.Message.ShouldContain("Billing");
     }
 
     [Theory]
@@ -342,8 +343,8 @@ public class SetCheckoutAddressCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-007");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-007");
     }
 
     #endregion
@@ -386,7 +387,7 @@ public class SetCheckoutAddressCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     [Fact]
@@ -424,8 +425,8 @@ public class SetCheckoutAddressCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ShippingAddress.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShippingAddress.ShouldNotBeNull();
     }
 
     [Fact]

@@ -61,8 +61,8 @@ public class UpdatePipelineCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Updated Pipeline");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Updated Pipeline");
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -84,7 +84,7 @@ public class UpdatePipelineCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -114,7 +114,7 @@ public class UpdatePipelineCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -144,8 +144,8 @@ public class UpdatePipelineCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        currentDefault.IsDefault.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        currentDefault.IsDefault.ShouldBe(false);
     }
 
     [Fact]
@@ -186,7 +186,7 @@ public class UpdatePipelineCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert — should fail because one of the removed stages has active leads
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -219,7 +219,7 @@ public class UpdatePipelineCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

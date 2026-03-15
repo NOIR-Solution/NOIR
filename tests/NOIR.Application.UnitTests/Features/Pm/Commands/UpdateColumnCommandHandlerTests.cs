@@ -44,10 +44,10 @@ public class UpdateColumnCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("In Progress");
-        result.Value.Color.Should().Be("#3B82F6");
-        result.Value.WipLimit.Should().Be(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("In Progress");
+        result.Value.Color.ShouldBe("#3B82F6");
+        result.Value.WipLimit.ShouldBe(5);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -64,7 +64,7 @@ public class UpdateColumnCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -85,7 +85,7 @@ public class UpdateColumnCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SortOrder.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SortOrder.ShouldBe(3);
     }
 }

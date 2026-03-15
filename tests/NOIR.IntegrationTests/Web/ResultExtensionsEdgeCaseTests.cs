@@ -19,7 +19,7 @@ public class ResultExtensionsEdgeCaseTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeAssignableTo<ProblemHttpResult>();
+        httpResult.ShouldBeAssignableTo<ProblemHttpResult>();
     }
 
     #endregion
@@ -37,7 +37,7 @@ public class ResultExtensionsEdgeCaseTests
         var httpResult = result.ToHttpResult();
 
         // Assert - Should be an Ok result (not a problem result)
-        httpResult.Should().NotBeAssignableTo<ProblemHttpResult>();
+        httpResult.ShouldNotBeAssignableTo<ProblemHttpResult>();
     }
 
     #endregion
@@ -57,7 +57,7 @@ public class ResultExtensionsEdgeCaseTests
             error => Results.Problem(error.Message));
 
         // Assert
-        httpResult.Should().Be(successResult);
+        httpResult.ShouldBe(successResult);
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class ResultExtensionsEdgeCaseTests
             Results.Created($"/api/entities/{id}", id));
 
         // Assert
-        httpResult.Should().BeOfType<Created<Guid>>();
+        httpResult.ShouldBeOfType<Created<Guid>>();
     }
 
     [Fact]
@@ -89,8 +89,8 @@ public class ResultExtensionsEdgeCaseTests
             err => { capturedError = err; return Results.Problem(err.Message); });
 
         // Assert
-        capturedError.Should().NotBeNull();
-        capturedError!.Code.Should().Be(ErrorCodes.Validation.General);
+        capturedError.ShouldNotBeNull();
+        capturedError!.Code.ShouldBe(ErrorCodes.Validation.General);
     }
 
     #endregion
@@ -107,7 +107,7 @@ public class ResultExtensionsEdgeCaseTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeAssignableTo<ProblemHttpResult>();
+        httpResult.ShouldBeAssignableTo<ProblemHttpResult>();
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class ResultExtensionsEdgeCaseTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeAssignableTo<ProblemHttpResult>();
+        httpResult.ShouldBeAssignableTo<ProblemHttpResult>();
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class ResultExtensionsEdgeCaseTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeAssignableTo<ProblemHttpResult>();
+        httpResult.ShouldBeAssignableTo<ProblemHttpResult>();
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class ResultExtensionsEdgeCaseTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeAssignableTo<ProblemHttpResult>();
+        httpResult.ShouldBeAssignableTo<ProblemHttpResult>();
     }
 
     [Fact]
@@ -159,7 +159,7 @@ public class ResultExtensionsEdgeCaseTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeAssignableTo<ProblemHttpResult>();
+        httpResult.ShouldBeAssignableTo<ProblemHttpResult>();
     }
 
     #endregion
@@ -176,9 +176,9 @@ public class ResultExtensionsEdgeCaseTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeOfType<Ok<int>>();
+        httpResult.ShouldBeOfType<Ok<int>>();
         var okResult = (Ok<int>)httpResult;
-        okResult.Value.Should().Be(123);
+        okResult.Value.ShouldBe(123);
     }
 
     [Fact]
@@ -192,9 +192,9 @@ public class ResultExtensionsEdgeCaseTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeOfType<Ok<List<string>>>();
+        httpResult.ShouldBeOfType<Ok<List<string>>>();
         var okResult = (Ok<List<string>>)httpResult;
-        okResult.Value.Should().HaveCount(3);
+        okResult.Value.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -207,7 +207,7 @@ public class ResultExtensionsEdgeCaseTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeAssignableTo<ProblemHttpResult>();
+        httpResult.ShouldBeAssignableTo<ProblemHttpResult>();
     }
 
     #endregion
@@ -224,7 +224,7 @@ public class ResultExtensionsEdgeCaseTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeOfType<Ok>();
+        httpResult.ShouldBeOfType<Ok>();
     }
 
     [Fact]
@@ -237,7 +237,7 @@ public class ResultExtensionsEdgeCaseTests
         var httpResult = result.ToHttpResult();
 
         // Assert
-        httpResult.Should().BeAssignableTo<ProblemHttpResult>();
+        httpResult.ShouldBeAssignableTo<ProblemHttpResult>();
     }
 
     #endregion

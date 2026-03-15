@@ -45,9 +45,9 @@ public class CreateDepartmentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Engineering");
-        result.Value.Code.Should().Be("ENG");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Engineering");
+        result.Value.Code.ShouldBe("ENG");
 
         _departmentRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Department>(), It.IsAny<CancellationToken>()),
@@ -72,8 +72,8 @@ public class CreateDepartmentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-HR-020");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-HR-020");
     }
 
     [Fact]
@@ -95,8 +95,8 @@ public class CreateDepartmentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-HR-021");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-HR-021");
     }
 
     [Fact]
@@ -119,7 +119,7 @@ public class CreateDepartmentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ParentDepartmentName.Should().Be("Engineering");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ParentDepartmentName.ShouldBe("Engineering");
     }
 }

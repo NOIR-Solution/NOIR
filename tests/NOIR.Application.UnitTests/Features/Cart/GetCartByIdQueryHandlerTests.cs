@@ -78,11 +78,11 @@ public class GetCartByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Id.Should().Be(cartId);
-        result.Value.UserId.Should().Be(TestUserId);
-        result.Value.Status.Should().Be(CartStatus.Active);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Id.ShouldBe(cartId);
+        result.Value.UserId.ShouldBe(TestUserId);
+        result.Value.Status.ShouldBe(CartStatus.Active);
     }
 
     [Fact]
@@ -108,13 +108,13 @@ public class GetCartByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items[0].ProductName.Should().Be("Test Product");
-        result.Value.Items[0].VariantName.Should().Be("Size M");
-        result.Value.Items[0].UnitPrice.Should().Be(100_000m);
-        result.Value.Items[0].Quantity.Should().Be(2);
-        result.Value.Items[0].ImageUrl.Should().Be("https://example.com/img.jpg");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items[0].ProductName.ShouldBe("Test Product");
+        result.Value.Items[0].VariantName.ShouldBe("Size M");
+        result.Value.Items[0].UnitPrice.ShouldBe(100_000m);
+        result.Value.Items[0].Quantity.ShouldBe(2);
+        result.Value.Items[0].ImageUrl.ShouldBe("https://example.com/img.jpg");
     }
 
     [Fact]
@@ -136,11 +136,11 @@ public class GetCartByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.IsEmpty.Should().BeTrue();
-        result.Value.ItemCount.Should().Be(0);
-        result.Value.Subtotal.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.IsEmpty.ShouldBe(true);
+        result.Value.ItemCount.ShouldBe(0);
+        result.Value.Subtotal.ShouldBe(0);
     }
 
     [Fact]
@@ -162,10 +162,10 @@ public class GetCartByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SessionId.Should().Be(TestSessionId);
-        result.Value.UserId.Should().BeNull();
-        result.Value.IsGuest.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SessionId.ShouldBe(TestSessionId);
+        result.Value.UserId.ShouldBeNull();
+        result.Value.IsGuest.ShouldBe(true);
     }
 
     [Fact]
@@ -190,9 +190,9 @@ public class GetCartByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(2);
-        result.Value.IsEmpty.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(2);
+        result.Value.IsEmpty.ShouldBe(false);
     }
 
     [Fact]
@@ -214,8 +214,8 @@ public class GetCartByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Currency.Should().Be("USD");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Currency.ShouldBe("USD");
     }
 
     #endregion
@@ -240,10 +240,10 @@ public class GetCartByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CART-001");
-        result.Error.Message.Should().Contain(nonExistentId.ToString());
-        result.Error.Type.Should().Be(ErrorType.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CART-001");
+        result.Error.Message.ShouldContain(nonExistentId.ToString());
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
     }
 
     #endregion
@@ -294,8 +294,8 @@ public class GetCartByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CART-001");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CART-001");
     }
 
     #endregion

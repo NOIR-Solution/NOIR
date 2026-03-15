@@ -91,14 +91,14 @@ public class OrderTests
             TestOrderNumber, TestCustomerEmail, TestSubTotal, TestGrandTotal, TestCurrency, TestTenantId);
 
         // Assert
-        order.Should().NotBeNull();
-        order.Id.Should().NotBe(Guid.Empty);
-        order.OrderNumber.Should().Be(TestOrderNumber);
-        order.CustomerEmail.Should().Be(TestCustomerEmail);
-        order.SubTotal.Should().Be(TestSubTotal);
-        order.GrandTotal.Should().Be(TestGrandTotal);
-        order.Currency.Should().Be(TestCurrency);
-        order.TenantId.Should().Be(TestTenantId);
+        order.ShouldNotBeNull();
+        order.Id.ShouldNotBe(Guid.Empty);
+        order.OrderNumber.ShouldBe(TestOrderNumber);
+        order.CustomerEmail.ShouldBe(TestCustomerEmail);
+        order.SubTotal.ShouldBe(TestSubTotal);
+        order.GrandTotal.ShouldBe(TestGrandTotal);
+        order.Currency.ShouldBe(TestCurrency);
+        order.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class OrderTests
         var order = CreateTestOrder();
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Pending);
+        order.Status.ShouldBe(OrderStatus.Pending);
     }
 
     [Fact]
@@ -118,9 +118,9 @@ public class OrderTests
         var order = CreateTestOrder();
 
         // Assert
-        order.DiscountAmount.Should().Be(0);
-        order.ShippingAmount.Should().Be(0);
-        order.TaxAmount.Should().Be(0);
+        order.DiscountAmount.ShouldBe(0);
+        order.ShippingAmount.ShouldBe(0);
+        order.TaxAmount.ShouldBe(0);
     }
 
     [Fact]
@@ -130,27 +130,27 @@ public class OrderTests
         var order = CreateTestOrder();
 
         // Assert
-        order.CustomerId.Should().BeNull();
-        order.ShippingAddress.Should().BeNull();
-        order.BillingAddress.Should().BeNull();
-        order.ShippingMethod.Should().BeNull();
-        order.TrackingNumber.Should().BeNull();
-        order.ShippingCarrier.Should().BeNull();
-        order.EstimatedDeliveryAt.Should().BeNull();
-        order.CustomerPhone.Should().BeNull();
-        order.CustomerName.Should().BeNull();
-        order.CustomerNotes.Should().BeNull();
-        order.InternalNotes.Should().BeNull();
-        order.CancellationReason.Should().BeNull();
-        order.CancelledAt.Should().BeNull();
-        order.ReturnReason.Should().BeNull();
-        order.ReturnedAt.Should().BeNull();
-        order.ConfirmedAt.Should().BeNull();
-        order.ShippedAt.Should().BeNull();
-        order.DeliveredAt.Should().BeNull();
-        order.CompletedAt.Should().BeNull();
-        order.CouponCode.Should().BeNull();
-        order.CheckoutSessionId.Should().BeNull();
+        order.CustomerId.ShouldBeNull();
+        order.ShippingAddress.ShouldBeNull();
+        order.BillingAddress.ShouldBeNull();
+        order.ShippingMethod.ShouldBeNull();
+        order.TrackingNumber.ShouldBeNull();
+        order.ShippingCarrier.ShouldBeNull();
+        order.EstimatedDeliveryAt.ShouldBeNull();
+        order.CustomerPhone.ShouldBeNull();
+        order.CustomerName.ShouldBeNull();
+        order.CustomerNotes.ShouldBeNull();
+        order.InternalNotes.ShouldBeNull();
+        order.CancellationReason.ShouldBeNull();
+        order.CancelledAt.ShouldBeNull();
+        order.ReturnReason.ShouldBeNull();
+        order.ReturnedAt.ShouldBeNull();
+        order.ConfirmedAt.ShouldBeNull();
+        order.ShippedAt.ShouldBeNull();
+        order.DeliveredAt.ShouldBeNull();
+        order.CompletedAt.ShouldBeNull();
+        order.CouponCode.ShouldBeNull();
+        order.CheckoutSessionId.ShouldBeNull();
     }
 
     [Fact]
@@ -160,12 +160,12 @@ public class OrderTests
         var order = CreateTestOrder();
 
         // Assert
-        order.Items.Should().NotBeNull();
-        order.Items.Should().BeEmpty();
-        order.Notes.Should().NotBeNull();
-        order.Notes.Should().BeEmpty();
-        order.Payments.Should().NotBeNull();
-        order.Payments.Should().BeEmpty();
+        order.Items.ShouldNotBeNull();
+        order.Items.ShouldBeEmpty();
+        order.Notes.ShouldNotBeNull();
+        order.Notes.ShouldBeEmpty();
+        order.Payments.ShouldNotBeNull();
+        order.Payments.ShouldBeEmpty();
     }
 
     [Fact]
@@ -176,7 +176,7 @@ public class OrderTests
             TestOrderNumber, TestCustomerEmail, TestSubTotal, TestGrandTotal);
 
         // Assert
-        order.Currency.Should().Be("VND");
+        order.Currency.ShouldBe("VND");
     }
 
     [Fact]
@@ -187,7 +187,7 @@ public class OrderTests
             TestOrderNumber, TestCustomerEmail, TestSubTotal, TestGrandTotal, "USD");
 
         // Assert
-        order.Currency.Should().Be("USD");
+        order.Currency.ShouldBe("USD");
     }
 
     [Fact]
@@ -197,16 +197,19 @@ public class OrderTests
         var order = CreateTestOrder();
 
         // Assert
-        order.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<OrderCreatedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                OrderId = order.Id,
-                OrderNumber = TestOrderNumber,
-                CustomerEmail = TestCustomerEmail,
-                GrandTotal = TestGrandTotal,
-                Currency = TestCurrency
-            });
+        var __evt = order.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<OrderCreatedEvent>();
+
+        __evt.OrderId.ShouldBe(order.Id);
+
+        __evt.OrderNumber.ShouldBe(TestOrderNumber);
+
+        __evt.CustomerEmail.ShouldBe(TestCustomerEmail);
+
+        __evt.GrandTotal.ShouldBe(TestGrandTotal);
+
+        __evt.Currency.ShouldBe(TestCurrency);
     }
 
     [Fact]
@@ -217,7 +220,7 @@ public class OrderTests
             TestOrderNumber, TestCustomerEmail, TestSubTotal, TestGrandTotal, tenantId: null);
 
         // Assert
-        order.TenantId.Should().BeNull();
+        order.TenantId.ShouldBeNull();
     }
 
     #endregion
@@ -235,9 +238,9 @@ public class OrderTests
         order.Confirm();
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Confirmed);
-        order.ConfirmedAt.Should().NotBeNull();
-        order.ConfirmedAt.Should().BeOnOrAfter(beforeConfirm);
+        order.Status.ShouldBe(OrderStatus.Confirmed);
+        order.ConfirmedAt.ShouldNotBeNull();
+        order.ConfirmedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeConfirm);
     }
 
     [Fact]
@@ -251,16 +254,17 @@ public class OrderTests
         order.Confirm();
 
         // Assert
-        order.DomainEvents.Should().HaveCount(2);
-        order.DomainEvents.Should().ContainSingle(e => e is OrderStatusChangedEvent)
-            .Which.Should().BeOfType<OrderStatusChangedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                OrderId = order.Id,
-                OldStatus = OrderStatus.Pending,
-                NewStatus = OrderStatus.Confirmed
-            });
-        order.DomainEvents.Should().ContainSingle(e => e is OrderConfirmedEvent);
+        order.DomainEvents.Count().ShouldBe(2);
+        var __evt = order.DomainEvents.Single(e => e is OrderStatusChangedEvent)
+
+            .ShouldBeOfType<OrderStatusChangedEvent>();
+
+        __evt.OrderId.ShouldBe(order.Id);
+
+        __evt.OldStatus.ShouldBe(OrderStatus.Pending);
+
+        __evt.NewStatus.ShouldBe(OrderStatus.Confirmed);
+        order.DomainEvents.ShouldContain(e => e is OrderConfirmedEvent);
     }
 
     [Fact]
@@ -273,7 +277,7 @@ public class OrderTests
         order.StartProcessing();
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Processing);
+        order.Status.ShouldBe(OrderStatus.Processing);
     }
 
     [Fact]
@@ -287,13 +291,13 @@ public class OrderTests
         order.StartProcessing();
 
         // Assert
-        order.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<OrderStatusChangedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                OldStatus = OrderStatus.Confirmed,
-                NewStatus = OrderStatus.Processing
-            });
+        var __evt = order.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<OrderStatusChangedEvent>();
+
+        __evt.OldStatus.ShouldBe(OrderStatus.Confirmed);
+
+        __evt.NewStatus.ShouldBe(OrderStatus.Processing);
     }
 
     [Fact]
@@ -307,11 +311,11 @@ public class OrderTests
         order.Ship("TRK-12345", "Giao Hang Tiet Kiem");
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Shipped);
-        order.ShippedAt.Should().NotBeNull();
-        order.ShippedAt.Should().BeOnOrAfter(beforeShip);
-        order.TrackingNumber.Should().Be("TRK-12345");
-        order.ShippingCarrier.Should().Be("Giao Hang Tiet Kiem");
+        order.Status.ShouldBe(OrderStatus.Shipped);
+        order.ShippedAt.ShouldNotBeNull();
+        order.ShippedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeShip);
+        order.TrackingNumber.ShouldBe("TRK-12345");
+        order.ShippingCarrier.ShouldBe("Giao Hang Tiet Kiem");
     }
 
     [Fact]
@@ -325,15 +329,15 @@ public class OrderTests
         order.Ship("TRK-001", "GHTK");
 
         // Assert
-        order.DomainEvents.Should().HaveCount(2);
-        order.DomainEvents.Should().ContainSingle(e => e is OrderStatusChangedEvent);
-        order.DomainEvents.Should().ContainSingle(e => e is OrderShippedEvent)
-            .Which.Should().BeOfType<OrderShippedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                TrackingNumber = "TRK-001",
-                ShippingCarrier = "GHTK"
-            });
+        order.DomainEvents.Count().ShouldBe(2);
+        order.DomainEvents.ShouldContain(e => e is OrderStatusChangedEvent);
+        var __evt = order.DomainEvents.Single(e => e is OrderShippedEvent)
+
+            .ShouldBeOfType<OrderShippedEvent>();
+
+        __evt.TrackingNumber.ShouldBe("TRK-001");
+
+        __evt.ShippingCarrier.ShouldBe("GHTK");
     }
 
     [Fact]
@@ -347,9 +351,9 @@ public class OrderTests
         order.MarkAsDelivered();
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Delivered);
-        order.DeliveredAt.Should().NotBeNull();
-        order.DeliveredAt.Should().BeOnOrAfter(beforeDelivery);
+        order.Status.ShouldBe(OrderStatus.Delivered);
+        order.DeliveredAt.ShouldNotBeNull();
+        order.DeliveredAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeDelivery);
     }
 
     [Fact]
@@ -363,9 +367,9 @@ public class OrderTests
         order.MarkAsDelivered();
 
         // Assert
-        order.DomainEvents.Should().HaveCount(2);
-        order.DomainEvents.Should().ContainSingle(e => e is OrderStatusChangedEvent);
-        order.DomainEvents.Should().ContainSingle(e => e is OrderDeliveredEvent);
+        order.DomainEvents.Count().ShouldBe(2);
+        order.DomainEvents.ShouldContain(e => e is OrderStatusChangedEvent);
+        order.DomainEvents.ShouldContain(e => e is OrderDeliveredEvent);
     }
 
     [Fact]
@@ -379,9 +383,9 @@ public class OrderTests
         order.Complete();
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Completed);
-        order.CompletedAt.Should().NotBeNull();
-        order.CompletedAt.Should().BeOnOrAfter(beforeComplete);
+        order.Status.ShouldBe(OrderStatus.Completed);
+        order.CompletedAt.ShouldNotBeNull();
+        order.CompletedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeComplete);
     }
 
     [Fact]
@@ -395,9 +399,9 @@ public class OrderTests
         order.Complete();
 
         // Assert
-        order.DomainEvents.Should().HaveCount(2);
-        order.DomainEvents.Should().ContainSingle(e => e is OrderStatusChangedEvent);
-        order.DomainEvents.Should().ContainSingle(e => e is OrderCompletedEvent);
+        order.DomainEvents.Count().ShouldBe(2);
+        order.DomainEvents.ShouldContain(e => e is OrderStatusChangedEvent);
+        order.DomainEvents.ShouldContain(e => e is OrderCompletedEvent);
     }
 
     [Fact]
@@ -407,26 +411,26 @@ public class OrderTests
         var order = CreateTestOrder();
 
         // Act & Assert - walk through full happy path
-        order.Status.Should().Be(OrderStatus.Pending);
+        order.Status.ShouldBe(OrderStatus.Pending);
 
         order.Confirm();
-        order.Status.Should().Be(OrderStatus.Confirmed);
-        order.ConfirmedAt.Should().NotBeNull();
+        order.Status.ShouldBe(OrderStatus.Confirmed);
+        order.ConfirmedAt.ShouldNotBeNull();
 
         order.StartProcessing();
-        order.Status.Should().Be(OrderStatus.Processing);
+        order.Status.ShouldBe(OrderStatus.Processing);
 
         order.Ship("TRK-FULL", "VNPost");
-        order.Status.Should().Be(OrderStatus.Shipped);
-        order.ShippedAt.Should().NotBeNull();
+        order.Status.ShouldBe(OrderStatus.Shipped);
+        order.ShippedAt.ShouldNotBeNull();
 
         order.MarkAsDelivered();
-        order.Status.Should().Be(OrderStatus.Delivered);
-        order.DeliveredAt.Should().NotBeNull();
+        order.Status.ShouldBe(OrderStatus.Delivered);
+        order.DeliveredAt.ShouldNotBeNull();
 
         order.Complete();
-        order.Status.Should().Be(OrderStatus.Completed);
-        order.CompletedAt.Should().NotBeNull();
+        order.Status.ShouldBe(OrderStatus.Completed);
+        order.CompletedAt.ShouldNotBeNull();
     }
 
     #endregion
@@ -448,8 +452,8 @@ public class OrderTests
         var act = () => order.Confirm();
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"Cannot confirm order in {startStatus} status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldBe($"Cannot confirm order in {startStatus} status");
     }
 
     [Fact]
@@ -463,8 +467,8 @@ public class OrderTests
         var act = () => order.Confirm();
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot confirm order in Cancelled status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot confirm order in Cancelled status");
     }
 
     #endregion
@@ -486,8 +490,8 @@ public class OrderTests
         var act = () => order.StartProcessing();
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"Cannot start processing order in {startStatus} status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldBe($"Cannot start processing order in {startStatus} status");
     }
 
     [Fact]
@@ -501,8 +505,8 @@ public class OrderTests
         var act = () => order.StartProcessing();
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot start processing order in Cancelled status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot start processing order in Cancelled status");
     }
 
     #endregion
@@ -524,8 +528,8 @@ public class OrderTests
         var act = () => order.Ship("TRK-001", "GHTK");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"Cannot ship order in {startStatus} status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldBe($"Cannot ship order in {startStatus} status");
     }
 
     [Fact]
@@ -539,8 +543,8 @@ public class OrderTests
         var act = () => order.Ship("TRK-001", "GHTK");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot ship order in Cancelled status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot ship order in Cancelled status");
     }
 
     #endregion
@@ -562,8 +566,8 @@ public class OrderTests
         var act = () => order.MarkAsDelivered();
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"Cannot mark as delivered order in {startStatus} status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldBe($"Cannot mark as delivered order in {startStatus} status");
     }
 
     [Fact]
@@ -577,8 +581,8 @@ public class OrderTests
         var act = () => order.MarkAsDelivered();
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot mark as delivered order in Cancelled status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot mark as delivered order in Cancelled status");
     }
 
     #endregion
@@ -600,8 +604,8 @@ public class OrderTests
         var act = () => order.Complete();
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"Cannot complete order in {startStatus} status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldBe($"Cannot complete order in {startStatus} status");
     }
 
     [Fact]
@@ -615,8 +619,8 @@ public class OrderTests
         var act = () => order.Complete();
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot complete order in Cancelled status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot complete order in Cancelled status");
     }
 
     #endregion
@@ -634,10 +638,10 @@ public class OrderTests
         order.Cancel("Customer changed mind");
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Cancelled);
-        order.CancellationReason.Should().Be("Customer changed mind");
-        order.CancelledAt.Should().NotBeNull();
-        order.CancelledAt.Should().BeOnOrAfter(beforeCancel);
+        order.Status.ShouldBe(OrderStatus.Cancelled);
+        order.CancellationReason.ShouldBe("Customer changed mind");
+        order.CancelledAt.ShouldNotBeNull();
+        order.CancelledAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeCancel);
     }
 
     [Fact]
@@ -650,9 +654,9 @@ public class OrderTests
         order.Cancel("Out of stock");
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Cancelled);
-        order.CancellationReason.Should().Be("Out of stock");
-        order.CancelledAt.Should().NotBeNull();
+        order.Status.ShouldBe(OrderStatus.Cancelled);
+        order.CancellationReason.ShouldBe("Out of stock");
+        order.CancelledAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -665,9 +669,9 @@ public class OrderTests
         order.Cancel("Duplicate order");
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Cancelled);
-        order.CancellationReason.Should().Be("Duplicate order");
-        order.CancelledAt.Should().NotBeNull();
+        order.Status.ShouldBe(OrderStatus.Cancelled);
+        order.CancellationReason.ShouldBe("Duplicate order");
+        order.CancelledAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -680,9 +684,9 @@ public class OrderTests
         order.Cancel();
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Cancelled);
-        order.CancellationReason.Should().BeNull();
-        order.CancelledAt.Should().NotBeNull();
+        order.Status.ShouldBe(OrderStatus.Cancelled);
+        order.CancellationReason.ShouldBeNull();
+        order.CancelledAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -697,18 +701,19 @@ public class OrderTests
         order.Cancel(reason);
 
         // Assert
-        order.DomainEvents.Should().HaveCount(2);
-        order.DomainEvents.Should().ContainSingle(e => e is OrderStatusChangedEvent)
-            .Which.Should().BeOfType<OrderStatusChangedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                OldStatus = OrderStatus.Pending,
-                NewStatus = OrderStatus.Cancelled,
-                Reason = reason
-            });
-        order.DomainEvents.Should().ContainSingle(e => e is OrderCancelledEvent)
-            .Which.Should().BeOfType<OrderCancelledEvent>()
-            .Which.CancellationReason.Should().Be(reason);
+        order.DomainEvents.Count().ShouldBe(2);
+        var __evt = order.DomainEvents.Single(e => e is OrderStatusChangedEvent)
+
+            .ShouldBeOfType<OrderStatusChangedEvent>();
+
+        __evt.OldStatus.ShouldBe(OrderStatus.Pending);
+
+        __evt.NewStatus.ShouldBe(OrderStatus.Cancelled);
+
+        __evt.Reason.ShouldBe(reason);
+        order.DomainEvents.Single(e => e is OrderCancelledEvent)
+            .ShouldBeOfType<OrderCancelledEvent>()
+            .CancellationReason.ShouldBe(reason);
     }
 
     [Theory]
@@ -724,8 +729,8 @@ public class OrderTests
         var act = () => order.Cancel("Too late");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"Cannot cancel order in {startStatus} status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldBe($"Cannot cancel order in {startStatus} status");
     }
 
     [Fact]
@@ -739,8 +744,8 @@ public class OrderTests
         var act = () => order.Cancel("Second cancel");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot cancel order in Cancelled status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot cancel order in Cancelled status");
     }
 
     [Fact]
@@ -754,8 +759,8 @@ public class OrderTests
         var act = () => order.Cancel("Try cancel refunded");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot cancel order in Refunded status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot cancel order in Refunded status");
     }
 
     #endregion
@@ -773,10 +778,10 @@ public class OrderTests
         order.Return("Product damaged");
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Returned);
-        order.ReturnReason.Should().Be("Product damaged");
-        order.ReturnedAt.Should().NotBeNull();
-        order.ReturnedAt.Should().BeOnOrAfter(beforeReturn);
+        order.Status.ShouldBe(OrderStatus.Returned);
+        order.ReturnReason.ShouldBe("Product damaged");
+        order.ReturnedAt.ShouldNotBeNull();
+        order.ReturnedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeReturn);
     }
 
     [Fact]
@@ -789,9 +794,9 @@ public class OrderTests
         order.Return("Wrong size");
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Returned);
-        order.ReturnReason.Should().Be("Wrong size");
-        order.ReturnedAt.Should().NotBeNull();
+        order.Status.ShouldBe(OrderStatus.Returned);
+        order.ReturnReason.ShouldBe("Wrong size");
+        order.ReturnedAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -804,9 +809,9 @@ public class OrderTests
         order.Return();
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Returned);
-        order.ReturnReason.Should().BeNull();
-        order.ReturnedAt.Should().NotBeNull();
+        order.Status.ShouldBe(OrderStatus.Returned);
+        order.ReturnReason.ShouldBeNull();
+        order.ReturnedAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -821,18 +826,19 @@ public class OrderTests
         order.Return(reason);
 
         // Assert
-        order.DomainEvents.Should().HaveCount(2);
-        order.DomainEvents.Should().ContainSingle(e => e is OrderStatusChangedEvent)
-            .Which.Should().BeOfType<OrderStatusChangedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                OldStatus = OrderStatus.Delivered,
-                NewStatus = OrderStatus.Returned,
-                Reason = reason
-            });
-        order.DomainEvents.Should().ContainSingle(e => e is OrderReturnedEvent)
-            .Which.Should().BeOfType<OrderReturnedEvent>()
-            .Which.ReturnReason.Should().Be(reason);
+        order.DomainEvents.Count().ShouldBe(2);
+        var __evt = order.DomainEvents.Single(e => e is OrderStatusChangedEvent)
+
+            .ShouldBeOfType<OrderStatusChangedEvent>();
+
+        __evt.OldStatus.ShouldBe(OrderStatus.Delivered);
+
+        __evt.NewStatus.ShouldBe(OrderStatus.Returned);
+
+        __evt.Reason.ShouldBe(reason);
+        order.DomainEvents.Single(e => e is OrderReturnedEvent)
+            .ShouldBeOfType<OrderReturnedEvent>()
+            .ReturnReason.ShouldBe(reason);
     }
 
     [Theory]
@@ -849,8 +855,8 @@ public class OrderTests
         var act = () => order.Return("Trying to return");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"Cannot return order in {startStatus} status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldBe($"Cannot return order in {startStatus} status");
     }
 
     [Fact]
@@ -864,8 +870,8 @@ public class OrderTests
         var act = () => order.Return("Trying to return cancelled");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot return order in Cancelled status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot return order in Cancelled status");
     }
 
     [Fact]
@@ -879,8 +885,8 @@ public class OrderTests
         var act = () => order.Return("Second return");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot return order in Returned status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot return order in Returned status");
     }
 
     #endregion
@@ -898,7 +904,7 @@ public class OrderTests
         order.MarkAsRefunded(250_000m);
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Refunded);
+        order.Status.ShouldBe(OrderStatus.Refunded);
     }
 
     [Fact]
@@ -911,7 +917,7 @@ public class OrderTests
         order.MarkAsRefunded(100_000m);
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Refunded);
+        order.Status.ShouldBe(OrderStatus.Refunded);
     }
 
     [Fact]
@@ -924,7 +930,7 @@ public class OrderTests
         order.MarkAsRefunded(500_000m);
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Refunded);
+        order.Status.ShouldBe(OrderStatus.Refunded);
     }
 
     [Fact]
@@ -937,7 +943,7 @@ public class OrderTests
         order.MarkAsRefunded(500_000m);
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Refunded);
+        order.Status.ShouldBe(OrderStatus.Refunded);
     }
 
     [Fact]
@@ -950,7 +956,7 @@ public class OrderTests
         order.MarkAsRefunded(500_000m);
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Refunded);
+        order.Status.ShouldBe(OrderStatus.Refunded);
     }
 
     [Fact]
@@ -964,7 +970,7 @@ public class OrderTests
         order.MarkAsRefunded(500_000m);
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Refunded);
+        order.Status.ShouldBe(OrderStatus.Refunded);
     }
 
     [Fact]
@@ -978,17 +984,17 @@ public class OrderTests
         order.MarkAsRefunded(250_000m);
 
         // Assert
-        order.DomainEvents.Should().HaveCount(2);
-        order.DomainEvents.Should().ContainSingle(e => e is OrderStatusChangedEvent)
-            .Which.Should().BeOfType<OrderStatusChangedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                OldStatus = OrderStatus.Confirmed,
-                NewStatus = OrderStatus.Refunded
-            });
-        order.DomainEvents.Should().ContainSingle(e => e is OrderRefundedEvent)
-            .Which.Should().BeOfType<OrderRefundedEvent>()
-            .Which.RefundAmount.Should().Be(250_000m);
+        order.DomainEvents.Count().ShouldBe(2);
+        var __evt = order.DomainEvents.Single(e => e is OrderStatusChangedEvent)
+
+            .ShouldBeOfType<OrderStatusChangedEvent>();
+
+        __evt.OldStatus.ShouldBe(OrderStatus.Confirmed);
+
+        __evt.NewStatus.ShouldBe(OrderStatus.Refunded);
+        order.DomainEvents.Single(e => e is OrderRefundedEvent)
+            .ShouldBeOfType<OrderRefundedEvent>()
+            .RefundAmount.ShouldBe(250_000m);
     }
 
     [Fact]
@@ -1001,8 +1007,8 @@ public class OrderTests
         var act = () => order.MarkAsRefunded(100_000m);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot refund order in Pending status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot refund order in Pending status");
     }
 
     [Fact]
@@ -1016,8 +1022,8 @@ public class OrderTests
         var act = () => order.MarkAsRefunded(100_000m);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot refund order in Cancelled status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot refund order in Cancelled status");
     }
 
     [Fact]
@@ -1031,8 +1037,8 @@ public class OrderTests
         var act = () => order.MarkAsRefunded(50_000m);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot refund order in Refunded status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot refund order in Refunded status");
     }
 
     #endregion
@@ -1050,9 +1056,9 @@ public class OrderTests
         order.SetCustomerInfo(customerId, "Nguyen Van A", "0901234567");
 
         // Assert
-        order.CustomerId.Should().Be(customerId);
-        order.CustomerName.Should().Be("Nguyen Van A");
-        order.CustomerPhone.Should().Be("0901234567");
+        order.CustomerId.ShouldBe(customerId);
+        order.CustomerName.ShouldBe("Nguyen Van A");
+        order.CustomerPhone.ShouldBe("0901234567");
     }
 
     [Fact]
@@ -1065,9 +1071,9 @@ public class OrderTests
         order.SetCustomerInfo(null, "Guest User", "0909876543");
 
         // Assert
-        order.CustomerId.Should().BeNull();
-        order.CustomerName.Should().Be("Guest User");
-        order.CustomerPhone.Should().Be("0909876543");
+        order.CustomerId.ShouldBeNull();
+        order.CustomerName.ShouldBe("Guest User");
+        order.CustomerPhone.ShouldBe("0909876543");
     }
 
     [Fact]
@@ -1081,9 +1087,9 @@ public class OrderTests
         order.SetCustomerInfo(customerId, null, null);
 
         // Assert
-        order.CustomerId.Should().Be(customerId);
-        order.CustomerName.Should().BeNull();
-        order.CustomerPhone.Should().BeNull();
+        order.CustomerId.ShouldBe(customerId);
+        order.CustomerName.ShouldBeNull();
+        order.CustomerPhone.ShouldBeNull();
     }
 
     [Fact]
@@ -1099,9 +1105,9 @@ public class OrderTests
         order.SetCustomerInfo(secondCustomerId, "Second", "222");
 
         // Assert
-        order.CustomerId.Should().Be(secondCustomerId);
-        order.CustomerName.Should().Be("Second");
-        order.CustomerPhone.Should().Be("222");
+        order.CustomerId.ShouldBe(secondCustomerId);
+        order.CustomerName.ShouldBe("Second");
+        order.CustomerPhone.ShouldBe("222");
     }
 
     #endregion
@@ -1119,12 +1125,12 @@ public class OrderTests
         order.SetShippingAddress(address);
 
         // Assert
-        order.ShippingAddress.Should().NotBeNull();
-        order.ShippingAddress.Should().Be(address);
-        order.ShippingAddress!.FullName.Should().Be("Nguyen Van A");
-        order.ShippingAddress.AddressLine1.Should().Be("123 Le Loi");
-        order.ShippingAddress.District.Should().Be("District 1");
-        order.ShippingAddress.Province.Should().Be("Ho Chi Minh City");
+        order.ShippingAddress.ShouldNotBeNull();
+        order.ShippingAddress.ShouldBe(address);
+        order.ShippingAddress!.FullName.ShouldBe("Nguyen Van A");
+        order.ShippingAddress.AddressLine1.ShouldBe("123 Le Loi");
+        order.ShippingAddress.District.ShouldBe("District 1");
+        order.ShippingAddress.Province.ShouldBe("Ho Chi Minh City");
     }
 
     [Fact]
@@ -1138,9 +1144,9 @@ public class OrderTests
         order.SetBillingAddress(address);
 
         // Assert
-        order.BillingAddress.Should().NotBeNull();
-        order.BillingAddress.Should().Be(address);
-        order.BillingAddress!.FullName.Should().Be("Tran Thi B");
+        order.BillingAddress.ShouldNotBeNull();
+        order.BillingAddress.ShouldBe(address);
+        order.BillingAddress!.FullName.ShouldBe("Tran Thi B");
     }
 
     [Fact]
@@ -1156,9 +1162,9 @@ public class OrderTests
         order.SetBillingAddress(billingAddress);
 
         // Assert
-        order.ShippingAddress.Should().NotBe(order.BillingAddress);
-        order.ShippingAddress!.FullName.Should().Be("Ship To");
-        order.BillingAddress!.FullName.Should().Be("Bill To");
+        order.ShippingAddress.ShouldNotBe(order.BillingAddress);
+        order.ShippingAddress!.FullName.ShouldBe("Ship To");
+        order.BillingAddress!.FullName.ShouldBe("Bill To");
     }
 
     [Fact]
@@ -1174,7 +1180,7 @@ public class OrderTests
         order.SetShippingAddress(secondAddress);
 
         // Assert
-        order.ShippingAddress!.FullName.Should().Be("Second");
+        order.ShippingAddress!.FullName.ShouldBe("Second");
     }
 
     #endregion
@@ -1191,9 +1197,9 @@ public class OrderTests
         order.SetShippingDetails("Express Delivery", 30_000m);
 
         // Assert
-        order.ShippingMethod.Should().Be("Express Delivery");
-        order.ShippingAmount.Should().Be(30_000m);
-        order.EstimatedDeliveryAt.Should().BeNull();
+        order.ShippingMethod.ShouldBe("Express Delivery");
+        order.ShippingAmount.ShouldBe(30_000m);
+        order.EstimatedDeliveryAt.ShouldBeNull();
     }
 
     [Fact]
@@ -1207,9 +1213,9 @@ public class OrderTests
         order.SetShippingDetails("Standard Shipping", 15_000m, estimatedDelivery);
 
         // Assert
-        order.ShippingMethod.Should().Be("Standard Shipping");
-        order.ShippingAmount.Should().Be(15_000m);
-        order.EstimatedDeliveryAt.Should().Be(estimatedDelivery);
+        order.ShippingMethod.ShouldBe("Standard Shipping");
+        order.ShippingAmount.ShouldBe(15_000m);
+        order.EstimatedDeliveryAt.ShouldBe(estimatedDelivery);
     }
 
     [Fact]
@@ -1222,7 +1228,7 @@ public class OrderTests
         order.SetShippingDetails("Express", 30_000m);
 
         // Assert - GrandTotal = SubTotal - Discount + Shipping + Tax = 500000 - 0 + 30000 + 0
-        order.GrandTotal.Should().Be(530_000m);
+        order.GrandTotal.ShouldBe(530_000m);
     }
 
     #endregion
@@ -1239,8 +1245,8 @@ public class OrderTests
         order.SetDiscount(50_000m, "SUMMER2026");
 
         // Assert
-        order.DiscountAmount.Should().Be(50_000m);
-        order.CouponCode.Should().Be("SUMMER2026");
+        order.DiscountAmount.ShouldBe(50_000m);
+        order.CouponCode.ShouldBe("SUMMER2026");
     }
 
     [Fact]
@@ -1253,8 +1259,8 @@ public class OrderTests
         order.SetDiscount(25_000m);
 
         // Assert
-        order.DiscountAmount.Should().Be(25_000m);
-        order.CouponCode.Should().BeNull();
+        order.DiscountAmount.ShouldBe(25_000m);
+        order.CouponCode.ShouldBeNull();
     }
 
     [Fact]
@@ -1267,7 +1273,7 @@ public class OrderTests
         order.SetDiscount(100_000m, "DISCOUNT100");
 
         // Assert - GrandTotal = SubTotal - Discount + Shipping + Tax = 500000 - 100000 + 0 + 0
-        order.GrandTotal.Should().Be(400_000m);
+        order.GrandTotal.ShouldBe(400_000m);
     }
 
     [Fact]
@@ -1281,7 +1287,7 @@ public class OrderTests
         order.SetDiscount(50_000m);
 
         // Assert - GrandTotal = 500000 - 50000 + 30000 + 0 = 480000
-        order.GrandTotal.Should().Be(480_000m);
+        order.GrandTotal.ShouldBe(480_000m);
     }
 
     #endregion
@@ -1298,7 +1304,7 @@ public class OrderTests
         order.SetTax(50_000m);
 
         // Assert
-        order.TaxAmount.Should().Be(50_000m);
+        order.TaxAmount.ShouldBe(50_000m);
     }
 
     [Fact]
@@ -1311,7 +1317,7 @@ public class OrderTests
         order.SetTax(50_000m);
 
         // Assert - GrandTotal = SubTotal - Discount + Shipping + Tax = 500000 - 0 + 0 + 50000
-        order.GrandTotal.Should().Be(550_000m);
+        order.GrandTotal.ShouldBe(550_000m);
     }
 
     [Fact]
@@ -1326,7 +1332,7 @@ public class OrderTests
         order.SetTax(80_000m);
 
         // Assert - GrandTotal = 1000000 - 100000 + 30000 + 80000 = 1010000
-        order.GrandTotal.Should().Be(1_010_000m);
+        order.GrandTotal.ShouldBe(1_010_000m);
     }
 
     #endregion
@@ -1343,7 +1349,7 @@ public class OrderTests
         order.SetCustomerNotes("Please deliver before 5 PM");
 
         // Assert
-        order.CustomerNotes.Should().Be("Please deliver before 5 PM");
+        order.CustomerNotes.ShouldBe("Please deliver before 5 PM");
     }
 
     [Fact]
@@ -1357,7 +1363,7 @@ public class OrderTests
         order.SetCustomerNotes(null);
 
         // Assert
-        order.CustomerNotes.Should().BeNull();
+        order.CustomerNotes.ShouldBeNull();
     }
 
     [Fact]
@@ -1371,7 +1377,7 @@ public class OrderTests
         order.SetCustomerNotes("Second note");
 
         // Assert
-        order.CustomerNotes.Should().Be("Second note");
+        order.CustomerNotes.ShouldBe("Second note");
     }
 
     #endregion
@@ -1389,7 +1395,7 @@ public class OrderTests
         order.SetCheckoutSessionId(sessionId);
 
         // Assert
-        order.CheckoutSessionId.Should().Be(sessionId);
+        order.CheckoutSessionId.ShouldBe(sessionId);
     }
 
     [Fact]
@@ -1405,7 +1411,7 @@ public class OrderTests
         order.SetCheckoutSessionId(secondSessionId);
 
         // Assert
-        order.CheckoutSessionId.Should().Be(secondSessionId);
+        order.CheckoutSessionId.ShouldBe(secondSessionId);
     }
 
     #endregion
@@ -1422,7 +1428,7 @@ public class OrderTests
         order.AddInternalNote("Customer called about delivery");
 
         // Assert
-        order.InternalNotes.Should().Be("Customer called about delivery");
+        order.InternalNotes.ShouldBe("Customer called about delivery");
     }
 
     [Fact]
@@ -1436,7 +1442,7 @@ public class OrderTests
         order.AddInternalNote("Second note");
 
         // Assert
-        order.InternalNotes.Should().Be("First note\n---\nSecond note");
+        order.InternalNotes.ShouldBe("First note\n---\nSecond note");
     }
 
     [Fact]
@@ -1451,7 +1457,7 @@ public class OrderTests
         order.AddInternalNote("Note 3");
 
         // Assert
-        order.InternalNotes.Should().Be("Note 1\n---\nNote 2\n---\nNote 3");
+        order.InternalNotes.ShouldBe("Note 1\n---\nNote 2\n---\nNote 3");
     }
 
     [Fact]
@@ -1465,14 +1471,15 @@ public class OrderTests
         order.AddInternalNote("Staff note");
 
         // Assert
-        order.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<OrderNoteAddedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                OrderId = order.Id,
-                Note = "Staff note",
-                IsInternal = true
-            });
+        var __evt = order.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<OrderNoteAddedEvent>();
+
+        __evt.OrderId.ShouldBe(order.Id);
+
+        __evt.Note.ShouldBe("Staff note");
+
+        __evt.IsInternal.ShouldBe(true);
     }
 
     #endregion
@@ -1496,18 +1503,18 @@ public class OrderTests
             "Color: Blue, Size: M");
 
         // Assert
-        order.Items.Should().HaveCount(1);
-        item.Should().NotBeNull();
-        item.OrderId.Should().Be(order.Id);
-        item.ProductId.Should().Be(productId);
-        item.ProductVariantId.Should().Be(variantId);
-        item.ProductName.Should().Be("Ao Thun Nam");
-        item.VariantName.Should().Be("Size M - Blue");
-        item.UnitPrice.Should().Be(250_000m);
-        item.Quantity.Should().Be(2);
-        item.Sku.Should().Be("SKU-AT-001");
-        item.ImageUrl.Should().Be("https://img.example.com/ao-thun.jpg");
-        item.OptionsSnapshot.Should().Be("Color: Blue, Size: M");
+        order.Items.Count().ShouldBe(1);
+        item.ShouldNotBeNull();
+        item.OrderId.ShouldBe(order.Id);
+        item.ProductId.ShouldBe(productId);
+        item.ProductVariantId.ShouldBe(variantId);
+        item.ProductName.ShouldBe("Ao Thun Nam");
+        item.VariantName.ShouldBe("Size M - Blue");
+        item.UnitPrice.ShouldBe(250_000m);
+        item.Quantity.ShouldBe(2);
+        item.Sku.ShouldBe("SKU-AT-001");
+        item.ImageUrl.ShouldBe("https://img.example.com/ao-thun.jpg");
+        item.OptionsSnapshot.ShouldBe("Color: Blue, Size: M");
     }
 
     [Fact]
@@ -1520,7 +1527,7 @@ public class OrderTests
         order.AddItem(Guid.NewGuid(), Guid.NewGuid(), "Product A", "Variant A", 100_000m, 3);
 
         // Assert - SubTotal = 100000 * 3 = 300000
-        order.SubTotal.Should().Be(300_000m);
+        order.SubTotal.ShouldBe(300_000m);
     }
 
     [Fact]
@@ -1533,7 +1540,7 @@ public class OrderTests
         order.AddItem(Guid.NewGuid(), Guid.NewGuid(), "Product A", "Variant A", 100_000m, 2);
 
         // Assert - GrandTotal = SubTotal - Discount + Shipping + Tax = 200000 - 0 + 0 + 0
-        order.GrandTotal.Should().Be(200_000m);
+        order.GrandTotal.ShouldBe(200_000m);
     }
 
     [Fact]
@@ -1547,9 +1554,9 @@ public class OrderTests
         order.AddItem(Guid.NewGuid(), Guid.NewGuid(), "Product B", "Variant B", 150_000m, 3); // 450,000
 
         // Assert
-        order.Items.Should().HaveCount(2);
-        order.SubTotal.Should().Be(650_000m);
-        order.GrandTotal.Should().Be(650_000m);
+        order.Items.Count().ShouldBe(2);
+        order.SubTotal.ShouldBe(650_000m);
+        order.GrandTotal.ShouldBe(650_000m);
     }
 
     [Fact]
@@ -1565,8 +1572,8 @@ public class OrderTests
         order.AddItem(Guid.NewGuid(), Guid.NewGuid(), "Product", "Variant", 200_000m, 1);
 
         // Assert - GrandTotal = 200000 - 10000 + 25000 + 5000 = 220000
-        order.SubTotal.Should().Be(200_000m);
-        order.GrandTotal.Should().Be(220_000m);
+        order.SubTotal.ShouldBe(200_000m);
+        order.GrandTotal.ShouldBe(220_000m);
     }
 
     [Fact]
@@ -1579,9 +1586,9 @@ public class OrderTests
         var item = order.AddItem(Guid.NewGuid(), Guid.NewGuid(), "Product", "Variant", 50_000m, 1);
 
         // Assert
-        item.Sku.Should().BeNull();
-        item.ImageUrl.Should().BeNull();
-        item.OptionsSnapshot.Should().BeNull();
+        item.Sku.ShouldBeNull();
+        item.ImageUrl.ShouldBeNull();
+        item.OptionsSnapshot.ShouldBeNull();
     }
 
     [Fact]
@@ -1594,7 +1601,7 @@ public class OrderTests
         var item = order.AddItem(Guid.NewGuid(), Guid.NewGuid(), "Product", "Variant", 50_000m, 1);
 
         // Assert
-        item.TenantId.Should().Be("tenant-xyz");
+        item.TenantId.ShouldBe("tenant-xyz");
     }
 
     #endregion
@@ -1611,7 +1618,7 @@ public class OrderTests
         var item = order.AddItem(Guid.NewGuid(), Guid.NewGuid(), "Product", "Variant", 150_000m, 4);
 
         // Assert
-        item.Subtotal.Should().Be(600_000m);
+        item.Subtotal.ShouldBe(600_000m);
     }
 
     [Fact]
@@ -1626,7 +1633,7 @@ public class OrderTests
         item.SetTax(15_000m);
 
         // Assert - LineTotal = (100000 * 3) - 20000 + 15000 = 295000
-        item.LineTotal.Should().Be(295_000m);
+        item.LineTotal.ShouldBe(295_000m);
     }
 
     [Fact]
@@ -1639,8 +1646,8 @@ public class OrderTests
         var item = order.AddItem(Guid.NewGuid(), Guid.NewGuid(), "Product", "Variant", 200_000m, 2);
 
         // Assert
-        item.LineTotal.Should().Be(item.Subtotal);
-        item.LineTotal.Should().Be(400_000m);
+        item.LineTotal.ShouldBe(item.Subtotal);
+        item.LineTotal.ShouldBe(400_000m);
     }
 
     [Fact]
@@ -1653,8 +1660,8 @@ public class OrderTests
         var item = order.AddItem(Guid.NewGuid(), Guid.NewGuid(), "Product", "Variant", 100_000m, 1);
 
         // Assert
-        item.DiscountAmount.Should().Be(0);
-        item.TaxAmount.Should().Be(0);
+        item.DiscountAmount.ShouldBe(0);
+        item.TaxAmount.ShouldBe(0);
     }
 
     [Fact]
@@ -1668,8 +1675,8 @@ public class OrderTests
         var act = () => item.SetDiscount(-10_000m);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Discount amount cannot be negative");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Discount amount cannot be negative");
     }
 
     [Fact]
@@ -1683,8 +1690,8 @@ public class OrderTests
         var act = () => item.SetTax(-5_000m);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Tax amount cannot be negative");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Tax amount cannot be negative");
     }
 
     [Fact]
@@ -1699,7 +1706,7 @@ public class OrderTests
         item.SetDiscount(0m);
 
         // Assert
-        item.DiscountAmount.Should().Be(0);
+        item.DiscountAmount.ShouldBe(0);
     }
 
     [Fact]
@@ -1714,7 +1721,7 @@ public class OrderTests
         item.SetTax(0m);
 
         // Assert
-        item.TaxAmount.Should().Be(0);
+        item.TaxAmount.ShouldBe(0);
     }
 
     #endregion
@@ -1731,14 +1738,14 @@ public class OrderTests
         var note = OrderNote.Create(orderId, "Urgent: contact customer", "user-123", "Admin User", TestTenantId);
 
         // Assert
-        note.Should().NotBeNull();
-        note.Id.Should().NotBe(Guid.Empty);
-        note.OrderId.Should().Be(orderId);
-        note.Content.Should().Be("Urgent: contact customer");
-        note.CreatedByUserId.Should().Be("user-123");
-        note.CreatedByUserName.Should().Be("Admin User");
-        note.IsInternal.Should().BeTrue();
-        note.TenantId.Should().Be(TestTenantId);
+        note.ShouldNotBeNull();
+        note.Id.ShouldNotBe(Guid.Empty);
+        note.OrderId.ShouldBe(orderId);
+        note.Content.ShouldBe("Urgent: contact customer");
+        note.CreatedByUserId.ShouldBe("user-123");
+        note.CreatedByUserName.ShouldBe("Admin User");
+        note.IsInternal.ShouldBeTrue();
+        note.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -1748,7 +1755,7 @@ public class OrderTests
         var note = OrderNote.Create(Guid.NewGuid(), "Note content", "user-1", "User Name");
 
         // Assert
-        note.IsInternal.Should().BeTrue();
+        note.IsInternal.ShouldBeTrue();
     }
 
     [Fact]
@@ -1758,7 +1765,7 @@ public class OrderTests
         var note = OrderNote.Create(Guid.NewGuid(), "Note", "user-1", "User");
 
         // Assert
-        note.TenantId.Should().BeNull();
+        note.TenantId.ShouldBeNull();
     }
 
     #endregion
@@ -1777,7 +1784,7 @@ public class OrderTests
         order.SetTax(80_000m);
 
         // Assert - GrandTotal = 1000000 - 150000 + 50000 + 80000 = 980000
-        order.GrandTotal.Should().Be(980_000m);
+        order.GrandTotal.ShouldBe(980_000m);
     }
 
     [Fact]
@@ -1787,7 +1794,7 @@ public class OrderTests
         var order = CreateTestOrder(subTotal: 500_000m, grandTotal: 500_000m);
 
         // Assert - no discount, shipping, or tax applied
-        order.GrandTotal.Should().Be(order.SubTotal);
+        order.GrandTotal.ShouldBe(order.SubTotal);
     }
 
     [Fact]
@@ -1804,8 +1811,8 @@ public class OrderTests
         order.AddItem(Guid.NewGuid(), Guid.NewGuid(), "P2", "V2", 50_000m, 3);  // 150,000
 
         // Assert - SubTotal = 350000, GrandTotal = 350000 - 10000 + 20000 + 5000 = 365000
-        order.SubTotal.Should().Be(350_000m);
-        order.GrandTotal.Should().Be(365_000m);
+        order.SubTotal.ShouldBe(350_000m);
+        order.GrandTotal.ShouldBe(365_000m);
     }
 
     #endregion
@@ -1834,12 +1841,12 @@ public class OrderTests
         var completedAt = order.CompletedAt;
 
         // Assert - all timestamps should be preserved
-        order.ConfirmedAt.Should().Be(confirmedAt);
-        order.ShippedAt.Should().Be(shippedAt);
-        order.DeliveredAt.Should().Be(deliveredAt);
-        order.CompletedAt.Should().Be(completedAt);
-        order.CancelledAt.Should().BeNull();
-        order.ReturnedAt.Should().BeNull();
+        order.ConfirmedAt.ShouldBe(confirmedAt);
+        order.ShippedAt.ShouldBe(shippedAt);
+        order.DeliveredAt.ShouldBe(deliveredAt);
+        order.CompletedAt.ShouldBe(completedAt);
+        order.CancelledAt.ShouldBeNull();
+        order.ReturnedAt.ShouldBeNull();
     }
 
     [Fact]
@@ -1853,8 +1860,8 @@ public class OrderTests
         order.Cancel("Changed mind");
 
         // Assert - ConfirmedAt should still be set from before cancellation
-        order.ConfirmedAt.Should().Be(confirmedAt);
-        order.CancelledAt.Should().NotBeNull();
+        order.ConfirmedAt.ShouldBe(confirmedAt);
+        order.CancelledAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -1869,7 +1876,7 @@ public class OrderTests
         order.StartProcessing();
 
         // Assert - OrderCreated(1) + StatusChanged+Confirmed(2) + StatusChanged(1) = 4
-        order.DomainEvents.Should().HaveCount(4);
+        order.DomainEvents.Count().ShouldBe(4);
     }
 
     [Fact]
@@ -1878,13 +1885,13 @@ public class OrderTests
         // Arrange
         var order = CreateTestOrder();
         order.Confirm();
-        order.DomainEvents.Should().HaveCountGreaterThan(0);
+        order.DomainEvents.Count().ShouldBeGreaterThan(0);
 
         // Act
         order.ClearDomainEvents();
 
         // Assert
-        order.DomainEvents.Should().BeEmpty();
+        order.DomainEvents.ShouldBeEmpty();
     }
 
     [Fact]
@@ -1897,9 +1904,9 @@ public class OrderTests
         var item = order.AddItem(Guid.NewGuid(), Guid.NewGuid(), "Product", "Variant", 99_000m, 1);
 
         // Assert
-        item.Subtotal.Should().Be(99_000m);
-        item.LineTotal.Should().Be(99_000m);
-        order.SubTotal.Should().Be(99_000m);
+        item.Subtotal.ShouldBe(99_000m);
+        item.LineTotal.ShouldBe(99_000m);
+        order.SubTotal.ShouldBe(99_000m);
     }
 
     [Fact]
@@ -1912,8 +1919,8 @@ public class OrderTests
         var item = order.AddItem(Guid.NewGuid(), Guid.NewGuid(), "Bulk Product", "Variant", 10_000m, 1000);
 
         // Assert
-        item.Subtotal.Should().Be(10_000_000m);
-        order.SubTotal.Should().Be(10_000_000m);
+        item.Subtotal.ShouldBe(10_000_000m);
+        order.SubTotal.ShouldBe(10_000_000m);
     }
 
     [Fact]
@@ -1924,7 +1931,7 @@ public class OrderTests
         var order2 = CreateTestOrder(orderNumber: "ORD-002");
 
         // Assert
-        order1.Id.Should().NotBe(order2.Id);
+        order1.Id.ShouldNotBe(order2.Id);
     }
 
     [Fact]
@@ -1933,14 +1940,14 @@ public class OrderTests
         // Arrange
         var order = CreateTestOrder(subTotal: 500_000m, grandTotal: 500_000m);
         order.SetDiscount(100_000m);
-        order.GrandTotal.Should().Be(400_000m);
+        order.GrandTotal.ShouldBe(400_000m);
 
         // Act - change discount to larger amount
         order.SetDiscount(200_000m);
 
         // Assert
-        order.DiscountAmount.Should().Be(200_000m);
-        order.GrandTotal.Should().Be(300_000m);
+        order.DiscountAmount.ShouldBe(200_000m);
+        order.GrandTotal.ShouldBe(300_000m);
     }
 
     [Fact]
@@ -1949,15 +1956,15 @@ public class OrderTests
         // Arrange
         var order = CreateTestOrder(subTotal: 500_000m, grandTotal: 500_000m);
         order.SetShippingDetails("Standard", 20_000m);
-        order.GrandTotal.Should().Be(520_000m);
+        order.GrandTotal.ShouldBe(520_000m);
 
         // Act - upgrade shipping
         order.SetShippingDetails("Express", 50_000m);
 
         // Assert
-        order.ShippingMethod.Should().Be("Express");
-        order.ShippingAmount.Should().Be(50_000m);
-        order.GrandTotal.Should().Be(550_000m);
+        order.ShippingMethod.ShouldBe("Express");
+        order.ShippingAmount.ShouldBe(50_000m);
+        order.GrandTotal.ShouldBe(550_000m);
     }
 
     [Fact]
@@ -1971,9 +1978,9 @@ public class OrderTests
         order.Return("Not satisfied");
 
         // Assert
-        order.CompletedAt.Should().Be(completedAt);
-        order.ReturnedAt.Should().NotBeNull();
-        order.ReturnReason.Should().Be("Not satisfied");
+        order.CompletedAt.ShouldBe(completedAt);
+        order.ReturnedAt.ShouldNotBeNull();
+        order.ReturnReason.ShouldBe("Not satisfied");
     }
 
     [Fact]
@@ -1987,7 +1994,7 @@ public class OrderTests
         order.MarkAsRefunded(500_000m);
 
         // Assert
-        order.Status.Should().Be(OrderStatus.Refunded);
+        order.Status.ShouldBe(OrderStatus.Refunded);
     }
 
     #endregion

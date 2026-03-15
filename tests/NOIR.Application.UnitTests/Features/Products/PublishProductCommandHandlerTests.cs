@@ -91,8 +91,8 @@ public class PublishProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(ProductStatus.Active);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(ProductStatus.Active);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -130,10 +130,10 @@ public class PublishProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategoryId.Should().Be(categoryId);
-        result.Value.CategoryName.Should().Be(category.Name);
-        result.Value.CategorySlug.Should().Be(category.Slug);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategoryId.ShouldBe(categoryId);
+        result.Value.CategoryName.ShouldBe(category.Name);
+        result.Value.CategorySlug.ShouldBe(category.Slug);
     }
 
     #endregion
@@ -156,10 +156,10 @@ public class PublishProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-012");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-012");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -188,10 +188,10 @@ public class PublishProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-013");
-        result.Error.Message.Should().Contain("Draft");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-013");
+        result.Error.Message.ShouldContain("Draft");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -216,10 +216,10 @@ public class PublishProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-013");
-        result.Error.Message.Should().Contain("Draft");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-013");
+        result.Error.Message.ShouldContain("Draft");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -285,9 +285,9 @@ public class PublishProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategoryId.Should().BeNull();
-        result.Value.CategoryName.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategoryId.ShouldBeNull();
+        result.Value.CategoryName.ShouldBeNull();
 
         _categoryRepositoryMock.Verify(
             x => x.FirstOrDefaultAsync(It.IsAny<ProductCategoryByIdSpec>(), It.IsAny<CancellationToken>()),
@@ -319,11 +319,11 @@ public class PublishProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Variants.Should().HaveCount(1);
-        result.Value.Variants.First().Name.Should().Be("Test Variant");
-        result.Value.Images.Should().HaveCount(1);
-        result.Value.Images.First().Url.Should().Be("https://example.com/image.jpg");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Variants.Count().ShouldBe(1);
+        result.Value.Variants.First().Name.ShouldBe("Test Variant");
+        result.Value.Images.Count().ShouldBe(1);
+        result.Value.Images.First().Url.ShouldBe("https://example.com/image.jpg");
     }
 
     #endregion

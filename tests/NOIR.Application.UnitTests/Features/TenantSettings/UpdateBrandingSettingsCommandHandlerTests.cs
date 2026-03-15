@@ -62,12 +62,12 @@ public class UpdateBrandingSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.LogoUrl.Should().Be("https://example.com/logo.png");
-        result.Value.FaviconUrl.Should().Be("https://example.com/favicon.ico");
-        result.Value.PrimaryColor.Should().Be("#3B82F6");
-        result.Value.SecondaryColor.Should().Be("#10B981");
-        result.Value.DarkModeDefault.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.LogoUrl.ShouldBe("https://example.com/logo.png");
+        result.Value.FaviconUrl.ShouldBe("https://example.com/favicon.ico");
+        result.Value.PrimaryColor.ShouldBe("#3B82F6");
+        result.Value.SecondaryColor.ShouldBe("#10B981");
+        result.Value.DarkModeDefault.ShouldBe(true);
     }
 
     [Fact]

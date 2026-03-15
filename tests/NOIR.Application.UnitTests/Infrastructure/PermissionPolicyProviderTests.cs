@@ -26,14 +26,14 @@ public class PermissionPolicyProviderTests
         var provider = new PermissionPolicyProvider(options);
 
         // Assert
-        provider.Should().NotBeNull();
+        provider.ShouldNotBeNull();
     }
 
     [Fact]
     public void Service_ShouldImplementIAuthorizationPolicyProvider()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IAuthorizationPolicyProvider>();
+        _sut.ShouldBeAssignableTo<IAuthorizationPolicyProvider>();
     }
 
     #endregion
@@ -47,7 +47,7 @@ public class PermissionPolicyProviderTests
         var policy = await _sut.GetPolicyAsync("Permission:users.read");
 
         // Assert
-        policy.Should().NotBeNull();
+        policy.ShouldNotBeNull();
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class PermissionPolicyProviderTests
         var policy = await _sut.GetPolicyAsync("Permission:users.read");
 
         // Assert
-        policy!.Requirements.Should().Contain(r => r is DenyAnonymousAuthorizationRequirement);
+        policy!.Requirements.ShouldContain(r => r is DenyAnonymousAuthorizationRequirement);
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class PermissionPolicyProviderTests
         var policy = await _sut.GetPolicyAsync("Permission:users.write");
 
         // Assert
-        policy!.Requirements.Should().Contain(r => r is PermissionRequirement);
+        policy!.Requirements.ShouldContain(r => r is PermissionRequirement);
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public class PermissionPolicyProviderTests
 
         // Assert
         var requirement = policy!.Requirements.OfType<PermissionRequirement>().First();
-        requirement.Permission.Should().Be(expectedPermission);
+        requirement.Permission.ShouldBe(expectedPermission);
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class PermissionPolicyProviderTests
         var policy = await _sut.GetPolicyAsync("PERMISSION:users.read");
 
         // Assert
-        policy.Should().NotBeNull();
+        policy.ShouldNotBeNull();
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class PermissionPolicyProviderTests
         var policy = await _sut.GetPolicyAsync("PeRmIsSiOn:users.read");
 
         // Assert
-        policy.Should().NotBeNull();
+        policy.ShouldNotBeNull();
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class PermissionPolicyProviderTests
         var policy = await _sut.GetPolicyAsync("SomeOtherPolicy");
 
         // Assert - Should return null for non-existent fallback policies
-        policy.Should().BeNull();
+        policy.ShouldBeNull();
     }
 
     [Fact]
@@ -121,7 +121,7 @@ public class PermissionPolicyProviderTests
         var policy = await _sut.GetPolicyAsync("Permission:");
 
         // Assert - Should still return a policy even with empty permission
-        policy.Should().NotBeNull();
+        policy.ShouldNotBeNull();
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class PermissionPolicyProviderTests
 
         // Assert
         var requirement = policy!.Requirements.OfType<PermissionRequirement>().First();
-        requirement.Permission.Should().Be(complexPermission);
+        requirement.Permission.ShouldBe(complexPermission);
     }
 
     #endregion
@@ -149,7 +149,7 @@ public class PermissionPolicyProviderTests
         var policy = await _sut.GetDefaultPolicyAsync();
 
         // Assert
-        policy.Should().NotBeNull();
+        policy.ShouldNotBeNull();
     }
 
     [Fact]
@@ -159,7 +159,7 @@ public class PermissionPolicyProviderTests
         var policy = await _sut.GetDefaultPolicyAsync();
 
         // Assert
-        policy.Requirements.Should().NotBeEmpty();
+        policy.Requirements.ShouldNotBeEmpty();
     }
 
     #endregion
@@ -173,7 +173,7 @@ public class PermissionPolicyProviderTests
         var act = async () => await _sut.GetFallbackPolicyAsync();
 
         // Assert
-        await act.Should().NotThrowAsync();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -183,7 +183,7 @@ public class PermissionPolicyProviderTests
         var policy = await _sut.GetFallbackPolicyAsync();
 
         // Assert
-        policy.Should().BeNull();
+        policy.ShouldBeNull();
     }
 
     #endregion
@@ -195,7 +195,7 @@ public class PermissionPolicyProviderTests
     {
         // Assert
         var method = typeof(PermissionPolicyProvider).GetMethod("GetPolicyAsync");
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
     }
 
     [Fact]
@@ -203,7 +203,7 @@ public class PermissionPolicyProviderTests
     {
         // Assert
         var method = typeof(PermissionPolicyProvider).GetMethod("GetDefaultPolicyAsync");
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
     }
 
     [Fact]
@@ -211,7 +211,7 @@ public class PermissionPolicyProviderTests
     {
         // Assert
         var method = typeof(PermissionPolicyProvider).GetMethod("GetFallbackPolicyAsync");
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
     }
 
     #endregion
@@ -230,8 +230,8 @@ public class PermissionPolicyProviderTests
         var policy = await _sut.GetPolicyAsync(policyName);
 
         // Assert
-        policy.Should().NotBeNull();
-        policy!.Requirements.Should().HaveCountGreaterThanOrEqualTo(2); // DenyAnonymous + PermissionRequirement
+        policy.ShouldNotBeNull();
+        policy!.Requirements.Count().ShouldBeGreaterThanOrEqualTo(2); // DenyAnonymous + PermissionRequirement
     }
 
     #endregion

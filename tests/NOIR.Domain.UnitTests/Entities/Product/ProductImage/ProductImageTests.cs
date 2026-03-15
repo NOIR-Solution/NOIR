@@ -42,13 +42,13 @@ public class ProductImageTests
         var image = product.AddImage("https://example.com/photo.jpg", "Alt text", true);
 
         // Assert
-        image.Should().NotBeNull();
-        image.Id.Should().NotBe(Guid.Empty);
-        image.ProductId.Should().Be(product.Id);
-        image.Url.Should().Be("https://example.com/photo.jpg");
-        image.AltText.Should().Be("Alt text");
-        image.IsPrimary.Should().BeTrue();
-        image.TenantId.Should().Be(TestTenantId);
+        image.ShouldNotBeNull();
+        image.Id.ShouldNotBe(Guid.Empty);
+        image.ProductId.ShouldBe(product.Id);
+        image.Url.ShouldBe("https://example.com/photo.jpg");
+        image.AltText.ShouldBe("Alt text");
+        image.IsPrimary.ShouldBeTrue();
+        image.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class ProductImageTests
         var image = CreateTestImage();
 
         // Assert
-        image.SortOrder.Should().Be(0);
+        image.SortOrder.ShouldBe(0);
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class ProductImageTests
         var second = product.AddImage("https://example.com/2.jpg");
 
         // Assert
-        second.SortOrder.Should().Be(1);
+        second.SortOrder.ShouldBe(1);
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class ProductImageTests
         var image = CreateTestImage(altText: null);
 
         // Assert
-        image.AltText.Should().BeNull();
+        image.AltText.ShouldBeNull();
     }
 
     [Fact]
@@ -96,8 +96,8 @@ public class ProductImageTests
         var second = product.AddImage("https://example.com/2.jpg", isPrimary: true);
 
         // Assert
-        first.IsPrimary.Should().BeFalse();
-        second.IsPrimary.Should().BeTrue();
+        first.IsPrimary.ShouldBeFalse();
+        second.IsPrimary.ShouldBeTrue();
     }
 
     [Fact]
@@ -111,8 +111,8 @@ public class ProductImageTests
         var second = product.AddImage("https://example.com/2.jpg", isPrimary: false);
 
         // Assert
-        first.IsPrimary.Should().BeTrue();
-        second.IsPrimary.Should().BeFalse();
+        first.IsPrimary.ShouldBeTrue();
+        second.IsPrimary.ShouldBeFalse();
     }
 
     #endregion
@@ -129,8 +129,8 @@ public class ProductImageTests
         image.Update("https://new.com/img.jpg", "New alt");
 
         // Assert
-        image.Url.Should().Be("https://new.com/img.jpg");
-        image.AltText.Should().Be("New alt");
+        image.Url.ShouldBe("https://new.com/img.jpg");
+        image.AltText.ShouldBe("New alt");
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public class ProductImageTests
         image.Update("https://new.com/img.jpg", null);
 
         // Assert
-        image.AltText.Should().BeNull();
+        image.AltText.ShouldBeNull();
     }
 
     #endregion
@@ -160,7 +160,7 @@ public class ProductImageTests
         image.SetSortOrder(5);
 
         // Assert
-        image.SortOrder.Should().Be(5);
+        image.SortOrder.ShouldBe(5);
     }
 
     [Theory]
@@ -176,7 +176,7 @@ public class ProductImageTests
         image.SetSortOrder(sortOrder);
 
         // Assert
-        image.SortOrder.Should().Be(sortOrder);
+        image.SortOrder.ShouldBe(sortOrder);
     }
 
     #endregion
@@ -193,7 +193,7 @@ public class ProductImageTests
         image.SetAsPrimary();
 
         // Assert
-        image.IsPrimary.Should().BeTrue();
+        image.IsPrimary.ShouldBeTrue();
     }
 
     [Fact]
@@ -206,7 +206,7 @@ public class ProductImageTests
         image.SetAsPrimary();
 
         // Assert
-        image.IsPrimary.Should().BeTrue();
+        image.IsPrimary.ShouldBeTrue();
     }
 
     #endregion
@@ -223,7 +223,7 @@ public class ProductImageTests
         image.ClearPrimary();
 
         // Assert
-        image.IsPrimary.Should().BeFalse();
+        image.IsPrimary.ShouldBeFalse();
     }
 
     [Fact]
@@ -236,7 +236,7 @@ public class ProductImageTests
         image.ClearPrimary();
 
         // Assert
-        image.IsPrimary.Should().BeFalse();
+        image.IsPrimary.ShouldBeFalse();
     }
 
     #endregion

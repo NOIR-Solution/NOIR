@@ -62,16 +62,16 @@ public class CreateFilterEventCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.SessionId.Should().Be(TestSessionId);
-        result.Value.UserId.Should().Be(TestUserId);
-        result.Value.EventType.Should().Be(FilterEventType.FilterApplied);
-        result.Value.ProductCount.Should().Be(42);
-        result.Value.CategorySlug.Should().Be("electronics");
-        result.Value.FilterCode.Should().Be("brand");
-        result.Value.FilterValue.Should().Be("Apple");
-        result.Value.Id.Should().NotBe(Guid.Empty);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.SessionId.ShouldBe(TestSessionId);
+        result.Value.UserId.ShouldBe(TestUserId);
+        result.Value.EventType.ShouldBe(FilterEventType.FilterApplied);
+        result.Value.ProductCount.ShouldBe(42);
+        result.Value.CategorySlug.ShouldBe("electronics");
+        result.Value.FilterCode.ShouldBe("brand");
+        result.Value.FilterValue.ShouldBe("Apple");
+        result.Value.Id.ShouldNotBe(Guid.Empty);
     }
 
     [Fact]
@@ -90,9 +90,9 @@ public class CreateFilterEventCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.UserId.Should().BeNull();
-        result.Value.SessionId.Should().Be(TestSessionId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.UserId.ShouldBeNull();
+        result.Value.SessionId.ShouldBe(TestSessionId);
     }
 
     [Fact]
@@ -110,9 +110,9 @@ public class CreateFilterEventCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.EventType.Should().Be(FilterEventType.ProductClicked);
-        result.Value.ClickedProductId.Should().Be(clickedProductId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.EventType.ShouldBe(FilterEventType.ProductClicked);
+        result.Value.ClickedProductId.ShouldBe(clickedProductId);
     }
 
     [Fact]
@@ -129,10 +129,10 @@ public class CreateFilterEventCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.EventType.Should().Be(FilterEventType.SearchPerformed);
-        result.Value.SearchQuery.Should().Be("wireless headphones");
-        result.Value.ProductCount.Should().Be(25);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.EventType.ShouldBe(FilterEventType.SearchPerformed);
+        result.Value.SearchQuery.ShouldBe("wireless headphones");
+        result.Value.ProductCount.ShouldBe(25);
     }
 
     [Fact]
@@ -154,12 +154,12 @@ public class CreateFilterEventCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategorySlug.Should().Be("shoes");
-        result.Value.FilterCode.Should().Be("color");
-        result.Value.FilterValue.Should().Be("red");
-        result.Value.SearchQuery.Should().Be("running shoes");
-        result.Value.ClickedProductId.Should().Be(clickedProductId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategorySlug.ShouldBe("shoes");
+        result.Value.FilterCode.ShouldBe("color");
+        result.Value.FilterValue.ShouldBe("red");
+        result.Value.SearchQuery.ShouldBe("running shoes");
+        result.Value.ClickedProductId.ShouldBe(clickedProductId);
     }
 
     [Fact]
@@ -175,15 +175,15 @@ public class CreateFilterEventCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SessionId.Should().Be(TestSessionId);
-        result.Value.EventType.Should().Be(FilterEventType.FilterApplied);
-        result.Value.ProductCount.Should().Be(0);
-        result.Value.CategorySlug.Should().BeNull();
-        result.Value.FilterCode.Should().BeNull();
-        result.Value.FilterValue.Should().BeNull();
-        result.Value.SearchQuery.Should().BeNull();
-        result.Value.ClickedProductId.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SessionId.ShouldBe(TestSessionId);
+        result.Value.EventType.ShouldBe(FilterEventType.FilterApplied);
+        result.Value.ProductCount.ShouldBe(0);
+        result.Value.CategorySlug.ShouldBeNull();
+        result.Value.FilterCode.ShouldBeNull();
+        result.Value.FilterValue.ShouldBeNull();
+        result.Value.SearchQuery.ShouldBeNull();
+        result.Value.ClickedProductId.ShouldBeNull();
     }
 
     #endregion
@@ -253,8 +253,8 @@ public class CreateFilterEventCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        capturedEvent.Should().NotBeNull();
-        capturedEvent!.TenantId.Should().Be(customTenantId);
+        capturedEvent.ShouldNotBeNull();
+        capturedEvent!.TenantId.ShouldBe(customTenantId);
     }
 
     [Fact]
@@ -272,7 +272,7 @@ public class CreateFilterEventCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     #endregion
@@ -298,8 +298,8 @@ public class CreateFilterEventCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.EventType.Should().Be(eventType);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.EventType.ShouldBe(eventType);
     }
 
     #endregion
@@ -319,8 +319,8 @@ public class CreateFilterEventCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().NotBe(Guid.Empty);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldNotBe(Guid.Empty);
     }
 
     [Fact]
@@ -338,8 +338,8 @@ public class CreateFilterEventCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CreatedAt.Should().BeAfter(beforeTime);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CreatedAt.ShouldBeGreaterThan(beforeTime);
     }
 
     [Fact]
@@ -379,7 +379,7 @@ public class CreateFilterEventCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _mockDbSet.Verify(
             x => x.Add(It.IsAny<FilterAnalyticsEvent>()),
             Times.Once);
@@ -401,8 +401,8 @@ public class CreateFilterEventCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProductCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProductCount.ShouldBe(0);
     }
 
     [Fact]
@@ -418,8 +418,8 @@ public class CreateFilterEventCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProductCount.Should().Be(999999);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProductCount.ShouldBe(999999);
     }
 
     #endregion

@@ -83,9 +83,9 @@ public class CreateLeadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Title.Should().Be("Enterprise Deal");
-        result.Value.StageId.Should().Be(stage.Id);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Title.ShouldBe("Enterprise Deal");
+        result.Value.StageId.ShouldBe(stage.Id);
 
         _leadRepoMock.Verify(
             x => x.AddAsync(It.IsAny<Lead>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -108,7 +108,7 @@ public class CreateLeadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _leadRepoMock.Verify(
             x => x.AddAsync(It.IsAny<Lead>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -134,7 +134,7 @@ public class CreateLeadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _leadRepoMock.Verify(
             x => x.AddAsync(It.IsAny<Lead>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -162,6 +162,6 @@ public class CreateLeadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 }

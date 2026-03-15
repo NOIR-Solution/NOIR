@@ -36,9 +36,9 @@ public class ProductCategoryEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await adminClient.GetAsync("/api/products/categories");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<List<ProductCategoryListDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class ProductCategoryEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await _client.GetAsync("/api/products/categories");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class ProductCategoryEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await adminClient.GetAsync("/api/products/categories?topLevelOnly=true");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -84,11 +84,11 @@ public class ProductCategoryEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await adminClient.GetAsync($"/api/products/categories/{createdCategory!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var category = await response.Content.ReadFromJsonAsync<ProductCategoryDto>();
-        category.Should().NotBeNull();
-        category!.Id.Should().Be(createdCategory.Id);
-        category.Name.Should().Be(createRequest.Name);
+        category.ShouldNotBeNull();
+        category!.Id.ShouldBe(createdCategory.Id);
+        category.Name.ShouldBe(createRequest.Name);
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class ProductCategoryEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await adminClient.GetAsync($"/api/products/categories/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -119,11 +119,11 @@ public class ProductCategoryEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await adminClient.PostAsJsonAsync("/api/products/categories", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var category = await response.Content.ReadFromJsonAsync<ProductCategoryDto>();
-        category.Should().NotBeNull();
-        category!.Name.Should().Be(request.Name);
-        category.Slug.Should().Be(request.Slug);
+        category.ShouldNotBeNull();
+        category!.Name.ShouldBe(request.Name);
+        category.Slug.ShouldBe(request.Slug);
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public class ProductCategoryEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await adminClient.PostAsJsonAsync("/api/products/categories", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -158,7 +158,7 @@ public class ProductCategoryEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await _client.PostAsJsonAsync("/api/products/categories", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -176,7 +176,7 @@ public class ProductCategoryEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await adminClient.PostAsJsonAsync("/api/products/categories", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 
     #endregion
@@ -209,11 +209,11 @@ public class ProductCategoryEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await adminClient.PutAsJsonAsync($"/api/products/categories/{createdCategory!.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updatedCategory = await response.Content.ReadFromJsonAsync<ProductCategoryDto>();
-        updatedCategory.Should().NotBeNull();
-        updatedCategory!.Name.Should().Be("Updated Category Name");
-        updatedCategory.Description.Should().Be("Updated description");
+        updatedCategory.ShouldNotBeNull();
+        updatedCategory!.Name.ShouldBe("Updated Category Name");
+        updatedCategory.Description.ShouldBe("Updated description");
     }
 
     [Fact]
@@ -235,7 +235,7 @@ public class ProductCategoryEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await adminClient.PutAsJsonAsync($"/api/products/categories/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -258,11 +258,11 @@ public class ProductCategoryEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await adminClient.DeleteAsync($"/api/products/categories/{createdCategory!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Verify it's deleted (soft delete - should return not found)
         var getResponse = await adminClient.GetAsync($"/api/products/categories/{createdCategory.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -275,7 +275,7 @@ public class ProductCategoryEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await adminClient.DeleteAsync($"/api/products/categories/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion

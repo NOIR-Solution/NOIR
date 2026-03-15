@@ -16,7 +16,7 @@ public class ExceptionTests
         var exception = new NotFoundException();
 
         // Assert
-        exception.Message.Should().NotBeNull();
+        exception.Message.ShouldNotBeNull();
     }
 
     [Fact]
@@ -29,7 +29,7 @@ public class ExceptionTests
         var exception = new NotFoundException(message);
 
         // Assert
-        exception.Message.Should().Be(message);
+        exception.Message.ShouldBe(message);
     }
 
     [Fact]
@@ -39,8 +39,8 @@ public class ExceptionTests
         var exception = new NotFoundException("User", "123");
 
         // Assert
-        exception.Message.Should().Contain("User");
-        exception.Message.Should().Contain("123");
+        exception.Message.ShouldContain("User");
+        exception.Message.ShouldContain("123");
     }
 
     [Fact]
@@ -53,8 +53,8 @@ public class ExceptionTests
         var exception = new NotFoundException("Outer error", innerException);
 
         // Assert
-        exception.Message.Should().Be("Outer error");
-        exception.InnerException.Should().Be(innerException);
+        exception.Message.ShouldBe("Outer error");
+        exception.InnerException.ShouldBe(innerException);
     }
 
     #endregion
@@ -68,7 +68,7 @@ public class ExceptionTests
         var exception = new ForbiddenAccessException();
 
         // Assert
-        exception.Message.Should().NotBeNull();
+        exception.Message.ShouldNotBeNull();
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public class ExceptionTests
         var exception = new ForbiddenAccessException(message);
 
         // Assert
-        exception.Message.Should().Be(message);
+        exception.Message.ShouldBe(message);
     }
 
     #endregion
@@ -95,8 +95,8 @@ public class ExceptionTests
         var exception = new ValidationException();
 
         // Assert
-        exception.Errors.Should().NotBeNull();
-        exception.Errors.Should().BeEmpty();
+        exception.Errors.ShouldNotBeNull();
+        exception.Errors.ShouldBeEmpty();
     }
 
     [Fact]
@@ -114,10 +114,10 @@ public class ExceptionTests
         var exception = new ValidationException(failures);
 
         // Assert
-        exception.Errors.Should().ContainKey("Email");
-        exception.Errors.Should().ContainKey("Password");
-        exception.Errors["Email"].Should().Contain("Email is required");
-        exception.Errors["Password"].Should().HaveCount(2);
+        exception.Errors.ShouldContainKey("Email");
+        exception.Errors.ShouldContainKey("Password");
+        exception.Errors["Email"].ShouldContain("Email is required");
+        exception.Errors["Password"].Count().ShouldBe(2);
     }
 
     [Fact]
@@ -127,8 +127,8 @@ public class ExceptionTests
         var exception = new ValidationException("Email", "Email is invalid");
 
         // Assert
-        exception.Errors.Should().ContainKey("Email");
-        exception.Errors["Email"].Should().Contain("Email is invalid");
+        exception.Errors.ShouldContainKey("Email");
+        exception.Errors["Email"].ShouldContain("Email is invalid");
     }
 
     #endregion

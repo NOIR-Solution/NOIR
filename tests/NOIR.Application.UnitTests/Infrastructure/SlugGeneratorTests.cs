@@ -18,7 +18,7 @@ public class SlugGeneratorTests
         var result = SlugGenerator.Generate(fileName);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Theory]
@@ -31,7 +31,7 @@ public class SlugGeneratorTests
         var result = SlugGenerator.Generate(fileName);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Theory]
@@ -44,7 +44,7 @@ public class SlugGeneratorTests
         var result = SlugGenerator.Generate(fileName);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Theory]
@@ -57,7 +57,7 @@ public class SlugGeneratorTests
         var result = SlugGenerator.Generate(fileName);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Theory]
@@ -70,7 +70,7 @@ public class SlugGeneratorTests
         var result = SlugGenerator.Generate(fileName);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Theory]
@@ -82,7 +82,7 @@ public class SlugGeneratorTests
         var result = SlugGenerator.Generate(fileName);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Theory]
@@ -95,8 +95,8 @@ public class SlugGeneratorTests
         var result = SlugGenerator.Generate(fileName!);
 
         // Assert
-        result.Should().StartWith("image_");
-        result.Should().HaveLength(14); // "image_" + 8 char shortId
+        result.ShouldStartWith("image_");
+        result.Length.ShouldBe(14); // "image_" + 8 char shortId
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class SlugGeneratorTests
         var result = SlugGenerator.Generate(longName, 50);
 
         // Assert
-        result.Length.Should().BeLessThanOrEqualTo(50);
+        result.Length.ShouldBeLessThanOrEqualTo(50);
     }
 
     [Theory]
@@ -122,8 +122,8 @@ public class SlugGeneratorTests
         var result = SlugGenerator.Generate(fileName);
 
         // Assert
-        result.Should().MatchRegex("^[a-z0-9-]+$");
-        result.Should().NotBeEmpty();
+        result.ShouldMatch("^[a-z0-9-]+$");
+        result.ShouldNotBeEmpty();
     }
 
     [Theory]
@@ -135,7 +135,7 @@ public class SlugGeneratorTests
         var result = SlugGenerator.Generate(fileName);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Theory]
@@ -147,8 +147,8 @@ public class SlugGeneratorTests
         var result = SlugGenerator.Generate(fileName);
 
         // Assert
-        result.Should().MatchRegex("^[a-z0-9-]+$");
-        result.Should().NotContain(".");
+        result.ShouldMatch("^[a-z0-9-]+$");
+        result.ShouldNotContain(".");
     }
 
     [Fact]
@@ -161,8 +161,8 @@ public class SlugGeneratorTests
         var result = SlugGenerator.Generate(fileName);
 
         // Assert
-        result.Should().StartWith("image_");
-        result.Should().MatchRegex("^image_[a-f0-9]{8}$");
+        result.ShouldStartWith("image_");
+        result.ShouldMatch("^image_[a-f0-9]{8}$");
     }
 
     #endregion
@@ -176,8 +176,8 @@ public class SlugGeneratorTests
         var result = SlugGenerator.GenerateUnique("hello-world.jpg");
 
         // Assert
-        result.Should().StartWith("hello-world_");
-        result.Should().MatchRegex("^hello-world_[a-f0-9]{8}$");
+        result.ShouldStartWith("hello-world_");
+        result.ShouldMatch("^hello-world_[a-f0-9]{8}$");
     }
 
     [Fact]
@@ -187,7 +187,7 @@ public class SlugGeneratorTests
         var result = SlugGenerator.GenerateUnique("test.jpg", "custom123");
 
         // Assert
-        result.Should().Be("test_custom123");
+        result.ShouldBe("test_custom123");
     }
 
     [Fact]
@@ -199,7 +199,7 @@ public class SlugGeneratorTests
             .ToList();
 
         // Assert
-        results.Should().OnlyHaveUniqueItems();
+        results.ShouldBeUnique();
     }
 
     [Fact]
@@ -211,8 +211,8 @@ public class SlugGeneratorTests
             .ToList();
 
         // Assert
-        results.Should().OnlyHaveUniqueItems();
-        results.All(r => r.StartsWith("test_")).Should().BeTrue();
+        results.ShouldBeUnique();
+        results.All(r => r.StartsWith("test_")).ShouldBe(true);
     }
 
     [Fact]
@@ -225,8 +225,8 @@ public class SlugGeneratorTests
         var result = SlugGenerator.GenerateUnique(longName);
 
         // Assert
-        result.Should().Contain("_"); // Suffix separator preserved
-        result.Split('_').Last().Length.Should().Be(8); // Short ID preserved
+        result.ShouldContain("_"); // Suffix separator preserved
+        result.Split('_').Last().Length.ShouldBe(8); // Short ID preserved
     }
 
     #endregion
@@ -243,7 +243,7 @@ public class SlugGeneratorTests
         var result = SlugGenerator.ExtractShortId(slug);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Theory]
@@ -257,7 +257,7 @@ public class SlugGeneratorTests
         var result = SlugGenerator.ExtractShortId(slug!);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -267,7 +267,7 @@ public class SlugGeneratorTests
         var result = SlugGenerator.ExtractShortId("test_");
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -277,7 +277,7 @@ public class SlugGeneratorTests
         var result = SlugGenerator.ExtractShortId("my_complex_name_a1b2c3d4");
 
         // Assert
-        result.Should().Be("a1b2c3d4");
+        result.ShouldBe("a1b2c3d4");
     }
 
     #endregion
@@ -291,7 +291,7 @@ public class SlugGeneratorTests
         var result = SlugGenerator.GenerateShortId();
 
         // Assert
-        result.Should().HaveLength(8);
+        result.Length.ShouldBe(8);
     }
 
     [Fact]
@@ -301,7 +301,7 @@ public class SlugGeneratorTests
         var result = SlugGenerator.GenerateShortId();
 
         // Assert
-        result.Should().MatchRegex("^[a-f0-9]+$");
+        result.ShouldMatch("^[a-f0-9]+$");
     }
 
     [Fact]
@@ -313,7 +313,7 @@ public class SlugGeneratorTests
             .ToList();
 
         // Assert
-        results.Should().OnlyHaveUniqueItems();
+        results.ShouldBeUnique();
     }
 
     #endregion

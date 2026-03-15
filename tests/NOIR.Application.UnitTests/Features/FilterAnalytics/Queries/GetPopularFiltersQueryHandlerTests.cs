@@ -93,9 +93,9 @@ public class GetPopularFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Filters.Should().NotBeEmpty();
-        result.Value.TotalEvents.Should().BeGreaterThanOrEqualTo(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Filters.ShouldNotBeEmpty();
+        result.Value.TotalEvents.ShouldBeGreaterThanOrEqualTo(0);
     }
 
     [Fact]
@@ -115,11 +115,11 @@ public class GetPopularFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Default is last 30 days
-        result.Value.FromDate.Should().BeBefore(result.Value.ToDate);
+        result.Value.FromDate.ShouldBeLessThan(result.Value.ToDate);
         var daysDiff = (result.Value.ToDate - result.Value.FromDate).TotalDays;
-        daysDiff.Should().BeApproximately(30, 1);
+        daysDiff.ShouldBe(30, 1);
     }
 
     #endregion
@@ -148,9 +148,9 @@ public class GetPopularFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.FromDate.Should().Be(fromDate);
-        result.Value.ToDate.Should().Be(toDate);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.FromDate.ShouldBe(fromDate);
+        result.Value.ToDate.ShouldBe(toDate);
     }
 
     [Fact]
@@ -170,10 +170,10 @@ public class GetPopularFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.FromDate.Should().Be(fromDate);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.FromDate.ShouldBe(fromDate);
         // ToDate defaults to UtcNow
-        result.Value.ToDate.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
+        result.Value.ToDate.ShouldBe(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
     }
 
     [Fact]
@@ -193,10 +193,10 @@ public class GetPopularFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ToDate.Should().Be(toDate);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ToDate.ShouldBe(toDate);
         var daysDiff = (result.Value.ToDate - result.Value.FromDate).TotalDays;
-        daysDiff.Should().BeApproximately(30, 0.01);
+        daysDiff.ShouldBe(30, 0.01);
     }
 
     #endregion
@@ -222,15 +222,15 @@ public class GetPopularFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // All filters should be from the electronics category
-        result.Value.Filters.Should().AllSatisfy(f =>
+        foreach (var f in result.Value.Filters)
         {
             if (f.CategorySlug != null)
             {
-                f.CategorySlug.Should().Be("electronics");
+                f.CategorySlug.ShouldBe("electronics");
             }
-        });
+        }
     }
 
     [Fact]
@@ -251,9 +251,9 @@ public class GetPopularFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Should include filters from both categories
-        result.Value.Filters.Should().NotBeEmpty();
+        result.Value.Filters.ShouldNotBeEmpty();
     }
 
     #endregion
@@ -272,9 +272,9 @@ public class GetPopularFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Filters.Should().BeEmpty();
-        result.Value.TotalEvents.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Filters.ShouldBeEmpty();
+        result.Value.TotalEvents.ShouldBe(0);
     }
 
     [Fact]
@@ -295,8 +295,8 @@ public class GetPopularFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Filters.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Filters.ShouldBeEmpty();
     }
 
     [Fact]
@@ -311,9 +311,9 @@ public class GetPopularFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TotalEvents.Should().Be(0);
-        result.Value.Filters.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TotalEvents.ShouldBe(0);
+        result.Value.Filters.ShouldBeEmpty();
     }
 
     #endregion
@@ -342,10 +342,10 @@ public class GetPopularFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         if (result.Value.Filters.Count >= 2)
         {
-            result.Value.Filters[0].UsageCount.Should().BeGreaterThanOrEqualTo(
+            result.Value.Filters[0].UsageCount.ShouldBeGreaterThanOrEqualTo(
                 result.Value.Filters[1].UsageCount);
         }
     }
@@ -370,8 +370,8 @@ public class GetPopularFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Filters.Should().HaveCountLessThanOrEqualTo(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Filters.Count().ShouldBeLessThanOrEqualTo(2);
     }
 
     [Fact]
@@ -383,7 +383,7 @@ public class GetPopularFiltersQueryHandlerTests
         var query = new GetPopularFiltersQuery();
 
         // Assert - verify the default Top value is 20
-        query.Top.Should().Be(20);
+        query.Top.ShouldBe(20);
     }
 
     #endregion
@@ -408,11 +408,11 @@ public class GetPopularFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Filters.Should().AllSatisfy(f =>
+        result.IsSuccess.ShouldBe(true);
+        foreach (var f in result.Value.Filters)
         {
-            f.ConversionRate.Should().BeGreaterThanOrEqualTo(0);
-        });
+            f.ConversionRate.ShouldBeGreaterThanOrEqualTo(0);
+        }
     }
 
     [Fact]
@@ -434,12 +434,12 @@ public class GetPopularFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // All filters should have non-negative conversion rates
-        result.Value.Filters.Should().AllSatisfy(f =>
+        foreach (var f in result.Value.Filters)
         {
-            f.ConversionRate.Should().BeGreaterThanOrEqualTo(0);
-        });
+            f.ConversionRate.ShouldBeGreaterThanOrEqualTo(0);
+        }
     }
 
     #endregion
@@ -470,11 +470,11 @@ public class GetPopularFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Filters.Should().AllSatisfy(f =>
+        result.IsSuccess.ShouldBe(true);
+        foreach (var f in result.Value.Filters)
         {
-            f.FilterCode.Should().NotBeNull();
-        });
+            f.FilterCode.ShouldNotBeNull();
+        }
     }
 
     #endregion
@@ -497,7 +497,7 @@ public class GetPopularFiltersQueryHandlerTests
         var result = await _handler.Handle(query, token);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     [Fact]
@@ -524,9 +524,9 @@ public class GetPopularFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // TotalEvents should only count FilterApplied events
-        result.Value.TotalEvents.Should().Be(2);
+        result.Value.TotalEvents.ShouldBe(2);
     }
 
     [Fact]
@@ -541,9 +541,9 @@ public class GetPopularFiltersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.FromDate.Should().NotBe(default);
-        result.Value.ToDate.Should().NotBe(default);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.FromDate.ShouldNotBe(default);
+        result.Value.ToDate.ShouldNotBe(default);
     }
 
     #endregion

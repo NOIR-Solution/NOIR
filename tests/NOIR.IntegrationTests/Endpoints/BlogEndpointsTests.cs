@@ -64,10 +64,10 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/blog/posts");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<PostListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeNull();
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/blog/posts");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -90,11 +90,11 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/blog/posts?page=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<PostListDto>>();
-        result.Should().NotBeNull();
-        result!.PageNumber.Should().Be(1);
-        result.Items.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.PageNumber.ShouldBe(1);
+        result.Items.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     [Fact]
@@ -113,11 +113,11 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/blog/posts/{createdPost!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var post = await response.Content.ReadFromJsonWithEnumsAsync<PostDto>();
-        post.Should().NotBeNull();
-        post!.Id.Should().Be(createdPost.Id);
-        post.Title.Should().Be(postRequest.Title);
+        post.ShouldNotBeNull();
+        post!.Id.ShouldBe(createdPost.Id);
+        post.Title.ShouldBe(postRequest.Title);
     }
 
     [Fact]
@@ -130,7 +130,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/blog/posts/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -149,10 +149,10 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/blog/posts/by-slug/{createdPost!.Slug}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var post = await response.Content.ReadFromJsonWithEnumsAsync<PostDto>();
-        post.Should().NotBeNull();
-        post!.Slug.Should().Be(createdPost.Slug);
+        post.ShouldNotBeNull();
+        post!.Slug.ShouldBe(createdPost.Slug);
     }
 
     [Fact]
@@ -165,7 +165,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/blog/posts/by-slug/non-existent-slug-12345");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -179,11 +179,11 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/blog/posts", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var post = await response.Content.ReadFromJsonWithEnumsAsync<PostDto>();
-        post.Should().NotBeNull();
-        post!.Title.Should().Be(request.Title);
-        post.Slug.Should().Be(request.Slug);
+        post.ShouldNotBeNull();
+        post!.Title.ShouldBe(request.Title);
+        post.Slug.ShouldBe(request.Slug);
     }
 
     [Fact]
@@ -200,7 +200,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/blog/posts", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 
     [Fact]
@@ -228,7 +228,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/blog/posts", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -241,7 +241,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/blog/posts", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -276,10 +276,10 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/blog/posts/{createdPost.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updatedPost = await response.Content.ReadFromJsonWithEnumsAsync<PostDto>();
-        updatedPost.Should().NotBeNull();
-        updatedPost!.Title.Should().Be("Updated Title");
+        updatedPost.ShouldNotBeNull();
+        updatedPost!.Title.ShouldBe("Updated Title");
     }
 
     [Fact]
@@ -307,7 +307,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/blog/posts/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -325,11 +325,11 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/blog/posts/{createdPost!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Verify it's deleted
         var getResponse = await adminClient.GetAsync($"/api/blog/posts/{createdPost.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -342,7 +342,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/blog/posts/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -362,10 +362,10 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             new PublishPostRequest());
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var publishedPost = await response.Content.ReadFromJsonWithEnumsAsync<PostDto>();
-        publishedPost.Should().NotBeNull();
-        publishedPost!.Status.Should().Be(NOIR.Domain.Enums.PostStatus.Published);
+        publishedPost.ShouldNotBeNull();
+        publishedPost!.Status.ShouldBe(NOIR.Domain.Enums.PostStatus.Published);
     }
 
     [Fact]
@@ -380,7 +380,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             new PublishPostRequest());
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -397,9 +397,9 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/blog/categories");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<List<PostCategoryListDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -409,7 +409,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/blog/categories");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -426,10 +426,10 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/blog/categories?search={categoryRequest.Name}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<List<PostCategoryListDto>>();
-        result.Should().NotBeNull();
-        result.Should().Contain(c => c.Name == categoryRequest.Name);
+        result.ShouldNotBeNull();
+        result.ShouldContain(c => c.Name == categoryRequest.Name);
     }
 
     [Fact]
@@ -443,11 +443,11 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/blog/categories", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var category = await response.Content.ReadFromJsonAsync<PostCategoryDto>();
-        category.Should().NotBeNull();
-        category!.Name.Should().Be(request.Name);
-        category.Slug.Should().Be(request.Slug);
+        category.ShouldNotBeNull();
+        category!.Name.ShouldBe(request.Name);
+        category.Slug.ShouldBe(request.Slug);
     }
 
     [Fact]
@@ -464,7 +464,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/blog/categories", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 
     [Fact]
@@ -486,7 +486,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/blog/categories", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -499,7 +499,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/blog/categories", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -528,10 +528,10 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/blog/categories/{createdCategory.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updatedCategory = await response.Content.ReadFromJsonAsync<PostCategoryDto>();
-        updatedCategory.Should().NotBeNull();
-        updatedCategory!.Name.Should().Be("Updated Category Name");
+        updatedCategory.ShouldNotBeNull();
+        updatedCategory!.Name.ShouldBe("Updated Category Name");
     }
 
     [Fact]
@@ -553,7 +553,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/blog/categories/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -571,7 +571,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/blog/categories/{createdCategory!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -584,7 +584,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/blog/categories/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -601,9 +601,9 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/blog/tags");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<List<PostTagListDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -613,7 +613,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/blog/tags");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -630,10 +630,10 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/blog/tags?search={tagRequest.Name}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<List<PostTagListDto>>();
-        result.Should().NotBeNull();
-        result.Should().Contain(t => t.Name == tagRequest.Name);
+        result.ShouldNotBeNull();
+        result.ShouldContain(t => t.Name == tagRequest.Name);
     }
 
     [Fact]
@@ -647,11 +647,11 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/blog/tags", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var tag = await response.Content.ReadFromJsonAsync<PostTagDto>();
-        tag.Should().NotBeNull();
-        tag!.Name.Should().Be(request.Name);
-        tag.Slug.Should().Be(request.Slug);
+        tag.ShouldNotBeNull();
+        tag!.Name.ShouldBe(request.Name);
+        tag.Slug.ShouldBe(request.Slug);
     }
 
     [Fact]
@@ -668,7 +668,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/blog/tags", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 
     [Fact]
@@ -686,7 +686,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/blog/tags", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -699,7 +699,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/blog/tags", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -724,11 +724,11 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/blog/tags/{createdTag.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updatedTag = await response.Content.ReadFromJsonAsync<PostTagDto>();
-        updatedTag.Should().NotBeNull();
-        updatedTag!.Name.Should().Be("Updated Tag Name");
-        updatedTag.Color.Should().Be("#FF5733");
+        updatedTag.ShouldNotBeNull();
+        updatedTag!.Name.ShouldBe("Updated Tag Name");
+        updatedTag.Color.ShouldBe("#FF5733");
     }
 
     [Fact]
@@ -746,7 +746,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/blog/tags/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -764,7 +764,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/blog/tags/{createdTag!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -777,7 +777,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/blog/tags/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -795,7 +795,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await userClient.GetAsync("/api/blog/posts");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -809,7 +809,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await userClient.GetAsync("/api/blog/categories");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -823,7 +823,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await userClient.GetAsync("/api/blog/tags");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -838,7 +838,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await userClient.PostAsJsonAsync("/api/blog/posts", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -853,7 +853,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await userClient.PostAsJsonAsync("/api/blog/categories", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -868,7 +868,7 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await userClient.PostAsJsonAsync("/api/blog/tags", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -907,15 +907,15 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/blog/posts", postRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var post = await response.Content.ReadFromJsonWithEnumsAsync<PostDto>();
-        post.Should().NotBeNull();
-        post!.CategoryId.Should().Be(category.Id);
+        post.ShouldNotBeNull();
+        post!.CategoryId.ShouldBe(category.Id);
         // CategoryName may not be populated in create response - verify by fetching
         var getResponse = await adminClient.GetAsync($"/api/blog/posts/{post.Id}");
         var fetchedPost = await getResponse.Content.ReadFromJsonWithEnumsAsync<PostDto>();
-        fetchedPost!.CategoryId.Should().Be(category.Id);
-        fetchedPost.CategoryName.Should().Be(category.Name);
+        fetchedPost!.CategoryId.ShouldBe(category.Id);
+        fetchedPost.CategoryName.ShouldBe(category.Name);
     }
 
     [Fact]
@@ -954,15 +954,15 @@ public class BlogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/blog/posts", postRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var post = await response.Content.ReadFromJsonWithEnumsAsync<PostDto>();
-        post.Should().NotBeNull();
+        post.ShouldNotBeNull();
         // Tags may not be populated in create response - verify by fetching
         var getResponse = await adminClient.GetAsync($"/api/blog/posts/{post!.Id}");
         var fetchedPost = await getResponse.Content.ReadFromJsonWithEnumsAsync<PostDto>();
-        fetchedPost!.Tags.Should().HaveCount(2);
-        fetchedPost.Tags.Should().Contain(t => t.Id == tag1.Id);
-        fetchedPost.Tags.Should().Contain(t => t.Id == tag2.Id);
+        fetchedPost!.Tags.Count().ShouldBe(2);
+        fetchedPost.Tags.ShouldContain(t => t.Id == tag1.Id);
+        fetchedPost.Tags.ShouldContain(t => t.Id == tag2.Id);
     }
 
     #endregion

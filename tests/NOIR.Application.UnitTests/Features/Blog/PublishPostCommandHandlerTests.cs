@@ -104,13 +104,13 @@ public class PublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Status.Should().Be(PostStatus.Published);
-        post.Status.Should().Be(PostStatus.Published);
-        post.PublishedAt.Should().NotBeNull();
-        post.PublishedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
-        post.ScheduledPublishAt.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Status.ShouldBe(PostStatus.Published);
+        post.Status.ShouldBe(PostStatus.Published);
+        post.PublishedAt.ShouldNotBeNull();
+        post.PublishedAt!.Value.ShouldBe(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
+        post.ScheduledPublishAt.ShouldBeNull();
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -137,8 +137,8 @@ public class PublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        post.Status.Should().Be(PostStatus.Published);
+        result.IsSuccess.ShouldBe(true);
+        post.Status.ShouldBe(PostStatus.Published);
     }
 
     [Fact]
@@ -162,10 +162,10 @@ public class PublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        post.Status.Should().Be(PostStatus.Published);
-        post.ScheduledPublishAt.Should().BeNull();
-        post.PublishedAt.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        post.Status.ShouldBe(PostStatus.Published);
+        post.ScheduledPublishAt.ShouldBeNull();
+        post.PublishedAt.ShouldNotBeNull();
     }
 
     #endregion
@@ -193,11 +193,11 @@ public class PublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(PostStatus.Scheduled);
-        post.Status.Should().Be(PostStatus.Scheduled);
-        post.ScheduledPublishAt.Should().Be(futureDate);
-        post.PublishedAt.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(PostStatus.Scheduled);
+        post.Status.ShouldBe(PostStatus.Scheduled);
+        post.ScheduledPublishAt.ShouldBe(futureDate);
+        post.PublishedAt.ShouldBeNull();
     }
 
     [Fact]
@@ -222,10 +222,10 @@ public class PublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        post.Status.Should().Be(PostStatus.Scheduled);
-        post.ScheduledPublishAt.Should().Be(futureDate);
-        post.PublishedAt.Should().BeNull(); // Cleared when scheduling
+        result.IsSuccess.ShouldBe(true);
+        post.Status.ShouldBe(PostStatus.Scheduled);
+        post.ScheduledPublishAt.ShouldBe(futureDate);
+        post.PublishedAt.ShouldBeNull(); // Cleared when scheduling
     }
 
     [Fact]
@@ -245,10 +245,10 @@ public class PublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-BLOG-004");
-        result.Error.Message.Should().Contain("future");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-BLOG-004");
+        result.Error.Message.ShouldContain("future");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -273,9 +273,9 @@ public class PublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-BLOG-004");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-BLOG-004");
     }
 
     #endregion
@@ -297,10 +297,10 @@ public class PublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-BLOG-003");
-        result.Error.Message.Should().Contain(postId.ToString());
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-BLOG-003");
+        result.Error.Message.ShouldContain(postId.ToString());
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -338,9 +338,9 @@ public class PublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategoryId.Should().Be(categoryId);
-        result.Value.CategoryName.Should().Be("Technology");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategoryId.ShouldBe(categoryId);
+        result.Value.CategoryName.ShouldBe("Technology");
     }
 
     [Fact]
@@ -363,9 +363,9 @@ public class PublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategoryId.Should().BeNull();
-        result.Value.CategoryName.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategoryId.ShouldBeNull();
+        result.Value.CategoryName.ShouldBeNull();
 
         _categoryRepositoryMock.Verify(
             x => x.FirstOrDefaultAsync(It.IsAny<CategoryByIdSpec>(), It.IsAny<CancellationToken>()),
@@ -408,10 +408,10 @@ public class PublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Tags.Should().HaveCount(2);
-        result.Value.Tags.Select(t => t.Name).Should().Contain("Tag 1");
-        result.Value.Tags.Select(t => t.Name).Should().Contain("Tag 2");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Tags.Count().ShouldBe(2);
+        result.Value.Tags.Select(t => t.Name).ShouldContain("Tag 1");
+        result.Value.Tags.Select(t => t.Name).ShouldContain("Tag 2");
     }
 
     #endregion
@@ -471,18 +471,18 @@ public class PublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(postId);
-        result.Value.Title.Should().Be("My Post Title");
-        result.Value.Slug.Should().Be("my-post-title");
-        result.Value.Excerpt.Should().Be("Excerpt here");
-        result.Value.ContentJson.Should().Be("{}");
-        result.Value.ContentHtml.Should().Be("<p>Content</p>");
-        result.Value.MetaTitle.Should().Be("Meta Title");
-        result.Value.MetaDescription.Should().Be("Meta Description");
-        result.Value.CanonicalUrl.Should().Be("https://example.com");
-        result.Value.AllowIndexing.Should().BeTrue();
-        result.Value.Status.Should().Be(PostStatus.Published);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(postId);
+        result.Value.Title.ShouldBe("My Post Title");
+        result.Value.Slug.ShouldBe("my-post-title");
+        result.Value.Excerpt.ShouldBe("Excerpt here");
+        result.Value.ContentJson.ShouldBe("{}");
+        result.Value.ContentHtml.ShouldBe("<p>Content</p>");
+        result.Value.MetaTitle.ShouldBe("Meta Title");
+        result.Value.MetaDescription.ShouldBe("Meta Description");
+        result.Value.CanonicalUrl.ShouldBe("https://example.com");
+        result.Value.AllowIndexing.ShouldBe(true);
+        result.Value.Status.ShouldBe(PostStatus.Published);
     }
 
     [Fact]
@@ -507,10 +507,10 @@ public class PublishPostCommandHandlerTests
         var afterHandle = DateTimeOffset.UtcNow;
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        post.PublishedAt.Should().NotBeNull();
-        post.PublishedAt.Should().BeOnOrAfter(beforeHandle);
-        post.PublishedAt.Should().BeOnOrBefore(afterHandle);
+        result.IsSuccess.ShouldBe(true);
+        post.PublishedAt.ShouldNotBeNull();
+        post.PublishedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeHandle);
+        post.PublishedAt!.Value.ShouldBeLessThanOrEqualTo(afterHandle);
     }
 
     [Fact]
@@ -534,9 +534,9 @@ public class PublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        post.ScheduledPublishAt.Should().Be(scheduleTime);
-        result.Value.ScheduledPublishAt.Should().Be(scheduleTime);
+        result.IsSuccess.ShouldBe(true);
+        post.ScheduledPublishAt.ShouldBe(scheduleTime);
+        result.Value.ScheduledPublishAt.ShouldBe(scheduleTime);
     }
 
     [Fact]
@@ -565,9 +565,9 @@ public class PublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategoryId.Should().Be(categoryId);
-        result.Value.CategoryName.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategoryId.ShouldBe(categoryId);
+        result.Value.CategoryName.ShouldBeNull();
     }
 
     #endregion

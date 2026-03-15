@@ -81,9 +81,9 @@ public class DeliverOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(OrderStatus.Delivered);
-        result.Value.DeliveredAt.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(OrderStatus.Delivered);
+        result.Value.DeliveredAt.ShouldNotBeNull();
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -113,10 +113,10 @@ public class DeliverOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.DeliveredAt.Should().NotBeNull();
-        result.Value.DeliveredAt.Should().BeOnOrAfter(beforeDeliver);
-        result.Value.DeliveredAt.Should().BeOnOrBefore(DateTimeOffset.UtcNow.AddSeconds(1));
+        result.IsSuccess.ShouldBe(true);
+        result.Value.DeliveredAt.ShouldNotBeNull();
+        result.Value.DeliveredAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeDeliver);
+        result.Value.DeliveredAt!.Value.ShouldBeLessThanOrEqualTo(DateTimeOffset.UtcNow.AddSeconds(1));
     }
 
     [Fact]
@@ -144,13 +144,13 @@ public class DeliverOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.OrderNumber.Should().Be("ORD-20250126-0042");
-        result.Value.CustomerEmail.Should().Be("john@example.com");
-        result.Value.CustomerName.Should().Be("John Doe");
-        result.Value.Status.Should().Be(OrderStatus.Delivered);
-        result.Value.TrackingNumber.Should().Be("TRACK-123");
-        result.Value.ShippingCarrier.Should().Be("GHTK");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.OrderNumber.ShouldBe("ORD-20250126-0042");
+        result.Value.CustomerEmail.ShouldBe("john@example.com");
+        result.Value.CustomerName.ShouldBe("John Doe");
+        result.Value.Status.ShouldBe(OrderStatus.Delivered);
+        result.Value.TrackingNumber.ShouldBe("TRACK-123");
+        result.Value.ShippingCarrier.ShouldBe("GHTK");
     }
 
     [Fact]
@@ -185,8 +185,8 @@ public class DeliverOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
     }
 
     #endregion
@@ -209,10 +209,10 @@ public class DeliverOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be(ErrorCodes.Order.NotFound);
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.NotFound);
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -241,9 +241,9 @@ public class DeliverOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidDeliverTransition);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.InvalidDeliverTransition);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -269,9 +269,9 @@ public class DeliverOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidDeliverTransition);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.InvalidDeliverTransition);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -298,9 +298,9 @@ public class DeliverOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidDeliverTransition);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.InvalidDeliverTransition);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -326,9 +326,9 @@ public class DeliverOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidDeliverTransition);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.InvalidDeliverTransition);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -355,9 +355,9 @@ public class DeliverOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidDeliverTransition);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.InvalidDeliverTransition);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -383,9 +383,9 @@ public class DeliverOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidDeliverTransition);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.InvalidDeliverTransition);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),

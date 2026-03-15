@@ -81,8 +81,8 @@ public class LockUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
         _userIdentityServiceMock.Verify(
             x => x.SetUserLockoutAsync(targetUserId, true, currentUserId, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -110,7 +110,7 @@ public class LockUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _userIdentityServiceMock.Verify(
             x => x.SetUserLockoutAsync(targetUserId, true, "system", It.IsAny<CancellationToken>()),
             Times.Once);
@@ -143,8 +143,8 @@ public class LockUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
         _userIdentityServiceMock.Verify(
             x => x.SetUserLockoutAsync(targetUserId, false, null, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -201,8 +201,8 @@ public class LockUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.UserNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.UserNotFound);
         _userIdentityServiceMock.Verify(
             x => x.SetUserLockoutAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -230,8 +230,8 @@ public class LockUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Business.CannotModify);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Business.CannotModify);
         _userIdentityServiceMock.Verify(
             x => x.SetUserLockoutAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -255,8 +255,8 @@ public class LockUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Business.CannotModify);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Business.CannotModify);
     }
 
     #endregion
@@ -286,8 +286,8 @@ public class LockUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Validation.General);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Validation.General);
     }
 
     #endregion
@@ -348,7 +348,7 @@ public class LockUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     #endregion

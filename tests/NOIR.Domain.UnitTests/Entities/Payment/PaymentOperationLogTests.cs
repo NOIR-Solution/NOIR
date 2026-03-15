@@ -35,12 +35,12 @@ public class PaymentOperationLogTests
             PaymentOperationType.InitiatePayment, TestProvider, TestCorrelationId, TestTenantId);
 
         // Assert
-        log.Should().NotBeNull();
-        log.Id.Should().NotBe(Guid.Empty);
-        log.OperationType.Should().Be(PaymentOperationType.InitiatePayment);
-        log.Provider.Should().Be(TestProvider);
-        log.CorrelationId.Should().Be(TestCorrelationId);
-        log.TenantId.Should().Be(TestTenantId);
+        log.ShouldNotBeNull();
+        log.Id.ShouldNotBe(Guid.Empty);
+        log.OperationType.ShouldBe(PaymentOperationType.InitiatePayment);
+        log.Provider.ShouldBe(TestProvider);
+        log.CorrelationId.ShouldBe(TestCorrelationId);
+        log.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -50,18 +50,18 @@ public class PaymentOperationLogTests
         var log = CreateTestLog();
 
         // Assert
-        log.PaymentTransactionId.Should().BeNull();
-        log.TransactionNumber.Should().BeNull();
-        log.RefundId.Should().BeNull();
-        log.RequestData.Should().BeNull();
-        log.ResponseData.Should().BeNull();
-        log.HttpStatusCode.Should().BeNull();
-        log.ErrorCode.Should().BeNull();
-        log.ErrorMessage.Should().BeNull();
-        log.StackTrace.Should().BeNull();
-        log.AdditionalContext.Should().BeNull();
-        log.UserId.Should().BeNull();
-        log.IpAddress.Should().BeNull();
+        log.PaymentTransactionId.ShouldBeNull();
+        log.TransactionNumber.ShouldBeNull();
+        log.RefundId.ShouldBeNull();
+        log.RequestData.ShouldBeNull();
+        log.ResponseData.ShouldBeNull();
+        log.HttpStatusCode.ShouldBeNull();
+        log.ErrorCode.ShouldBeNull();
+        log.ErrorMessage.ShouldBeNull();
+        log.StackTrace.ShouldBeNull();
+        log.AdditionalContext.ShouldBeNull();
+        log.UserId.ShouldBeNull();
+        log.IpAddress.ShouldBeNull();
     }
 
     [Fact]
@@ -71,8 +71,8 @@ public class PaymentOperationLogTests
         var log = CreateTestLog();
 
         // Assert
-        log.DurationMs.Should().Be(0);
-        log.Success.Should().BeFalse();
+        log.DurationMs.ShouldBe(0);
+        log.Success.ShouldBeFalse();
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class PaymentOperationLogTests
         var log = CreateTestLog(tenantId: null);
 
         // Assert
-        log.TenantId.Should().BeNull();
+        log.TenantId.ShouldBeNull();
     }
 
     [Theory]
@@ -99,7 +99,7 @@ public class PaymentOperationLogTests
         var log = CreateTestLog(operationType: opType);
 
         // Assert
-        log.OperationType.Should().Be(opType);
+        log.OperationType.ShouldBe(opType);
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public class PaymentOperationLogTests
         var log2 = CreateTestLog(correlationId: "corr-2");
 
         // Assert
-        log1.Id.Should().NotBe(log2.Id);
+        log1.Id.ShouldNotBe(log2.Id);
     }
 
     #endregion
@@ -128,8 +128,8 @@ public class PaymentOperationLogTests
         log.SetTransactionInfo(transactionId, "TXN-20260219-0001");
 
         // Assert
-        log.PaymentTransactionId.Should().Be(transactionId);
-        log.TransactionNumber.Should().Be("TXN-20260219-0001");
+        log.PaymentTransactionId.ShouldBe(transactionId);
+        log.TransactionNumber.ShouldBe("TXN-20260219-0001");
     }
 
     [Fact]
@@ -142,8 +142,8 @@ public class PaymentOperationLogTests
         log.SetTransactionInfo(null, null);
 
         // Assert
-        log.PaymentTransactionId.Should().BeNull();
-        log.TransactionNumber.Should().BeNull();
+        log.PaymentTransactionId.ShouldBeNull();
+        log.TransactionNumber.ShouldBeNull();
     }
 
     [Fact]
@@ -159,8 +159,8 @@ public class PaymentOperationLogTests
         log.SetTransactionInfo(secondId, "TXN-002");
 
         // Assert
-        log.PaymentTransactionId.Should().Be(secondId);
-        log.TransactionNumber.Should().Be("TXN-002");
+        log.PaymentTransactionId.ShouldBe(secondId);
+        log.TransactionNumber.ShouldBe("TXN-002");
     }
 
     #endregion
@@ -178,7 +178,7 @@ public class PaymentOperationLogTests
         log.SetRefundInfo(refundId);
 
         // Assert
-        log.RefundId.Should().Be(refundId);
+        log.RefundId.ShouldBe(refundId);
     }
 
     [Fact]
@@ -194,7 +194,7 @@ public class PaymentOperationLogTests
         log.SetRefundInfo(secondRefundId);
 
         // Assert
-        log.RefundId.Should().Be(secondRefundId);
+        log.RefundId.ShouldBe(secondRefundId);
     }
 
     #endregion
@@ -212,7 +212,7 @@ public class PaymentOperationLogTests
         log.SetRequestData(requestData);
 
         // Assert
-        log.RequestData.Should().Be(requestData);
+        log.RequestData.ShouldBe(requestData);
     }
 
     [Fact]
@@ -225,7 +225,7 @@ public class PaymentOperationLogTests
         log.SetRequestData(null);
 
         // Assert
-        log.RequestData.Should().BeNull();
+        log.RequestData.ShouldBeNull();
     }
 
     [Fact]
@@ -239,8 +239,8 @@ public class PaymentOperationLogTests
         log.SetRequestData(longData);
 
         // Assert
-        log.RequestData.Should().HaveLength(10240 + "...[TRUNCATED]".Length);
-        log.RequestData.Should().EndWith("...[TRUNCATED]");
+        log.RequestData.Length.ShouldBe(10240 + "...[TRUNCATED]".Length);
+        log.RequestData.ShouldEndWith("...[TRUNCATED]");
     }
 
     [Fact]
@@ -254,8 +254,8 @@ public class PaymentOperationLogTests
         log.SetRequestData(exactData);
 
         // Assert
-        log.RequestData.Should().HaveLength(10240);
-        log.RequestData.Should().NotContain("TRUNCATED");
+        log.RequestData.Length.ShouldBe(10240);
+        log.RequestData.ShouldNotContain("TRUNCATED");
     }
 
     [Fact]
@@ -269,7 +269,7 @@ public class PaymentOperationLogTests
         log.SetRequestData(overData);
 
         // Assert
-        log.RequestData.Should().EndWith("...[TRUNCATED]");
+        log.RequestData.ShouldEndWith("...[TRUNCATED]");
     }
 
     #endregion
@@ -287,8 +287,8 @@ public class PaymentOperationLogTests
         log.SetResponseData(responseData, 200);
 
         // Assert
-        log.ResponseData.Should().Be(responseData);
-        log.HttpStatusCode.Should().Be(200);
+        log.ResponseData.ShouldBe(responseData);
+        log.HttpStatusCode.ShouldBe(200);
     }
 
     [Fact]
@@ -301,8 +301,8 @@ public class PaymentOperationLogTests
         log.SetResponseData(null);
 
         // Assert
-        log.ResponseData.Should().BeNull();
-        log.HttpStatusCode.Should().BeNull();
+        log.ResponseData.ShouldBeNull();
+        log.HttpStatusCode.ShouldBeNull();
     }
 
     [Fact]
@@ -316,8 +316,8 @@ public class PaymentOperationLogTests
         log.SetResponseData(longData, 500);
 
         // Assert
-        log.ResponseData.Should().EndWith("...[TRUNCATED]");
-        log.HttpStatusCode.Should().Be(500);
+        log.ResponseData.ShouldEndWith("...[TRUNCATED]");
+        log.HttpStatusCode.ShouldBe(500);
     }
 
     [Fact]
@@ -330,8 +330,8 @@ public class PaymentOperationLogTests
         log.SetResponseData("{\"ok\":true}");
 
         // Assert
-        log.ResponseData.Should().Be("{\"ok\":true}");
-        log.HttpStatusCode.Should().BeNull();
+        log.ResponseData.ShouldBe("{\"ok\":true}");
+        log.HttpStatusCode.ShouldBeNull();
     }
 
     [Theory]
@@ -349,7 +349,7 @@ public class PaymentOperationLogTests
         log.SetResponseData("response body", statusCode);
 
         // Assert
-        log.HttpStatusCode.Should().Be(statusCode);
+        log.HttpStatusCode.ShouldBe(statusCode);
     }
 
     #endregion
@@ -366,7 +366,7 @@ public class PaymentOperationLogTests
         log.SetDuration(1500);
 
         // Assert
-        log.DurationMs.Should().Be(1500);
+        log.DurationMs.ShouldBe(1500);
     }
 
     [Fact]
@@ -379,7 +379,7 @@ public class PaymentOperationLogTests
         log.SetDuration(0);
 
         // Assert
-        log.DurationMs.Should().Be(0);
+        log.DurationMs.ShouldBe(0);
     }
 
     [Fact]
@@ -393,7 +393,7 @@ public class PaymentOperationLogTests
         log.SetDuration(250);
 
         // Assert
-        log.DurationMs.Should().Be(250);
+        log.DurationMs.ShouldBe(250);
     }
 
     #endregion
@@ -405,13 +405,13 @@ public class PaymentOperationLogTests
     {
         // Arrange
         var log = CreateTestLog();
-        log.Success.Should().BeFalse();
+        log.Success.ShouldBeFalse();
 
         // Act
         log.MarkAsSuccess();
 
         // Assert
-        log.Success.Should().BeTrue();
+        log.Success.ShouldBeTrue();
     }
 
     #endregion
@@ -428,7 +428,7 @@ public class PaymentOperationLogTests
         log.MarkAsFailed("ERR_001", "Payment declined", null);
 
         // Assert
-        log.Success.Should().BeFalse();
+        log.Success.ShouldBeFalse();
     }
 
     [Fact]
@@ -441,8 +441,8 @@ public class PaymentOperationLogTests
         log.MarkAsFailed("ERR_TIMEOUT", "Connection timed out");
 
         // Assert
-        log.ErrorCode.Should().Be("ERR_TIMEOUT");
-        log.ErrorMessage.Should().Be("Connection timed out");
+        log.ErrorCode.ShouldBe("ERR_TIMEOUT");
+        log.ErrorMessage.ShouldBe("Connection timed out");
     }
 
     [Fact]
@@ -456,7 +456,7 @@ public class PaymentOperationLogTests
         log.MarkAsFailed("ERR_001", "Internal error", stackTrace);
 
         // Assert
-        log.StackTrace.Should().Be(stackTrace);
+        log.StackTrace.ShouldBe(stackTrace);
     }
 
     [Fact]
@@ -469,9 +469,9 @@ public class PaymentOperationLogTests
         log.MarkAsFailed(null, null, null);
 
         // Assert
-        log.ErrorCode.Should().BeNull();
-        log.ErrorMessage.Should().BeNull();
-        log.StackTrace.Should().BeNull();
+        log.ErrorCode.ShouldBeNull();
+        log.ErrorMessage.ShouldBeNull();
+        log.StackTrace.ShouldBeNull();
     }
 
     [Fact]
@@ -485,8 +485,8 @@ public class PaymentOperationLogTests
         log.MarkAsFailed("ERR_001", longMessage);
 
         // Assert
-        log.ErrorMessage.Should().HaveLength(2000 + "...[TRUNCATED]".Length);
-        log.ErrorMessage.Should().EndWith("...[TRUNCATED]");
+        log.ErrorMessage.Length.ShouldBe(2000 + "...[TRUNCATED]".Length);
+        log.ErrorMessage.ShouldEndWith("...[TRUNCATED]");
     }
 
     [Fact]
@@ -500,8 +500,8 @@ public class PaymentOperationLogTests
         log.MarkAsFailed("ERR_001", exactMessage);
 
         // Assert
-        log.ErrorMessage.Should().HaveLength(2000);
-        log.ErrorMessage.Should().NotContain("TRUNCATED");
+        log.ErrorMessage.Length.ShouldBe(2000);
+        log.ErrorMessage.ShouldNotContain("TRUNCATED");
     }
 
     [Fact]
@@ -515,8 +515,8 @@ public class PaymentOperationLogTests
         log.MarkAsFailed("ERR_001", "Error", longStackTrace);
 
         // Assert
-        log.StackTrace.Should().HaveLength(4000 + "...[TRUNCATED]".Length);
-        log.StackTrace.Should().EndWith("...[TRUNCATED]");
+        log.StackTrace.Length.ShouldBe(4000 + "...[TRUNCATED]".Length);
+        log.StackTrace.ShouldEndWith("...[TRUNCATED]");
     }
 
     [Fact]
@@ -530,8 +530,8 @@ public class PaymentOperationLogTests
         log.MarkAsFailed("ERR_001", "Error", exactStackTrace);
 
         // Assert
-        log.StackTrace.Should().HaveLength(4000);
-        log.StackTrace.Should().NotContain("TRUNCATED");
+        log.StackTrace.Length.ShouldBe(4000);
+        log.StackTrace.ShouldNotContain("TRUNCATED");
     }
 
     [Fact]
@@ -540,13 +540,13 @@ public class PaymentOperationLogTests
         // Arrange
         var log = CreateTestLog();
         log.MarkAsSuccess();
-        log.Success.Should().BeTrue();
+        log.Success.ShouldBeTrue();
 
         // Act
         log.MarkAsFailed("ERR_001", "Late failure");
 
         // Assert
-        log.Success.Should().BeFalse();
+        log.Success.ShouldBeFalse();
     }
 
     #endregion
@@ -564,7 +564,7 @@ public class PaymentOperationLogTests
         log.SetAdditionalContext(context);
 
         // Assert
-        log.AdditionalContext.Should().Be(context);
+        log.AdditionalContext.ShouldBe(context);
     }
 
     [Fact]
@@ -577,7 +577,7 @@ public class PaymentOperationLogTests
         log.SetAdditionalContext(null);
 
         // Assert
-        log.AdditionalContext.Should().BeNull();
+        log.AdditionalContext.ShouldBeNull();
     }
 
     [Fact]
@@ -591,8 +591,8 @@ public class PaymentOperationLogTests
         log.SetAdditionalContext(longContext);
 
         // Assert
-        log.AdditionalContext.Should().HaveLength(4000 + "...[TRUNCATED]".Length);
-        log.AdditionalContext.Should().EndWith("...[TRUNCATED]");
+        log.AdditionalContext.Length.ShouldBe(4000 + "...[TRUNCATED]".Length);
+        log.AdditionalContext.ShouldEndWith("...[TRUNCATED]");
     }
 
     [Fact]
@@ -606,8 +606,8 @@ public class PaymentOperationLogTests
         log.SetAdditionalContext(exactContext);
 
         // Assert
-        log.AdditionalContext.Should().HaveLength(4000);
-        log.AdditionalContext.Should().NotContain("TRUNCATED");
+        log.AdditionalContext.Length.ShouldBe(4000);
+        log.AdditionalContext.ShouldNotContain("TRUNCATED");
     }
 
     #endregion
@@ -624,8 +624,8 @@ public class PaymentOperationLogTests
         log.SetUserInfo("user-abc-123", "192.168.1.100");
 
         // Assert
-        log.UserId.Should().Be("user-abc-123");
-        log.IpAddress.Should().Be("192.168.1.100");
+        log.UserId.ShouldBe("user-abc-123");
+        log.IpAddress.ShouldBe("192.168.1.100");
     }
 
     [Fact]
@@ -638,8 +638,8 @@ public class PaymentOperationLogTests
         log.SetUserInfo(null, null);
 
         // Assert
-        log.UserId.Should().BeNull();
-        log.IpAddress.Should().BeNull();
+        log.UserId.ShouldBeNull();
+        log.IpAddress.ShouldBeNull();
     }
 
     [Fact]
@@ -653,8 +653,8 @@ public class PaymentOperationLogTests
         log.SetUserInfo("user-2", "10.0.0.2");
 
         // Assert
-        log.UserId.Should().Be("user-2");
-        log.IpAddress.Should().Be("10.0.0.2");
+        log.UserId.ShouldBe("user-2");
+        log.IpAddress.ShouldBe("10.0.0.2");
     }
 
     #endregion
@@ -679,21 +679,21 @@ public class PaymentOperationLogTests
         log.SetAdditionalContext("{\"retryAttempt\":0}");
 
         // Assert
-        log.OperationType.Should().Be(PaymentOperationType.InitiatePayment);
-        log.Provider.Should().Be("momo");
-        log.CorrelationId.Should().Be("corr-xyz");
-        log.PaymentTransactionId.Should().Be(transactionId);
-        log.TransactionNumber.Should().Be("TXN-20260219-0001");
-        log.UserId.Should().Be("user-admin");
-        log.IpAddress.Should().Be("203.0.113.50");
-        log.RequestData.Should().Be("{\"amount\":500000}");
-        log.ResponseData.Should().Be("{\"status\":\"success\",\"txnId\":\"MOMO-123\"}");
-        log.HttpStatusCode.Should().Be(200);
-        log.DurationMs.Should().Be(350);
-        log.Success.Should().BeTrue();
-        log.AdditionalContext.Should().Be("{\"retryAttempt\":0}");
-        log.ErrorCode.Should().BeNull();
-        log.ErrorMessage.Should().BeNull();
+        log.OperationType.ShouldBe(PaymentOperationType.InitiatePayment);
+        log.Provider.ShouldBe("momo");
+        log.CorrelationId.ShouldBe("corr-xyz");
+        log.PaymentTransactionId.ShouldBe(transactionId);
+        log.TransactionNumber.ShouldBe("TXN-20260219-0001");
+        log.UserId.ShouldBe("user-admin");
+        log.IpAddress.ShouldBe("203.0.113.50");
+        log.RequestData.ShouldBe("{\"amount\":500000}");
+        log.ResponseData.ShouldBe("{\"status\":\"success\",\"txnId\":\"MOMO-123\"}");
+        log.HttpStatusCode.ShouldBe(200);
+        log.DurationMs.ShouldBe(350);
+        log.Success.ShouldBeTrue();
+        log.AdditionalContext.ShouldBe("{\"retryAttempt\":0}");
+        log.ErrorCode.ShouldBeNull();
+        log.ErrorMessage.ShouldBeNull();
     }
 
     [Fact]
@@ -713,13 +713,13 @@ public class PaymentOperationLogTests
         log.MarkAsFailed("REFUND_DECLINED", "Insufficient balance for refund", "at RefundService.Process()");
 
         // Assert
-        log.RefundId.Should().Be(refundId);
-        log.Success.Should().BeFalse();
-        log.ErrorCode.Should().Be("REFUND_DECLINED");
-        log.ErrorMessage.Should().Be("Insufficient balance for refund");
-        log.StackTrace.Should().Be("at RefundService.Process()");
-        log.HttpStatusCode.Should().Be(400);
-        log.DurationMs.Should().Be(1200);
+        log.RefundId.ShouldBe(refundId);
+        log.Success.ShouldBeFalse();
+        log.ErrorCode.ShouldBe("REFUND_DECLINED");
+        log.ErrorMessage.ShouldBe("Insufficient balance for refund");
+        log.StackTrace.ShouldBe("at RefundService.Process()");
+        log.HttpStatusCode.ShouldBe(400);
+        log.DurationMs.ShouldBe(1200);
     }
 
     #endregion

@@ -92,8 +92,8 @@ public class GetActiveSessionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -118,10 +118,10 @@ public class GetActiveSessionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
-        result.Value.Should().ContainSingle(s => s.IsCurrent);
-        result.Value.First().IsCurrent.Should().BeTrue(); // Current session should be first (sorted)
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
+        result.Value.Where(s => s.IsCurrent);
+        result.Value.First().IsCurrent.ShouldBe(true); // Current session should be first (sorted)
     }
 
     [Fact]
@@ -146,9 +146,9 @@ public class GetActiveSessionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.First().IsCurrent.Should().BeTrue(); // Current should be first
-        result.Value.First().DeviceName.Should().Be("Current Device");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.First().IsCurrent.ShouldBe(true); // Current should be first
+        result.Value.First().DeviceName.ShouldBe("Current Device");
     }
 
     [Fact]
@@ -166,8 +166,8 @@ public class GetActiveSessionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     [Fact]
@@ -191,14 +191,14 @@ public class GetActiveSessionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var sessionDto = result.Value.Single();
-        sessionDto.Id.Should().Be(session.Id);
-        sessionDto.DeviceName.Should().Be("Test Device");
-        sessionDto.UserAgent.Should().Be("Mozilla/5.0");
-        sessionDto.IpAddress.Should().Be("192.168.1.100");
-        sessionDto.CreatedAt.Should().BeCloseTo(session.CreatedAt, TimeSpan.FromSeconds(1));
-        sessionDto.ExpiresAt.Should().BeCloseTo(session.ExpiresAt, TimeSpan.FromSeconds(1));
+        sessionDto.Id.ShouldBe(session.Id);
+        sessionDto.DeviceName.ShouldBe("Test Device");
+        sessionDto.UserAgent.ShouldBe("Mozilla/5.0");
+        sessionDto.IpAddress.ShouldBe("192.168.1.100");
+        sessionDto.CreatedAt.ShouldBe(session.CreatedAt, TimeSpan.FromSeconds(1));
+        sessionDto.ExpiresAt.ShouldBe(session.ExpiresAt, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
@@ -222,8 +222,8 @@ public class GetActiveSessionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().AllSatisfy(s => s.IsCurrent.Should().BeFalse());
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldAllBe(s => s.IsCurrent == false);
     }
 
     #endregion
@@ -241,9 +241,9 @@ public class GetActiveSessionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Unauthorized);
-        result.Error.Message.Should().Contain("auth.user.notAuthenticated");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Unauthorized);
+        result.Error.Message.ShouldContain("auth.user.notAuthenticated");
     }
 
     [Fact]
@@ -259,8 +259,8 @@ public class GetActiveSessionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Unauthorized);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Unauthorized);
     }
 
     [Fact]
@@ -276,8 +276,8 @@ public class GetActiveSessionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Unauthorized);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Unauthorized);
     }
 
     [Fact]
@@ -293,8 +293,8 @@ public class GetActiveSessionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Unauthorized);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Unauthorized);
     }
 
     #endregion
@@ -338,8 +338,8 @@ public class GetActiveSessionsQueryHandlerTests
         var result = await _handler.Handle(query, cts.Token);
 
         // Assert - Should fail on authentication check, not cancellation
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Unauthorized);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Unauthorized);
     }
 
     #endregion

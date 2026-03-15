@@ -1,4 +1,3 @@
-using FluentAssertions;
 using Moq;
 using NOIR.Application.Common.Interfaces;
 using NOIR.Application.Common.Models;
@@ -56,12 +55,12 @@ public class CreateCustomerGroupCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("VIP Customers");
-        result.Value.Description.Should().Be("Top-tier customers with high spending");
-        result.Value.Slug.Should().Be("vip-customers");
-        result.Value.IsActive.Should().BeTrue();
-        result.Value.MemberCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("VIP Customers");
+        result.Value.Description.ShouldBe("Top-tier customers with high spending");
+        result.Value.Slug.ShouldBe("vip-customers");
+        result.Value.IsActive.ShouldBe(true);
+        result.Value.MemberCount.ShouldBe(0);
 
         _repositoryMock.Verify(x => x.AddAsync(It.IsAny<CustomerGroup>(), It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -80,8 +79,8 @@ public class CreateCustomerGroupCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Description.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Description.ShouldBeNull();
     }
 
     #endregion
@@ -102,8 +101,8 @@ public class CreateCustomerGroupCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(ErrorCodes.CustomerGroup.DuplicateName);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe(ErrorCodes.CustomerGroup.DuplicateName);
     }
 
     #endregion

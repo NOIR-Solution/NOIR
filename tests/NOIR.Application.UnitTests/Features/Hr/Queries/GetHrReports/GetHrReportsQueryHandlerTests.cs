@@ -76,14 +76,14 @@ public class GetHrReportsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var reports = result.Value;
 
-        reports.TotalDepartments.Should().BeGreaterThanOrEqualTo(1);
-        reports.TotalActiveEmployees.Should().BeGreaterThanOrEqualTo(1);
-        reports.HeadcountByDepartment.Should().NotBeNull();
-        reports.TagDistribution.Should().NotBeNull();
-        reports.EmploymentTypeBreakdown.Should().NotBeNull();
-        reports.StatusBreakdown.Should().NotBeNull();
+        reports.TotalDepartments.ShouldBeGreaterThanOrEqualTo(1);
+        reports.TotalActiveEmployees.ShouldBeGreaterThanOrEqualTo(1);
+        reports.HeadcountByDepartment.ShouldNotBeNull();
+        reports.TagDistribution.ShouldNotBeNull();
+        reports.EmploymentTypeBreakdown.ShouldNotBeNull();
+        reports.StatusBreakdown.ShouldNotBeNull();
     }
 }

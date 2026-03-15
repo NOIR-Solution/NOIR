@@ -42,7 +42,7 @@ public class AuditableEntityTests
         var entity = new TestAuditableEntity();
 
         // Assert
-        entity.Should().NotBeNull();
+        entity.ShouldNotBeNull();
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class AuditableEntityTests
         var entity = new TestAuditableEntity(id);
 
         // Assert
-        entity.Id.Should().Be(id);
+        entity.Id.ShouldBe(id);
     }
 
     [Fact]
@@ -67,8 +67,8 @@ public class AuditableEntityTests
         var after = DateTimeOffset.UtcNow;
 
         // Assert
-        entity.CreatedAt.Should().BeOnOrAfter(before);
-        entity.CreatedAt.Should().BeOnOrBefore(after);
+        entity.CreatedAt.ShouldBeGreaterThanOrEqualTo(before);
+        entity.CreatedAt.ShouldBeLessThanOrEqualTo(after);
     }
 
     #endregion
@@ -82,7 +82,7 @@ public class AuditableEntityTests
         var entity = new TestAuditableEntity();
 
         // Assert
-        entity.CreatedBy.Should().BeNull();
+        entity.CreatedBy.ShouldBeNull();
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public class AuditableEntityTests
         var entity = new TestAuditableEntity();
 
         // Assert
-        entity.ModifiedBy.Should().BeNull();
+        entity.ModifiedBy.ShouldBeNull();
     }
 
     #endregion
@@ -106,7 +106,7 @@ public class AuditableEntityTests
         var entity = new TestAuditableEntity();
 
         // Assert
-        entity.IsDeleted.Should().BeFalse();
+        entity.IsDeleted.ShouldBeFalse();
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class AuditableEntityTests
         var entity = new TestAuditableEntity();
 
         // Assert
-        entity.DeletedAt.Should().BeNull();
+        entity.DeletedAt.ShouldBeNull();
     }
 
     [Fact]
@@ -126,7 +126,7 @@ public class AuditableEntityTests
         var entity = new TestAuditableEntity();
 
         // Assert
-        entity.DeletedBy.Should().BeNull();
+        entity.DeletedBy.ShouldBeNull();
     }
 
     #endregion
@@ -140,7 +140,7 @@ public class AuditableEntityTests
         var entity = new TestAuditableEntity();
 
         // Assert
-        entity.Should().BeAssignableTo<IAuditableEntity>();
+        entity.ShouldBeAssignableTo<IAuditableEntity>();
     }
 
     [Fact]
@@ -150,7 +150,7 @@ public class AuditableEntityTests
         var entity = new TestAuditableEntity();
 
         // Assert
-        entity.Should().BeAssignableTo<Entity<Guid>>();
+        entity.ShouldBeAssignableTo<Entity<Guid>>();
     }
 
     #endregion
@@ -164,8 +164,8 @@ public class AuditableEntityTests
         var entity = new TestAuditableEntityWithInt(42);
 
         // Assert
-        entity.Id.Should().Be(42);
-        entity.IsDeleted.Should().BeFalse();
+        entity.Id.ShouldBe(42);
+        entity.IsDeleted.ShouldBeFalse();
     }
 
     [Fact]
@@ -175,8 +175,8 @@ public class AuditableEntityTests
         var entity = new TestAuditableEntityWithInt();
 
         // Assert
-        entity.Should().NotBeNull();
-        entity.Id.Should().Be(0); // Default int value
+        entity.ShouldNotBeNull();
+        entity.Id.ShouldBe(0); // Default int value
     }
 
     #endregion
@@ -190,8 +190,8 @@ public class AuditableEntityTests
         var entity = TestAuditableEntity.Create("Test Name");
 
         // Assert
-        entity.Name.Should().Be("Test Name");
-        entity.Id.Should().NotBe(Guid.Empty);
+        entity.Name.ShouldBe("Test Name");
+        entity.Id.ShouldNotBe(Guid.Empty);
     }
 
     [Fact]
@@ -203,8 +203,8 @@ public class AuditableEntityTests
         var after = DateTimeOffset.UtcNow;
 
         // Assert
-        entity.CreatedAt.Should().BeOnOrAfter(before);
-        entity.CreatedAt.Should().BeOnOrBefore(after);
+        entity.CreatedAt.ShouldBeGreaterThanOrEqualTo(before);
+        entity.CreatedAt.ShouldBeLessThanOrEqualTo(after);
     }
 
     #endregion
@@ -220,7 +220,7 @@ public class AuditableEntityTests
         var entity2 = new TestAuditableEntity(id) { Name = "Entity 2" };
 
         // Assert
-        entity1.Should().Be(entity2);
+        entity1.ShouldBe(entity2);
     }
 
     [Fact]
@@ -231,7 +231,7 @@ public class AuditableEntityTests
         var entity2 = new TestAuditableEntity(Guid.NewGuid()) { Name = "Test" };
 
         // Assert
-        entity1.Should().NotBe(entity2);
+        entity1.ShouldNotBe(entity2);
     }
 
     #endregion
@@ -246,24 +246,24 @@ public class AuditableEntityTests
 
         // Act & Assert
         var createdByProperty = entityType.GetProperty("CreatedBy");
-        createdByProperty.Should().NotBeNull();
-        createdByProperty!.SetMethod!.IsFamily.Should().BeTrue("CreatedBy should have protected setter");
+        createdByProperty.ShouldNotBeNull();
+        createdByProperty!.SetMethod!.IsFamily.ShouldBeTrue("CreatedBy should have protected setter");
 
         var modifiedByProperty = entityType.GetProperty("ModifiedBy");
-        modifiedByProperty.Should().NotBeNull();
-        modifiedByProperty!.SetMethod!.IsFamily.Should().BeTrue("ModifiedBy should have protected setter");
+        modifiedByProperty.ShouldNotBeNull();
+        modifiedByProperty!.SetMethod!.IsFamily.ShouldBeTrue("ModifiedBy should have protected setter");
 
         var isDeletedProperty = entityType.GetProperty("IsDeleted");
-        isDeletedProperty.Should().NotBeNull();
-        isDeletedProperty!.SetMethod!.IsFamily.Should().BeTrue("IsDeleted should have protected setter");
+        isDeletedProperty.ShouldNotBeNull();
+        isDeletedProperty!.SetMethod!.IsFamily.ShouldBeTrue("IsDeleted should have protected setter");
 
         var deletedAtProperty = entityType.GetProperty("DeletedAt");
-        deletedAtProperty.Should().NotBeNull();
-        deletedAtProperty!.SetMethod!.IsFamily.Should().BeTrue("DeletedAt should have protected setter");
+        deletedAtProperty.ShouldNotBeNull();
+        deletedAtProperty!.SetMethod!.IsFamily.ShouldBeTrue("DeletedAt should have protected setter");
 
         var deletedByProperty = entityType.GetProperty("DeletedBy");
-        deletedByProperty.Should().NotBeNull();
-        deletedByProperty!.SetMethod!.IsFamily.Should().BeTrue("DeletedBy should have protected setter");
+        deletedByProperty.ShouldNotBeNull();
+        deletedByProperty!.SetMethod!.IsFamily.ShouldBeTrue("DeletedBy should have protected setter");
     }
 
     #endregion

@@ -12,7 +12,7 @@ public class PermissionsTests
     public void ClaimType_ShouldBePermission()
     {
         // Assert
-        Permissions.ClaimType.Should().Be("permission");
+        Permissions.ClaimType.ShouldBe("permission");
     }
 
     #endregion
@@ -23,35 +23,35 @@ public class PermissionsTests
     public void UsersRead_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.UsersRead.Should().Be("users:read");
+        Permissions.UsersRead.ShouldBe("users:read");
     }
 
     [Fact]
     public void UsersCreate_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.UsersCreate.Should().Be("users:create");
+        Permissions.UsersCreate.ShouldBe("users:create");
     }
 
     [Fact]
     public void UsersUpdate_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.UsersUpdate.Should().Be("users:update");
+        Permissions.UsersUpdate.ShouldBe("users:update");
     }
 
     [Fact]
     public void UsersDelete_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.UsersDelete.Should().Be("users:delete");
+        Permissions.UsersDelete.ShouldBe("users:delete");
     }
 
     [Fact]
     public void UsersManageRoles_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.UsersManageRoles.Should().Be("users:manage-roles");
+        Permissions.UsersManageRoles.ShouldBe("users:manage-roles");
     }
 
     #endregion
@@ -62,35 +62,35 @@ public class PermissionsTests
     public void RolesRead_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.RolesRead.Should().Be("roles:read");
+        Permissions.RolesRead.ShouldBe("roles:read");
     }
 
     [Fact]
     public void RolesCreate_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.RolesCreate.Should().Be("roles:create");
+        Permissions.RolesCreate.ShouldBe("roles:create");
     }
 
     [Fact]
     public void RolesUpdate_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.RolesUpdate.Should().Be("roles:update");
+        Permissions.RolesUpdate.ShouldBe("roles:update");
     }
 
     [Fact]
     public void RolesDelete_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.RolesDelete.Should().Be("roles:delete");
+        Permissions.RolesDelete.ShouldBe("roles:delete");
     }
 
     [Fact]
     public void RolesManagePermissions_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.RolesManagePermissions.Should().Be("roles:manage-permissions");
+        Permissions.RolesManagePermissions.ShouldBe("roles:manage-permissions");
     }
 
     #endregion
@@ -101,28 +101,28 @@ public class PermissionsTests
     public void TenantsRead_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.TenantsRead.Should().Be("tenants:read");
+        Permissions.TenantsRead.ShouldBe("tenants:read");
     }
 
     [Fact]
     public void TenantsCreate_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.TenantsCreate.Should().Be("tenants:create");
+        Permissions.TenantsCreate.ShouldBe("tenants:create");
     }
 
     [Fact]
     public void TenantsUpdate_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.TenantsUpdate.Should().Be("tenants:update");
+        Permissions.TenantsUpdate.ShouldBe("tenants:update");
     }
 
     [Fact]
     public void TenantsDelete_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.TenantsDelete.Should().Be("tenants:delete");
+        Permissions.TenantsDelete.ShouldBe("tenants:delete");
     }
 
     #endregion
@@ -133,28 +133,28 @@ public class PermissionsTests
     public void SystemAdmin_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.SystemAdmin.Should().Be("system:admin");
+        Permissions.SystemAdmin.ShouldBe("system:admin");
     }
 
     [Fact]
     public void SystemAuditLogs_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.SystemAuditLogs.Should().Be("system:audit-logs");
+        Permissions.SystemAuditLogs.ShouldBe("system:audit-logs");
     }
 
     [Fact]
     public void SystemSettings_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.SystemSettings.Should().Be("system:settings");
+        Permissions.SystemSettings.ShouldBe("system:settings");
     }
 
     [Fact]
     public void HangfireDashboard_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.HangfireDashboard.Should().Be("system:hangfire");
+        Permissions.HangfireDashboard.ShouldBe("system:hangfire");
     }
 
     #endregion
@@ -165,21 +165,21 @@ public class PermissionsTests
     public void AuditRead_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.AuditRead.Should().Be("audit:read");
+        Permissions.AuditRead.ShouldBe("audit:read");
     }
 
     [Fact]
     public void AuditExport_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.AuditExport.Should().Be("audit:export");
+        Permissions.AuditExport.ShouldBe("audit:export");
     }
 
     [Fact]
     public void AuditEntityHistory_ShouldHaveCorrectValue()
     {
         // Assert
-        Permissions.AuditEntityHistory.Should().Be("audit:entity-history");
+        Permissions.AuditEntityHistory.ShouldBe("audit:entity-history");
     }
 
     #endregion
@@ -190,158 +190,158 @@ public class PermissionsTests
     public void Groups_Users_ShouldContainAllUserPermissions()
     {
         // Assert
-        Permissions.Groups.Users.Should().HaveCount(5);
-        Permissions.Groups.Users.Should().Contain(Permissions.UsersRead);
-        Permissions.Groups.Users.Should().Contain(Permissions.UsersCreate);
-        Permissions.Groups.Users.Should().Contain(Permissions.UsersUpdate);
-        Permissions.Groups.Users.Should().Contain(Permissions.UsersDelete);
-        Permissions.Groups.Users.Should().Contain(Permissions.UsersManageRoles);
+        Permissions.Groups.Users.Count().ShouldBe(5);
+        Permissions.Groups.Users.ShouldContain(Permissions.UsersRead);
+        Permissions.Groups.Users.ShouldContain(Permissions.UsersCreate);
+        Permissions.Groups.Users.ShouldContain(Permissions.UsersUpdate);
+        Permissions.Groups.Users.ShouldContain(Permissions.UsersDelete);
+        Permissions.Groups.Users.ShouldContain(Permissions.UsersManageRoles);
     }
 
     [Fact]
     public void Groups_Roles_ShouldContainAllRolePermissions()
     {
         // Assert
-        Permissions.Groups.Roles.Should().HaveCount(5);
-        Permissions.Groups.Roles.Should().Contain(Permissions.RolesRead);
-        Permissions.Groups.Roles.Should().Contain(Permissions.RolesCreate);
-        Permissions.Groups.Roles.Should().Contain(Permissions.RolesUpdate);
-        Permissions.Groups.Roles.Should().Contain(Permissions.RolesDelete);
-        Permissions.Groups.Roles.Should().Contain(Permissions.RolesManagePermissions);
+        Permissions.Groups.Roles.Count().ShouldBe(5);
+        Permissions.Groups.Roles.ShouldContain(Permissions.RolesRead);
+        Permissions.Groups.Roles.ShouldContain(Permissions.RolesCreate);
+        Permissions.Groups.Roles.ShouldContain(Permissions.RolesUpdate);
+        Permissions.Groups.Roles.ShouldContain(Permissions.RolesDelete);
+        Permissions.Groups.Roles.ShouldContain(Permissions.RolesManagePermissions);
     }
 
     [Fact]
     public void Groups_Tenants_ShouldContainAllTenantPermissions()
     {
         // Assert
-        Permissions.Groups.Tenants.Should().HaveCount(4);
-        Permissions.Groups.Tenants.Should().Contain(Permissions.TenantsRead);
-        Permissions.Groups.Tenants.Should().Contain(Permissions.TenantsCreate);
-        Permissions.Groups.Tenants.Should().Contain(Permissions.TenantsUpdate);
-        Permissions.Groups.Tenants.Should().Contain(Permissions.TenantsDelete);
+        Permissions.Groups.Tenants.Count().ShouldBe(4);
+        Permissions.Groups.Tenants.ShouldContain(Permissions.TenantsRead);
+        Permissions.Groups.Tenants.ShouldContain(Permissions.TenantsCreate);
+        Permissions.Groups.Tenants.ShouldContain(Permissions.TenantsUpdate);
+        Permissions.Groups.Tenants.ShouldContain(Permissions.TenantsDelete);
     }
 
     [Fact]
     public void Groups_System_ShouldContainAllSystemPermissions()
     {
         // Assert
-        Permissions.Groups.SystemPermissions.Should().HaveCount(4);
-        Permissions.Groups.SystemPermissions.Should().Contain(Permissions.SystemAdmin);
-        Permissions.Groups.SystemPermissions.Should().Contain(Permissions.SystemAuditLogs);
-        Permissions.Groups.SystemPermissions.Should().Contain(Permissions.SystemSettings);
-        Permissions.Groups.SystemPermissions.Should().Contain(Permissions.HangfireDashboard);
+        Permissions.Groups.SystemPermissions.Count().ShouldBe(4);
+        Permissions.Groups.SystemPermissions.ShouldContain(Permissions.SystemAdmin);
+        Permissions.Groups.SystemPermissions.ShouldContain(Permissions.SystemAuditLogs);
+        Permissions.Groups.SystemPermissions.ShouldContain(Permissions.SystemSettings);
+        Permissions.Groups.SystemPermissions.ShouldContain(Permissions.HangfireDashboard);
     }
 
     [Fact]
     public void Groups_Audit_ShouldContainAllAuditPermissions()
     {
         // Assert
-        Permissions.Groups.Audit.Should().HaveCount(7);
-        Permissions.Groups.Audit.Should().Contain(Permissions.AuditRead);
-        Permissions.Groups.Audit.Should().Contain(Permissions.AuditExport);
-        Permissions.Groups.Audit.Should().Contain(Permissions.AuditEntityHistory);
-        Permissions.Groups.Audit.Should().Contain(Permissions.AuditPolicyRead);
-        Permissions.Groups.Audit.Should().Contain(Permissions.AuditPolicyWrite);
-        Permissions.Groups.Audit.Should().Contain(Permissions.AuditPolicyDelete);
-        Permissions.Groups.Audit.Should().Contain(Permissions.AuditStream);
+        Permissions.Groups.Audit.Count().ShouldBe(7);
+        Permissions.Groups.Audit.ShouldContain(Permissions.AuditRead);
+        Permissions.Groups.Audit.ShouldContain(Permissions.AuditExport);
+        Permissions.Groups.Audit.ShouldContain(Permissions.AuditEntityHistory);
+        Permissions.Groups.Audit.ShouldContain(Permissions.AuditPolicyRead);
+        Permissions.Groups.Audit.ShouldContain(Permissions.AuditPolicyWrite);
+        Permissions.Groups.Audit.ShouldContain(Permissions.AuditPolicyDelete);
+        Permissions.Groups.Audit.ShouldContain(Permissions.AuditStream);
     }
 
     [Fact]
     public void Groups_Orders_ShouldContainAllOrderPermissions()
     {
         // Assert
-        Permissions.Groups.Orders.Should().HaveCount(3);
-        Permissions.Groups.Orders.Should().Contain(Permissions.OrdersRead);
-        Permissions.Groups.Orders.Should().Contain(Permissions.OrdersWrite);
-        Permissions.Groups.Orders.Should().Contain(Permissions.OrdersManage);
+        Permissions.Groups.Orders.Count().ShouldBe(3);
+        Permissions.Groups.Orders.ShouldContain(Permissions.OrdersRead);
+        Permissions.Groups.Orders.ShouldContain(Permissions.OrdersWrite);
+        Permissions.Groups.Orders.ShouldContain(Permissions.OrdersManage);
     }
 
     [Fact]
     public void Groups_Customers_ShouldContainAllCustomerPermissions()
     {
         // Assert
-        Permissions.Groups.Customers.Should().HaveCount(5);
-        Permissions.Groups.Customers.Should().Contain(Permissions.CustomersRead);
-        Permissions.Groups.Customers.Should().Contain(Permissions.CustomersCreate);
-        Permissions.Groups.Customers.Should().Contain(Permissions.CustomersUpdate);
-        Permissions.Groups.Customers.Should().Contain(Permissions.CustomersDelete);
-        Permissions.Groups.Customers.Should().Contain(Permissions.CustomersManage);
+        Permissions.Groups.Customers.Count().ShouldBe(5);
+        Permissions.Groups.Customers.ShouldContain(Permissions.CustomersRead);
+        Permissions.Groups.Customers.ShouldContain(Permissions.CustomersCreate);
+        Permissions.Groups.Customers.ShouldContain(Permissions.CustomersUpdate);
+        Permissions.Groups.Customers.ShouldContain(Permissions.CustomersDelete);
+        Permissions.Groups.Customers.ShouldContain(Permissions.CustomersManage);
     }
 
     [Fact]
     public void Groups_Wishlists_ShouldContainAllWishlistPermissions()
     {
         // Assert
-        Permissions.Groups.Wishlists.Should().HaveCount(3);
-        Permissions.Groups.Wishlists.Should().Contain(Permissions.WishlistsRead);
-        Permissions.Groups.Wishlists.Should().Contain(Permissions.WishlistsWrite);
-        Permissions.Groups.Wishlists.Should().Contain(Permissions.WishlistsManage);
+        Permissions.Groups.Wishlists.Count().ShouldBe(3);
+        Permissions.Groups.Wishlists.ShouldContain(Permissions.WishlistsRead);
+        Permissions.Groups.Wishlists.ShouldContain(Permissions.WishlistsWrite);
+        Permissions.Groups.Wishlists.ShouldContain(Permissions.WishlistsManage);
     }
 
     [Fact]
     public void Groups_Reports_ShouldContainAllReportPermissions()
     {
         // Assert
-        Permissions.Groups.Reports.Should().HaveCount(1);
-        Permissions.Groups.Reports.Should().Contain(Permissions.ReportsRead);
+        Permissions.Groups.Reports.Count().ShouldBe(1);
+        Permissions.Groups.Reports.ShouldContain(Permissions.ReportsRead);
     }
 
     [Fact]
     public void Groups_Features_ShouldContainAllFeaturePermissions()
     {
         // Assert
-        Permissions.Groups.Features.Should().HaveCount(2);
-        Permissions.Groups.Features.Should().Contain(Permissions.FeaturesRead);
-        Permissions.Groups.Features.Should().Contain(Permissions.FeaturesUpdate);
+        Permissions.Groups.Features.Count().ShouldBe(2);
+        Permissions.Groups.Features.ShouldContain(Permissions.FeaturesRead);
+        Permissions.Groups.Features.ShouldContain(Permissions.FeaturesUpdate);
     }
 
     [Fact]
     public void Groups_Webhooks_ShouldContainAllWebhookPermissions()
     {
         // Assert
-        Permissions.Groups.Webhooks.Should().HaveCount(3);
-        Permissions.Groups.Webhooks.Should().Contain(Permissions.WebhooksRead);
-        Permissions.Groups.Webhooks.Should().Contain(Permissions.WebhooksManage);
-        Permissions.Groups.Webhooks.Should().Contain(Permissions.WebhooksTest);
+        Permissions.Groups.Webhooks.Count().ShouldBe(3);
+        Permissions.Groups.Webhooks.ShouldContain(Permissions.WebhooksRead);
+        Permissions.Groups.Webhooks.ShouldContain(Permissions.WebhooksManage);
+        Permissions.Groups.Webhooks.ShouldContain(Permissions.WebhooksTest);
     }
 
     [Fact]
     public void Groups_Search_ShouldContainAllSearchPermissions()
     {
         // Assert
-        Permissions.Groups.Search.Should().HaveCount(1);
-        Permissions.Groups.Search.Should().Contain(Permissions.SearchGlobal);
+        Permissions.Groups.Search.Count().ShouldBe(1);
+        Permissions.Groups.Search.ShouldContain(Permissions.SearchGlobal);
     }
 
     [Fact]
     public void Groups_HrEmployees_ShouldContainAllHrEmployeePermissions()
     {
         // Assert
-        Permissions.Groups.HrEmployees.Should().HaveCount(4);
-        Permissions.Groups.HrEmployees.Should().Contain(Permissions.HrEmployeesRead);
-        Permissions.Groups.HrEmployees.Should().Contain(Permissions.HrEmployeesCreate);
-        Permissions.Groups.HrEmployees.Should().Contain(Permissions.HrEmployeesUpdate);
-        Permissions.Groups.HrEmployees.Should().Contain(Permissions.HrEmployeesDelete);
+        Permissions.Groups.HrEmployees.Count().ShouldBe(4);
+        Permissions.Groups.HrEmployees.ShouldContain(Permissions.HrEmployeesRead);
+        Permissions.Groups.HrEmployees.ShouldContain(Permissions.HrEmployeesCreate);
+        Permissions.Groups.HrEmployees.ShouldContain(Permissions.HrEmployeesUpdate);
+        Permissions.Groups.HrEmployees.ShouldContain(Permissions.HrEmployeesDelete);
     }
 
     [Fact]
     public void Groups_HrDepartments_ShouldContainAllHrDepartmentPermissions()
     {
         // Assert
-        Permissions.Groups.HrDepartments.Should().HaveCount(4);
-        Permissions.Groups.HrDepartments.Should().Contain(Permissions.HrDepartmentsRead);
-        Permissions.Groups.HrDepartments.Should().Contain(Permissions.HrDepartmentsCreate);
-        Permissions.Groups.HrDepartments.Should().Contain(Permissions.HrDepartmentsUpdate);
-        Permissions.Groups.HrDepartments.Should().Contain(Permissions.HrDepartmentsDelete);
+        Permissions.Groups.HrDepartments.Count().ShouldBe(4);
+        Permissions.Groups.HrDepartments.ShouldContain(Permissions.HrDepartmentsRead);
+        Permissions.Groups.HrDepartments.ShouldContain(Permissions.HrDepartmentsCreate);
+        Permissions.Groups.HrDepartments.ShouldContain(Permissions.HrDepartmentsUpdate);
+        Permissions.Groups.HrDepartments.ShouldContain(Permissions.HrDepartmentsDelete);
     }
 
     [Fact]
     public void Groups_HrTags_ShouldContainAllHrTagPermissions()
     {
         // Assert
-        Permissions.Groups.HrTags.Should().HaveCount(2);
-        Permissions.Groups.HrTags.Should().Contain(Permissions.HrTagsRead);
-        Permissions.Groups.HrTags.Should().Contain(Permissions.HrTagsManage);
+        Permissions.Groups.HrTags.Count().ShouldBe(2);
+        Permissions.Groups.HrTags.ShouldContain(Permissions.HrTagsRead);
+        Permissions.Groups.HrTags.ShouldContain(Permissions.HrTagsManage);
     }
 
     #endregion
@@ -396,14 +396,14 @@ public class PermissionsTests
             + Permissions.Groups.ApiKeys.Count;
 
         // Assert
-        Permissions.All.Should().HaveCount(expectedCount);
+        Permissions.All.Count().ShouldBe(expectedCount);
     }
 
     [Fact]
     public void All_ShouldContainNoDuplicates()
     {
         // Each permission must appear exactly once so sortOrder is deterministic
-        Permissions.All.Should().OnlyHaveUniqueItems();
+        Permissions.All.ShouldBeUnique();
     }
 
     [Fact]
@@ -412,7 +412,7 @@ public class PermissionsTests
         // Assert
         foreach (var permission in Permissions.Groups.Users)
         {
-            Permissions.All.Should().Contain(permission);
+            Permissions.All.ShouldContain(permission);
         }
     }
 
@@ -422,7 +422,7 @@ public class PermissionsTests
         // Assert
         foreach (var permission in Permissions.Groups.Roles)
         {
-            Permissions.All.Should().Contain(permission);
+            Permissions.All.ShouldContain(permission);
         }
     }
 
@@ -432,7 +432,7 @@ public class PermissionsTests
         // Assert
         foreach (var permission in Permissions.Groups.Tenants)
         {
-            Permissions.All.Should().Contain(permission);
+            Permissions.All.ShouldContain(permission);
         }
     }
 
@@ -442,7 +442,7 @@ public class PermissionsTests
         // Assert
         foreach (var permission in Permissions.Groups.SystemPermissions)
         {
-            Permissions.All.Should().Contain(permission);
+            Permissions.All.ShouldContain(permission);
         }
     }
 
@@ -452,7 +452,7 @@ public class PermissionsTests
         // Assert
         foreach (var permission in Permissions.Groups.Audit)
         {
-            Permissions.All.Should().Contain(permission);
+            Permissions.All.ShouldContain(permission);
         }
     }
 
@@ -462,7 +462,7 @@ public class PermissionsTests
         // Assert
         foreach (var permission in Permissions.Groups.Customers)
         {
-            Permissions.All.Should().Contain(permission);
+            Permissions.All.ShouldContain(permission);
         }
     }
 
@@ -472,7 +472,7 @@ public class PermissionsTests
         // Assert
         foreach (var permission in Permissions.Groups.Wishlists)
         {
-            Permissions.All.Should().Contain(permission);
+            Permissions.All.ShouldContain(permission);
         }
     }
 
@@ -482,7 +482,7 @@ public class PermissionsTests
         // Assert
         foreach (var permission in Permissions.Groups.Reports)
         {
-            Permissions.All.Should().Contain(permission);
+            Permissions.All.ShouldContain(permission);
         }
     }
 
@@ -492,7 +492,7 @@ public class PermissionsTests
         // Assert
         foreach (var permission in Permissions.Groups.Search)
         {
-            Permissions.All.Should().Contain(permission);
+            Permissions.All.ShouldContain(permission);
         }
     }
 
@@ -502,7 +502,7 @@ public class PermissionsTests
         // Assert
         foreach (var permission in Permissions.Groups.HrEmployees)
         {
-            Permissions.All.Should().Contain(permission);
+            Permissions.All.ShouldContain(permission);
         }
     }
 
@@ -512,7 +512,7 @@ public class PermissionsTests
         // Assert
         foreach (var permission in Permissions.Groups.HrDepartments)
         {
-            Permissions.All.Should().Contain(permission);
+            Permissions.All.ShouldContain(permission);
         }
     }
 
@@ -522,7 +522,7 @@ public class PermissionsTests
         // Assert
         foreach (var permission in Permissions.Groups.HrTags)
         {
-            Permissions.All.Should().Contain(permission);
+            Permissions.All.ShouldContain(permission);
         }
     }
 
@@ -534,14 +534,14 @@ public class PermissionsTests
     public void PlatformAdminDefaults_ShouldContainPlatformLevelPermissions()
     {
         // Platform Admin has system-level permissions for managing tenants and platform settings
-        Permissions.PlatformAdminDefaults.Should().Contain(Permissions.TenantsRead);
-        Permissions.PlatformAdminDefaults.Should().Contain(Permissions.TenantsCreate);
-        Permissions.PlatformAdminDefaults.Should().Contain(Permissions.TenantsUpdate);
-        Permissions.PlatformAdminDefaults.Should().Contain(Permissions.TenantsDelete);
-        Permissions.PlatformAdminDefaults.Should().Contain(Permissions.SystemAdmin);
-        Permissions.PlatformAdminDefaults.Should().Contain(Permissions.SystemAuditLogs);
-        Permissions.PlatformAdminDefaults.Should().Contain(Permissions.SystemSettings);
-        Permissions.PlatformAdminDefaults.Should().Contain(Permissions.HangfireDashboard);
+        Permissions.PlatformAdminDefaults.ShouldContain(Permissions.TenantsRead);
+        Permissions.PlatformAdminDefaults.ShouldContain(Permissions.TenantsCreate);
+        Permissions.PlatformAdminDefaults.ShouldContain(Permissions.TenantsUpdate);
+        Permissions.PlatformAdminDefaults.ShouldContain(Permissions.TenantsDelete);
+        Permissions.PlatformAdminDefaults.ShouldContain(Permissions.SystemAdmin);
+        Permissions.PlatformAdminDefaults.ShouldContain(Permissions.SystemAuditLogs);
+        Permissions.PlatformAdminDefaults.ShouldContain(Permissions.SystemSettings);
+        Permissions.PlatformAdminDefaults.ShouldContain(Permissions.HangfireDashboard);
     }
 
     [Fact]
@@ -549,27 +549,27 @@ public class PermissionsTests
     {
         // Tenant Admin has within-tenant permissions (user management, roles, blog)
         // but NOT system-level permissions (tenants, system)
-        Permissions.AdminDefaults.Should().Contain(Permissions.UsersRead);
-        Permissions.AdminDefaults.Should().Contain(Permissions.UsersCreate);
-        Permissions.AdminDefaults.Should().Contain(Permissions.UsersUpdate);
-        Permissions.AdminDefaults.Should().Contain(Permissions.UsersDelete);
-        Permissions.AdminDefaults.Should().Contain(Permissions.RolesRead);
-        Permissions.AdminDefaults.Should().Contain(Permissions.RolesCreate);
-        Permissions.AdminDefaults.Should().Contain(Permissions.BlogPostsRead);
+        Permissions.AdminDefaults.ShouldContain(Permissions.UsersRead);
+        Permissions.AdminDefaults.ShouldContain(Permissions.UsersCreate);
+        Permissions.AdminDefaults.ShouldContain(Permissions.UsersUpdate);
+        Permissions.AdminDefaults.ShouldContain(Permissions.UsersDelete);
+        Permissions.AdminDefaults.ShouldContain(Permissions.RolesRead);
+        Permissions.AdminDefaults.ShouldContain(Permissions.RolesCreate);
+        Permissions.AdminDefaults.ShouldContain(Permissions.BlogPostsRead);
 
         // Admin should NOT have platform-level permissions
-        Permissions.AdminDefaults.Should().NotContain(Permissions.TenantsRead);
-        Permissions.AdminDefaults.Should().NotContain(Permissions.TenantsCreate);
-        Permissions.AdminDefaults.Should().NotContain(Permissions.SystemAdmin);
-        Permissions.AdminDefaults.Should().NotContain(Permissions.HangfireDashboard);
+        Permissions.AdminDefaults.ShouldNotContain(Permissions.TenantsRead);
+        Permissions.AdminDefaults.ShouldNotContain(Permissions.TenantsCreate);
+        Permissions.AdminDefaults.ShouldNotContain(Permissions.SystemAdmin);
+        Permissions.AdminDefaults.ShouldNotContain(Permissions.HangfireDashboard);
     }
 
     [Fact]
     public void UserDefaults_ShouldOnlyContainUsersRead()
     {
         // Assert
-        Permissions.UserDefaults.Should().HaveCount(1);
-        Permissions.UserDefaults.Should().Contain(Permissions.UsersRead);
+        Permissions.UserDefaults.Count().ShouldBe(1);
+        Permissions.UserDefaults.ShouldContain(Permissions.UsersRead);
     }
 
     [Fact]
@@ -582,8 +582,7 @@ public class PermissionsTests
         // Platform admin defaults should include system-only permissions
         foreach (var permission in platformOnlyPermissions.Intersect(Permissions.PlatformAdminDefaults))
         {
-            Permissions.AdminDefaults.Should().NotContain(permission,
-                because: $"tenant admin should not have system-only permission '{permission}'");
+            Permissions.AdminDefaults.ShouldNotContain(permission);
         }
     }
 
@@ -597,11 +596,11 @@ public class PermissionsTests
         // Assert
         foreach (var permission in Permissions.All)
         {
-            permission.Should().Contain(":");
+            permission.ShouldContain(":");
             var parts = permission.Split(':');
-            parts.Should().HaveCount(2);
-            parts[0].Should().NotBeNullOrWhiteSpace("resource should not be empty");
-            parts[1].Should().NotBeNullOrWhiteSpace("action should not be empty");
+            parts.Count().ShouldBe(2);
+            parts[0].ShouldNotBeNullOrWhiteSpace("resource should not be empty");
+            parts[1].ShouldNotBeNullOrWhiteSpace("action should not be empty");
         }
     }
 

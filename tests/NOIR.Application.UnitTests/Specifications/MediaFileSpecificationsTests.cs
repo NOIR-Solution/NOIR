@@ -49,7 +49,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFileByIdSpec(TestId1);
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFileByIdSpec(TestId1);
 
         // Assert
-        spec.QueryTags.Should().Contain("MediaFileById");
+        spec.QueryTags.ShouldContain("MediaFileById");
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFileByIdSpec(mediaFile.Id);
 
         // Act & Assert
-        spec.IsSatisfiedBy(mediaFile).Should().BeTrue();
+        spec.IsSatisfiedBy(mediaFile).ShouldBe(true);
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFileByIdSpec(Guid.NewGuid());
 
         // Act & Assert
-        spec.IsSatisfiedBy(mediaFile).Should().BeFalse();
+        spec.IsSatisfiedBy(mediaFile).ShouldBe(false);
     }
 
     [Theory]
@@ -93,7 +93,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFileByIdSpec(TestId1, asTracking);
 
         // Assert
-        spec.AsNoTracking.Should().Be(!asTracking);
+        spec.AsNoTracking.ShouldBe(!asTracking);
     }
 
     #endregion
@@ -107,7 +107,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFileBySlugSpec("test-slug");
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFileBySlugSpec("test-slug");
 
         // Assert
-        spec.QueryTags.Should().Contain("MediaFileBySlug");
+        spec.QueryTags.ShouldContain("MediaFileBySlug");
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFileBySlugSpec("hero-banner_abc12345");
 
         // Act & Assert
-        spec.IsSatisfiedBy(mediaFile).Should().BeTrue();
+        spec.IsSatisfiedBy(mediaFile).ShouldBe(true);
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFileBySlugSpec("different-slug");
 
         // Act & Assert
-        spec.IsSatisfiedBy(mediaFile).Should().BeFalse();
+        spec.IsSatisfiedBy(mediaFile).ShouldBe(false);
     }
 
     #endregion
@@ -153,7 +153,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFileByShortIdSpec("abc12345");
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -163,7 +163,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFileByShortIdSpec("abc12345");
 
         // Assert
-        spec.QueryTags.Should().Contain("MediaFileByShortId");
+        spec.QueryTags.ShouldContain("MediaFileByShortId");
     }
 
     [Fact]
@@ -174,7 +174,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFileByShortIdSpec("abc12345");
 
         // Act & Assert
-        spec.IsSatisfiedBy(mediaFile).Should().BeTrue();
+        spec.IsSatisfiedBy(mediaFile).ShouldBe(true);
     }
 
     [Fact]
@@ -185,7 +185,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFileByShortIdSpec("xyz99999");
 
         // Act & Assert
-        spec.IsSatisfiedBy(mediaFile).Should().BeFalse();
+        spec.IsSatisfiedBy(mediaFile).ShouldBe(false);
     }
 
     #endregion
@@ -200,7 +200,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFilesByIdsSpec(ids);
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -210,7 +210,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFilesByIdsSpec(new List<Guid>());
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -221,7 +221,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFilesByIdsSpec(ids);
 
         // Assert
-        spec.QueryTags.Should().NotBeEmpty();
+        spec.QueryTags.ShouldNotBeEmpty();
     }
 
     #endregion
@@ -236,7 +236,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFilesBySlugsSpec(slugs);
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -247,7 +247,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFilesBySlugsSpec(slugs);
 
         // Assert
-        spec.QueryTags.Should().NotBeEmpty();
+        spec.QueryTags.ShouldNotBeEmpty();
     }
 
     #endregion
@@ -262,7 +262,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFilesByShortIdsSpec(shortIds);
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -273,7 +273,7 @@ public class MediaFileSpecificationsTests
         var spec = new NOIR.Application.Specifications.MediaFiles.MediaFilesByShortIdsSpec(shortIds);
 
         // Assert
-        spec.QueryTags.Should().NotBeEmpty();
+        spec.QueryTags.ShouldNotBeEmpty();
     }
 
     #endregion

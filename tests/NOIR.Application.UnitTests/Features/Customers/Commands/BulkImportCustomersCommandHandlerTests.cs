@@ -93,10 +93,10 @@ public class BulkImportCustomersCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(2);
-        result.Value.Failed.Should().Be(0);
-        result.Value.Errors.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(2);
+        result.Value.Failed.ShouldBe(0);
+        result.Value.Errors.ShouldBeEmpty();
 
         _customerRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Customer>(), It.IsAny<CancellationToken>()),
@@ -151,11 +151,11 @@ public class BulkImportCustomersCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(1);
-        result.Value.Failed.Should().Be(1);
-        result.Value.Errors.Should().HaveCount(1);
-        result.Value.Errors[0].Message.Should().Contain("already exists");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(1);
+        result.Value.Failed.ShouldBe(1);
+        result.Value.Errors.Count().ShouldBe(1);
+        result.Value.Errors[0].Message.ShouldContain("already exists");
     }
 
     [Fact]
@@ -178,11 +178,11 @@ public class BulkImportCustomersCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(1);
-        result.Value.Failed.Should().Be(1);
-        result.Value.Errors.Should().HaveCount(1);
-        result.Value.Errors[0].Message.Should().Contain("Duplicate email");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(1);
+        result.Value.Failed.ShouldBe(1);
+        result.Value.Errors.Count().ShouldBe(1);
+        result.Value.Errors[0].Message.ShouldContain("Duplicate email");
     }
 
     #endregion
@@ -209,11 +209,11 @@ public class BulkImportCustomersCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(1);
-        result.Value.Failed.Should().Be(1);
-        result.Value.Errors.Should().HaveCount(1);
-        result.Value.Errors[0].Message.Should().Contain("Email is required");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(1);
+        result.Value.Failed.ShouldBe(1);
+        result.Value.Errors.Count().ShouldBe(1);
+        result.Value.Errors[0].Message.ShouldContain("Email is required");
     }
 
     [Fact]
@@ -231,8 +231,8 @@ public class BulkImportCustomersCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Value.Failed.Should().Be(1);
-        result.Value.Errors[0].Message.Should().Contain("Email is required");
+        result.Value.Failed.ShouldBe(1);
+        result.Value.Errors[0].Message.ShouldContain("Email is required");
     }
 
     #endregion
@@ -260,11 +260,11 @@ public class BulkImportCustomersCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(1);
-        capturedCustomer.Should().NotBeNull();
-        capturedCustomer!.Tags.Should().Contain("vip");
-        capturedCustomer.Tags.Should().Contain("premium");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(1);
+        capturedCustomer.ShouldNotBeNull();
+        capturedCustomer!.Tags.ShouldContain("vip");
+        capturedCustomer.Tags.ShouldContain("premium");
     }
 
     #endregion
@@ -293,10 +293,10 @@ public class BulkImportCustomersCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(2);
-        result.Value.Failed.Should().Be(2);
-        result.Value.Errors.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(2);
+        result.Value.Failed.ShouldBe(2);
+        result.Value.Errors.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -320,8 +320,8 @@ public class BulkImportCustomersCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Value.Errors.Should().HaveCount(1);
-        result.Value.Errors[0].Row.Should().Be(3); // 1-indexed + header row
+        result.Value.Errors.Count().ShouldBe(1);
+        result.Value.Errors[0].Row.ShouldBe(3); // 1-indexed + header row
     }
 
     #endregion

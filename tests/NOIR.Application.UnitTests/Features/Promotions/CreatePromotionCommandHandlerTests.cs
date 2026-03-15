@@ -94,13 +94,13 @@ public class CreatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Summer Sale");
-        result.Value.Code.Should().Be("SUMMER2026");
-        result.Value.DiscountType.Should().Be(DiscountType.Percentage);
-        result.Value.DiscountValue.Should().Be(20m);
-        result.Value.Status.Should().Be(PromotionStatus.Draft);
-        result.Value.IsActive.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Summer Sale");
+        result.Value.Code.ShouldBe("SUMMER2026");
+        result.Value.DiscountType.ShouldBe(DiscountType.Percentage);
+        result.Value.DiscountValue.ShouldBe(20m);
+        result.Value.Status.ShouldBe(PromotionStatus.Draft);
+        result.Value.IsActive.ShouldBe(false);
 
         _promotionRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Promotion>(), It.IsAny<CancellationToken>()),
@@ -137,13 +137,13 @@ public class CreatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Description.Should().Be("Summer promotion with 20% off");
-        result.Value.MaxDiscountAmount.Should().Be(100000m);
-        result.Value.MinOrderValue.Should().Be(500000m);
-        result.Value.MinItemQuantity.Should().Be(2);
-        result.Value.UsageLimitTotal.Should().Be(1000);
-        result.Value.UsageLimitPerUser.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Description.ShouldBe("Summer promotion with 20% off");
+        result.Value.MaxDiscountAmount.ShouldBe(100000m);
+        result.Value.MinOrderValue.ShouldBe(500000m);
+        result.Value.MinItemQuantity.ShouldBe(2);
+        result.Value.UsageLimitTotal.ShouldBe(1000);
+        result.Value.UsageLimitPerUser.ShouldBe(3);
     }
 
     [Fact]
@@ -170,11 +170,11 @@ public class CreatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ApplyLevel.Should().Be(PromotionApplyLevel.Product);
-        result.Value.ProductIds.Should().HaveCount(2);
-        result.Value.ProductIds.Should().Contain(productId1);
-        result.Value.ProductIds.Should().Contain(productId2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ApplyLevel.ShouldBe(PromotionApplyLevel.Product);
+        result.Value.ProductIds.Count().ShouldBe(2);
+        result.Value.ProductIds.ShouldContain(productId1);
+        result.Value.ProductIds.ShouldContain(productId2);
     }
 
     [Fact]
@@ -201,11 +201,11 @@ public class CreatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ApplyLevel.Should().Be(PromotionApplyLevel.Category);
-        result.Value.CategoryIds.Should().HaveCount(2);
-        result.Value.CategoryIds.Should().Contain(categoryId1);
-        result.Value.CategoryIds.Should().Contain(categoryId2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ApplyLevel.ShouldBe(PromotionApplyLevel.Category);
+        result.Value.CategoryIds.Count().ShouldBe(2);
+        result.Value.CategoryIds.ShouldContain(categoryId1);
+        result.Value.CategoryIds.ShouldContain(categoryId2);
     }
 
     [Fact]
@@ -230,9 +230,9 @@ public class CreatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.DiscountType.Should().Be(DiscountType.FixedAmount);
-        result.Value.DiscountValue.Should().Be(50000m);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.DiscountType.ShouldBe(DiscountType.FixedAmount);
+        result.Value.DiscountValue.ShouldBe(50000m);
     }
 
     [Fact]
@@ -255,8 +255,8 @@ public class CreatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Code.Should().Be("SUMMER2026");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Code.ShouldBe("SUMMER2026");
     }
 
     #endregion
@@ -289,8 +289,8 @@ public class CreatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-PROMO-001");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-PROMO-001");
 
         _promotionRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Promotion>(), It.IsAny<CancellationToken>()),
@@ -327,9 +327,9 @@ public class CreatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedPromotion.Should().NotBeNull();
-        capturedPromotion!.TenantId.Should().Be(tenantId);
+        result.IsSuccess.ShouldBe(true);
+        capturedPromotion.ShouldNotBeNull();
+        capturedPromotion!.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -393,9 +393,9 @@ public class CreatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProductIds.Should().BeEmpty();
-        result.Value.CategoryIds.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProductIds.ShouldBeEmpty();
+        result.Value.CategoryIds.ShouldBeEmpty();
     }
 
     [Fact]
@@ -418,8 +418,8 @@ public class CreatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CurrentUsageCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CurrentUsageCount.ShouldBe(0);
     }
 
     #endregion

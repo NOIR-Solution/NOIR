@@ -69,13 +69,13 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
         var response = await authenticatedClient.PutAsJsonAsync("/api/auth/me", updateCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var userProfile = await response.Content.ReadFromJsonAsync<UserProfileDto>();
-        userProfile.Should().NotBeNull();
-        userProfile!.FirstName.Should().Be("Updated");
-        userProfile.LastName.Should().Be("User");
-        userProfile.Email.Should().Be(email);
+        userProfile.ShouldNotBeNull();
+        userProfile!.FirstName.ShouldBe("Updated");
+        userProfile.LastName.ShouldBe("User");
+        userProfile.Email.ShouldBe(email);
     }
 
     [Fact]
@@ -90,11 +90,11 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
         var response = await authenticatedClient.PutAsJsonAsync("/api/auth/me", updateCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var userProfile = await response.Content.ReadFromJsonAsync<UserProfileDto>();
-        userProfile!.FirstName.Should().Be("NewFirst");
-        userProfile.LastName.Should().Be("Lastname"); // Unchanged
+        userProfile!.FirstName.ShouldBe("NewFirst");
+        userProfile.LastName.ShouldBe("Lastname"); // Unchanged
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PutAsJsonAsync("/api/auth/me", updateCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
         var response = await authenticatedClient.PutAsJsonAsync("/api/auth/me", updateCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -145,7 +145,7 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
 
             // Find the user first
             var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
-            user.Should().NotBeNull();
+            user.ShouldNotBeNull();
 
             // Check for entity audit logs for this user
             var auditLogs = await dbContext.EntityAuditLogs
@@ -154,14 +154,14 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
                 .ToListAsync();
 
             // Should have at least one audit log for the update
-            auditLogs.Should().NotBeEmpty();
+            auditLogs.ShouldNotBeEmpty();
 
             var latestLog = auditLogs.First();
-            latestLog.Operation.Should().Be("Modified");
-            latestLog.EntityDiff.Should().NotBeNullOrEmpty();
+            latestLog.Operation.ShouldBe("Modified");
+            latestLog.EntityDiff.ShouldNotBeNullOrEmpty();
 
             // Verify the diff contains the changes
-            latestLog.EntityDiff.Should().Contain("FirstName");
+            latestLog.EntityDiff.ShouldContain("FirstName");
         });
     }
 
@@ -182,7 +182,7 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
             var dbContext = services.GetRequiredService<ApplicationDbContext>();
 
             var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
-            user.Should().NotBeNull();
+            user.ShouldNotBeNull();
 
             var auditLog = await dbContext.EntityAuditLogs
                 .Where(a => a.EntityType == "ApplicationUser" && a.EntityId == user!.Id)
@@ -190,18 +190,18 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
                 .OrderByDescending(a => a.Timestamp)
                 .FirstOrDefaultAsync();
 
-            auditLog.Should().NotBeNull();
-            auditLog!.EntityDiff.Should().NotBeNullOrEmpty();
+            auditLog.ShouldNotBeNull();
+            auditLog!.EntityDiff.ShouldNotBeNullOrEmpty();
 
             // Parse the diff and verify it has the expected structure
             // Format: {"fieldName": {"from": oldValue, "to": newValue}}
             var diff = JsonSerializer.Deserialize<JsonElement>(auditLog.EntityDiff!);
-            diff.ValueKind.Should().Be(JsonValueKind.Object);
+            diff.ValueKind.ShouldBe(JsonValueKind.Object);
 
             // Should contain FirstName field with from/to values
-            diff.TryGetProperty("FirstName", out var firstNameChange).Should().BeTrue();
-            firstNameChange.GetProperty("from").GetString().Should().Be("Before");
-            firstNameChange.GetProperty("to").GetString().Should().Be("After");
+            diff.TryGetProperty("FirstName", out var firstNameChange).ShouldBeTrue();
+            firstNameChange.GetProperty("from").GetString().ShouldBe("Before");
+            firstNameChange.GetProperty("to").GetString().ShouldBe("After");
         });
     }
 
@@ -236,7 +236,7 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
                 .CountAsync();
         });
 
-        finalCount.Should().Be(initialCount);
+        finalCount.ShouldBe(initialCount);
     }
 
     [Fact]
@@ -261,8 +261,8 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
                 .OrderByDescending(a => a.Timestamp)
                 .FirstOrDefaultAsync();
 
-            auditLog.Should().NotBeNull();
-            auditLog!.CorrelationId.Should().NotBeNullOrEmpty();
+            auditLog.ShouldNotBeNull();
+            auditLog!.CorrelationId.ShouldNotBeNullOrEmpty();
         });
     }
 
@@ -288,25 +288,25 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
                 .OrderByDescending(h => h.StartTime)
                 .FirstOrDefaultAsync();
 
-            handlerLog.Should().NotBeNull();
-            handlerLog!.IsSuccess.Should().BeTrue();
-            handlerLog.OperationType.Should().Be(AuditOperationType.Update.ToString());
-            handlerLog.TargetDtoType.Should().Be("UserProfileDto");
-            handlerLog.TargetDtoId.Should().NotBeNullOrEmpty("the user ID should be set as target DTO ID");
+            handlerLog.ShouldNotBeNull();
+            handlerLog!.IsSuccess.ShouldBeTrue();
+            handlerLog.OperationType.ShouldBe(AuditOperationType.Update.ToString());
+            handlerLog.TargetDtoType.ShouldBe("UserProfileDto");
+            handlerLog.TargetDtoId.ShouldNotBeNullOrEmpty("the user ID should be set as target DTO ID");
 
             // DtoDiff should contain the before/after changes
             // Uses lazy initialization - resolvers are applied on first use
-            handlerLog.DtoDiff.Should().NotBeNullOrEmpty("DTO diff should be computed for update operations");
+            handlerLog.DtoDiff.ShouldNotBeNullOrEmpty("DTO diff should be computed for update operations");
 
             // Parse the diff to verify structure
             // Format: {"fieldName": {"from": oldValue, "to": newValue}}
             var diff = JsonSerializer.Deserialize<JsonElement>(handlerLog.DtoDiff!);
-            diff.ValueKind.Should().Be(JsonValueKind.Object);
+            diff.ValueKind.ShouldBe(JsonValueKind.Object);
 
             // Should contain firstName field with from/to values (camelCase for DTOs)
-            diff.TryGetProperty("firstName", out var firstNameChange).Should().BeTrue("FirstName change should be in the diff");
-            firstNameChange.GetProperty("from").GetString().Should().Be("Original");
-            firstNameChange.GetProperty("to").GetString().Should().Be("Changed");
+            diff.TryGetProperty("firstName", out var firstNameChange).ShouldBeTrue("FirstName change should be in the diff");
+            firstNameChange.GetProperty("from").GetString().ShouldBe("Original");
+            firstNameChange.GetProperty("to").GetString().ShouldBe("Changed");
         });
     }
 
@@ -331,12 +331,12 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
                 .OrderByDescending(h => h.StartTime)
                 .FirstOrDefaultAsync();
 
-            handlerLog.Should().NotBeNull();
-            handlerLog!.IsSuccess.Should().BeTrue();
+            handlerLog.ShouldNotBeNull();
+            handlerLog!.IsSuccess.ShouldBeTrue();
 
             // When there are no changes, the diff should be null
             // (the diff service returns null for identical objects)
-            handlerLog.DtoDiff.Should().BeNull("no changes means no diff");
+            handlerLog.DtoDiff.ShouldBeNull("no changes means no diff");
         });
     }
 
@@ -365,9 +365,9 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
                 .OrderByDescending(h => h.StartTime)
                 .FirstOrDefaultAsync();
 
-            handlerLog.Should().NotBeNull();
-            handlerLog!.CorrelationId.Should().NotBeNullOrEmpty();
-            handlerLog.IsSuccess.Should().BeTrue();
+            handlerLog.ShouldNotBeNull();
+            handlerLog!.CorrelationId.ShouldNotBeNullOrEmpty();
+            handlerLog.IsSuccess.ShouldBeTrue();
 
             // Note: HttpRequestAuditLogId is null in Testing environment because
             // HttpRequestAuditMiddleware is disabled to avoid test interference
@@ -403,10 +403,10 @@ public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
             {
                 if (log.EntityDiff != null)
                 {
-                    log.EntityDiff.Should().NotContain("Password");
-                    log.EntityDiff.Should().NotContain("PasswordHash");
-                    log.EntityDiff.Should().NotContain("SecurityStamp");
-                    log.EntityDiff.Should().NotContain("ConcurrencyStamp");
+                    log.EntityDiff.ShouldNotContain("Password");
+                    log.EntityDiff.ShouldNotContain("PasswordHash");
+                    log.EntityDiff.ShouldNotContain("SecurityStamp");
+                    log.EntityDiff.ShouldNotContain("ConcurrencyStamp");
                 }
             }
         });

@@ -129,8 +129,8 @@ public class GetDashboardMetricsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(expectedMetrics);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(expectedMetrics);
     }
 
     [Fact]
@@ -150,12 +150,12 @@ public class GetDashboardMetricsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Revenue.TotalRevenue.Should().Be(250_000m);
-        result.Value.Revenue.TotalOrders.Should().Be(100);
-        result.Value.Revenue.RevenueThisMonth.Should().Be(25_000m);
-        result.Value.Revenue.RevenueLastMonth.Should().Be(20_000m);
-        result.Value.Revenue.AverageOrderValue.Should().Be(2_500m);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Revenue.TotalRevenue.ShouldBe(250_000m);
+        result.Value.Revenue.TotalOrders.ShouldBe(100);
+        result.Value.Revenue.RevenueThisMonth.ShouldBe(25_000m);
+        result.Value.Revenue.RevenueLastMonth.ShouldBe(20_000m);
+        result.Value.Revenue.AverageOrderValue.ShouldBe(2_500m);
     }
 
     [Fact]
@@ -175,17 +175,17 @@ public class GetDashboardMetricsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var counts = result.Value.OrderCounts;
-        counts.Pending.Should().Be(5);
-        counts.Confirmed.Should().Be(3);
-        counts.Processing.Should().Be(2);
-        counts.Shipped.Should().Be(4);
-        counts.Delivered.Should().Be(10);
-        counts.Completed.Should().Be(15);
-        counts.Cancelled.Should().Be(2);
-        counts.Refunded.Should().Be(1);
-        counts.Returned.Should().Be(0);
+        counts.Pending.ShouldBe(5);
+        counts.Confirmed.ShouldBe(3);
+        counts.Processing.ShouldBe(2);
+        counts.Shipped.ShouldBe(4);
+        counts.Delivered.ShouldBe(10);
+        counts.Completed.ShouldBe(15);
+        counts.Cancelled.ShouldBe(2);
+        counts.Refunded.ShouldBe(1);
+        counts.Returned.ShouldBe(0);
     }
 
     [Fact]
@@ -205,15 +205,15 @@ public class GetDashboardMetricsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TopSellingProducts.Should().HaveCount(3);
-        result.Value.TopSellingProducts.Should().AllSatisfy(p =>
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TopSellingProducts.Count().ShouldBe(3);
+        foreach (var p in result.Value.TopSellingProducts)
         {
-            p.ProductId.Should().NotBeEmpty();
-            p.ProductName.Should().NotBeNullOrEmpty();
-            p.TotalQuantitySold.Should().BeGreaterThan(0);
-            p.TotalRevenue.Should().BeGreaterThan(0);
-        });
+            p.ProductId.ShouldNotBe(Guid.Empty);
+            p.ProductName.ShouldNotBeNullOrEmpty();
+            p.TotalQuantitySold.ShouldBeGreaterThan(0);
+            p.TotalRevenue.ShouldBeGreaterThan(0);
+        }
     }
 
     [Fact]
@@ -233,14 +233,14 @@ public class GetDashboardMetricsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.LowStockProducts.Should().HaveCount(4);
-        result.Value.LowStockProducts.Should().AllSatisfy(p =>
+        result.IsSuccess.ShouldBe(true);
+        result.Value.LowStockProducts.Count().ShouldBe(4);
+        foreach (var p in result.Value.LowStockProducts)
         {
-            p.ProductId.Should().NotBeEmpty();
-            p.VariantId.Should().NotBeEmpty();
-            p.StockQuantity.Should().BeLessThanOrEqualTo(10);
-        });
+            p.ProductId.ShouldNotBe(Guid.Empty);
+            p.VariantId.ShouldNotBe(Guid.Empty);
+            p.StockQuantity.ShouldBeLessThanOrEqualTo(10);
+        }
     }
 
     [Fact]
@@ -260,14 +260,14 @@ public class GetDashboardMetricsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.RecentOrders.Should().HaveCount(5);
-        result.Value.RecentOrders.Should().AllSatisfy(o =>
+        result.IsSuccess.ShouldBe(true);
+        result.Value.RecentOrders.Count().ShouldBe(5);
+        foreach (var o in result.Value.RecentOrders)
         {
-            o.OrderId.Should().NotBeEmpty();
-            o.OrderNumber.Should().StartWith("ORD-");
-            o.GrandTotal.Should().BeGreaterThan(0);
-        });
+            o.OrderId.ShouldNotBe(Guid.Empty);
+            o.OrderNumber.ShouldStartWith("ORD-");
+            o.GrandTotal.ShouldBeGreaterThan(0);
+        }
     }
 
     [Fact]
@@ -287,10 +287,10 @@ public class GetDashboardMetricsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProductDistribution.Draft.Should().Be(5);
-        result.Value.ProductDistribution.Active.Should().Be(30);
-        result.Value.ProductDistribution.Archived.Should().Be(8);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProductDistribution.Draft.ShouldBe(5);
+        result.Value.ProductDistribution.Active.ShouldBe(30);
+        result.Value.ProductDistribution.Archived.ShouldBe(8);
     }
 
     [Fact]
@@ -310,13 +310,13 @@ public class GetDashboardMetricsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SalesOverTime.Should().HaveCount(7);
-        result.Value.SalesOverTime.Should().AllSatisfy(s =>
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SalesOverTime.Count().ShouldBe(7);
+        foreach (var s in result.Value.SalesOverTime)
         {
-            s.Revenue.Should().BeGreaterThan(0);
-            s.OrderCount.Should().BeGreaterThan(0);
-        });
+            s.Revenue.ShouldBeGreaterThan(0);
+            s.OrderCount.ShouldBeGreaterThan(0);
+        }
     }
 
     #endregion
@@ -425,13 +425,13 @@ public class GetDashboardMetricsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Revenue.TotalRevenue.Should().Be(0);
-        result.Value.Revenue.TotalOrders.Should().Be(0);
-        result.Value.TopSellingProducts.Should().BeEmpty();
-        result.Value.LowStockProducts.Should().BeEmpty();
-        result.Value.RecentOrders.Should().BeEmpty();
-        result.Value.SalesOverTime.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Revenue.TotalRevenue.ShouldBe(0);
+        result.Value.Revenue.TotalOrders.ShouldBe(0);
+        result.Value.TopSellingProducts.ShouldBeEmpty();
+        result.Value.LowStockProducts.ShouldBeEmpty();
+        result.Value.RecentOrders.ShouldBeEmpty();
+        result.Value.SalesOverTime.ShouldBeEmpty();
     }
 
     [Fact]

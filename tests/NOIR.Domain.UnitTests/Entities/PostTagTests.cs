@@ -19,11 +19,11 @@ public class PostTagTests
         var tag = PostTag.Create(name, slug);
 
         // Assert
-        tag.Should().NotBeNull();
-        tag.Id.Should().NotBe(Guid.Empty);
-        tag.Name.Should().Be(name);
-        tag.Slug.Should().Be(slug);
-        tag.PostCount.Should().Be(0);
+        tag.ShouldNotBeNull();
+        tag.Id.ShouldNotBe(Guid.Empty);
+        tag.Name.ShouldBe(name);
+        tag.Slug.ShouldBe(slug);
+        tag.PostCount.ShouldBe(0);
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class PostTagTests
         var tag = PostTag.Create("JavaScript", "JAVASCRIPT");
 
         // Assert
-        tag.Slug.Should().Be("javascript");
+        tag.Slug.ShouldBe("javascript");
     }
 
     [Fact]
@@ -50,9 +50,9 @@ public class PostTagTests
         var tag = PostTag.Create(name, slug, description, color, tenantId);
 
         // Assert
-        tag.Description.Should().Be(description);
-        tag.Color.Should().Be(color);
-        tag.TenantId.Should().Be(tenantId);
+        tag.Description.ShouldBe(description);
+        tag.Color.ShouldBe(color);
+        tag.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -62,9 +62,9 @@ public class PostTagTests
         var tag = PostTag.Create("Tag", "tag");
 
         // Assert
-        tag.Description.Should().BeNull();
-        tag.Color.Should().BeNull();
-        tag.TenantId.Should().BeNull();
+        tag.Description.ShouldBeNull();
+        tag.Color.ShouldBeNull();
+        tag.TenantId.ShouldBeNull();
     }
 
     #endregion
@@ -85,10 +85,10 @@ public class PostTagTests
         tag.Update(newName, newSlug, newDescription, newColor);
 
         // Assert
-        tag.Name.Should().Be(newName);
-        tag.Slug.Should().Be("updated");
-        tag.Description.Should().Be(newDescription);
-        tag.Color.Should().Be(newColor);
+        tag.Name.ShouldBe(newName);
+        tag.Slug.ShouldBe("updated");
+        tag.Description.ShouldBe(newDescription);
+        tag.Color.ShouldBe(newColor);
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class PostTagTests
         tag.Update("Updated", "UPDATED-SLUG");
 
         // Assert
-        tag.Slug.Should().Be("updated-slug");
+        tag.Slug.ShouldBe("updated-slug");
     }
 
     [Fact]
@@ -114,8 +114,8 @@ public class PostTagTests
         tag.Update("Tag", "tag", null, null);
 
         // Assert
-        tag.Description.Should().BeNull();
-        tag.Color.Should().BeNull();
+        tag.Description.ShouldBeNull();
+        tag.Color.ShouldBeNull();
     }
 
     #endregion
@@ -133,7 +133,7 @@ public class PostTagTests
         tag.IncrementPostCount();
 
         // Assert
-        tag.PostCount.Should().Be(initialCount + 1);
+        tag.PostCount.ShouldBe(initialCount + 1);
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public class PostTagTests
         }
 
         // Assert
-        tag.PostCount.Should().Be(25);
+        tag.PostCount.ShouldBe(25);
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class PostTagTests
         tag.DecrementPostCount();
 
         // Assert
-        tag.PostCount.Should().Be(1);
+        tag.PostCount.ShouldBe(1);
     }
 
     [Fact]
@@ -177,7 +177,7 @@ public class PostTagTests
         tag.DecrementPostCount();
 
         // Assert
-        tag.PostCount.Should().Be(0);
+        tag.PostCount.ShouldBe(0);
     }
 
     [Fact]
@@ -193,7 +193,7 @@ public class PostTagTests
         tag.DecrementPostCount();
 
         // Assert
-        tag.PostCount.Should().Be(0);
+        tag.PostCount.ShouldBe(0);
     }
 
     #endregion
@@ -211,7 +211,7 @@ public class PostTagTests
         var tag = PostTag.Create("Tag", "tag", color: color);
 
         // Assert
-        tag.Color.Should().Be(color);
+        tag.Color.ShouldBe(color);
     }
 
     #endregion
@@ -225,8 +225,8 @@ public class PostTagTests
         var tag = PostTag.Create("Tag", "tag");
 
         // Assert
-        tag.PostAssignments.Should().NotBeNull();
-        tag.PostAssignments.Should().BeEmpty();
+        tag.PostAssignments.ShouldNotBeNull();
+        tag.PostAssignments.ShouldBeEmpty();
     }
 
     #endregion
@@ -245,11 +245,11 @@ public class PostTagTests
         var assignment = PostTagAssignment.Create(postId, tagId, tenantId);
 
         // Assert
-        assignment.Should().NotBeNull();
-        assignment.Id.Should().NotBe(Guid.Empty);
-        assignment.PostId.Should().Be(postId);
-        assignment.TagId.Should().Be(tagId);
-        assignment.TenantId.Should().Be(tenantId);
+        assignment.ShouldNotBeNull();
+        assignment.Id.ShouldNotBe(Guid.Empty);
+        assignment.PostId.ShouldBe(postId);
+        assignment.TagId.ShouldBe(tagId);
+        assignment.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -259,7 +259,7 @@ public class PostTagTests
         var assignment = PostTagAssignment.Create(Guid.NewGuid(), Guid.NewGuid());
 
         // Assert
-        assignment.TenantId.Should().BeNull();
+        assignment.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -274,7 +274,7 @@ public class PostTagTests
         var assignment2 = PostTagAssignment.Create(postId, tagId);
 
         // Assert
-        assignment1.Id.Should().NotBe(assignment2.Id);
+        assignment1.Id.ShouldNotBe(assignment2.Id);
     }
 
     #endregion
@@ -291,7 +291,7 @@ public class PostTagTests
         var tag = PostTag.Create("Tag", "tag", tenantId: tenantId);
 
         // Assert
-        tag.TenantId.Should().Be(tenantId);
+        tag.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -301,7 +301,7 @@ public class PostTagTests
         var tag = PostTag.Create("Tag", "tag");
 
         // Assert
-        tag.TenantId.Should().BeNull();
+        tag.TenantId.ShouldBeNull();
     }
 
     #endregion

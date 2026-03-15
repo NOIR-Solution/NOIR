@@ -38,10 +38,10 @@ public class InventoryEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.GetAsync("/api/inventory/receipts");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<InventoryReceiptSummaryDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeNull();
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class InventoryEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await _client.GetAsync("/api/inventory/receipts");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -64,10 +64,10 @@ public class InventoryEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.GetAsync("/api/inventory/receipts?page=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<InventoryReceiptSummaryDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.Items.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class InventoryEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.GetAsync("/api/inventory/receipts?type=StockIn");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -97,7 +97,7 @@ public class InventoryEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.GetAsync($"/api/inventory/receipts/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -111,7 +111,7 @@ public class InventoryEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await _client.GetAsync($"/api/inventory/products/{Guid.NewGuid()}/variants/{Guid.NewGuid()}/history");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -126,7 +126,7 @@ public class InventoryEndpointsTests : IClassFixture<CustomWebApplicationFactory
         // Assert
         // Known source issue: GetStockHistoryQueryHandler throws NullReferenceException for non-existent variants.
         // Accept either OK (if fixed) or InternalServerError (known NullRef bug).
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.InternalServerError);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.OK, HttpStatusCode.InternalServerError);
     }
 
     #endregion
@@ -143,7 +143,7 @@ public class InventoryEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await _client.PostAsJsonWithEnumsAsync("/api/inventory/movements", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -160,7 +160,7 @@ public class InventoryEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.PostAsync($"/api/inventory/receipts/{Guid.NewGuid()}/confirm", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -178,7 +178,7 @@ public class InventoryEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/inventory/receipts/{Guid.NewGuid()}/cancel", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion

@@ -39,9 +39,9 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/crm/pipelines");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<List<PipelineDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/crm/pipelines");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -69,12 +69,12 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/crm/pipelines/{pipeline.Id}/view");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var view = await response.Content.ReadFromJsonWithEnumsAsync<PipelineViewDto>();
-        view.Should().NotBeNull();
-        view!.Id.Should().Be(pipeline.Id);
-        view.Name.Should().Be(pipeline.Name);
-        view.Stages.Should().NotBeEmpty();
+        view.ShouldNotBeNull();
+        view!.Id.ShouldBe(pipeline.Id);
+        view.Name.ShouldBe(pipeline.Name);
+        view.Stages.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -87,7 +87,7 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/crm/pipelines/{Guid.NewGuid()}/view");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -105,11 +105,11 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/crm/pipelines", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var pipeline = await response.Content.ReadFromJsonWithEnumsAsync<PipelineDto>();
-        pipeline.Should().NotBeNull();
-        pipeline!.Name.Should().Be(request.Name);
-        pipeline.Stages.Should().HaveCount(request.Stages.Count);
+        pipeline.ShouldNotBeNull();
+        pipeline!.Name.ShouldBe(request.Name);
+        pipeline.Stages.Count().ShouldBe(request.Stages.Count);
     }
 
     [Fact]
@@ -134,11 +134,11 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/crm/pipelines", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var pipeline = await response.Content.ReadFromJsonWithEnumsAsync<PipelineDto>();
-        pipeline.Should().NotBeNull();
-        pipeline!.Stages.Should().HaveCount(5);
-        pipeline.Stages.Select(s => s.Name).Should().ContainInOrder("Lead", "Qualified", "Proposal", "Negotiation", "Closed");
+        pipeline.ShouldNotBeNull();
+        pipeline!.Stages.Count().ShouldBe(5);
+        pipeline.Stages.Select(s => s.Name).ShouldBe(new[] { "Lead", "Qualified", "Proposal", "Negotiation", "Closed" });
     }
 
     [Fact]
@@ -151,7 +151,7 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonWithEnumsAsync("/api/crm/pipelines", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -177,10 +177,10 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/crm/pipelines/{created.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await response.Content.ReadFromJsonWithEnumsAsync<PipelineDto>();
-        updated.Should().NotBeNull();
-        updated!.Name.Should().Be("Updated Pipeline Name");
+        updated.ShouldNotBeNull();
+        updated!.Name.ShouldBe("Updated Pipeline Name");
     }
 
     [Fact]
@@ -200,7 +200,7 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/crm/pipelines/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -218,7 +218,7 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/crm/pipelines/{created.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -231,7 +231,7 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/crm/pipelines/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -250,15 +250,15 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Assert
         // Known source issue: GetCrmDashboardQueryHandler has a LINQ expression that cannot be translated by EF Core.
         // Accept either OK (if data conditions allow) or InternalServerError (known LINQ translation bug).
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.InternalServerError);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.OK, HttpStatusCode.InternalServerError);
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
             var dashboard = await response.Content.ReadFromJsonWithEnumsAsync<CrmDashboardDto>();
-            dashboard.Should().NotBeNull();
-            dashboard!.TotalContacts.Should().BeGreaterThanOrEqualTo(0);
-            dashboard.TotalCompanies.Should().BeGreaterThanOrEqualTo(0);
-            dashboard.ActiveLeads.Should().BeGreaterThanOrEqualTo(0);
+            dashboard.ShouldNotBeNull();
+            dashboard!.TotalContacts.ShouldBeGreaterThanOrEqualTo(0);
+            dashboard.TotalCompanies.ShouldBeGreaterThanOrEqualTo(0);
+            dashboard.ActiveLeads.ShouldBeGreaterThanOrEqualTo(0);
         }
     }
 
@@ -269,7 +269,7 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/crm/dashboard");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -285,16 +285,16 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Create
         var createRequest = CreateTestPipelineRequest();
         var createResponse = await adminClient.PostAsJsonWithEnumsAsync("/api/crm/pipelines", createRequest);
-        createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        createResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var created = await createResponse.Content.ReadFromJsonWithEnumsAsync<PipelineDto>();
-        created.Should().NotBeNull();
+        created.ShouldNotBeNull();
         var pipelineId = created!.Id;
 
         // Read (via view endpoint)
         var viewResponse = await adminClient.GetAsync($"/api/crm/pipelines/{pipelineId}/view");
-        viewResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        viewResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var view = await viewResponse.Content.ReadFromJsonWithEnumsAsync<PipelineViewDto>();
-        view!.Name.Should().Be(createRequest.Name);
+        view!.Name.ShouldBe(createRequest.Name);
 
         // Update
         var updateStages = created.Stages.Select(s => new UpdatePipelineStageDto(
@@ -304,13 +304,13 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             IsDefault: false,
             Stages: updateStages);
         var updateResponse = await adminClient.PutAsJsonWithEnumsAsync($"/api/crm/pipelines/{pipelineId}", updateRequest);
-        updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        updateResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await updateResponse.Content.ReadFromJsonWithEnumsAsync<PipelineDto>();
-        updated!.Name.Should().Be("CrudUpdated Pipeline");
+        updated!.Name.ShouldBe("CrudUpdated Pipeline");
 
         // Delete
         var deleteResponse = await adminClient.DeleteAsync($"/api/crm/pipelines/{pipelineId}");
-        deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        deleteResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -338,7 +338,7 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/crm/pipelines/{created!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -376,7 +376,7 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/crm/pipelines/{pipeline.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     #endregion

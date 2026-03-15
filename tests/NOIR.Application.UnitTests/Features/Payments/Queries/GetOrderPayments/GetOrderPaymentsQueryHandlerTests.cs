@@ -69,10 +69,10 @@ public class GetOrderPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
-        result.Value[0].TransactionNumber.Should().Be("TXN-001");
-        result.Value[1].TransactionNumber.Should().Be("TXN-002");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
+        result.Value[0].TransactionNumber.ShouldBe("TXN-001");
+        result.Value[1].TransactionNumber.ShouldBe("TXN-002");
     }
 
     [Fact]
@@ -98,21 +98,21 @@ public class GetOrderPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value[0];
-        dto.Id.Should().Be(transaction.Id);
-        dto.TransactionNumber.Should().Be("TXN-001");
-        dto.GatewayTransactionId.Should().Be("gateway-txn-123");
-        dto.Provider.Should().Be("momo");
-        dto.OrderId.Should().Be(orderId);
-        dto.CustomerId.Should().Be(customerId);
-        dto.Amount.Should().Be(250000m);
-        dto.Currency.Should().Be("VND");
-        dto.GatewayFee.Should().Be(2500m);
-        dto.NetAmount.Should().Be(247500m);
-        dto.Status.Should().Be(PaymentStatus.Paid);
-        dto.PaymentMethod.Should().Be(PaymentMethod.EWallet);
-        dto.PaidAt.Should().NotBeNull();
+        dto.Id.ShouldBe(transaction.Id);
+        dto.TransactionNumber.ShouldBe("TXN-001");
+        dto.GatewayTransactionId.ShouldBe("gateway-txn-123");
+        dto.Provider.ShouldBe("momo");
+        dto.OrderId.ShouldBe(orderId);
+        dto.CustomerId.ShouldBe(customerId);
+        dto.Amount.ShouldBe(250000m);
+        dto.Currency.ShouldBe("VND");
+        dto.GatewayFee.ShouldBe(2500m);
+        dto.NetAmount.ShouldBe(247500m);
+        dto.Status.ShouldBe(PaymentStatus.Paid);
+        dto.PaymentMethod.ShouldBe(PaymentMethod.EWallet);
+        dto.PaidAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -134,8 +134,8 @@ public class GetOrderPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -168,11 +168,11 @@ public class GetOrderPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value[0];
-        dto.PaymentMethod.Should().Be(PaymentMethod.COD);
-        dto.CodCollectorName.Should().Be("Delivery Driver");
-        dto.CodCollectedAt.Should().NotBeNull();
+        dto.PaymentMethod.ShouldBe(PaymentMethod.COD);
+        dto.CodCollectorName.ShouldBe("Delivery Driver");
+        dto.CodCollectedAt.ShouldNotBeNull();
     }
 
     #endregion
@@ -197,8 +197,8 @@ public class GetOrderPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     #endregion

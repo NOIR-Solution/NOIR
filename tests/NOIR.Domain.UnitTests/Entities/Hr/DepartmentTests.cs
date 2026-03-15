@@ -40,16 +40,16 @@ public class DepartmentTests
             managerId: managerId);
 
         // Assert
-        department.Should().NotBeNull();
-        department.Id.Should().NotBe(Guid.Empty);
-        department.Name.Should().Be(TestName);
-        department.Code.Should().Be(TestCode.ToUpperInvariant());
-        department.Description.Should().Be(TestDescription);
-        department.ParentDepartmentId.Should().Be(parentId);
-        department.ManagerId.Should().Be(managerId);
-        department.SortOrder.Should().Be(0);
-        department.IsActive.Should().BeTrue();
-        department.TenantId.Should().Be(TestTenantId);
+        department.ShouldNotBeNull();
+        department.Id.ShouldNotBe(Guid.Empty);
+        department.Name.ShouldBe(TestName);
+        department.Code.ShouldBe(TestCode.ToUpperInvariant());
+        department.Description.ShouldBe(TestDescription);
+        department.ParentDepartmentId.ShouldBe(parentId);
+        department.ManagerId.ShouldBe(managerId);
+        department.SortOrder.ShouldBe(0);
+        department.IsActive.ShouldBeTrue();
+        department.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -59,10 +59,10 @@ public class DepartmentTests
         var department = CreateTestDepartment();
 
         // Assert
-        department.DomainEvents.Should().ContainSingle();
-        department.DomainEvents.First().Should().BeOfType<DepartmentCreatedEvent>();
+        department.DomainEvents.ShouldHaveSingleItem();
+        department.DomainEvents.First().ShouldBeOfType<DepartmentCreatedEvent>();
         var evt = (DepartmentCreatedEvent)department.DomainEvents.First();
-        evt.DepartmentId.Should().Be(department.Id);
+        evt.DepartmentId.ShouldBe(department.Id);
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class DepartmentTests
         var act = () => CreateTestDepartment(name: null!);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class DepartmentTests
         var act = () => CreateTestDepartment(name: "");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public class DepartmentTests
         var act = () => CreateTestDepartment(code: null!);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public class DepartmentTests
         var act = () => CreateTestDepartment(code: "");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class DepartmentTests
         var department = CreateTestDepartment(code: "eng");
 
         // Assert
-        department.Code.Should().Be("ENG");
+        department.Code.ShouldBe("ENG");
     }
 
     [Fact]
@@ -122,8 +122,8 @@ public class DepartmentTests
         var department = CreateTestDepartment(name: "  Engineering  ", code: "  eng  ");
 
         // Assert
-        department.Name.Should().Be("Engineering");
-        department.Code.Should().Be("ENG");
+        department.Name.ShouldBe("Engineering");
+        department.Code.ShouldBe("ENG");
     }
 
     [Fact]
@@ -136,9 +136,9 @@ public class DepartmentTests
             managerId: null);
 
         // Assert
-        department.Description.Should().BeNull();
-        department.ParentDepartmentId.Should().BeNull();
-        department.ManagerId.Should().BeNull();
+        department.Description.ShouldBeNull();
+        department.ParentDepartmentId.ShouldBeNull();
+        department.ManagerId.ShouldBeNull();
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public class DepartmentTests
         var dept2 = CreateTestDepartment();
 
         // Assert
-        dept1.Id.Should().NotBe(dept2.Id);
+        dept1.Id.ShouldNotBe(dept2.Id);
     }
 
     #endregion
@@ -169,11 +169,11 @@ public class DepartmentTests
         department.Update("Marketing", "MKT", "Marketing Department", newManagerId, newParentId);
 
         // Assert
-        department.Name.Should().Be("Marketing");
-        department.Code.Should().Be("MKT");
-        department.Description.Should().Be("Marketing Department");
-        department.ManagerId.Should().Be(newManagerId);
-        department.ParentDepartmentId.Should().Be(newParentId);
+        department.Name.ShouldBe("Marketing");
+        department.Code.ShouldBe("MKT");
+        department.Description.ShouldBe("Marketing Department");
+        department.ManagerId.ShouldBe(newManagerId);
+        department.ParentDepartmentId.ShouldBe(newParentId);
     }
 
     [Fact]
@@ -187,8 +187,8 @@ public class DepartmentTests
         department.Update("Marketing", "MKT", null, null, null);
 
         // Assert
-        department.DomainEvents.Should().ContainSingle();
-        department.DomainEvents.First().Should().BeOfType<DepartmentUpdatedEvent>();
+        department.DomainEvents.ShouldHaveSingleItem();
+        department.DomainEvents.First().ShouldBeOfType<DepartmentUpdatedEvent>();
     }
 
     [Fact]
@@ -202,7 +202,7 @@ public class DepartmentTests
         department.Update("Marketing", "mkt", null, null, null);
 
         // Assert
-        department.Code.Should().Be("MKT");
+        department.Code.ShouldBe("MKT");
     }
 
     [Fact]
@@ -217,7 +217,7 @@ public class DepartmentTests
         department.Update("Engineering", "ENG", "Eng Dept", null, null);
 
         // Assert
-        department.ManagerId.Should().BeNull();
+        department.ManagerId.ShouldBeNull();
     }
 
     [Fact]
@@ -231,7 +231,7 @@ public class DepartmentTests
         department.Update("Marketing", "MKT", "  Marketing Dept  ", null, null);
 
         // Assert
-        department.Description.Should().Be("Marketing Dept");
+        department.Description.ShouldBe("Marketing Dept");
     }
 
     #endregion
@@ -249,7 +249,7 @@ public class DepartmentTests
         department.Deactivate();
 
         // Assert
-        department.IsActive.Should().BeFalse();
+        department.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -263,8 +263,8 @@ public class DepartmentTests
         department.Deactivate();
 
         // Assert
-        department.DomainEvents.Should().ContainSingle();
-        department.DomainEvents.First().Should().BeOfType<DepartmentUpdatedEvent>();
+        department.DomainEvents.ShouldHaveSingleItem();
+        department.DomainEvents.First().ShouldBeOfType<DepartmentUpdatedEvent>();
     }
 
     [Fact]
@@ -279,7 +279,7 @@ public class DepartmentTests
         department.Activate();
 
         // Assert
-        department.IsActive.Should().BeTrue();
+        department.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -294,8 +294,8 @@ public class DepartmentTests
         department.Activate();
 
         // Assert
-        department.DomainEvents.Should().ContainSingle();
-        department.DomainEvents.First().Should().BeOfType<DepartmentUpdatedEvent>();
+        department.DomainEvents.ShouldHaveSingleItem();
+        department.DomainEvents.First().ShouldBeOfType<DepartmentUpdatedEvent>();
     }
 
     #endregion
@@ -312,7 +312,7 @@ public class DepartmentTests
         department.SetSortOrder(5);
 
         // Assert
-        department.SortOrder.Should().Be(5);
+        department.SortOrder.ShouldBe(5);
     }
 
     [Fact]
@@ -326,7 +326,7 @@ public class DepartmentTests
         department.SetSortOrder(0);
 
         // Assert
-        department.SortOrder.Should().Be(0);
+        department.SortOrder.ShouldBe(0);
     }
 
     #endregion

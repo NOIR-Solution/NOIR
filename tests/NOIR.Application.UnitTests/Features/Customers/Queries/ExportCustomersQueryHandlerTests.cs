@@ -67,17 +67,18 @@ public class ExportCustomersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ContentType.Should().Be("text/csv");
-        result.Value.FileName.Should().StartWith("customers-").And.EndWith(".csv");
-        result.Value.FileBytes.Should().NotBeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ContentType.ShouldBe("text/csv");
+        result.Value.FileName.ShouldStartWith("customers-");
+        result.Value.FileName.ShouldEndWith(".csv");
+        result.Value.FileBytes.ShouldNotBeEmpty();
 
         var csvContent = Encoding.UTF8.GetString(result.Value.FileBytes);
-        csvContent.Should().Contain("FirstName");
-        csvContent.Should().Contain("LastName");
-        csvContent.Should().Contain("Email");
-        csvContent.Should().Contain("Alice");
-        csvContent.Should().Contain("Bob");
+        csvContent.ShouldContain("FirstName");
+        csvContent.ShouldContain("LastName");
+        csvContent.ShouldContain("Email");
+        csvContent.ShouldContain("Alice");
+        csvContent.ShouldContain("Bob");
     }
 
     #endregion
@@ -108,10 +109,11 @@ public class ExportCustomersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ContentType.Should().Be("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        result.Value.FileName.Should().StartWith("customers-").And.EndWith(".xlsx");
-        result.Value.FileBytes.Should().BeEquivalentTo(excelBytes);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ContentType.ShouldBe("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        result.Value.FileName.ShouldStartWith("customers-");
+        result.Value.FileName.ShouldEndWith(".xlsx");
+        result.Value.FileBytes.ShouldBe(excelBytes);
 
         _excelExportServiceMock.Verify(
             x => x.CreateExcelFile("Customers", It.IsAny<IReadOnlyList<string>>(), It.IsAny<IReadOnlyList<IReadOnlyList<object?>>>()),
@@ -135,7 +137,7 @@ public class ExportCustomersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         _customerRepositoryMock.Verify(
             x => x.ListAsync(It.IsAny<CustomersForExportSpec>(), It.IsAny<CancellationToken>()),
@@ -157,13 +159,13 @@ public class ExportCustomersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.FileBytes.Should().NotBeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.FileBytes.ShouldNotBeEmpty();
 
         // CSV should still have headers even with no data rows
         var csvContent = Encoding.UTF8.GetString(result.Value.FileBytes);
-        csvContent.Should().Contain("FirstName");
-        csvContent.Should().Contain("Email");
+        csvContent.ShouldContain("FirstName");
+        csvContent.ShouldContain("Email");
     }
 
     #endregion
@@ -183,23 +185,23 @@ public class ExportCustomersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var csvContent = Encoding.UTF8.GetString(result.Value.FileBytes);
         var headerLine = csvContent.Split('\n')[0];
 
-        headerLine.Should().Contain("FirstName");
-        headerLine.Should().Contain("LastName");
-        headerLine.Should().Contain("Email");
-        headerLine.Should().Contain("Phone");
-        headerLine.Should().Contain("Segment");
-        headerLine.Should().Contain("Tier");
-        headerLine.Should().Contain("TotalOrders");
-        headerLine.Should().Contain("TotalSpent");
-        headerLine.Should().Contain("AverageOrderValue");
-        headerLine.Should().Contain("LoyaltyPoints");
-        headerLine.Should().Contain("IsActive");
-        headerLine.Should().Contain("Tags");
-        headerLine.Should().Contain("CreatedAt");
+        headerLine.ShouldContain("FirstName");
+        headerLine.ShouldContain("LastName");
+        headerLine.ShouldContain("Email");
+        headerLine.ShouldContain("Phone");
+        headerLine.ShouldContain("Segment");
+        headerLine.ShouldContain("Tier");
+        headerLine.ShouldContain("TotalOrders");
+        headerLine.ShouldContain("TotalSpent");
+        headerLine.ShouldContain("AverageOrderValue");
+        headerLine.ShouldContain("LoyaltyPoints");
+        headerLine.ShouldContain("IsActive");
+        headerLine.ShouldContain("Tags");
+        headerLine.ShouldContain("CreatedAt");
     }
 
     #endregion

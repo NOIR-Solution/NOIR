@@ -89,10 +89,10 @@ public class ResetTenantAdminPasswordCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().BeTrue();
-        result.Value.AdminUserId.Should().Be("admin-user-id");
-        result.Value.AdminEmail.Should().Be("admin@tenant.com");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(true);
+        result.Value.AdminUserId.ShouldBe("admin-user-id");
+        result.Value.AdminEmail.ShouldBe("admin@tenant.com");
     }
 
     [Fact]
@@ -123,9 +123,9 @@ public class ResetTenantAdminPasswordCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.AdminUserId.Should().Be("first-admin");
-        result.Value.AdminEmail.Should().Be("first@tenant.com");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.AdminUserId.ShouldBe("first-admin");
+        result.Value.AdminEmail.ShouldBe("first@tenant.com");
     }
 
     #endregion
@@ -146,8 +146,8 @@ public class ResetTenantAdminPasswordCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Business.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Business.NotFound);
     }
 
     [Fact]
@@ -192,8 +192,8 @@ public class ResetTenantAdminPasswordCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Business.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Business.NotFound);
     }
 
     #endregion
@@ -224,8 +224,8 @@ public class ResetTenantAdminPasswordCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.System.InternalError);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.System.InternalError);
     }
 
     [Fact]
@@ -252,8 +252,8 @@ public class ResetTenantAdminPasswordCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.System.InternalError);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.System.InternalError);
     }
 
     #endregion

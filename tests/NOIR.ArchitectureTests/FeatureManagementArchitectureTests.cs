@@ -28,7 +28,7 @@ public class FeatureManagementArchitectureTests
     {
         // Arrange
         var moduleTypes = GetModuleDefinitionTypes().ToList();
-        moduleTypes.Should().NotBeEmpty("there should be module definitions in the Application assembly");
+        moduleTypes.ShouldNotBeEmpty("there should be module definitions in the Application assembly");
 
         // Act - instantiate each and get the Name
         var names = new List<(string Name, string TypeName)>();
@@ -45,8 +45,8 @@ public class FeatureManagementArchitectureTests
             .Select(g => $"'{g.Key}' used by: {string.Join(", ", g.Select(x => x.TypeName))}")
             .ToList();
 
-        duplicates.Should().BeEmpty(
-            because: "all IModuleDefinition implementations must have unique Name values");
+        duplicates.ShouldBeEmpty(
+            "all IModuleDefinition implementations must have unique Name values");
     }
 
     [Fact]
@@ -69,8 +69,8 @@ public class FeatureManagementArchitectureTests
             .GetResult();
 
         // Assert
-        result.IsSuccessful.Should().BeTrue(
-            because: "all IModuleDefinition implementations must also implement ISingletonService for DI auto-registration");
+        result.IsSuccessful.ShouldBeTrue(
+            "all IModuleDefinition implementations must also implement ISingletonService for DI auto-registration");
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class FeatureManagementArchitectureTests
     {
         // Arrange
         var moduleTypes = GetModuleDefinitionTypes().ToList();
-        moduleTypes.Should().NotBeEmpty("there should be module definitions in the Application assembly");
+        moduleTypes.ShouldNotBeEmpty("there should be module definitions in the Application assembly");
 
         // Act & Assert - each module name should contain exactly one dot (Category.Name format)
         foreach (var type in moduleTypes)
@@ -86,8 +86,8 @@ public class FeatureManagementArchitectureTests
             var instance = (Domain.Interfaces.IModuleDefinition)Activator.CreateInstance(type)!;
             var dotCount = instance.Name.Count(c => c == '.');
 
-            dotCount.Should().Be(1,
-                because: $"module '{instance.Name}' (type: {type.Name}) should follow 'Category.Name' format with exactly one dot");
+            dotCount.ShouldBe(1,
+                $"module '{instance.Name}' (type: {type.Name}) should follow 'Category.Name' format with exactly one dot");
         }
     }
 
@@ -98,8 +98,8 @@ public class FeatureManagementArchitectureTests
         var moduleTypes = GetModuleDefinitionTypes().ToList();
 
         // Assert
-        moduleTypes.Should().HaveCount(35,
-            because: "there should be exactly 35 module definitions (8 Core + 14 Ecommerce + 3 Content + 4 Platform + 2 Analytics + 1 Integrations + 3 Erp)");
+        moduleTypes.Count().ShouldBe(35,
+            "there should be exactly 35 module definitions (8 Core + 14 Ecommerce + 3 Content + 4 Platform + 2 Analytics + 1 Integrations + 3 Erp)");
     }
 
     [Fact]
@@ -121,13 +121,13 @@ public class FeatureManagementArchitectureTests
 
             if (coreModuleNames.Contains(instance.Name))
             {
-                instance.IsCore.Should().BeTrue(
-                    because: $"module '{instance.Name}' is a core module and must have IsCore = true");
+                instance.IsCore.ShouldBeTrue(
+                    $"module '{instance.Name}' is a core module and must have IsCore = true");
             }
             else
             {
-                instance.IsCore.Should().BeFalse(
-                    because: $"module '{instance.Name}' is not a core module and must have IsCore = false");
+                instance.IsCore.ShouldBeFalse(
+                    $"module '{instance.Name}' is not a core module and must have IsCore = false");
             }
         }
     }
@@ -149,7 +149,7 @@ public class FeatureManagementArchitectureTests
             .GetResult();
 
         // Assert
-        result.IsSuccessful.Should().BeTrue(
-            because: "all IModuleDefinition implementations should be sealed for performance and clarity");
+        result.IsSuccessful.ShouldBeTrue(
+            "all IModuleDefinition implementations should be sealed for performance and clarity");
     }
 }

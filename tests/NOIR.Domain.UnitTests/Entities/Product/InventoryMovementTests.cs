@@ -42,14 +42,14 @@ public class InventoryMovementTests
         var movement = CreateTestMovement();
 
         // Assert
-        movement.Should().NotBeNull();
-        movement.Id.Should().NotBe(Guid.Empty);
-        movement.ProductVariantId.Should().Be(TestVariantId);
-        movement.ProductId.Should().Be(TestProductId);
-        movement.MovementType.Should().Be(InventoryMovementType.StockIn);
-        movement.QuantityBefore.Should().Be(100);
-        movement.QuantityMoved.Should().Be(50);
-        movement.TenantId.Should().Be(TestTenantId);
+        movement.ShouldNotBeNull();
+        movement.Id.ShouldNotBe(Guid.Empty);
+        movement.ProductVariantId.ShouldBe(TestVariantId);
+        movement.ProductId.ShouldBe(TestProductId);
+        movement.MovementType.ShouldBe(InventoryMovementType.StockIn);
+        movement.QuantityBefore.ShouldBe(100);
+        movement.QuantityMoved.ShouldBe(50);
+        movement.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class InventoryMovementTests
         var movement = CreateTestMovement(quantityBefore: 100, quantityMoved: 50);
 
         // Assert
-        movement.QuantityAfter.Should().Be(150); // 100 + 50
+        movement.QuantityAfter.ShouldBe(150); // 100 + 50
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class InventoryMovementTests
             quantityMoved: -30);
 
         // Assert
-        movement.QuantityAfter.Should().Be(70); // 100 + (-30)
+        movement.QuantityAfter.ShouldBe(70); // 100 + (-30)
     }
 
     [Fact]
@@ -86,10 +86,10 @@ public class InventoryMovementTests
             correlationId: "corr-12345");
 
         // Assert
-        movement.Reference.Should().Be("ORD-001");
-        movement.Notes.Should().Be("Stock received from supplier");
-        movement.UserId.Should().Be("admin-user");
-        movement.CorrelationId.Should().Be("corr-12345");
+        movement.Reference.ShouldBe("ORD-001");
+        movement.Notes.ShouldBe("Stock received from supplier");
+        movement.UserId.ShouldBe("admin-user");
+        movement.CorrelationId.ShouldBe("corr-12345");
     }
 
     [Fact]
@@ -100,10 +100,10 @@ public class InventoryMovementTests
             reference: null, notes: null, userId: null, correlationId: null);
 
         // Assert
-        movement.Reference.Should().BeNull();
-        movement.Notes.Should().BeNull();
-        movement.UserId.Should().BeNull();
-        movement.CorrelationId.Should().BeNull();
+        movement.Reference.ShouldBeNull();
+        movement.Notes.ShouldBeNull();
+        movement.UserId.ShouldBeNull();
+        movement.CorrelationId.ShouldBeNull();
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public class InventoryMovementTests
         var movement = CreateTestMovement(tenantId: null);
 
         // Assert
-        movement.TenantId.Should().BeNull();
+        movement.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -124,7 +124,7 @@ public class InventoryMovementTests
         var movement2 = CreateTestMovement();
 
         // Assert
-        movement1.Id.Should().NotBe(movement2.Id);
+        movement1.Id.ShouldNotBe(movement2.Id);
     }
 
     #endregion
@@ -146,7 +146,7 @@ public class InventoryMovementTests
         var movement = CreateTestMovement(movementType: type);
 
         // Assert
-        movement.MovementType.Should().Be(type);
+        movement.MovementType.ShouldBe(type);
     }
 
     [Fact]
@@ -156,8 +156,8 @@ public class InventoryMovementTests
         var act = () => CreateTestMovement(movementType: (InventoryMovementType)999);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("*Invalid inventory movement type*");
+        Should.Throw<ArgumentException>(act)
+            .Message.ShouldContain("Invalid inventory movement type");
     }
 
     #endregion
@@ -180,7 +180,7 @@ public class InventoryMovementTests
             quantityBefore, quantityMoved, TestTenantId);
 
         // Assert
-        movement.QuantityAfter.Should().Be(expectedAfter);
+        movement.QuantityAfter.ShouldBe(expectedAfter);
     }
 
     [Fact]
@@ -193,8 +193,8 @@ public class InventoryMovementTests
             quantityMoved: 100);
 
         // Assert
-        movement.QuantityAfter.Should().Be(150);
-        movement.QuantityAfter.Should().BeGreaterThan(movement.QuantityBefore);
+        movement.QuantityAfter.ShouldBe(150);
+        movement.QuantityAfter.ShouldBeGreaterThan(movement.QuantityBefore);
     }
 
     [Fact]
@@ -207,8 +207,8 @@ public class InventoryMovementTests
             quantityMoved: -30);
 
         // Assert
-        movement.QuantityAfter.Should().Be(70);
-        movement.QuantityAfter.Should().BeLessThan(movement.QuantityBefore);
+        movement.QuantityAfter.ShouldBe(70);
+        movement.QuantityAfter.ShouldBeLessThan(movement.QuantityBefore);
     }
 
     #endregion
@@ -225,7 +225,7 @@ public class InventoryMovementTests
         var movement = CreateTestMovement(reference: reference);
 
         // Assert
-        movement.Reference.Should().Be(reference);
+        movement.Reference.ShouldBe(reference);
     }
 
     [Fact]
@@ -238,8 +238,8 @@ public class InventoryMovementTests
         var movement = CreateTestMovement(reference: reference);
 
         // Assert
-        movement.Reference.Should().Be(reference);
-        movement.Reference!.Length.Should().Be(100);
+        movement.Reference.ShouldBe(reference);
+        movement.Reference!.Length.ShouldBe(100);
     }
 
     [Fact]
@@ -252,8 +252,8 @@ public class InventoryMovementTests
         var movement = CreateTestMovement(reference: reference);
 
         // Assert
-        movement.Reference!.Length.Should().Be(100);
-        movement.Reference.Should().Be(new string('X', 100));
+        movement.Reference!.Length.ShouldBe(100);
+        movement.Reference.ShouldBe(new string('X', 100));
     }
 
     #endregion
@@ -270,7 +270,7 @@ public class InventoryMovementTests
         var movement = CreateTestMovement(notes: notes);
 
         // Assert
-        movement.Notes.Should().Be(notes);
+        movement.Notes.ShouldBe(notes);
     }
 
     [Fact]
@@ -283,8 +283,8 @@ public class InventoryMovementTests
         var movement = CreateTestMovement(notes: notes);
 
         // Assert
-        movement.Notes.Should().Be(notes);
-        movement.Notes!.Length.Should().Be(500);
+        movement.Notes.ShouldBe(notes);
+        movement.Notes!.Length.ShouldBe(500);
     }
 
     [Fact]
@@ -297,8 +297,8 @@ public class InventoryMovementTests
         var movement = CreateTestMovement(notes: notes);
 
         // Assert
-        movement.Notes!.Length.Should().Be(503); // 500 chars + "..."
-        movement.Notes.Should().EndWith("...");
+        movement.Notes!.Length.ShouldBe(503); // 500 chars + "..."
+        movement.Notes.ShouldEndWith("...");
     }
 
     #endregion
@@ -312,8 +312,8 @@ public class InventoryMovementTests
         var movement = CreateTestMovement(quantityBefore: 0, quantityMoved: 100);
 
         // Assert
-        movement.QuantityBefore.Should().Be(0);
-        movement.QuantityAfter.Should().Be(100);
+        movement.QuantityBefore.ShouldBe(0);
+        movement.QuantityAfter.ShouldBe(100);
     }
 
     [Fact]
@@ -323,8 +323,8 @@ public class InventoryMovementTests
         var movement = CreateTestMovement(quantityBefore: 100, quantityMoved: 0);
 
         // Assert
-        movement.QuantityMoved.Should().Be(0);
-        movement.QuantityAfter.Should().Be(100);
+        movement.QuantityMoved.ShouldBe(0);
+        movement.QuantityAfter.ShouldBe(100);
     }
 
     [Fact]
@@ -334,7 +334,7 @@ public class InventoryMovementTests
         var movement = CreateTestMovement(quantityBefore: 10, quantityMoved: -50);
 
         // Assert
-        movement.QuantityAfter.Should().Be(-40);
+        movement.QuantityAfter.ShouldBe(-40);
     }
 
     #endregion

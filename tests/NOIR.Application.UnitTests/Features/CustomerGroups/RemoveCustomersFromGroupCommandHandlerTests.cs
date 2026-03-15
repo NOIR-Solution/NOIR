@@ -60,9 +60,9 @@ public class RemoveCustomersFromGroupCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
-        group.MemberCount.Should().Be(0); // Was incremented to 1 in setup, then decremented by handler
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
+        group.MemberCount.ShouldBe(0); // Was incremented to 1 in setup, then decremented by handler
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -84,7 +84,7 @@ public class RemoveCustomersFromGroupCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -106,8 +106,8 @@ public class RemoveCustomersFromGroupCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.CustomerGroup.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.CustomerGroup.NotFound);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 

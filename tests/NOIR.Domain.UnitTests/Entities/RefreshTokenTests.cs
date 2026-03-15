@@ -23,11 +23,11 @@ public class RefreshTokenTests
         var token = RefreshToken.Create(tokenValue, userId, expirationDays);
 
         // Assert
-        token.Should().NotBeNull();
-        token.Id.Should().NotBe(Guid.Empty);
-        token.UserId.Should().Be(userId);
-        token.Token.Should().Be(tokenValue);
-        token.TokenFamily.Should().NotBe(Guid.Empty);
+        token.ShouldNotBeNull();
+        token.Id.ShouldNotBe(Guid.Empty);
+        token.UserId.ShouldBe(userId);
+        token.Token.ShouldBe(tokenValue);
+        token.TokenFamily.ShouldNotBe(Guid.Empty);
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class RefreshTokenTests
         var token2 = RefreshToken.Create(GenerateTestToken(), "user-1", 7);
 
         // Assert - Different tokens should be created
-        token1.Token.Should().NotBe(token2.Token);
+        token1.Token.ShouldNotBe(token2.Token);
     }
 
     [Fact]
@@ -56,7 +56,10 @@ public class RefreshTokenTests
         var expectedMin = beforeCreate.AddDays(expirationDays);
         var expectedMax = afterCreate.AddDays(expirationDays);
 
-        token.ExpiresAt.Should().BeOnOrAfter(expectedMin).And.BeOnOrBefore(expectedMax);
+        token.ExpiresAt.ShouldBeGreaterThanOrEqualTo(expectedMin);
+
+
+        token.ExpiresAt.ShouldBeLessThanOrEqualTo(expectedMax);
     }
 
     [Fact]
@@ -69,7 +72,7 @@ public class RefreshTokenTests
         var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7, tenantId: tenantId);
 
         // Assert
-        token.TenantId.Should().Be(tenantId);
+        token.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -82,7 +85,7 @@ public class RefreshTokenTests
         var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7, ipAddress: ipAddress);
 
         // Assert
-        token.CreatedByIp.Should().Be(ipAddress);
+        token.CreatedByIp.ShouldBe(ipAddress);
     }
 
     [Fact]
@@ -103,9 +106,9 @@ public class RefreshTokenTests
             deviceName: deviceName);
 
         // Assert
-        token.DeviceFingerprint.Should().Be(fingerprint);
-        token.UserAgent.Should().Be(userAgent);
-        token.DeviceName.Should().Be(deviceName);
+        token.DeviceFingerprint.ShouldBe(fingerprint);
+        token.UserAgent.ShouldBe(userAgent);
+        token.DeviceName.ShouldBe(deviceName);
     }
 
     [Fact]
@@ -118,7 +121,7 @@ public class RefreshTokenTests
         var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7, tokenFamily: family);
 
         // Assert
-        token.TokenFamily.Should().Be(family);
+        token.TokenFamily.ShouldBe(family);
     }
 
     [Fact]
@@ -128,7 +131,7 @@ public class RefreshTokenTests
         var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Assert
-        token.TokenFamily.Should().NotBe(Guid.Empty);
+        token.TokenFamily.ShouldNotBe(Guid.Empty);
     }
 
     [Fact]
@@ -138,10 +141,10 @@ public class RefreshTokenTests
         var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Assert
-        token.RevokedAt.Should().BeNull();
-        token.RevokedByIp.Should().BeNull();
-        token.ReplacedByToken.Should().BeNull();
-        token.ReasonRevoked.Should().BeNull();
+        token.RevokedAt.ShouldBeNull();
+        token.RevokedByIp.ShouldBeNull();
+        token.ReplacedByToken.ShouldBeNull();
+        token.ReasonRevoked.ShouldBeNull();
     }
 
     [Theory]
@@ -159,7 +162,7 @@ public class RefreshTokenTests
 
         // Assert
         var expectedMin = before.AddDays(days);
-        token.ExpiresAt.Should().BeCloseTo(expectedMin, TimeSpan.FromSeconds(5));
+        token.ExpiresAt.ShouldBe(expectedMin, TimeSpan.FromSeconds(5));
     }
 
     #endregion
@@ -173,7 +176,7 @@ public class RefreshTokenTests
         var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Act & Assert
-        token.IsExpired.Should().BeFalse();
+        token.IsExpired.ShouldBeFalse();
     }
 
     [Fact]
@@ -187,7 +190,7 @@ public class RefreshTokenTests
         var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // A fresh token should not be expired
-        token.IsExpired.Should().BeFalse();
+        token.IsExpired.ShouldBeFalse();
     }
 
     #endregion
@@ -201,7 +204,7 @@ public class RefreshTokenTests
         var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Act & Assert
-        token.IsRevoked.Should().BeFalse();
+        token.IsRevoked.ShouldBeFalse();
     }
 
     [Fact]
@@ -214,7 +217,7 @@ public class RefreshTokenTests
         token.Revoke();
 
         // Assert
-        token.IsRevoked.Should().BeTrue();
+        token.IsRevoked.ShouldBeTrue();
     }
 
     #endregion
@@ -228,7 +231,7 @@ public class RefreshTokenTests
         var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Act & Assert
-        token.IsActive.Should().BeTrue();
+        token.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -239,7 +242,7 @@ public class RefreshTokenTests
         token.Revoke();
 
         // Act & Assert
-        token.IsActive.Should().BeFalse();
+        token.IsActive.ShouldBeFalse();
     }
 
     #endregion
@@ -258,8 +261,10 @@ public class RefreshTokenTests
 
         // Assert
         var afterRevoke = DateTimeOffset.UtcNow;
-        token.RevokedAt.Should().NotBeNull();
-        token.RevokedAt.Should().BeOnOrAfter(beforeRevoke).And.BeOnOrBefore(afterRevoke);
+        token.RevokedAt.ShouldNotBeNull();
+        token.RevokedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeRevoke);
+
+        token.RevokedAt!.Value.ShouldBeLessThanOrEqualTo(afterRevoke);
     }
 
     [Fact]
@@ -273,7 +278,7 @@ public class RefreshTokenTests
         token.Revoke(ipAddress: ipAddress);
 
         // Assert
-        token.RevokedByIp.Should().Be(ipAddress);
+        token.RevokedByIp.ShouldBe(ipAddress);
     }
 
     [Fact]
@@ -287,7 +292,7 @@ public class RefreshTokenTests
         token.Revoke(reason: reason);
 
         // Assert
-        token.ReasonRevoked.Should().Be(reason);
+        token.ReasonRevoked.ShouldBe(reason);
     }
 
     [Fact]
@@ -301,7 +306,7 @@ public class RefreshTokenTests
         token.Revoke(replacedByToken: newToken.Token);
 
         // Assert
-        token.ReplacedByToken.Should().Be(newToken.Token);
+        token.ReplacedByToken.ShouldBe(newToken.Token);
     }
 
     [Fact]
@@ -317,10 +322,10 @@ public class RefreshTokenTests
         token.Revoke(ipAddress, reason, newTokenValue);
 
         // Assert
-        token.RevokedByIp.Should().Be(ipAddress);
-        token.ReasonRevoked.Should().Be(reason);
-        token.ReplacedByToken.Should().Be(newTokenValue);
-        token.RevokedAt.Should().NotBeNull();
+        token.RevokedByIp.ShouldBe(ipAddress);
+        token.ReasonRevoked.ShouldBe(reason);
+        token.ReplacedByToken.ShouldBe(newTokenValue);
+        token.RevokedAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -338,8 +343,8 @@ public class RefreshTokenTests
         token.Revoke(reason: "Second revoke");
 
         // Assert
-        token.ReasonRevoked.Should().Be("Second revoke");
-        token.RevokedAt.Should().BeOnOrAfter(firstRevokedAt!.Value);
+        token.ReasonRevoked.ShouldBe("Second revoke");
+        token.RevokedAt!.Value.ShouldBeGreaterThanOrEqualTo(firstRevokedAt!.Value);
     }
 
     #endregion
@@ -353,7 +358,7 @@ public class RefreshTokenTests
         var token = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Assert - Token should be sufficiently long for security (2 GUIDs = 64 chars)
-        token.Token.Length.Should().BeGreaterThan(60);
+        token.Token.Length.ShouldBeGreaterThan(60);
     }
 
     [Fact]
@@ -365,7 +370,7 @@ public class RefreshTokenTests
             .ToList();
 
         // Assert - All tokens should be unique
-        tokens.Distinct().Count().Should().Be(100);
+        tokens.Distinct().Count().ShouldBe(100);
     }
 
     [Fact]
@@ -378,7 +383,7 @@ public class RefreshTokenTests
         var act = () => Convert.FromBase64String(token.Token);
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     #endregion
@@ -399,8 +404,8 @@ public class RefreshTokenTests
             tokenFamily: parentToken.TokenFamily);
 
         // Assert
-        childToken.TokenFamily.Should().Be(parentToken.TokenFamily);
-        childToken.Token.Should().NotBe(parentToken.Token);
+        childToken.TokenFamily.ShouldBe(parentToken.TokenFamily);
+        childToken.Token.ShouldNotBe(parentToken.Token);
     }
 
     [Fact]
@@ -411,7 +416,7 @@ public class RefreshTokenTests
         var token2 = RefreshToken.Create(GenerateTestToken(), "user-123", 7);
 
         // Assert
-        token1.TokenFamily.Should().NotBe(token2.TokenFamily);
+        token1.TokenFamily.ShouldNotBe(token2.TokenFamily);
     }
 
     #endregion

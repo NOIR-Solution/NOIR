@@ -49,8 +49,8 @@ public class RepositoryTests : IAsyncLifetime
 
             // Assert
             var savedToken = await context.RefreshTokens.FindAsync(token.Id);
-            savedToken.Should().NotBeNull();
-            savedToken!.UserId.Should().Be("test-user");
+            savedToken.ShouldNotBeNull();
+            savedToken!.UserId.ShouldBe("test-user");
         });
     }
 
@@ -70,8 +70,8 @@ public class RepositoryTests : IAsyncLifetime
             var result = await context.RefreshTokens.FindAsync(token.Id);
 
             // Assert
-            result.Should().NotBeNull();
-            result!.Id.Should().Be(token.Id);
+            result.ShouldNotBeNull();
+            result!.Id.ShouldBe(token.Id);
         });
     }
 
@@ -86,7 +86,7 @@ public class RepositoryTests : IAsyncLifetime
             var result = await context.RefreshTokens.FindAsync(Guid.NewGuid());
 
             // Assert
-            result.Should().BeNull();
+            result.ShouldBeNull();
         });
     }
 
@@ -108,9 +108,9 @@ public class RepositoryTests : IAsyncLifetime
 
             // Assert
             var updatedToken = await context.RefreshTokens.FindAsync(token.Id);
-            updatedToken.Should().NotBeNull();
-            updatedToken!.IsRevoked.Should().BeTrue();
-            updatedToken.RevokedByIp.Should().Be("127.0.0.1");
+            updatedToken.ShouldNotBeNull();
+            updatedToken!.IsRevoked.ShouldBeTrue();
+            updatedToken.RevokedByIp.ShouldBe("127.0.0.1");
         });
     }
 
@@ -138,15 +138,15 @@ public class RepositoryTests : IAsyncLifetime
             var deletedToken = await context.RefreshTokens
                 .Where(t => t.Id == tokenId)
                 .FirstOrDefaultAsync();
-            deletedToken.Should().BeNull("entity should be filtered out by soft delete query filter");
+            deletedToken.ShouldBeNull("entity should be filtered out by soft delete query filter");
 
             // But still exists in database with IsDeleted = true
             var softDeleted = await context.RefreshTokens
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(t => t.Id == tokenId);
-            softDeleted.Should().NotBeNull();
-            softDeleted!.IsDeleted.Should().BeTrue();
-            softDeleted.DeletedAt.Should().NotBeNull();
+            softDeleted.ShouldNotBeNull();
+            softDeleted!.IsDeleted.ShouldBeTrue();
+            softDeleted.DeletedAt.ShouldNotBeNull();
         });
     }
 
@@ -167,7 +167,7 @@ public class RepositoryTests : IAsyncLifetime
             var count = await context.RefreshTokens.CountAsync();
 
             // Assert
-            count.Should().Be(initialCount + 2);
+            count.ShouldBe(initialCount + 2);
         });
     }
 
@@ -187,7 +187,7 @@ public class RepositoryTests : IAsyncLifetime
             var exists = await context.RefreshTokens.AnyAsync(t => t.UserId == "any-test-user");
 
             // Assert
-            exists.Should().BeTrue();
+            exists.ShouldBeTrue();
         });
     }
 
@@ -202,7 +202,7 @@ public class RepositoryTests : IAsyncLifetime
             var exists = await context.RefreshTokens.AnyAsync(t => t.UserId == "non-existent-user-xyz");
 
             // Assert
-            exists.Should().BeFalse();
+            exists.ShouldBeFalse();
         });
     }
 
@@ -234,9 +234,9 @@ public class RepositoryTests : IAsyncLifetime
 
             // Assert
             var saved = await context.EntityAuditLogs.FindAsync(auditLog.Id);
-            saved.Should().NotBeNull();
-            saved!.Operation.Should().Be(nameof(EntityAuditOperation.Added));
-            saved.EntityType.Should().Be("TestEntity");
+            saved.ShouldNotBeNull();
+            saved!.Operation.ShouldBe(nameof(EntityAuditOperation.Added));
+            saved.EntityType.ShouldBe("TestEntity");
         });
     }
 
@@ -261,7 +261,7 @@ public class RepositoryTests : IAsyncLifetime
                 .ToListAsync();
 
             // Assert
-            customerLogs.Should().HaveCount(2);
+            customerLogs.Count().ShouldBe(2);
         });
     }
 

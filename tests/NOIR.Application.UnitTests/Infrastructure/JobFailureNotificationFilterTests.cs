@@ -37,7 +37,7 @@ public class JobFailureNotificationFilterTests
         var filter = CreateFilter();
 
         // Assert
-        filter.Should().NotBeNull();
+        filter.ShouldNotBeNull();
     }
 
     [Fact]
@@ -45,8 +45,8 @@ public class JobFailureNotificationFilterTests
     {
         // Assert - Verify constructor has 3 required parameters
         var constructors = typeof(JobFailureNotificationFilter).GetConstructors();
-        constructors.Should().HaveCount(1);
-        constructors[0].GetParameters().Should().HaveCount(3);
+        constructors.Count().ShouldBe(1);
+        constructors[0].GetParameters().Count().ShouldBe(3);
     }
 
     #endregion
@@ -60,7 +60,7 @@ public class JobFailureNotificationFilterTests
         var filter = CreateFilter();
 
         // Assert
-        filter.Should().BeAssignableTo<IElectStateFilter>();
+        filter.ShouldBeAssignableTo<IElectStateFilter>();
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class JobFailureNotificationFilterTests
         var filter = CreateFilter();
 
         // Assert
-        filter.Should().BeAssignableTo<JobFilterAttribute>();
+        filter.ShouldBeAssignableTo<JobFilterAttribute>();
     }
 
     #endregion
@@ -84,15 +84,15 @@ public class JobFailureNotificationFilterTests
         var method = typeof(JobFailureNotificationFilter)
             .GetMethod("OnStateElection", [typeof(ElectStateContext)]);
 
-        method.Should().NotBeNull();
-        method!.ReturnType.Should().Be(typeof(void));
+        method.ShouldNotBeNull();
+        method!.ReturnType.ShouldBe(typeof(void));
     }
 
     [Fact]
     public void Filter_ShouldBePublicClass()
     {
         // Assert
-        typeof(JobFailureNotificationFilter).IsPublic.Should().BeTrue();
+        typeof(JobFailureNotificationFilter).IsPublic.ShouldBe(true);
     }
 
     #endregion
@@ -103,7 +103,7 @@ public class JobFailureNotificationFilterTests
     public void JobNotificationSettings_ShouldHaveSectionName()
     {
         // Assert
-        JobNotificationSettings.SectionName.Should().Be("JobNotifications");
+        JobNotificationSettings.SectionName.ShouldBe("JobNotifications");
     }
 
     [Fact]
@@ -113,8 +113,8 @@ public class JobFailureNotificationFilterTests
         var settings = new JobNotificationSettings();
 
         // Assert
-        settings.SendEmailOnFailure.Should().BeFalse();
-        settings.NotificationEmail.Should().BeNull();
+        settings.SendEmailOnFailure.ShouldBe(false);
+        settings.NotificationEmail.ShouldBeNull();
     }
 
     [Fact]
@@ -128,8 +128,8 @@ public class JobFailureNotificationFilterTests
         };
 
         // Assert
-        settings.SendEmailOnFailure.Should().BeTrue();
-        settings.NotificationEmail.Should().Be("admin@example.com");
+        settings.SendEmailOnFailure.ShouldBe(true);
+        settings.NotificationEmail.ShouldBe("admin@example.com");
     }
 
     #endregion
@@ -143,7 +143,7 @@ public class JobFailureNotificationFilterTests
         // Other state transitions (Enqueued, Scheduled, Processing, Succeeded) are ignored
         var filter = CreateFilter();
 
-        filter.Should().NotBeNull("Filter should be instantiable");
+        filter.ShouldNotBeNull("Filter should be instantiable");
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class JobFailureNotificationFilterTests
         // - Exception details
         var filter = CreateFilter();
 
-        filter.Should().NotBeNull();
+        filter.ShouldNotBeNull();
     }
 
     [Fact]
@@ -169,7 +169,7 @@ public class JobFailureNotificationFilterTests
 
         var filter = CreateFilter();
 
-        filter.Should().NotBeNull();
+        filter.ShouldNotBeNull();
     }
 
     [Fact]
@@ -182,7 +182,7 @@ public class JobFailureNotificationFilterTests
 
         var filter = CreateFilter();
 
-        filter.Should().NotBeNull("Filter should use IServiceProvider for scoped services");
+        filter.ShouldNotBeNull("Filter should use IServiceProvider for scoped services");
     }
 
     [Fact]
@@ -194,7 +194,7 @@ public class JobFailureNotificationFilterTests
 
         var filter = CreateFilter();
 
-        filter.Should().NotBeNull("Filter should work even if email service is unavailable");
+        filter.ShouldNotBeNull("Filter should work even if email service is unavailable");
     }
 
     #endregion

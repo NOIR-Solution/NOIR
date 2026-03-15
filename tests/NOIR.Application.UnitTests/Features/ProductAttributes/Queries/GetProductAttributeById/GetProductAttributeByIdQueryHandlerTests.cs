@@ -65,10 +65,10 @@ public class GetProductAttributeByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Code.Should().Be("screen_size");
-        result.Value.Name.Should().Be("Screen Size");
-        result.Value.Type.Should().Be("Number");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Code.ShouldBe("screen_size");
+        result.Value.Name.ShouldBe("Screen Size");
+        result.Value.Type.ShouldBe("Number");
     }
 
     [Fact]
@@ -90,11 +90,11 @@ public class GetProductAttributeByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Values.Should().HaveCount(3);
-        result.Value.Values.Should().Contain(v => v.Value == "red");
-        result.Value.Values.Should().Contain(v => v.Value == "blue");
-        result.Value.Values.Should().Contain(v => v.Value == "green");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Values.Count().ShouldBe(3);
+        result.Value.Values.ShouldContain(v => v.Value == "red");
+        result.Value.Values.ShouldContain(v => v.Value == "blue");
+        result.Value.Values.ShouldContain(v => v.Value == "green");
     }
 
     [Theory]
@@ -129,8 +129,8 @@ public class GetProductAttributeByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Type.Should().Be(type.ToString());
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Type.ShouldBe(type.ToString());
     }
 
     [Fact]
@@ -168,16 +168,16 @@ public class GetProductAttributeByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsFilterable.Should().BeTrue();
-        result.Value.IsSearchable.Should().BeTrue();
-        result.Value.IsRequired.Should().BeTrue();
-        result.Value.ShowInProductCard.Should().BeTrue();
-        result.Value.ShowInSpecifications.Should().BeTrue();
-        result.Value.Unit.Should().Be("kg");
-        result.Value.MinValue.Should().Be(0.1m);
-        result.Value.MaxValue.Should().Be(1000m);
-        result.Value.IsGlobal.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsFilterable.ShouldBe(true);
+        result.Value.IsSearchable.ShouldBe(true);
+        result.Value.IsRequired.ShouldBe(true);
+        result.Value.ShowInProductCard.ShouldBe(true);
+        result.Value.ShowInSpecifications.ShouldBe(true);
+        result.Value.Unit.ShouldBe("kg");
+        result.Value.MinValue.ShouldBe(0.1m);
+        result.Value.MaxValue.ShouldBe(1000m);
+        result.Value.IsGlobal.ShouldBe(true);
     }
 
     #endregion
@@ -202,8 +202,8 @@ public class GetProductAttributeByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Attribute.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Attribute.NotFound);
     }
 
     #endregion
@@ -253,8 +253,8 @@ public class GetProductAttributeByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Values.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Values.ShouldBeEmpty();
     }
 
     #endregion

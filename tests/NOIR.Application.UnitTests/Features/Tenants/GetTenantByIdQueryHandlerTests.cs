@@ -71,11 +71,11 @@ public class GetTenantByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(tenant.Id);
-        result.Value.Identifier.Should().Be("acme-corp");
-        result.Value.Name.Should().Be("Acme Corporation");
-        result.Value.IsActive.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(tenant.Id);
+        result.Value.Identifier.ShouldBe("acme-corp");
+        result.Value.Name.ShouldBe("Acme Corporation");
+        result.Value.IsActive.ShouldBe(true);
     }
 
     [Fact]
@@ -98,8 +98,8 @@ public class GetTenantByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(false);
     }
 
     [Fact]
@@ -121,14 +121,14 @@ public class GetTenantByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Id.Should().Be(tenant.Id);
-        dto.Identifier.Should().Be(tenant.Identifier);
-        dto.Name.Should().Be(tenant.Name);
-        dto.IsActive.Should().Be(tenant.IsActive);
-        dto.CreatedAt.Should().Be(tenant.CreatedAt);
-        dto.ModifiedAt.Should().Be(tenant.ModifiedAt);
+        dto.Id.ShouldBe(tenant.Id);
+        dto.Identifier.ShouldBe(tenant.Identifier);
+        dto.Name.ShouldBe(tenant.Name);
+        dto.IsActive.ShouldBe(tenant.IsActive);
+        dto.CreatedAt.ShouldBe(tenant.CreatedAt);
+        dto.ModifiedAt.ShouldBe(tenant.ModifiedAt);
     }
 
     [Fact]
@@ -157,9 +157,9 @@ public class GetTenantByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ModifiedAt.Should().NotBeNull();
-        result.Value.Name.Should().Be("Updated Name");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ModifiedAt.ShouldNotBeNull();
+        result.Value.Name.ShouldBe("Updated Name");
     }
 
     #endregion
@@ -182,8 +182,8 @@ public class GetTenantByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.TenantNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.TenantNotFound);
     }
 
     [Fact]
@@ -206,8 +206,8 @@ public class GetTenantByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.TenantNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.TenantNotFound);
     }
 
     #endregion
@@ -259,8 +259,8 @@ public class GetTenantByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ModifiedAt.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ModifiedAt.ShouldBeNull();
     }
 
     [Fact]

@@ -114,10 +114,10 @@ public class GetShippingOrderQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.TrackingNumber.Should().Be(TestTrackingNumber);
-        result.Value.ProviderCode.Should().Be(ShippingProviderCode.GHTK);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.TrackingNumber.ShouldBe(TestTrackingNumber);
+        result.Value.ProviderCode.ShouldBe(ShippingProviderCode.GHTK);
     }
 
     [Fact]
@@ -134,9 +134,9 @@ public class GetShippingOrderQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain("NONEXISTENT123");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Message.ShouldContain("NONEXISTENT123");
     }
 
     [Fact]
@@ -160,8 +160,8 @@ public class GetShippingOrderQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProviderName.Should().Be("Giao Hang Tiet Kiem");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProviderName.ShouldBe("Giao Hang Tiet Kiem");
     }
 
     #endregion
@@ -185,9 +185,9 @@ public class GetShippingOrderQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Id.Should().Be(shippingOrderId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Id.ShouldBe(shippingOrderId);
     }
 
     [Fact]
@@ -206,9 +206,9 @@ public class GetShippingOrderQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain(nonExistentId.ToString());
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Message.ShouldContain(nonExistentId.ToString());
     }
 
     #endregion
@@ -233,9 +233,9 @@ public class GetShippingOrderQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.OrderId.Should().Be(noirOrderId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.OrderId.ShouldBe(noirOrderId);
     }
 
     [Fact]
@@ -254,9 +254,9 @@ public class GetShippingOrderQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain(nonExistentOrderId.ToString());
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Message.ShouldContain(nonExistentOrderId.ToString());
     }
 
     #endregion
@@ -281,21 +281,21 @@ public class GetShippingOrderQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
 
-        dto.Id.Should().Be(shippingOrderId);
-        dto.OrderId.Should().Be(noirOrderId);
-        dto.ProviderCode.Should().Be(ShippingProviderCode.GHTK);
-        dto.TrackingNumber.Should().Be(TestTrackingNumber);
-        dto.ServiceTypeCode.Should().Be("STANDARD");
-        dto.ServiceTypeName.Should().Be("Standard Delivery");
-        dto.Status.Should().Be(ShippingStatus.AwaitingPickup);
-        dto.BaseRate.Should().Be(30000m);
-        dto.TotalShippingFee.Should().Be(30000m);
-        dto.LabelUrl.Should().Be("https://label.example.com/123");
-        dto.TrackingUrl.Should().Be("https://tracking.example.com/123");
-        dto.EstimatedDeliveryDate.Should().NotBeNull();
+        dto.Id.ShouldBe(shippingOrderId);
+        dto.OrderId.ShouldBe(noirOrderId);
+        dto.ProviderCode.ShouldBe(ShippingProviderCode.GHTK);
+        dto.TrackingNumber.ShouldBe(TestTrackingNumber);
+        dto.ServiceTypeCode.ShouldBe("STANDARD");
+        dto.ServiceTypeName.ShouldBe("Standard Delivery");
+        dto.Status.ShouldBe(ShippingStatus.AwaitingPickup);
+        dto.BaseRate.ShouldBe(30000m);
+        dto.TotalShippingFee.ShouldBe(30000m);
+        dto.LabelUrl.ShouldBe("https://label.example.com/123");
+        dto.TrackingUrl.ShouldBe("https://tracking.example.com/123");
+        dto.EstimatedDeliveryDate.ShouldNotBeNull();
     }
 
     [Fact]
@@ -315,8 +315,8 @@ public class GetShippingOrderQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProviderName.Should().Be("GHTK"); // Falls back to ProviderCode.ToString()
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProviderName.ShouldBe("GHTK"); // Falls back to ProviderCode.ToString()
     }
 
     #endregion

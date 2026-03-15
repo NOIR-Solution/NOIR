@@ -59,10 +59,10 @@ public class DeleteCustomerCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Email.Should().Be("john@example.com");
-        result.Value.FirstName.Should().Be("John");
-        result.Value.LastName.Should().Be("Doe");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Email.ShouldBe("john@example.com");
+        result.Value.FirstName.ShouldBe("John");
+        result.Value.LastName.ShouldBe("Doe");
 
         _customerRepositoryMock.Verify(
             x => x.Remove(existingCustomer),
@@ -95,11 +95,11 @@ public class DeleteCustomerCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Email.Should().Be("test@example.com");
-        result.Value.FirstName.Should().Be("Test");
-        result.Value.LastName.Should().Be("Customer");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Email.ShouldBe("test@example.com");
+        result.Value.FirstName.ShouldBe("Test");
+        result.Value.LastName.ShouldBe("Customer");
     }
 
     #endregion
@@ -124,8 +124,8 @@ public class DeleteCustomerCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CUSTOMER-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CUSTOMER-002");
 
         _customerRepositoryMock.Verify(
             x => x.Remove(It.IsAny<Customer>()),

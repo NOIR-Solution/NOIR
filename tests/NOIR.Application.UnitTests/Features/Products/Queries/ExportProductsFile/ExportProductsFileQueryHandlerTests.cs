@@ -78,16 +78,17 @@ public class ExportProductsFileQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ContentType.Should().Be("text/csv");
-        result.Value.FileName.Should().StartWith("products-").And.EndWith(".csv");
-        result.Value.FileBytes.Should().NotBeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ContentType.ShouldBe("text/csv");
+        result.Value.FileName.ShouldStartWith("products-");
+        result.Value.FileName.ShouldEndWith(".csv");
+        result.Value.FileBytes.ShouldNotBeEmpty();
 
         // Decode and verify CSV content
         var csvContent = Encoding.UTF8.GetString(result.Value.FileBytes);
-        csvContent.Should().Contain("Name");
-        csvContent.Should().Contain("Product 1");
-        csvContent.Should().Contain("Product 2");
+        csvContent.ShouldContain("Name");
+        csvContent.ShouldContain("Product 1");
+        csvContent.ShouldContain("Product 2");
     }
 
     #endregion
@@ -115,10 +116,11 @@ public class ExportProductsFileQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ContentType.Should().Be("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        result.Value.FileName.Should().StartWith("products-").And.EndWith(".xlsx");
-        result.Value.FileBytes.Should().BeEquivalentTo(excelBytes);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ContentType.ShouldBe("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        result.Value.FileName.ShouldStartWith("products-");
+        result.Value.FileName.ShouldEndWith(".xlsx");
+        result.Value.FileBytes.ShouldBe(excelBytes);
 
         _excelExportServiceMock.Verify(
             x => x.CreateExcelFile("Products", It.IsAny<IReadOnlyList<string>>(), It.IsAny<IReadOnlyList<IReadOnlyList<object?>>>()),
@@ -141,12 +143,12 @@ public class ExportProductsFileQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.FileBytes.Should().NotBeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.FileBytes.ShouldNotBeEmpty();
 
         // CSV should still have headers
         var csvContent = Encoding.UTF8.GetString(result.Value.FileBytes);
-        csvContent.Should().Contain("Name");
+        csvContent.ShouldContain("Name");
     }
 
     #endregion
@@ -168,7 +170,7 @@ public class ExportProductsFileQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
     }
 
     #endregion
@@ -187,10 +189,10 @@ public class ExportProductsFileQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var csvContent = Encoding.UTF8.GetString(result.Value.FileBytes);
         var headerLine = csvContent.Split('\n')[0];
-        headerLine.Should().NotContain("Images");
+        headerLine.ShouldNotContain("Images");
     }
 
     [Fact]
@@ -205,10 +207,10 @@ public class ExportProductsFileQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var csvContent = Encoding.UTF8.GetString(result.Value.FileBytes);
         var headerLine = csvContent.Split('\n')[0];
-        headerLine.Should().NotContain("Color");
+        headerLine.ShouldNotContain("Color");
     }
 
     #endregion

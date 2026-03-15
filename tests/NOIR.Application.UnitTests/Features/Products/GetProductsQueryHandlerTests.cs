@@ -92,11 +92,11 @@ public class GetProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.TotalCount.Should().Be(5);
-        result.Value.PageNumber.Should().Be(1);
-        result.Value.PageSize.Should().Be(20);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.TotalCount.ShouldBe(5);
+        result.Value.PageNumber.ShouldBe(1);
+        result.Value.PageSize.ShouldBe(20);
     }
 
     [Fact]
@@ -122,14 +122,14 @@ public class GetProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.TotalCount.Should().Be(10);
-        result.Value.PageNumber.Should().Be(2);
-        result.Value.PageSize.Should().Be(5);
-        result.Value.TotalPages.Should().Be(2);
-        result.Value.HasPreviousPage.Should().BeTrue();
-        result.Value.HasNextPage.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.TotalCount.ShouldBe(10);
+        result.Value.PageNumber.ShouldBe(2);
+        result.Value.PageSize.ShouldBe(5);
+        result.Value.TotalPages.ShouldBe(2);
+        result.Value.HasPreviousPage.ShouldBe(true);
+        result.Value.HasNextPage.ShouldBe(false);
     }
 
     [Fact]
@@ -155,7 +155,7 @@ public class GetProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         _productRepositoryMock.Verify(
             x => x.ListAsync(It.IsAny<ProductsSpec>(), It.IsAny<CancellationToken>()),
@@ -187,8 +187,8 @@ public class GetProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -216,8 +216,8 @@ public class GetProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -243,8 +243,8 @@ public class GetProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(3);
     }
 
     #endregion
@@ -273,12 +273,12 @@ public class GetProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
-        result.Value.TotalPages.Should().Be(0);
-        result.Value.HasPreviousPage.Should().BeFalse();
-        result.Value.HasNextPage.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
+        result.Value.TotalPages.ShouldBe(0);
+        result.Value.HasPreviousPage.ShouldBe(false);
+        result.Value.HasNextPage.ShouldBe(false);
     }
 
     #endregion
@@ -343,8 +343,8 @@ public class GetProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.First().PrimaryImageUrl.Should().Be("https://example.com/primary.jpg");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.First().PrimaryImageUrl.ShouldBe("https://example.com/primary.jpg");
     }
 
     [Fact]
@@ -373,8 +373,8 @@ public class GetProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.First().PrimaryImageUrl.Should().Be("https://example.com/first.jpg");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.First().PrimaryImageUrl.ShouldBe("https://example.com/first.jpg");
     }
 
     [Fact]
@@ -404,14 +404,14 @@ public class GetProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var item = result.Value.Items.First();
-        item.Name.Should().Be("Test Product");
-        item.Slug.Should().Be("test-product");
-        item.BasePrice.Should().Be(99.99m);
-        item.Brand.Should().Be("Test Brand");
-        item.Sku.Should().Be("SKU-001");
-        item.Status.Should().Be(ProductStatus.Draft);
+        item.Name.ShouldBe("Test Product");
+        item.Slug.ShouldBe("test-product");
+        item.BasePrice.ShouldBe(99.99m);
+        item.Brand.ShouldBe("Test Brand");
+        item.Sku.ShouldBe("SKU-001");
+        item.Status.ShouldBe(ProductStatus.Draft);
     }
 
     #endregion

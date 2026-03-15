@@ -60,8 +60,8 @@ public class RequestPasswordResetCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SessionToken.Should().Be(sessionToken);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SessionToken.ShouldBe(sessionToken);
     }
 
     [Fact]
@@ -123,9 +123,9 @@ public class RequestPasswordResetCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.TooManyRequests);
-        result.Error.Type.Should().Be(ErrorType.TooManyRequests);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.TooManyRequests);
+        result.Error.Type.ShouldBe(ErrorType.TooManyRequests);
         _passwordResetServiceMock.Verify(
             x => x.RequestPasswordResetAsync(It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -155,7 +155,7 @@ public class RequestPasswordResetCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _passwordResetServiceMock.Verify(
             x => x.RequestPasswordResetAsync(email, null, null, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -186,7 +186,7 @@ public class RequestPasswordResetCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
     }
 
     #endregion

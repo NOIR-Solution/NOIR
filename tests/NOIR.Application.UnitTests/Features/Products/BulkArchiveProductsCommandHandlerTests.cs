@@ -93,10 +93,10 @@ public class BulkArchiveProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(3);
-        result.Value.Failed.Should().Be(0);
-        result.Value.Errors.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(3);
+        result.Value.Failed.ShouldBe(0);
+        result.Value.Errors.ShouldBeEmpty();
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -125,9 +125,9 @@ public class BulkArchiveProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(1);
-        result.Value.Failed.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(1);
+        result.Value.Failed.ShouldBe(0);
     }
 
     #endregion
@@ -163,12 +163,12 @@ public class BulkArchiveProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(1);
-        result.Value.Failed.Should().Be(2);
-        result.Value.Errors.Should().HaveCount(2);
-        result.Value.Errors.Should().Contain(e => e.EntityId == draftId);
-        result.Value.Errors.Should().Contain(e => e.EntityId == archivedId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(1);
+        result.Value.Failed.ShouldBe(2);
+        result.Value.Errors.Count().ShouldBe(2);
+        result.Value.Errors.ShouldContain(e => e.EntityId == draftId);
+        result.Value.Errors.ShouldContain(e => e.EntityId == archivedId);
     }
 
     [Fact]
@@ -196,12 +196,12 @@ public class BulkArchiveProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(1);
-        result.Value.Failed.Should().Be(1);
-        result.Value.Errors.Should().HaveCount(1);
-        result.Value.Errors[0].EntityId.Should().Be(nonExistentId);
-        result.Value.Errors[0].Message.Should().Contain("not found");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(1);
+        result.Value.Failed.ShouldBe(1);
+        result.Value.Errors.Count().ShouldBe(1);
+        result.Value.Errors[0].EntityId.ShouldBe(nonExistentId);
+        result.Value.Errors[0].Message.ShouldContain("not found");
     }
 
     #endregion
@@ -232,10 +232,10 @@ public class BulkArchiveProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue(); // Operation itself succeeds, just no products to archive
-        result.Value.Success.Should().Be(0);
-        result.Value.Failed.Should().Be(2);
-        result.Value.Errors.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true); // Operation itself succeeds, just no products to archive
+        result.Value.Success.ShouldBe(0);
+        result.Value.Failed.ShouldBe(2);
+        result.Value.Errors.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -265,11 +265,11 @@ public class BulkArchiveProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(0);
-        result.Value.Failed.Should().Be(2);
-        result.Value.Errors.Should().HaveCount(2);
-        result.Value.Errors.Should().AllSatisfy(e => e.Message.Should().Contain("not Active"));
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(0);
+        result.Value.Failed.ShouldBe(2);
+        result.Value.Errors.Count().ShouldBe(2);
+        result.Value.Errors.ShouldAllBe(e => e.Message.Contains("not Active"));
     }
 
     #endregion
@@ -296,10 +296,10 @@ public class BulkArchiveProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(0);
-        result.Value.Failed.Should().Be(0);
-        result.Value.Errors.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(0);
+        result.Value.Failed.ShouldBe(0);
+        result.Value.Errors.ShouldBeEmpty();
     }
 
     [Fact]

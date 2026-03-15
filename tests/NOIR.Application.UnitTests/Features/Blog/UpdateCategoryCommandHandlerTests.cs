@@ -117,10 +117,10 @@ public class UpdateCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Updated Name");
-        result.Value.Slug.Should().Be("updated-slug");
-        result.Value.Description.Should().Be("Updated description");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Updated Name");
+        result.Value.Slug.ShouldBe("updated-slug");
+        result.Value.Description.ShouldBe("Updated description");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -151,7 +151,7 @@ public class UpdateCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         // Should not check for slug uniqueness when slug hasn't changed
         _categoryRepositoryMock.Verify(
@@ -197,9 +197,9 @@ public class UpdateCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ParentId.Should().Be(parentId);
-        result.Value.ParentName.Should().Be(parentCategory.Name);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ParentId.ShouldBe(parentId);
+        result.Value.ParentName.ShouldBe(parentCategory.Name);
     }
 
     [Fact]
@@ -233,9 +233,9 @@ public class UpdateCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.MetaTitle.Should().Be("New SEO Title");
-        result.Value.MetaDescription.Should().Be("New SEO Description");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.MetaTitle.ShouldBe("New SEO Title");
+        result.Value.MetaDescription.ShouldBe("New SEO Description");
     }
 
     [Fact]
@@ -268,8 +268,8 @@ public class UpdateCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ImageUrl.Should().Be("https://example.com/new-image.jpg");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ImageUrl.ShouldBe("https://example.com/new-image.jpg");
     }
 
     [Fact]
@@ -302,8 +302,8 @@ public class UpdateCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SortOrder.Should().Be(10);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SortOrder.ShouldBe(10);
     }
 
     #endregion
@@ -327,9 +327,9 @@ public class UpdateCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-BLOG-007");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-BLOG-007");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -369,10 +369,10 @@ public class UpdateCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-BLOG-006");
-        result.Error.Message.Should().Contain("Parent category");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-BLOG-006");
+        result.Error.Message.ShouldContain("Parent category");
+        result.Error.Message.ShouldContain("not found");
     }
 
     #endregion
@@ -406,9 +406,9 @@ public class UpdateCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-BLOG-005");
-        result.Error.Message.Should().Contain("already exists");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-BLOG-005");
+        result.Error.Message.ShouldContain("already exists");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -445,9 +445,9 @@ public class UpdateCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-BLOG-008");
-        result.Error.Message.Should().Contain("cannot be its own parent");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-BLOG-008");
+        result.Error.Message.ShouldContain("cannot be its own parent");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -526,9 +526,9 @@ public class UpdateCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ParentId.Should().BeNull();
-        result.Value.ParentName.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ParentId.ShouldBeNull();
+        result.Value.ParentName.ShouldBeNull();
 
         _categoryRepositoryMock.Verify(
             x => x.FirstOrDefaultAsync(It.IsAny<CategoryByIdSpec>(), It.IsAny<CancellationToken>()),
@@ -559,7 +559,7 @@ public class UpdateCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         // Should not check for slug uniqueness since it's the same when lowercased
         _categoryRepositoryMock.Verify(

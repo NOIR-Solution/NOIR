@@ -23,14 +23,14 @@ public class OrderNoteTests
         var note = OrderNote.Create(orderId, "Urgent: contact customer", "user-123", "Admin User", TestTenantId);
 
         // Assert
-        note.Should().NotBeNull();
-        note.Id.Should().NotBe(Guid.Empty);
-        note.OrderId.Should().Be(orderId);
-        note.Content.Should().Be("Urgent: contact customer");
-        note.CreatedByUserId.Should().Be("user-123");
-        note.CreatedByUserName.Should().Be("Admin User");
-        note.IsInternal.Should().BeTrue();
-        note.TenantId.Should().Be(TestTenantId);
+        note.ShouldNotBeNull();
+        note.Id.ShouldNotBe(Guid.Empty);
+        note.OrderId.ShouldBe(orderId);
+        note.Content.ShouldBe("Urgent: contact customer");
+        note.CreatedByUserId.ShouldBe("user-123");
+        note.CreatedByUserName.ShouldBe("Admin User");
+        note.IsInternal.ShouldBeTrue();
+        note.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class OrderNoteTests
         var note = OrderNote.Create(TestOrderId, "Note content", "user-1", "User Name");
 
         // Assert
-        note.IsInternal.Should().BeTrue();
+        note.IsInternal.ShouldBeTrue();
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class OrderNoteTests
         var note = OrderNote.Create(TestOrderId, "Note", "user-1", "User");
 
         // Assert
-        note.TenantId.Should().BeNull();
+        note.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class OrderNoteTests
         var note2 = OrderNote.Create(TestOrderId, "Note 2", "user-2", "User 2");
 
         // Assert
-        note1.Id.Should().NotBe(note2.Id);
+        note1.Id.ShouldNotBe(note2.Id);
     }
 
     [Fact]
@@ -76,8 +76,8 @@ public class OrderNoteTests
         var note2 = OrderNote.Create(orderId2, "Note 2", "user-1", "User 1");
 
         // Assert
-        note1.OrderId.Should().Be(orderId1);
-        note2.OrderId.Should().Be(orderId2);
+        note1.OrderId.ShouldBe(orderId1);
+        note2.OrderId.ShouldBe(orderId2);
     }
 
     [Fact]
@@ -87,7 +87,7 @@ public class OrderNoteTests
         var note = OrderNote.Create(TestOrderId, "", "user-1", "User");
 
         // Assert
-        note.Content.Should().BeEmpty();
+        note.Content.ShouldBeEmpty();
     }
 
     [Fact]
@@ -100,8 +100,8 @@ public class OrderNoteTests
         var note = OrderNote.Create(TestOrderId, longContent, "user-1", "User");
 
         // Assert
-        note.Content.Should().Be(longContent);
-        note.Content.Length.Should().Be(5000);
+        note.Content.ShouldBe(longContent);
+        note.Content.Length.ShouldBe(5000);
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class OrderNoteTests
         var note = OrderNote.Create(TestOrderId, "Content", "admin-user-456", "Admin Name");
 
         // Assert
-        note.CreatedByUserId.Should().Be("admin-user-456");
+        note.CreatedByUserId.ShouldBe("admin-user-456");
     }
 
     [Fact]
@@ -121,7 +121,7 @@ public class OrderNoteTests
         var note = OrderNote.Create(TestOrderId, "Content", "user-1", "Nguyen Van A");
 
         // Assert
-        note.CreatedByUserName.Should().Be("Nguyen Van A");
+        note.CreatedByUserName.ShouldBe("Nguyen Van A");
     }
 
     #endregion

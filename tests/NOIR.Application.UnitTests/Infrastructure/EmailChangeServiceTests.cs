@@ -61,9 +61,9 @@ public class EmailChangeServiceTests
         var result = await _sut.RequestEmailChangeAsync(userId, newEmail);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SessionToken.Should().Be(sessionToken);
-        result.Value.OtpLength.Should().Be(6);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SessionToken.ShouldBe(sessionToken);
+        result.Value.OtpLength.ShouldBe(6);
         _otpRepositoryMock.Verify(x => x.AddAsync(It.IsAny<EmailChangeOtp>(), It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -85,8 +85,8 @@ public class EmailChangeServiceTests
         var result = await _sut.RequestEmailChangeAsync(userId, newEmail);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.TooManyRequests);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.TooManyRequests);
     }
 
     [Fact]
@@ -104,8 +104,8 @@ public class EmailChangeServiceTests
         var result = await _sut.RequestEmailChangeAsync(userId, newEmail);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.UserNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.UserNotFound);
     }
 
     [Fact]
@@ -123,8 +123,8 @@ public class EmailChangeServiceTests
         var result = await _sut.RequestEmailChangeAsync(userId, email);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Validation.InvalidInput);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Validation.InvalidInput);
     }
 
     [Fact]
@@ -146,8 +146,8 @@ public class EmailChangeServiceTests
         var result = await _sut.RequestEmailChangeAsync(userId, newEmail);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.DuplicateEmail);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.DuplicateEmail);
     }
 
     [Fact]
@@ -181,8 +181,8 @@ public class EmailChangeServiceTests
         var result = await _sut.RequestEmailChangeAsync(userId, newEmail);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SessionToken.Should().Be("session-token");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SessionToken.ShouldBe("session-token");
         _otpRepositoryMock.Verify(x => x.AddAsync(It.IsAny<EmailChangeOtp>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -225,9 +225,9 @@ public class EmailChangeServiceTests
         var result = await _sut.RequestEmailChangeAsync(userId, secondNewEmail);
 
         // Assert - Should create new session, not block with cooldown
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SessionToken.Should().Be(newSessionToken); // New session, not the old one
-        existingOtp.IsUsed.Should().BeTrue(); // Old OTP should be marked as used
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SessionToken.ShouldBe(newSessionToken); // New session, not the old one
+        existingOtp.IsUsed.ShouldBe(true); // Old OTP should be marked as used
         _otpRepositoryMock.Verify(x => x.AddAsync(It.IsAny<EmailChangeOtp>(), It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Exactly(2)); // Once for marking old as used, once for new OTP
     }
@@ -260,8 +260,8 @@ public class EmailChangeServiceTests
         await _sut.RequestEmailChangeAsync(userId, newEmail);
 
         // Assert
-        capturedOtp.Should().NotBeNull();
-        capturedOtp!.NewEmail.Should().Be(normalizedNewEmail);
+        capturedOtp.ShouldNotBeNull();
+        capturedOtp!.NewEmail.ShouldBe(normalizedNewEmail);
     }
 
     [Fact]
@@ -324,7 +324,7 @@ public class EmailChangeServiceTests
         var result = await _sut.RequestEmailChangeAsync(userId, newEmail);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     [Fact]
@@ -376,8 +376,8 @@ public class EmailChangeServiceTests
         var result = await _sut.VerifyOtpAsync(sessionToken, otpCode);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.NewEmail.Should().Be(newEmail);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.NewEmail.ShouldBe(newEmail);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.AtLeastOnce);
     }
 
@@ -397,8 +397,8 @@ public class EmailChangeServiceTests
         var result = await _sut.VerifyOtpAsync(sessionToken, otpCode);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.InvalidSession);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.InvalidSession);
     }
 
     [Fact]
@@ -419,8 +419,8 @@ public class EmailChangeServiceTests
         var result = await _sut.VerifyOtpAsync(sessionToken, otpCode);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.OtpAlreadyUsed);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.OtpAlreadyUsed);
     }
 
     [Fact]
@@ -440,8 +440,8 @@ public class EmailChangeServiceTests
         var result = await _sut.VerifyOtpAsync(sessionToken, otpCode);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.OtpExpired);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.OtpExpired);
     }
 
     [Fact]
@@ -464,9 +464,9 @@ public class EmailChangeServiceTests
         var result = await _sut.VerifyOtpAsync(sessionToken, otpCode);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.InvalidOtp);
-        otp.AttemptCount.Should().Be(1);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.InvalidOtp);
+        otp.AttemptCount.ShouldBe(1);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -495,8 +495,8 @@ public class EmailChangeServiceTests
         var result = await _sut.VerifyOtpAsync(sessionToken, otpCode);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.UpdateFailed);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.UpdateFailed);
     }
 
     [Fact]
@@ -554,10 +554,10 @@ public class EmailChangeServiceTests
         var result = await _sut.ResendOtpAsync(sessionToken);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().BeTrue();
-        result.Value.NextResendAt.Should().NotBeNull();
-        result.Value.RemainingResends.Should().BeLessThan(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(true);
+        result.Value.NextResendAt.ShouldNotBeNull();
+        result.Value.RemainingResends.ShouldBeLessThan(3);
     }
 
     [Fact]
@@ -575,8 +575,8 @@ public class EmailChangeServiceTests
         var result = await _sut.ResendOtpAsync(sessionToken);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.InvalidSession);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.InvalidSession);
     }
 
     [Fact]
@@ -596,8 +596,8 @@ public class EmailChangeServiceTests
         var result = await _sut.ResendOtpAsync(sessionToken);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.OtpAlreadyUsed);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.OtpAlreadyUsed);
     }
 
     [Fact]
@@ -616,8 +616,8 @@ public class EmailChangeServiceTests
         var result = await _sut.ResendOtpAsync(sessionToken);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.OtpExpired);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.OtpExpired);
     }
 
     [Fact]
@@ -641,11 +641,11 @@ public class EmailChangeServiceTests
         var result = await _sut.ResendOtpAsync(sessionToken);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
         // Note: Service's CanResend check returns CooldownActive when EITHER cooldown is active
         // OR max resends reached. The MaxResendsReached check after it is unreachable.
         // This is a service implementation detail.
-        result.Error.Code.Should().Be(ErrorCodes.Auth.CooldownActive);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.CooldownActive);
     }
 
     [Fact]
@@ -726,7 +726,7 @@ public class EmailChangeServiceTests
         var result = await _sut.IsRateLimitedAsync(userId);
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -744,7 +744,7 @@ public class EmailChangeServiceTests
         var result = await _sut.IsRateLimitedAsync(userId);
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -762,7 +762,7 @@ public class EmailChangeServiceTests
         var result = await _sut.IsRateLimitedAsync(userId);
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -795,14 +795,14 @@ public class EmailChangeServiceTests
     public void Service_ShouldImplementIEmailChangeService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IEmailChangeService>();
+        _sut.ShouldBeAssignableTo<IEmailChangeService>();
     }
 
     [Fact]
     public void Service_ShouldImplementIScopedService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IScopedService>();
+        _sut.ShouldBeAssignableTo<IScopedService>();
     }
 
     #endregion

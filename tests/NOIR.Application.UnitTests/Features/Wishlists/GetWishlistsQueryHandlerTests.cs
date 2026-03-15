@@ -43,10 +43,10 @@ public class GetWishlistsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
-        result.Value[0].Name.Should().Be("Default Wishlist");
-        result.Value[1].Name.Should().Be("Holiday Gifts");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
+        result.Value[0].Name.ShouldBe("Default Wishlist");
+        result.Value[1].Name.ShouldBe("Holiday Gifts");
     }
 
     [Fact]
@@ -65,8 +65,8 @@ public class GetWishlistsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     #endregion
@@ -85,7 +85,7 @@ public class GetWishlistsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
     }
 
     #endregion

@@ -29,11 +29,11 @@ public class CustomerGroupTests
         var group = CreateTestGroup();
 
         // Assert
-        group.Should().NotBeNull();
-        group.Id.Should().NotBe(Guid.Empty);
-        group.Name.Should().Be(TestGroupName);
-        group.Description.Should().Be(TestDescription);
-        group.TenantId.Should().Be(TestTenantId);
+        group.ShouldNotBeNull();
+        group.Id.ShouldNotBe(Guid.Empty);
+        group.Name.ShouldBe(TestGroupName);
+        group.Description.ShouldBe(TestDescription);
+        group.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class CustomerGroupTests
         var group = CreateTestGroup();
 
         // Assert
-        group.IsActive.Should().BeTrue();
+        group.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class CustomerGroupTests
         var group = CreateTestGroup();
 
         // Assert
-        group.MemberCount.Should().Be(0);
+        group.MemberCount.ShouldBe(0);
     }
 
     [Fact]
@@ -63,8 +63,8 @@ public class CustomerGroupTests
         var group = CreateTestGroup();
 
         // Assert
-        group.Memberships.Should().NotBeNull();
-        group.Memberships.Should().BeEmpty();
+        group.Memberships.ShouldNotBeNull();
+        group.Memberships.ShouldBeEmpty();
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class CustomerGroupTests
         var group = CreateTestGroup(description: null);
 
         // Assert
-        group.Description.Should().BeNull();
+        group.Description.ShouldBeNull();
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public class CustomerGroupTests
         var group = CreateTestGroup(tenantId: null);
 
         // Assert
-        group.TenantId.Should().BeNull();
+        group.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class CustomerGroupTests
         var group2 = CreateTestGroup();
 
         // Assert
-        group1.Id.Should().NotBe(group2.Id);
+        group1.Id.ShouldNotBe(group2.Id);
     }
 
     #endregion
@@ -109,7 +109,7 @@ public class CustomerGroupTests
         var group = CreateTestGroup(name: "VIP Customers");
 
         // Assert
-        group.Slug.Should().Be("vip-customers");
+        group.Slug.ShouldBe("vip-customers");
     }
 
     [Fact]
@@ -119,7 +119,7 @@ public class CustomerGroupTests
         var group = CreateTestGroup(name: "Premium & Gold Members!");
 
         // Assert
-        group.Slug.Should().Be("premium-gold-members");
+        group.Slug.ShouldBe("premium-gold-members");
     }
 
     [Fact]
@@ -129,7 +129,7 @@ public class CustomerGroupTests
         var group = CreateTestGroup(name: "VIP   Customers");
 
         // Assert
-        group.Slug.Should().Be("vip-customers");
+        group.Slug.ShouldBe("vip-customers");
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class CustomerGroupTests
         var group = CreateTestGroup(name: "  VIP Customers  ");
 
         // Assert
-        group.Slug.Should().Be("vip-customers");
+        group.Slug.ShouldBe("vip-customers");
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public class CustomerGroupTests
         var group = CreateTestGroup(name: "PREMIUM GROUP");
 
         // Assert
-        group.Slug.Should().Be("premium-group");
+        group.Slug.ShouldBe("premium-group");
     }
 
     [Fact]
@@ -159,7 +159,7 @@ public class CustomerGroupTests
         var group = CreateTestGroup(name: "first-time-buyers");
 
         // Assert
-        group.Slug.Should().Be("first-time-buyers");
+        group.Slug.ShouldBe("first-time-buyers");
     }
 
     [Fact]
@@ -169,7 +169,7 @@ public class CustomerGroupTests
         var group = CreateTestGroup(name: "Tier 1 Customers");
 
         // Assert
-        group.Slug.Should().Be("tier-1-customers");
+        group.Slug.ShouldBe("tier-1-customers");
     }
 
     [Fact]
@@ -179,7 +179,7 @@ public class CustomerGroupTests
         var group = CreateTestGroup(name: "VIP---Customers");
 
         // Assert
-        group.Slug.Should().Be("vip-customers");
+        group.Slug.ShouldBe("vip-customers");
     }
 
     #endregion
@@ -198,8 +198,8 @@ public class CustomerGroupTests
         group.Update(newName, newDescription);
 
         // Assert
-        group.Name.Should().Be(newName);
-        group.Description.Should().Be(newDescription);
+        group.Name.ShouldBe(newName);
+        group.Description.ShouldBe(newDescription);
     }
 
     [Fact]
@@ -212,7 +212,7 @@ public class CustomerGroupTests
         group.Update("New Name", "Description");
 
         // Assert
-        group.Slug.Should().Be("new-name");
+        group.Slug.ShouldBe("new-name");
     }
 
     [Fact]
@@ -225,7 +225,7 @@ public class CustomerGroupTests
         group.Update("Updated Name", null);
 
         // Assert
-        group.Description.Should().BeNull();
+        group.Description.ShouldBeNull();
     }
 
     [Fact]
@@ -239,7 +239,7 @@ public class CustomerGroupTests
         group.Update("Updated Name", "Updated Desc");
 
         // Assert
-        group.MemberCount.Should().Be(5);
+        group.MemberCount.ShouldBe(5);
     }
 
     [Fact]
@@ -253,7 +253,7 @@ public class CustomerGroupTests
         group.Update("Updated Name", "Updated Desc");
 
         // Assert
-        group.IsActive.Should().BeFalse();
+        group.IsActive.ShouldBeFalse();
     }
 
     #endregion
@@ -270,7 +270,7 @@ public class CustomerGroupTests
         group.Deactivate();
 
         // Assert
-        group.IsActive.Should().BeFalse();
+        group.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -284,7 +284,7 @@ public class CustomerGroupTests
         group.Activate();
 
         // Assert
-        group.IsActive.Should().BeTrue();
+        group.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -298,7 +298,7 @@ public class CustomerGroupTests
         group.SetActive(true);
 
         // Assert
-        group.IsActive.Should().BeTrue();
+        group.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -311,7 +311,7 @@ public class CustomerGroupTests
         group.SetActive(false);
 
         // Assert
-        group.IsActive.Should().BeFalse();
+        group.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -325,7 +325,7 @@ public class CustomerGroupTests
         group.Deactivate();
 
         // Assert
-        group.IsActive.Should().BeFalse();
+        group.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -338,7 +338,7 @@ public class CustomerGroupTests
         group.Activate();
 
         // Assert
-        group.IsActive.Should().BeTrue();
+        group.IsActive.ShouldBeTrue();
     }
 
     #endregion
@@ -355,7 +355,7 @@ public class CustomerGroupTests
         group.IncrementMemberCount();
 
         // Assert
-        group.MemberCount.Should().Be(1);
+        group.MemberCount.ShouldBe(1);
     }
 
     [Fact]
@@ -368,7 +368,7 @@ public class CustomerGroupTests
         group.IncrementMemberCount(5);
 
         // Assert
-        group.MemberCount.Should().Be(5);
+        group.MemberCount.ShouldBe(5);
     }
 
     [Fact]
@@ -383,7 +383,7 @@ public class CustomerGroupTests
         group.IncrementMemberCount();
 
         // Assert
-        group.MemberCount.Should().Be(6);
+        group.MemberCount.ShouldBe(6);
     }
 
     #endregion
@@ -401,7 +401,7 @@ public class CustomerGroupTests
         group.DecrementMemberCount();
 
         // Assert
-        group.MemberCount.Should().Be(4);
+        group.MemberCount.ShouldBe(4);
     }
 
     [Fact]
@@ -415,7 +415,7 @@ public class CustomerGroupTests
         group.DecrementMemberCount(3);
 
         // Assert
-        group.MemberCount.Should().Be(7);
+        group.MemberCount.ShouldBe(7);
     }
 
     [Fact]
@@ -429,7 +429,7 @@ public class CustomerGroupTests
         group.DecrementMemberCount(5);
 
         // Assert
-        group.MemberCount.Should().Be(0);
+        group.MemberCount.ShouldBe(0);
     }
 
     [Fact]
@@ -442,7 +442,7 @@ public class CustomerGroupTests
         group.DecrementMemberCount();
 
         // Assert
-        group.MemberCount.Should().Be(0);
+        group.MemberCount.ShouldBe(0);
     }
 
     [Fact]
@@ -456,7 +456,7 @@ public class CustomerGroupTests
         group.DecrementMemberCount(5);
 
         // Assert
-        group.MemberCount.Should().Be(0);
+        group.MemberCount.ShouldBe(0);
     }
 
     #endregion
@@ -473,7 +473,7 @@ public class CustomerGroupTests
         group.UpdateMemberCount(42);
 
         // Assert
-        group.MemberCount.Should().Be(42);
+        group.MemberCount.ShouldBe(42);
     }
 
     [Fact]
@@ -487,7 +487,7 @@ public class CustomerGroupTests
         group.UpdateMemberCount(5);
 
         // Assert
-        group.MemberCount.Should().Be(5);
+        group.MemberCount.ShouldBe(5);
     }
 
     [Fact]
@@ -501,7 +501,7 @@ public class CustomerGroupTests
         group.UpdateMemberCount(0);
 
         // Assert
-        group.MemberCount.Should().Be(0);
+        group.MemberCount.ShouldBe(0);
     }
 
     #endregion
@@ -518,7 +518,7 @@ public class CustomerGroupTests
         var act = () => group.MarkAsDeleted();
 
         // Assert - Soft delete handled by interceptor; method should complete without error
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     #endregion

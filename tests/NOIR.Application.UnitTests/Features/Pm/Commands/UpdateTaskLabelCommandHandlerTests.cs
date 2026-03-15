@@ -42,9 +42,9 @@ public class UpdateTaskLabelCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Feature");
-        result.Value.Color.Should().Be("#3B82F6");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Feature");
+        result.Value.Color.ShouldBe("#3B82F6");
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -62,7 +62,7 @@ public class UpdateTaskLabelCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -84,7 +84,7 @@ public class UpdateTaskLabelCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }

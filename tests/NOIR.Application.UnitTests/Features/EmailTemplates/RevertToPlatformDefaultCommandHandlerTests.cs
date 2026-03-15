@@ -127,11 +127,11 @@ public class RevertToPlatformDefaultCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Name.Should().Be("WelcomeEmail");
-        result.Value.Subject.Should().Be("Platform Subject");
-        result.Value.IsInherited.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Name.ShouldBe("WelcomeEmail");
+        result.Value.Subject.ShouldBe("Platform Subject");
+        result.Value.IsInherited.ShouldBe(true);
     }
 
     [Fact]
@@ -186,10 +186,10 @@ public class RevertToPlatformDefaultCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Subject.Should().Be("Verify Your Email");
-        result.Value.HtmlBody.Should().Be("<p>Please verify your email</p>");
-        result.Value.AvailableVariables.Should().BeEquivalentTo(new[] { "UserName", "VerificationLink" });
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Subject.ShouldBe("Verify Your Email");
+        result.Value.HtmlBody.ShouldBe("<p>Please verify your email</p>");
+        result.Value.AvailableVariables.ShouldBe(new[] { "UserName", "VerificationLink" });
     }
 
     #endregion
@@ -208,8 +208,8 @@ public class RevertToPlatformDefaultCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-EMAIL-004");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-EMAIL-004");
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -226,8 +226,8 @@ public class RevertToPlatformDefaultCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-EMAIL-001");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-EMAIL-001");
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -247,9 +247,9 @@ public class RevertToPlatformDefaultCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
         // Template not found for this tenant
-        result.Error.Code.Should().Be("NOIR-EMAIL-001");
+        result.Error.Code.ShouldBe("NOIR-EMAIL-001");
     }
 
     [Fact]
@@ -270,8 +270,8 @@ public class RevertToPlatformDefaultCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-EMAIL-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-EMAIL-002");
     }
 
     #endregion
@@ -290,8 +290,8 @@ public class RevertToPlatformDefaultCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-EMAIL-004");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-EMAIL-004");
     }
 
     [Fact]

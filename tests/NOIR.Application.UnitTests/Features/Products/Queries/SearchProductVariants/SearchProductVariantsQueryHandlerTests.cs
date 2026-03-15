@@ -58,9 +58,9 @@ public class SearchProductVariantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(3); // 2 variants from product1 + 1 from product2
-        result.Value.TotalCount.Should().Be(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(3); // 2 variants from product1 + 1 from product2
+        result.Value.TotalCount.ShouldBe(2);
     }
 
     [Fact]
@@ -84,14 +84,14 @@ public class SearchProductVariantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var item = result.Value.Items.First();
-        item.Id.Should().Be(variant.Id);
-        item.ProductId.Should().Be(product.Id);
-        item.ProductName.Should().Be("Laptop Pro");
-        item.VariantName.Should().Be("16GB Silver");
-        item.Sku.Should().Be("LAP-001");
-        item.Price.Should().Be(25000000m);
+        item.Id.ShouldBe(variant.Id);
+        item.ProductId.ShouldBe(product.Id);
+        item.ProductName.ShouldBe("Laptop Pro");
+        item.VariantName.ShouldBe("16GB Silver");
+        item.Sku.ShouldBe("LAP-001");
+        item.Price.ShouldBe(25000000m);
     }
 
     [Fact]
@@ -112,8 +112,8 @@ public class SearchProductVariantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
 
         _productRepositoryMock.Verify(
             x => x.ListAsync(It.IsAny<SearchProductsWithVariantsSpec>(), It.IsAny<CancellationToken>()),
@@ -138,10 +138,10 @@ public class SearchProductVariantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
-        result.Value.PageNumber.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
+        result.Value.PageNumber.ShouldBe(1);
     }
 
     [Fact]
@@ -162,9 +162,9 @@ public class SearchProductVariantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PageNumber.Should().Be(3);
-        result.Value.PageSize.Should().Be(10);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PageNumber.ShouldBe(3);
+        result.Value.PageSize.ShouldBe(10);
     }
 
     [Fact]

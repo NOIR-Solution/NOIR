@@ -41,10 +41,10 @@ public class ResendPasswordResetOtpCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().BeTrue();
-        result.Value.NextResendAt.Should().Be(nextResendTime);
-        result.Value.RemainingResends.Should().Be(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(true);
+        result.Value.NextResendAt.ShouldBe(nextResendTime);
+        result.Value.RemainingResends.ShouldBe(2);
     }
 
     [Fact]
@@ -92,8 +92,8 @@ public class ResendPasswordResetOtpCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
     }
 
     [Fact]
@@ -113,8 +113,8 @@ public class ResendPasswordResetOtpCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.TooManyRequests);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.TooManyRequests);
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public class ResendPasswordResetOtpCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
     }
 
     #endregion

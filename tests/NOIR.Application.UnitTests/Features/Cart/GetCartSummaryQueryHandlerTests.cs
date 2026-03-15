@@ -82,12 +82,12 @@ public class GetCartSummaryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Id.Should().Be(cartId);
-        result.Value.ItemCount.Should().Be(3); // 2 + 1
-        result.Value.Subtotal.Should().Be(400m); // (100*2) + (200*1)
-        result.Value.Currency.Should().Be("VND");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Id.ShouldBe(cartId);
+        result.Value.ItemCount.ShouldBe(3); // 2 + 1
+        result.Value.Subtotal.ShouldBe(400m); // (100*2) + (200*1)
+        result.Value.Currency.ShouldBe("VND");
     }
 
     [Fact]
@@ -107,11 +107,11 @@ public class GetCartSummaryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(cartId);
-        result.Value.ItemCount.Should().Be(0);
-        result.Value.Subtotal.Should().Be(0);
-        result.Value.RecentItems.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(cartId);
+        result.Value.ItemCount.ShouldBe(0);
+        result.Value.Subtotal.ShouldBe(0);
+        result.Value.RecentItems.ShouldBeEmpty();
     }
 
     [Fact]
@@ -128,12 +128,12 @@ public class GetCartSummaryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(Guid.Empty);
-        result.Value.ItemCount.Should().Be(0);
-        result.Value.Subtotal.Should().Be(0);
-        result.Value.Currency.Should().Be("VND");
-        result.Value.RecentItems.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(Guid.Empty);
+        result.Value.ItemCount.ShouldBe(0);
+        result.Value.Subtotal.ShouldBe(0);
+        result.Value.Currency.ShouldBe("VND");
+        result.Value.RecentItems.ShouldBeEmpty();
     }
 
     #endregion
@@ -158,10 +158,10 @@ public class GetCartSummaryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(cartId);
-        result.Value.ItemCount.Should().Be(3);
-        result.Value.Subtotal.Should().Be(450m);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(cartId);
+        result.Value.ItemCount.ShouldBe(3);
+        result.Value.Subtotal.ShouldBe(450m);
     }
 
     [Fact]
@@ -178,10 +178,10 @@ public class GetCartSummaryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(Guid.Empty);
-        result.Value.ItemCount.Should().Be(0);
-        result.Value.Subtotal.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(Guid.Empty);
+        result.Value.ItemCount.ShouldBe(0);
+        result.Value.Subtotal.ShouldBe(0);
     }
 
     #endregion
@@ -206,9 +206,9 @@ public class GetCartSummaryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(userCartId);
-        result.Value.ItemCount.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(userCartId);
+        result.Value.ItemCount.ShouldBe(1);
 
         // Session cart should NOT be queried since user cart was found
         _cartRepositoryMock.Verify(
@@ -238,9 +238,9 @@ public class GetCartSummaryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(sessionCartId);
-        result.Value.ItemCount.Should().Be(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(sessionCartId);
+        result.Value.ItemCount.ShouldBe(2);
     }
 
     #endregion
@@ -270,9 +270,9 @@ public class GetCartSummaryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ItemCount.Should().Be(10);
-        result.Value.RecentItems.Should().HaveCount(5); // Default limit is 5
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ItemCount.ShouldBe(10);
+        result.Value.RecentItems.Count().ShouldBe(5); // Default limit is 5
     }
 
     [Fact]
@@ -294,8 +294,8 @@ public class GetCartSummaryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.RecentItems.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.RecentItems.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -316,12 +316,12 @@ public class GetCartSummaryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.RecentItems.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.RecentItems.Count().ShouldBe(1);
         var recentItem = result.Value.RecentItems[0];
-        recentItem.ProductName.Should().Be("Test Product");
-        recentItem.UnitPrice.Should().Be(150m);
-        recentItem.Quantity.Should().Be(3);
+        recentItem.ProductName.ShouldBe("Test Product");
+        recentItem.UnitPrice.ShouldBe(150m);
+        recentItem.Quantity.ShouldBe(3);
     }
 
     #endregion
@@ -361,10 +361,10 @@ public class GetCartSummaryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(Guid.Empty);
-        result.Value.ItemCount.Should().Be(0);
-        result.Value.Subtotal.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(Guid.Empty);
+        result.Value.ItemCount.ShouldBe(0);
+        result.Value.Subtotal.ShouldBe(0);
 
         // No repository calls should be made
         _cartRepositoryMock.Verify(

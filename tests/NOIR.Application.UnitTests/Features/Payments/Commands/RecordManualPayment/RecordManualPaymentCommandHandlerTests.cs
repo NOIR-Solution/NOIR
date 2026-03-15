@@ -110,12 +110,12 @@ public class RecordManualPaymentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Status.Should().Be(PaymentStatus.Paid);
-        result.Value.Amount.Should().Be(500000m);
-        result.Value.Currency.Should().Be("VND");
-        result.Value.TransactionNumber.Should().Be(TestTransactionNumber);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Status.ShouldBe(PaymentStatus.Paid);
+        result.Value.Amount.ShouldBe(500000m);
+        result.Value.Currency.ShouldBe("VND");
+        result.Value.TransactionNumber.ShouldBe(TestTransactionNumber);
     }
 
     [Fact]
@@ -137,8 +137,8 @@ public class RecordManualPaymentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PaidAt.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PaidAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -160,8 +160,8 @@ public class RecordManualPaymentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(PaymentStatus.Paid);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(PaymentStatus.Paid);
     }
 
     [Fact]
@@ -226,9 +226,9 @@ public class RecordManualPaymentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be(ErrorCodes.Order.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.NotFound);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -247,9 +247,9 @@ public class RecordManualPaymentCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.OrderNotPayable);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.OrderNotPayable);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 

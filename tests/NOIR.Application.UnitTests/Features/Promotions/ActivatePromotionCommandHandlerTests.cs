@@ -67,9 +67,9 @@ public class ActivatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeTrue();
-        result.Value.Status.Should().Be(PromotionStatus.Active);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(true);
+        result.Value.Status.ShouldBe(PromotionStatus.Active);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -100,8 +100,8 @@ public class ActivatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(PromotionStatus.Active);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(PromotionStatus.Active);
     }
 
     #endregion
@@ -126,8 +126,8 @@ public class ActivatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-PROMO-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-PROMO-002");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -160,8 +160,8 @@ public class ActivatePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-PROMO-003");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-PROMO-003");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),

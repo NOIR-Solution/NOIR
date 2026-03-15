@@ -63,8 +63,8 @@ public class GetModuleCatalogQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Modules.Should().HaveCount(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Modules.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -87,13 +87,13 @@ public class GetModuleCatalogQueryHandlerTests
 
         // Assert
         var dto = result.Value.Modules[0];
-        dto.Name.Should().Be("Ecommerce");
-        dto.DisplayNameKey.Should().Be("modules.ecommerce");
-        dto.DescriptionKey.Should().Be("modules.ecommerce.desc");
-        dto.Icon.Should().Be("ShoppingCart");
-        dto.SortOrder.Should().Be(5);
-        dto.IsCore.Should().BeFalse();
-        dto.DefaultEnabled.Should().BeTrue();
+        dto.Name.ShouldBe("Ecommerce");
+        dto.DisplayNameKey.ShouldBe("modules.ecommerce");
+        dto.DescriptionKey.ShouldBe("modules.ecommerce.desc");
+        dto.Icon.ShouldBe("ShoppingCart");
+        dto.SortOrder.ShouldBe(5);
+        dto.IsCore.ShouldBe(false);
+        dto.DefaultEnabled.ShouldBe(true);
     }
 
     [Fact]
@@ -114,11 +114,11 @@ public class GetModuleCatalogQueryHandlerTests
 
         // Assert
         var moduleDto = result.Value.Modules[0];
-        moduleDto.Features.Should().HaveCount(2);
-        moduleDto.Features[0].Name.Should().Be("Ecommerce.Products");
-        moduleDto.Features[0].DefaultEnabled.Should().BeTrue();
-        moduleDto.Features[1].Name.Should().Be("Ecommerce.Reviews");
-        moduleDto.Features[1].DefaultEnabled.Should().BeFalse();
+        moduleDto.Features.Count().ShouldBe(2);
+        moduleDto.Features[0].Name.ShouldBe("Ecommerce.Products");
+        moduleDto.Features[0].DefaultEnabled.ShouldBe(true);
+        moduleDto.Features[1].Name.ShouldBe("Ecommerce.Reviews");
+        moduleDto.Features[1].DefaultEnabled.ShouldBe(false);
     }
 
     [Fact]
@@ -132,8 +132,8 @@ public class GetModuleCatalogQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Modules.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Modules.ShouldBeEmpty();
     }
 
     [Fact]
@@ -148,7 +148,7 @@ public class GetModuleCatalogQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.Value.Modules[0].Features.Should().BeEmpty();
+        result.Value.Modules[0].Features.ShouldBeEmpty();
     }
 
     #endregion

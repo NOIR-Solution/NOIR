@@ -96,9 +96,9 @@ public class UpdateProductAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Code.Should().Be("updated_code");
-        result.Value.Name.Should().Be("Updated Attribute");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Code.ShouldBe("updated_code");
+        result.Value.Name.ShouldBe("Updated Attribute");
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -151,11 +151,11 @@ public class UpdateProductAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsFilterable.Should().BeTrue();
-        result.Value.IsSearchable.Should().BeTrue();
-        result.Value.IsRequired.Should().BeTrue();
-        result.Value.IsVariantAttribute.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsFilterable.ShouldBe(true);
+        result.Value.IsSearchable.ShouldBe(true);
+        result.Value.IsRequired.ShouldBe(true);
+        result.Value.IsVariantAttribute.ShouldBe(true);
     }
 
     [Fact]
@@ -207,10 +207,10 @@ public class UpdateProductAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Unit.Should().Be("inch");
-        result.Value.MinValue.Should().Be(1);
-        result.Value.MaxValue.Should().Be(100);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Unit.ShouldBe("inch");
+        result.Value.MinValue.ShouldBe(1);
+        result.Value.MaxValue.ShouldBe(100);
     }
 
     [Fact]
@@ -262,8 +262,8 @@ public class UpdateProductAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsGlobal.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsGlobal.ShouldBe(true);
     }
 
     #endregion
@@ -288,8 +288,8 @@ public class UpdateProductAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Attribute.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Attribute.NotFound);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -339,8 +339,8 @@ public class UpdateProductAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Attribute.DuplicateCode);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Attribute.DuplicateCode);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -434,8 +434,8 @@ public class UpdateProductAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Updated Name");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Updated Name");
     }
 
     #endregion

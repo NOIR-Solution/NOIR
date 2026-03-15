@@ -293,14 +293,14 @@ public class CacheInvalidationServiceTests
     public void CacheInvalidationService_ShouldImplementIScopedService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IScopedService>();
+        _sut.ShouldBeAssignableTo<IScopedService>();
     }
 
     [Fact]
     public void CacheInvalidationService_ShouldImplementICacheInvalidationService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<ICacheInvalidationService>();
+        _sut.ShouldBeAssignableTo<ICacheInvalidationService>();
     }
 
     #endregion

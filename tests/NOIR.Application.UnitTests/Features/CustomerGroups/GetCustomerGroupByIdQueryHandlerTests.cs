@@ -1,4 +1,3 @@
-using FluentAssertions;
 using Moq;
 using NOIR.Application.Common.Interfaces;
 using NOIR.Application.Common.Models;
@@ -49,13 +48,13 @@ public class GetCustomerGroupByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(group.Id);
-        result.Value.Name.Should().Be("VIP Customers");
-        result.Value.Description.Should().Be("Top-tier customers");
-        result.Value.Slug.Should().Be("vip-customers");
-        result.Value.IsActive.Should().BeTrue();
-        result.Value.MemberCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(group.Id);
+        result.Value.Name.ShouldBe("VIP Customers");
+        result.Value.Description.ShouldBe("Top-tier customers");
+        result.Value.Slug.ShouldBe("vip-customers");
+        result.Value.IsActive.ShouldBe(true);
+        result.Value.MemberCount.ShouldBe(0);
     }
 
     [Fact]
@@ -73,8 +72,8 @@ public class GetCustomerGroupByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Description.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Description.ShouldBeNull();
     }
 
     #endregion
@@ -94,8 +93,8 @@ public class GetCustomerGroupByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(ErrorCodes.CustomerGroup.NotFound);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe(ErrorCodes.CustomerGroup.NotFound);
     }
 
     #endregion

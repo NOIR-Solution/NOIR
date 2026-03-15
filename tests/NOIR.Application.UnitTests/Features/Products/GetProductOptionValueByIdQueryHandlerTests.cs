@@ -56,9 +56,9 @@ public class GetProductOptionValueByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Value.Should().Be("red");
-        result.Value.DisplayValue.Should().Be("Red");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Value.ShouldBe("red");
+        result.Value.DisplayValue.ShouldBe("Red");
     }
 
     [Fact]
@@ -81,9 +81,9 @@ public class GetProductOptionValueByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ColorCode.Should().Be("#FF0000");
-        result.Value.SwatchUrl.Should().Be("https://example.com/red.png");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ColorCode.ShouldBe("#FF0000");
+        result.Value.SwatchUrl.ShouldBe("https://example.com/red.png");
     }
 
     #endregion
@@ -106,9 +106,9 @@ public class GetProductOptionValueByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-052");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-052");
     }
 
     [Fact]
@@ -129,9 +129,9 @@ public class GetProductOptionValueByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-052");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-052");
     }
 
     #endregion
@@ -187,9 +187,9 @@ public class GetProductOptionValueByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Value.Should().Be("small");
-        result.Value.DisplayValue.Should().Be("Small");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Value.ShouldBe("small");
+        result.Value.DisplayValue.ShouldBe("Small");
     }
 
     [Fact]
@@ -212,14 +212,14 @@ public class GetProductOptionValueByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Id.Should().Be(optionValue.Id);
-        dto.Value.Should().Be("medium");
-        dto.DisplayValue.Should().Be("Medium");
-        dto.ColorCode.Should().Be("#00FF00");
-        dto.SwatchUrl.Should().Be("https://example.com/medium.png");
-        dto.SortOrder.Should().Be(0);
+        dto.Id.ShouldBe(optionValue.Id);
+        dto.Value.ShouldBe("medium");
+        dto.DisplayValue.ShouldBe("Medium");
+        dto.ColorCode.ShouldBe("#00FF00");
+        dto.SwatchUrl.ShouldBe("https://example.com/medium.png");
+        dto.SortOrder.ShouldBe(0);
     }
 
     #endregion

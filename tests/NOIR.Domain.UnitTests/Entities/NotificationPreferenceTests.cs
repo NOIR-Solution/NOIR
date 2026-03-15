@@ -21,12 +21,12 @@ public class NotificationPreferenceTests
         var preference = NotificationPreference.Create(userId, category);
 
         // Assert
-        preference.Should().NotBeNull();
-        preference.Id.Should().NotBe(Guid.Empty);
-        preference.UserId.Should().Be(userId);
-        preference.Category.Should().Be(category);
-        preference.InAppEnabled.Should().BeTrue(); // Default
-        preference.EmailFrequency.Should().Be(EmailFrequency.Daily); // Default
+        preference.ShouldNotBeNull();
+        preference.Id.ShouldNotBe(Guid.Empty);
+        preference.UserId.ShouldBe(userId);
+        preference.Category.ShouldBe(category);
+        preference.InAppEnabled.ShouldBeTrue(); // Default
+        preference.EmailFrequency.ShouldBe(EmailFrequency.Daily); // Default
     }
 
     [Fact]
@@ -42,8 +42,8 @@ public class NotificationPreferenceTests
         var preference = NotificationPreference.Create(userId, category, inAppEnabled, emailFrequency);
 
         // Assert
-        preference.InAppEnabled.Should().BeFalse();
-        preference.EmailFrequency.Should().Be(EmailFrequency.Immediate);
+        preference.InAppEnabled.ShouldBeFalse();
+        preference.EmailFrequency.ShouldBe(EmailFrequency.Immediate);
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class NotificationPreferenceTests
         var act = () => NotificationPreference.Create(null!, NotificationCategory.System);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class NotificationPreferenceTests
         var act = () => NotificationPreference.Create("", NotificationCategory.System);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class NotificationPreferenceTests
         var preference = NotificationPreference.Create("user-123", NotificationCategory.System, tenantId: tenantId);
 
         // Assert
-        preference.TenantId.Should().Be(tenantId);
+        preference.TenantId.ShouldBe(tenantId);
     }
 
     [Theory]
@@ -91,7 +91,7 @@ public class NotificationPreferenceTests
         var preference = NotificationPreference.Create("user-123", category);
 
         // Assert
-        preference.Category.Should().Be(category);
+        preference.Category.ShouldBe(category);
     }
 
     #endregion
@@ -109,7 +109,7 @@ public class NotificationPreferenceTests
         var preferences = NotificationPreference.CreateDefaults(userId).ToList();
 
         // Assert
-        preferences.Should().HaveCount(expectedCategories);
+        preferences.Count().ShouldBe(expectedCategories);
     }
 
     [Fact]
@@ -123,7 +123,7 @@ public class NotificationPreferenceTests
 
         // Assert
         var securityPref = preferences.Single(p => p.Category == NotificationCategory.Security);
-        securityPref.EmailFrequency.Should().Be(EmailFrequency.Immediate);
+        securityPref.EmailFrequency.ShouldBe(EmailFrequency.Immediate);
     }
 
     [Fact]
@@ -137,7 +137,7 @@ public class NotificationPreferenceTests
 
         // Assert
         var nonSecurityPrefs = preferences.Where(p => p.Category != NotificationCategory.Security);
-        nonSecurityPrefs.Should().OnlyContain(p => p.EmailFrequency == EmailFrequency.Daily);
+        nonSecurityPrefs.ShouldAllBe(p => p.EmailFrequency == EmailFrequency.Daily);
     }
 
     [Fact]
@@ -150,7 +150,7 @@ public class NotificationPreferenceTests
         var preferences = NotificationPreference.CreateDefaults(userId).ToList();
 
         // Assert
-        preferences.Should().OnlyContain(p => p.InAppEnabled == true);
+        preferences.ShouldAllBe(p => p.InAppEnabled == true);
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class NotificationPreferenceTests
         var preferences = NotificationPreference.CreateDefaults(userId, tenantId).ToList();
 
         // Assert
-        preferences.Should().OnlyContain(p => p.TenantId == tenantId);
+        preferences.ShouldAllBe(p => p.TenantId == tenantId);
     }
 
     [Fact]
@@ -178,7 +178,7 @@ public class NotificationPreferenceTests
 
         // Assert
         var ids = preferences.Select(p => p.Id).ToList();
-        ids.Distinct().Count().Should().Be(ids.Count);
+        ids.Distinct().Count().ShouldBe(ids.Count);
     }
 
     #endregion
@@ -195,8 +195,8 @@ public class NotificationPreferenceTests
         preference.Update(false, EmailFrequency.Weekly);
 
         // Assert
-        preference.InAppEnabled.Should().BeFalse();
-        preference.EmailFrequency.Should().Be(EmailFrequency.Weekly);
+        preference.InAppEnabled.ShouldBeFalse();
+        preference.EmailFrequency.ShouldBe(EmailFrequency.Weekly);
     }
 
     [Fact]
@@ -211,7 +211,7 @@ public class NotificationPreferenceTests
         var act = () => preference.Update(initialInApp, initialEmail);
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     #endregion
@@ -228,7 +228,7 @@ public class NotificationPreferenceTests
         preference.EnableInApp();
 
         // Assert
-        preference.InAppEnabled.Should().BeTrue();
+        preference.InAppEnabled.ShouldBeTrue();
     }
 
     [Fact]
@@ -241,7 +241,7 @@ public class NotificationPreferenceTests
         preference.DisableInApp();
 
         // Assert
-        preference.InAppEnabled.Should().BeFalse();
+        preference.InAppEnabled.ShouldBeFalse();
     }
 
     [Fact]
@@ -254,7 +254,7 @@ public class NotificationPreferenceTests
         preference.EnableInApp();
 
         // Assert
-        preference.InAppEnabled.Should().BeTrue();
+        preference.InAppEnabled.ShouldBeTrue();
     }
 
     [Fact]
@@ -267,7 +267,7 @@ public class NotificationPreferenceTests
         preference.DisableInApp();
 
         // Assert
-        preference.InAppEnabled.Should().BeFalse();
+        preference.InAppEnabled.ShouldBeFalse();
     }
 
     #endregion
@@ -288,7 +288,7 @@ public class NotificationPreferenceTests
         preference.SetEmailFrequency(frequency);
 
         // Assert
-        preference.EmailFrequency.Should().Be(frequency);
+        preference.EmailFrequency.ShouldBe(frequency);
     }
 
     [Fact]
@@ -301,7 +301,7 @@ public class NotificationPreferenceTests
         preference.SetEmailFrequency(EmailFrequency.Immediate);
 
         // Assert
-        preference.EmailFrequency.Should().Be(EmailFrequency.Immediate);
+        preference.EmailFrequency.ShouldBe(EmailFrequency.Immediate);
     }
 
     #endregion
@@ -319,8 +319,8 @@ public class NotificationPreferenceTests
         preference.SetEmailFrequency(EmailFrequency.None);
 
         // Assert
-        preference.InAppEnabled.Should().BeFalse();
-        preference.EmailFrequency.Should().Be(EmailFrequency.None);
+        preference.InAppEnabled.ShouldBeFalse();
+        preference.EmailFrequency.ShouldBe(EmailFrequency.None);
     }
 
     [Fact]
@@ -335,8 +335,8 @@ public class NotificationPreferenceTests
         preference.Update(true, EmailFrequency.Weekly);
 
         // Assert
-        preference.InAppEnabled.Should().BeTrue();
-        preference.EmailFrequency.Should().Be(EmailFrequency.Weekly);
+        preference.InAppEnabled.ShouldBeTrue();
+        preference.EmailFrequency.ShouldBe(EmailFrequency.Weekly);
     }
 
     #endregion

@@ -22,14 +22,14 @@ public class ProjectColumnTests
             color: "#3B82F6", wipLimit: 5);
 
         // Assert
-        column.Should().NotBeNull();
-        column.Id.Should().NotBe(Guid.Empty);
-        column.ProjectId.Should().Be(TestProjectId);
-        column.Name.Should().Be("In Progress");
-        column.SortOrder.Should().Be(1);
-        column.Color.Should().Be("#3B82F6");
-        column.WipLimit.Should().Be(5);
-        column.TenantId.Should().Be(TestTenantId);
+        column.ShouldNotBeNull();
+        column.Id.ShouldNotBe(Guid.Empty);
+        column.ProjectId.ShouldBe(TestProjectId);
+        column.Name.ShouldBe("In Progress");
+        column.SortOrder.ShouldBe(1);
+        column.Color.ShouldBe("#3B82F6");
+        column.WipLimit.ShouldBe(5);
+        column.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -39,8 +39,8 @@ public class ProjectColumnTests
         var column = ProjectColumn.Create(TestProjectId, "Todo", 0, TestTenantId);
 
         // Assert
-        column.Color.Should().BeNull();
-        column.WipLimit.Should().BeNull();
+        column.Color.ShouldBeNull();
+        column.WipLimit.ShouldBeNull();
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class ProjectColumnTests
     {
         // Act & Assert
         var act = () => ProjectColumn.Create(TestProjectId, "", 0, TestTenantId);
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class ProjectColumnTests
         var column = ProjectColumn.Create(TestProjectId, "  Done  ", 3, TestTenantId);
 
         // Assert
-        column.Name.Should().Be("Done");
+        column.Name.ShouldBe("Done");
     }
 
     #endregion
@@ -75,10 +75,10 @@ public class ProjectColumnTests
         column.Update("In Review", 2, "#F59E0B", 3);
 
         // Assert
-        column.Name.Should().Be("In Review");
-        column.SortOrder.Should().Be(2);
-        column.Color.Should().Be("#F59E0B");
-        column.WipLimit.Should().Be(3);
+        column.Name.ShouldBe("In Review");
+        column.SortOrder.ShouldBe(2);
+        column.Color.ShouldBe("#F59E0B");
+        column.WipLimit.ShouldBe(3);
     }
 
     #endregion

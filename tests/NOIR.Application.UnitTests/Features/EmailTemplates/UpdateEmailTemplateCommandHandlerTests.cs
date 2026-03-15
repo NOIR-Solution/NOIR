@@ -128,10 +128,10 @@ public class UpdateEmailTemplateCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Subject.Should().Be("New Subject");
-        result.Value.HtmlBody.Should().Be("<p>New Body</p>");
-        result.Value.IsInherited.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Subject.ShouldBe("New Subject");
+        result.Value.HtmlBody.ShouldBe("<p>New Body</p>");
+        result.Value.IsInherited.ShouldBe(false);
 
         // Verify we did NOT create a new template
         _repositoryMock.Verify(x => x.AddAsync(It.IsAny<EmailTemplate>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -163,8 +163,8 @@ public class UpdateEmailTemplateCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Version.Should().Be(2); // Version incremented from 1 to 2
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Version.ShouldBe(2); // Version incremented from 1 to 2
     }
 
     #endregion
@@ -203,11 +203,11 @@ public class UpdateEmailTemplateCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Subject.Should().Be("Tenant Subject");
-        result.Value.HtmlBody.Should().Be("<p>Tenant Body</p>");
-        result.Value.IsInherited.Should().BeFalse(); // After save, it's tenant-owned
-        result.Value.Id.Should().NotBe(platformTemplate.Id); // New ID for copy
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Subject.ShouldBe("Tenant Subject");
+        result.Value.HtmlBody.ShouldBe("<p>Tenant Body</p>");
+        result.Value.IsInherited.ShouldBe(false); // After save, it's tenant-owned
+        result.Value.Id.ShouldNotBe(platformTemplate.Id); // New ID for copy
 
         // Verify Copy-on-Write: a new template was created
         _repositoryMock.Verify(
@@ -249,8 +249,8 @@ public class UpdateEmailTemplateCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.AvailableVariables.Should().BeEquivalentTo(new[] { "UserName", "OtpCode" });
+        result.IsSuccess.ShouldBe(true);
+        result.Value.AvailableVariables.ShouldBe(new[] { "UserName", "OtpCode" });
     }
 
     #endregion
@@ -288,8 +288,8 @@ public class UpdateEmailTemplateCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(platformTemplate.Id); // Same ID, updated in place
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(platformTemplate.Id); // Same ID, updated in place
 
         // Verify no copy was created
         _repositoryMock.Verify(x => x.AddAsync(It.IsAny<EmailTemplate>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -317,8 +317,8 @@ public class UpdateEmailTemplateCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-EMAIL-001");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-EMAIL-001");
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
             Times.Never);
@@ -385,8 +385,8 @@ public class UpdateEmailTemplateCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PlainTextBody.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PlainTextBody.ShouldBeNull();
     }
 
     #endregion

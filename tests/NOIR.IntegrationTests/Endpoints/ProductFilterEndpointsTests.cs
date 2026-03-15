@@ -28,9 +28,9 @@ public class ProductFilterEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await _client.GetAsync("/api/products/filter");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<FilteredProductsResult>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class ProductFilterEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await _client.GetAsync("/api/products/filter?q=test");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class ProductFilterEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await _client.GetAsync("/api/products/filter?priceMin=10&priceMax=100");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class ProductFilterEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await _client.GetAsync("/api/products/filter?page=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class ProductFilterEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await _client.GetAsync("/api/products/filter?inStock=true");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class ProductFilterEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await _client.GetAsync("/api/products/filter?sort=price&order=asc");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -101,7 +101,7 @@ public class ProductFilterEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await _client.PostAsJsonAsync("/api/products/filter", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -119,7 +119,7 @@ public class ProductFilterEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await _client.PostAsJsonAsync("/api/products/filter", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -133,7 +133,7 @@ public class ProductFilterEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await _client.GetAsync("/api/categories/non-existent-category/filters");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion

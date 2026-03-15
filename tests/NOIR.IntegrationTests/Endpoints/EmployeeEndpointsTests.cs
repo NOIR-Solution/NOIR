@@ -41,10 +41,10 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/hr/employees");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<EmployeeListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeNull();
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/hr/employees");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -67,10 +67,10 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/hr/employees?page=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<EmployeeListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.Items.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     #endregion
@@ -87,9 +87,9 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/hr/employees/search?q=test");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<List<EmployeeSearchDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/hr/employees/search?q=test");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -116,9 +116,9 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/hr/employees/org-chart");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<List<OrgChartNodeDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/hr/employees/org-chart");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -149,10 +149,10 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/hr/employees/{employee.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<EmployeeDto>();
-        result.Should().NotBeNull();
-        result!.Id.Should().Be(employee.Id);
+        result.ShouldNotBeNull();
+        result!.Id.ShouldBe(employee.Id);
     }
 
     [Fact]
@@ -165,7 +165,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/hr/employees/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -175,7 +175,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync($"/api/hr/employees/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -194,13 +194,13 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/hr/employees", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var employee = await response.Content.ReadFromJsonWithEnumsAsync<EmployeeDto>();
-        employee.Should().NotBeNull();
-        employee!.FirstName.Should().Be(request.FirstName);
-        employee.LastName.Should().Be(request.LastName);
-        employee.Email.Should().Be(request.Email);
-        employee.EmployeeCode.Should().StartWith("EMP-");
+        employee.ShouldNotBeNull();
+        employee!.FirstName.ShouldBe(request.FirstName);
+        employee.LastName.ShouldBe(request.LastName);
+        employee.Email.ShouldBe(request.Email);
+        employee.EmployeeCode.ShouldStartWith("EMP-");
     }
 
     [Fact]
@@ -215,7 +215,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonWithEnumsAsync("/api/hr/employees", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -239,12 +239,12 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/hr/employees/{employee.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await response.Content.ReadFromJsonWithEnumsAsync<EmployeeDto>();
-        updated.Should().NotBeNull();
-        updated!.FirstName.Should().Be("Updated");
-        updated.LastName.Should().Be("Name");
-        updated.Position.Should().Be("Senior Engineer");
+        updated.ShouldNotBeNull();
+        updated!.FirstName.ShouldBe("Updated");
+        updated.LastName.ShouldBe("Name");
+        updated.Position.ShouldBe("Senior Engineer");
     }
 
     [Fact]
@@ -260,7 +260,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/hr/employees/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -281,10 +281,10 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/hr/employees/{employee.Id}/deactivate", deactivateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<EmployeeDto>();
-        result.Should().NotBeNull();
-        result!.Status.Should().Be(EmployeeStatus.Resigned);
+        result.ShouldNotBeNull();
+        result!.Status.ShouldBe(EmployeeStatus.Resigned);
     }
 
     [Fact]
@@ -298,7 +298,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/hr/employees/{Guid.NewGuid()}/deactivate", deactivateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -321,10 +321,10 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/hr/employees/{employee.Id}/reactivate", new { });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<EmployeeDto>();
-        result.Should().NotBeNull();
-        result!.Status.Should().Be(EmployeeStatus.Active);
+        result.ShouldNotBeNull();
+        result!.Status.ShouldBe(EmployeeStatus.Active);
     }
 
     #endregion
@@ -344,12 +344,12 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Known source issue: GetHrReportsQueryHandler has a LINQ GroupBy with navigation property
         // (Department!.Name) that cannot be translated by EF Core.
         // Accept either OK (if fixed) or InternalServerError (known LINQ translation bug).
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.InternalServerError);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.OK, HttpStatusCode.InternalServerError);
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
             var result = await response.Content.ReadFromJsonWithEnumsAsync<HrReportsDto>();
-            result.Should().NotBeNull();
+            result.ShouldNotBeNull();
         }
     }
 
@@ -360,7 +360,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/hr/employees/reports");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -377,8 +377,8 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/hr/employees/export?format=CSV");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        response.Content.Headers.ContentType.Should().NotBeNull();
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.Content.Headers.ContentType.ShouldNotBeNull();
     }
 
     [Fact]
@@ -388,7 +388,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/hr/employees/export");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -405,30 +405,30 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Create
         var createRequest = CreateTestEmployeeRequest(dept.Id);
         var createResponse = await adminClient.PostAsJsonWithEnumsAsync("/api/hr/employees", createRequest);
-        createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        createResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var created = await createResponse.Content.ReadFromJsonWithEnumsAsync<EmployeeDto>();
-        created.Should().NotBeNull();
+        created.ShouldNotBeNull();
 
         // Read
         var getResponse = await adminClient.GetAsync($"/api/hr/employees/{created!.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Update
         var updateRequest = new UpdateEmployeeRequest(
             "Updated", "Employee", created.Email,
             dept.Id, EmploymentType.Contract);
         var updateResponse = await adminClient.PutAsJsonWithEnumsAsync($"/api/hr/employees/{created.Id}", updateRequest);
-        updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        updateResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await updateResponse.Content.ReadFromJsonWithEnumsAsync<EmployeeDto>();
-        updated!.FirstName.Should().Be("Updated");
+        updated!.FirstName.ShouldBe("Updated");
 
         // Deactivate (soft delete equivalent)
         var deactivateResponse = await adminClient.PostAsJsonWithEnumsAsync(
             $"/api/hr/employees/{created.Id}/deactivate",
             new { Status = "Terminated" });
-        deactivateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        deactivateResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var deactivated = await deactivateResponse.Content.ReadFromJsonWithEnumsAsync<EmployeeDto>();
-        deactivated!.Status.Should().Be(EmployeeStatus.Terminated);
+        deactivated!.Status.ShouldBe(EmployeeStatus.Terminated);
     }
 
     #endregion
@@ -463,11 +463,11 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/hr/employees/{employee.Id}/link-user", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<EmployeeDto>();
-        result.Should().NotBeNull();
-        result!.UserId.Should().Be(createdUser.Id);
-        result.HasUserAccount.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result!.UserId.ShouldBe(createdUser.Id);
+        result.HasUserAccount.ShouldBeTrue();
     }
 
     [Fact]
@@ -482,7 +482,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/hr/employees/{Guid.NewGuid()}/link-user", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -494,7 +494,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/hr/employees/{Guid.NewGuid()}/link-user", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -527,11 +527,11 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             "/api/hr/employees/bulk-assign-tags", bulkRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<BulkOperationResultDto>();
-        result.Should().NotBeNull();
-        result!.Success.Should().Be(2);
-        result.Failed.Should().Be(0);
+        result.ShouldNotBeNull();
+        result!.Success.ShouldBe(2);
+        result.Failed.ShouldBe(0);
     }
 
     [Fact]
@@ -548,7 +548,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             "/api/hr/employees/bulk-assign-tags", bulkRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -564,7 +564,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             "/api/hr/employees/bulk-assign-tags", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -590,11 +590,11 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             "/api/hr/employees/bulk-change-department", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<BulkOperationResultDto>();
-        result.Should().NotBeNull();
-        result!.Success.Should().Be(2);
-        result.Failed.Should().Be(0);
+        result.ShouldNotBeNull();
+        result!.Success.ShouldBe(2);
+        result.Failed.ShouldBe(0);
     }
 
     [Fact]
@@ -611,7 +611,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             "/api/hr/employees/bulk-change-department", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -627,7 +627,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             "/api/hr/employees/bulk-change-department", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -659,7 +659,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Verify manager is set
         var getReportBefore = await adminClient.GetAsync($"/api/hr/employees/{report.Id}");
         var reportBefore = await getReportBefore.Content.ReadFromJsonWithEnumsAsync<EmployeeDto>();
-        reportBefore!.ManagerId.Should().Be(manager.Id);
+        reportBefore!.ManagerId.ShouldBe(manager.Id);
 
         // Act - Deactivate manager
         var deactivateRequest = new { Status = "Resigned" };
@@ -670,7 +670,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Assert - Report's ManagerId should now be null
         var getReportAfter = await adminClient.GetAsync($"/api/hr/employees/{report.Id}");
         var reportAfter = await getReportAfter.Content.ReadFromJsonWithEnumsAsync<EmployeeDto>();
-        reportAfter!.ManagerId.Should().BeNull();
+        reportAfter!.ManagerId.ShouldBeNull();
     }
 
     [Fact]
@@ -703,11 +703,11 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Assert - Both reports should have null ManagerId
         var getReport1 = await adminClient.GetAsync($"/api/hr/employees/{report1.Id}");
         var updatedReport1 = await getReport1.Content.ReadFromJsonWithEnumsAsync<EmployeeDto>();
-        updatedReport1!.ManagerId.Should().BeNull();
+        updatedReport1!.ManagerId.ShouldBeNull();
 
         var getReport2 = await adminClient.GetAsync($"/api/hr/employees/{report2.Id}");
         var updatedReport2 = await getReport2.Content.ReadFromJsonWithEnumsAsync<EmployeeDto>();
-        updatedReport2!.ManagerId.Should().BeNull();
+        updatedReport2!.ManagerId.ShouldBeNull();
     }
 
     #endregion
@@ -720,7 +720,7 @@ public class EmployeeEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         await _factory.ExecuteWithTenantAsync(sp =>
         {
             var repository = sp.GetRequiredService<IRepository<Employee, Guid>>();
-            repository.Should().NotBeNull();
+            repository.ShouldNotBeNull();
             return Task.CompletedTask;
         });
     }

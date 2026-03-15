@@ -73,9 +73,9 @@ public class GetUserRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEquivalentTo(expectedRoles);
-        result.Value.Should().HaveCount(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(expectedRoles);
+        result.Value.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -98,8 +98,8 @@ public class GetUserRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     [Fact]
@@ -123,8 +123,8 @@ public class GetUserRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().ContainSingle().Which.Should().Be("User");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldHaveSingleItem().ShouldBe("User");
     }
 
     #endregion
@@ -147,8 +147,8 @@ public class GetUserRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.UserNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.UserNotFound);
         _userIdentityServiceMock.Verify(
             x => x.GetRolesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -205,7 +205,7 @@ public class GetUserRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     [Fact]
@@ -229,8 +229,8 @@ public class GetUserRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeAssignableTo<IReadOnlyList<string>>();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeAssignableTo<IReadOnlyList<string>>();
     }
 
     #endregion

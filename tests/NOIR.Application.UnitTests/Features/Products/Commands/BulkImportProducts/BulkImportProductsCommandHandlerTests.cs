@@ -115,10 +115,10 @@ public class BulkImportProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(1);
-        result.Value.Failed.Should().Be(0);
-        result.Value.Errors.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(1);
+        result.Value.Failed.ShouldBe(0);
+        result.Value.Errors.ShouldBeEmpty();
 
         _productRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>()),
@@ -154,9 +154,9 @@ public class BulkImportProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(3);
-        result.Value.Failed.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(3);
+        result.Value.Failed.ShouldBe(0);
 
         _productRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>()),
@@ -206,9 +206,9 @@ public class BulkImportProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedProduct.Should().NotBeNull();
-        capturedProduct!.CategoryId.Should().Be(category.Id);
+        result.IsSuccess.ShouldBe(true);
+        capturedProduct.ShouldNotBeNull();
+        capturedProduct!.CategoryId.ShouldBe(category.Id);
     }
 
     [Fact]
@@ -248,12 +248,12 @@ public class BulkImportProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(1); // One product, two variants
-        capturedProduct.Should().NotBeNull();
-        capturedProduct!.Variants.Should().HaveCount(2);
-        capturedProduct.Variants.Should().Contain(v => v.Name == "Small");
-        capturedProduct.Variants.Should().Contain(v => v.Name == "Large");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(1); // One product, two variants
+        capturedProduct.ShouldNotBeNull();
+        capturedProduct!.Variants.Count().ShouldBe(2);
+        capturedProduct.Variants.ShouldContain(v => v.Name == "Small");
+        capturedProduct.Variants.ShouldContain(v => v.Name == "Large");
     }
 
     [Fact]
@@ -284,10 +284,10 @@ public class BulkImportProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedProduct.Should().NotBeNull();
-        capturedProduct!.Images.Should().HaveCount(2);
-        capturedProduct.Images.First().IsPrimary.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        capturedProduct.ShouldNotBeNull();
+        capturedProduct!.Images.Count().ShouldBe(2);
+        capturedProduct.Images.First().IsPrimary.ShouldBe(true);
     }
 
     [Fact]
@@ -314,7 +314,7 @@ public class BulkImportProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _movementLoggerMock.Verify(
             x => x.LogMovementAsync(
                 It.IsAny<ProductVariant>(),
@@ -355,9 +355,9 @@ public class BulkImportProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedProduct.Should().NotBeNull();
-        capturedProduct!.Brand.Should().Be("Apple");
+        result.IsSuccess.ShouldBe(true);
+        capturedProduct.ShouldNotBeNull();
+        capturedProduct!.Brand.ShouldBe("Apple");
     }
 
     #endregion
@@ -407,10 +407,10 @@ public class BulkImportProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedProduct.Should().NotBeNull();
-        capturedProduct!.Slug.Should().NotBe("product-1");
-        capturedProduct.Slug.Should().StartWith("product-1-");
+        result.IsSuccess.ShouldBe(true);
+        capturedProduct.ShouldNotBeNull();
+        capturedProduct!.Slug.ShouldNotBe("product-1");
+        capturedProduct.Slug.ShouldStartWith("product-1-");
     }
 
     [Fact]
@@ -439,9 +439,9 @@ public class BulkImportProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedProduct.Should().NotBeNull();
-        capturedProduct!.Slug.Should().Be("my-awesome-product");
+        result.IsSuccess.ShouldBe(true);
+        capturedProduct.ShouldNotBeNull();
+        capturedProduct!.Slug.ShouldBe("my-awesome-product");
     }
 
     #endregion
@@ -473,9 +473,9 @@ public class BulkImportProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // The empty name product should fail, the valid one should succeed
-        result.Value.Errors.Should().NotBeEmpty();
+        result.Value.Errors.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -520,9 +520,9 @@ public class BulkImportProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedProduct.Should().NotBeNull();
-        capturedProduct!.CategoryId.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        capturedProduct.ShouldNotBeNull();
+        capturedProduct!.CategoryId.ShouldBeNull();
     }
 
     #endregion
@@ -545,9 +545,9 @@ public class BulkImportProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(0);
-        result.Value.Failed.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(0);
+        result.Value.Failed.ShouldBe(0);
     }
 
     [Fact]
@@ -616,9 +616,9 @@ public class BulkImportProductsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedProduct.Should().NotBeNull();
-        capturedProduct!.Variants.First().CompareAtPrice.Should().Be(99.99m);
+        result.IsSuccess.ShouldBe(true);
+        capturedProduct.ShouldNotBeNull();
+        capturedProduct!.Variants.First().CompareAtPrice.ShouldBe(99.99m);
     }
 
     #endregion

@@ -56,8 +56,8 @@ public class GetUnreadCountQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.Unauthorized);
     }
 
     #endregion
@@ -79,8 +79,8 @@ public class GetUnreadCountQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Count.Should().Be(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count.ShouldBe(5);
     }
 
     [Fact]
@@ -98,8 +98,8 @@ public class GetUnreadCountQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Count.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count.ShouldBe(0);
     }
 
     [Fact]

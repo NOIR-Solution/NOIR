@@ -28,12 +28,12 @@ public class PublicLegalPageEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await _client.GetAsync("/api/public/legal/terms-of-service");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var page = await response.Content.ReadFromJsonAsync<PublicLegalPageDto>();
-        page.Should().NotBeNull();
-        page!.Slug.Should().Be("terms-of-service");
-        page.Title.Should().NotBeNullOrEmpty();
-        page.HtmlContent.Should().NotBeNullOrEmpty();
+        page.ShouldNotBeNull();
+        page!.Slug.ShouldBe("terms-of-service");
+        page.Title.ShouldNotBeNullOrEmpty();
+        page.HtmlContent.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -43,12 +43,12 @@ public class PublicLegalPageEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await _client.GetAsync("/api/public/legal/privacy-policy");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var page = await response.Content.ReadFromJsonAsync<PublicLegalPageDto>();
-        page.Should().NotBeNull();
-        page!.Slug.Should().Be("privacy-policy");
-        page.Title.Should().NotBeNullOrEmpty();
-        page.HtmlContent.Should().NotBeNullOrEmpty();
+        page.ShouldNotBeNull();
+        page!.Slug.ShouldBe("privacy-policy");
+        page.Title.ShouldNotBeNullOrEmpty();
+        page.HtmlContent.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class PublicLegalPageEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await _client.GetAsync("/api/public/legal/cookie-policy");
 
         // Assert - Should return 404 since page is not seeded
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class PublicLegalPageEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await _client.GetAsync("/api/public/legal/non-existent-page-slug");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class PublicLegalPageEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await _client.GetAsync("/api/public/legal/");
 
         // Assert - Either MethodNotAllowed (no route match) or NotFound
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.MethodNotAllowed);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.MethodNotAllowed);
     }
 
     [Fact]
@@ -89,8 +89,8 @@ public class PublicLegalPageEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await _client.GetAsync("/api/public/legal/terms-of-service");
 
         // Assert - Should succeed without authentication
-        response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
-        response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldNotBe(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldNotBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -100,12 +100,12 @@ public class PublicLegalPageEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await _client.GetAsync("/api/public/legal/terms-of-service");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var page = await response.Content.ReadFromJsonAsync<PublicLegalPageDto>();
-        page.Should().NotBeNull();
-        page!.LastModified.Should().NotBe(default);
+        page.ShouldNotBeNull();
+        page!.LastModified.ShouldNotBe(default);
         // AllowIndexing should be a valid boolean value
-        page.AllowIndexing.Should().Be(page.AllowIndexing);
+        page.AllowIndexing.ShouldBe(page.AllowIndexing);
     }
 
     #endregion

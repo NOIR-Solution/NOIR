@@ -50,14 +50,14 @@ public class GetCustomerByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Email.Should().Be("john@example.com");
-        result.Value.FirstName.Should().Be("John");
-        result.Value.LastName.Should().Be("Doe");
-        result.Value.Phone.Should().Be("0901234567");
-        result.Value.Segment.Should().Be(CustomerSegment.New);
-        result.Value.Tier.Should().Be(CustomerTier.Standard);
-        result.Value.IsActive.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Email.ShouldBe("john@example.com");
+        result.Value.FirstName.ShouldBe("John");
+        result.Value.LastName.ShouldBe("Doe");
+        result.Value.Phone.ShouldBe("0901234567");
+        result.Value.Segment.ShouldBe(CustomerSegment.New);
+        result.Value.Tier.ShouldBe(CustomerTier.Standard);
+        result.Value.IsActive.ShouldBe(true);
     }
 
     [Fact]
@@ -91,11 +91,11 @@ public class GetCustomerByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Addresses.Should().HaveCount(1);
-        result.Value.Addresses[0].FullName.Should().Be("John Doe");
-        result.Value.Addresses[0].AddressType.Should().Be(AddressType.Shipping);
-        result.Value.Addresses[0].IsDefault.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Addresses.Count().ShouldBe(1);
+        result.Value.Addresses[0].FullName.ShouldBe("John Doe");
+        result.Value.Addresses[0].AddressType.ShouldBe(AddressType.Shipping);
+        result.Value.Addresses[0].IsDefault.ShouldBe(true);
     }
 
     [Fact]
@@ -117,15 +117,15 @@ public class GetCustomerByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Email.Should().Be("min@example.com");
-        result.Value.Phone.Should().BeNull();
-        result.Value.Tags.Should().BeNull();
-        result.Value.Notes.Should().BeNull();
-        result.Value.Addresses.Should().BeEmpty();
-        result.Value.LoyaltyPoints.Should().Be(0);
-        result.Value.TotalOrders.Should().Be(0);
-        result.Value.TotalSpent.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Email.ShouldBe("min@example.com");
+        result.Value.Phone.ShouldBeNull();
+        result.Value.Tags.ShouldBeNull();
+        result.Value.Notes.ShouldBeNull();
+        result.Value.Addresses.ShouldBeEmpty();
+        result.Value.LoyaltyPoints.ShouldBe(0);
+        result.Value.TotalOrders.ShouldBe(0);
+        result.Value.TotalSpent.ShouldBe(0);
     }
 
     #endregion
@@ -150,8 +150,8 @@ public class GetCustomerByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CUSTOMER-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CUSTOMER-002");
     }
 
     #endregion

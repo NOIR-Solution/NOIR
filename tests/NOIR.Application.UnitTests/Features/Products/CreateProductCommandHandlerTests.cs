@@ -137,12 +137,12 @@ public class CreateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be(command.Name);
-        result.Value.Slug.Should().Be(command.Slug.ToLowerInvariant());
-        result.Value.BasePrice.Should().Be(command.BasePrice);
-        result.Value.Currency.Should().Be(command.Currency);
-        result.Value.Status.Should().Be(ProductStatus.Draft);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe(command.Name);
+        result.Value.Slug.ShouldBe(command.Slug.ToLowerInvariant());
+        result.Value.BasePrice.ShouldBe(command.BasePrice);
+        result.Value.Currency.ShouldBe(command.Currency);
+        result.Value.Status.ShouldBe(ProductStatus.Draft);
 
         _productRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>()),
@@ -184,10 +184,10 @@ public class CreateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategoryId.Should().Be(categoryId);
-        result.Value.CategoryName.Should().Be(category.Name);
-        result.Value.CategorySlug.Should().Be(category.Slug);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategoryId.ShouldBe(categoryId);
+        result.Value.CategoryName.ShouldBe(category.Name);
+        result.Value.CategorySlug.ShouldBe(category.Slug);
     }
 
     [Fact]
@@ -220,8 +220,8 @@ public class CreateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Sku.Should().Be("TEST-SKU-001");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Sku.ShouldBe("TEST-SKU-001");
     }
 
     [Fact]
@@ -248,8 +248,8 @@ public class CreateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Brand.Should().Be("Test Brand");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Brand.ShouldBe("Test Brand");
     }
 
     [Fact]
@@ -278,9 +278,9 @@ public class CreateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.MetaTitle.Should().Be("SEO Title");
-        result.Value.MetaDescription.Should().Be("SEO Description");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.MetaTitle.ShouldBe("SEO Title");
+        result.Value.MetaDescription.ShouldBe("SEO Description");
     }
 
     [Fact]
@@ -312,10 +312,10 @@ public class CreateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Variants.Should().HaveCount(2);
-        result.Value.Variants.Should().Contain(v => v.Name == "Small");
-        result.Value.Variants.Should().Contain(v => v.Name == "Large");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Variants.Count().ShouldBe(2);
+        result.Value.Variants.ShouldContain(v => v.Name == "Small");
+        result.Value.Variants.ShouldContain(v => v.Name == "Large");
     }
 
     [Fact]
@@ -342,10 +342,10 @@ public class CreateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Variants.Should().HaveCount(1);
-        result.Value.Variants.First().Name.Should().Be("Default");
-        result.Value.Variants.First().Price.Should().Be(command.BasePrice);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Variants.Count().ShouldBe(1);
+        result.Value.Variants.First().Name.ShouldBe("Default");
+        result.Value.Variants.First().Price.ShouldBe(command.BasePrice);
     }
 
     [Fact]
@@ -377,9 +377,9 @@ public class CreateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Images.Should().HaveCount(2);
-        result.Value.Images.Should().Contain(i => i.Url == "https://example.com/image1.jpg" && i.IsPrimary);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Images.Count().ShouldBe(2);
+        result.Value.Images.ShouldContain(i => i.Url == "https://example.com/image1.jpg" && i.IsPrimary);
     }
 
     #endregion
@@ -403,11 +403,11 @@ public class CreateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Conflict);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-010");
-        result.Error.Message.Should().Contain("slug");
-        result.Error.Message.Should().Contain("already exists");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Conflict);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-010");
+        result.Error.Message.ShouldContain("slug");
+        result.Error.Message.ShouldContain("already exists");
 
         _productRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>()),
@@ -437,11 +437,11 @@ public class CreateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Conflict);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-011");
-        result.Error.Message.Should().Contain("SKU");
-        result.Error.Message.Should().Contain("already exists");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Conflict);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-011");
+        result.Error.Message.ShouldContain("SKU");
+        result.Error.Message.ShouldContain("already exists");
 
         _productRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>()),
@@ -475,11 +475,11 @@ public class CreateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-002");
-        result.Error.Message.Should().Contain("Category");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-002");
+        result.Error.Message.ShouldContain("Category");
+        result.Error.Message.ShouldContain("not found");
 
         _productRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>()),
@@ -553,8 +553,8 @@ public class CreateProductCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        capturedProduct.Should().NotBeNull();
-        capturedProduct!.TenantId.Should().Be(TestTenantId);
+        capturedProduct.ShouldNotBeNull();
+        capturedProduct!.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -581,7 +581,7 @@ public class CreateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         _productRepositoryMock.Verify(
             x => x.FirstOrDefaultAsync(It.IsAny<ProductSkuExistsSpec>(), It.IsAny<CancellationToken>()),
@@ -612,9 +612,9 @@ public class CreateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategoryId.Should().BeNull();
-        result.Value.CategoryName.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategoryId.ShouldBeNull();
+        result.Value.CategoryName.ShouldBeNull();
 
         _categoryRepositoryMock.Verify(
             x => x.FirstOrDefaultAsync(It.IsAny<ProductCategoryByIdSpec>(), It.IsAny<CancellationToken>()),
@@ -645,8 +645,8 @@ public class CreateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TrackInventory.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TrackInventory.ShouldBe(false);
     }
 
     [Fact]
@@ -678,10 +678,10 @@ public class CreateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Variants.Should().HaveCount(2);
-        result.Value.Variants.Should().Contain(v => v.Sku == "SKU-VAR-001");
-        result.Value.Variants.Should().Contain(v => v.Sku == "SKU-VAR-002");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Variants.Count().ShouldBe(2);
+        result.Value.Variants.ShouldContain(v => v.Sku == "SKU-VAR-001");
+        result.Value.Variants.ShouldContain(v => v.Sku == "SKU-VAR-002");
     }
 
     [Fact]
@@ -716,9 +716,9 @@ public class CreateProductCommandHandlerTests
 
         // Assert
         // Currently allows duplicate variant SKUs within same product
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Variants.Should().HaveCount(2);
-        result.Value.Variants.All(v => v.Sku == "DUPLICATE-SKU").Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Variants.Count().ShouldBe(2);
+        result.Value.Variants.All(v => v.Sku == "DUPLICATE-SKU").ShouldBe(true);
     }
 
     [Fact]
@@ -749,9 +749,9 @@ public class CreateProductCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Variants.Should().HaveCount(1);
-        result.Value.Variants.First().Sku.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Variants.Count().ShouldBe(1);
+        result.Value.Variants.First().Sku.ShouldBeNull();
     }
 
     #endregion

@@ -98,8 +98,8 @@ public class FeatureCheckMiddlewareTests
         var act = () => _sut.BeforeAsync(envelope, _featureCheckerMock.Object, _loggerMock.Object);
 
         // Assert
-        var exception = await act.Should().ThrowAsync<FeatureNotAvailableException>();
-        exception.Which.FeatureName.Should().Be("Ecommerce.Products");
+        var exception = await Should.ThrowAsync<FeatureNotAvailableException>(act);
+        exception.FeatureName.ShouldBe("Ecommerce.Products");
     }
 
     #endregion
@@ -143,8 +143,8 @@ public class FeatureCheckMiddlewareTests
         var act = () => _sut.BeforeAsync(envelope, _featureCheckerMock.Object, _loggerMock.Object);
 
         // Assert
-        var exception = await act.Should().ThrowAsync<FeatureNotAvailableException>();
-        exception.Which.FeatureName.Should().Be("Ecommerce.Products");
+        var exception = await Should.ThrowAsync<FeatureNotAvailableException>(act);
+        exception.FeatureName.ShouldBe("Ecommerce.Products");
         // Should not check the second feature since the first is disabled
         _featureCheckerMock.Verify(
             x => x.IsEnabledAsync("Ecommerce.Cart", It.IsAny<CancellationToken>()),
@@ -167,8 +167,8 @@ public class FeatureCheckMiddlewareTests
         var act = () => _sut.BeforeAsync(envelope, _featureCheckerMock.Object, _loggerMock.Object);
 
         // Assert
-        var exception = await act.Should().ThrowAsync<FeatureNotAvailableException>();
-        exception.Which.FeatureName.Should().Be("Ecommerce.Cart");
+        var exception = await Should.ThrowAsync<FeatureNotAvailableException>(act);
+        exception.FeatureName.ShouldBe("Ecommerce.Cart");
     }
 
     #endregion

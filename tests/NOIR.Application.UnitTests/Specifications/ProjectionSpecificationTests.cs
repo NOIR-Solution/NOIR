@@ -102,7 +102,7 @@ public class ProjectionSpecificationTests
         var spec = new ProductSummarySpec();
 
         // Assert
-        spec.Selector.Should().NotBeNull();
+        spec.Selector.ShouldNotBeNull();
     }
 
     [Fact]
@@ -117,10 +117,10 @@ public class ProjectionSpecificationTests
         var result = compiled(product);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(1);
-        result.Name.Should().Be("Test");
-        result.Price.Should().Be(10.00m);
+        result.ShouldNotBeNull();
+        result.Id.ShouldBe(1);
+        result.Name.ShouldBe("Test");
+        result.Price.ShouldBe(10.00m);
     }
 
     #endregion
@@ -134,7 +134,7 @@ public class ProjectionSpecificationTests
         var spec = new ProductSummarySpec();
 
         // Assert
-        spec.QueryTags.Should().Contain("ProductSummary");
+        spec.QueryTags.ShouldContain("ProductSummary");
     }
 
     [Fact]
@@ -144,7 +144,7 @@ public class ProjectionSpecificationTests
         var spec = new FullFeaturedProjectionSpec();
 
         // Assert
-        spec.QueryTags.Should().Contain("FullFeatured");
+        spec.QueryTags.ShouldContain("FullFeatured");
     }
 
     #endregion
@@ -158,7 +158,7 @@ public class ProjectionSpecificationTests
         var spec = new ProductSummarySpec(activeOnly: true);
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -168,7 +168,7 @@ public class ProjectionSpecificationTests
         var spec = new ProductSummarySpec(activeOnly: false);
 
         // Assert
-        spec.WhereExpressions.Should().BeEmpty();
+        spec.WhereExpressions.ShouldBeEmpty();
     }
 
     #endregion
@@ -182,7 +182,7 @@ public class ProjectionSpecificationTests
         var spec = new ProductSummarySpec();
 
         // Assert
-        spec.OrderBy.Should().NotBeNull();
+        spec.OrderBy.ShouldNotBeNull();
     }
 
     [Fact]
@@ -192,8 +192,8 @@ public class ProjectionSpecificationTests
         var spec = new FullFeaturedProjectionSpec();
 
         // Assert
-        spec.OrderByDescending.Should().NotBeNull();
-        spec.OrderBy.Should().BeNull(); // OrderByDescending clears OrderBy
+        spec.OrderByDescending.ShouldNotBeNull();
+        spec.OrderBy.ShouldBeNull(); // OrderByDescending clears OrderBy
     }
 
     [Fact]
@@ -203,7 +203,7 @@ public class ProjectionSpecificationTests
         var spec = new FullFeaturedProjectionSpec();
 
         // Assert
-        spec.ThenByExpressions.Should().HaveCount(1);
+        spec.ThenByExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -213,7 +213,7 @@ public class ProjectionSpecificationTests
         var spec = new FullFeaturedProjectionSpec();
 
         // Assert
-        spec.ThenByDescendingExpressions.Should().HaveCount(1);
+        spec.ThenByDescendingExpressions.Count().ShouldBe(1);
     }
 
     #endregion
@@ -227,9 +227,9 @@ public class ProjectionSpecificationTests
         var spec = new PagedProductSummarySpec(pageIndex: 2, pageSize: 5);
 
         // Assert
-        spec.Skip.Should().Be(10); // 2 * 5
-        spec.Take.Should().Be(5);
-        spec.IsPagingEnabled.Should().BeTrue();
+        spec.Skip.ShouldBe(10); // 2 * 5
+        spec.Take.ShouldBe(5);
+        spec.IsPagingEnabled.ShouldBe(true);
     }
 
     [Fact]
@@ -239,7 +239,7 @@ public class ProjectionSpecificationTests
         var spec = new FullFeaturedProjectionSpec();
 
         // Assert
-        spec.Skip.Should().Be(5);
+        spec.Skip.ShouldBe(5);
     }
 
     [Fact]
@@ -249,7 +249,7 @@ public class ProjectionSpecificationTests
         var spec = new FullFeaturedProjectionSpec();
 
         // Assert
-        spec.Take.Should().Be(10);
+        spec.Take.ShouldBe(10);
     }
 
     [Fact]
@@ -259,8 +259,8 @@ public class ProjectionSpecificationTests
         var spec = new PagedProductSummarySpec(pageIndex: 0, pageSize: 10);
 
         // Assert
-        spec.Skip.Should().Be(0);
-        spec.Take.Should().Be(10);
+        spec.Skip.ShouldBe(0);
+        spec.Take.ShouldBe(10);
     }
 
     #endregion
@@ -274,8 +274,8 @@ public class ProjectionSpecificationTests
         var spec = new TrackedProductSummarySpec();
 
         // Assert
-        spec.AsNoTracking.Should().BeFalse();
-        spec.AsNoTrackingWithIdentityResolution.Should().BeFalse();
+        spec.AsNoTracking.ShouldBe(false);
+        spec.AsNoTrackingWithIdentityResolution.ShouldBe(false);
     }
 
     [Fact]
@@ -285,7 +285,7 @@ public class ProjectionSpecificationTests
         var spec = new ProductSummarySpec();
 
         // Assert
-        spec.AsNoTracking.Should().BeTrue();
+        spec.AsNoTracking.ShouldBe(true);
     }
 
     #endregion
@@ -303,7 +303,7 @@ public class ProjectionSpecificationTests
         var result = spec.IsSatisfiedBy(product);
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -317,7 +317,7 @@ public class ProjectionSpecificationTests
         var result = spec.IsSatisfiedBy(product);
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -331,7 +331,7 @@ public class ProjectionSpecificationTests
         var result = spec.IsSatisfiedBy(product);
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     #endregion

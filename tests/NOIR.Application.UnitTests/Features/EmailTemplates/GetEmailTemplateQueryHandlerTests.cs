@@ -106,11 +106,11 @@ public class GetEmailTemplateQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("WelcomeEmail");
-        result.Value.Subject.Should().Be("Welcome to Our Service");
-        result.Value.HtmlBody.Should().Be("<h1>Welcome, {{UserName}}!</h1>");
-        result.Value.IsInherited.Should().BeFalse(); // Tenant-owned template
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("WelcomeEmail");
+        result.Value.Subject.ShouldBe("Welcome to Our Service");
+        result.Value.HtmlBody.ShouldBe("<h1>Welcome, {{UserName}}!</h1>");
+        result.Value.IsInherited.ShouldBe(false); // Tenant-owned template
     }
 
     [Fact]
@@ -131,8 +131,8 @@ public class GetEmailTemplateQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsInherited.Should().BeTrue(); // Platform template viewed by tenant user
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsInherited.ShouldBe(true); // Platform template viewed by tenant user
     }
 
     [Fact]
@@ -152,8 +152,8 @@ public class GetEmailTemplateQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.AvailableVariables.Should().BeEquivalentTo(new[] { "UserName", "OtpCode", "ExpiryMinutes" });
+        result.IsSuccess.ShouldBe(true);
+        result.Value.AvailableVariables.ShouldBe(new[] { "UserName", "OtpCode", "ExpiryMinutes" });
     }
 
     [Fact]
@@ -170,8 +170,8 @@ public class GetEmailTemplateQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.AvailableVariables.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.AvailableVariables.ShouldBeEmpty();
     }
 
     [Fact]
@@ -188,8 +188,8 @@ public class GetEmailTemplateQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.AvailableVariables.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.AvailableVariables.ShouldBeEmpty();
     }
 
     [Fact]
@@ -210,8 +210,8 @@ public class GetEmailTemplateQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsInherited.Should().BeFalse(); // Platform admin viewing platform template
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsInherited.ShouldBe(false); // Platform admin viewing platform template
     }
 
     #endregion
@@ -231,8 +231,8 @@ public class GetEmailTemplateQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-EMAIL-001");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-EMAIL-001");
     }
 
     #endregion

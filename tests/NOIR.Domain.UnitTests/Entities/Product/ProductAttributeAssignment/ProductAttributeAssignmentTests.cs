@@ -39,12 +39,12 @@ public class ProductAttributeAssignmentTests
         var assignment = CreateTestAssignment();
 
         // Assert
-        assignment.Should().NotBeNull();
-        assignment.Id.Should().NotBe(Guid.Empty);
-        assignment.ProductId.Should().Be(TestProductId);
-        assignment.AttributeId.Should().Be(TestAttributeId);
-        assignment.VariantId.Should().BeNull();
-        assignment.TenantId.Should().Be(TestTenantId);
+        assignment.ShouldNotBeNull();
+        assignment.Id.ShouldNotBe(Guid.Empty);
+        assignment.ProductId.ShouldBe(TestProductId);
+        assignment.AttributeId.ShouldBe(TestAttributeId);
+        assignment.VariantId.ShouldBeNull();
+        assignment.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class ProductAttributeAssignmentTests
         var assignment = CreateTestAssignment(variantId: variantId);
 
         // Assert
-        assignment.VariantId.Should().Be(variantId);
+        assignment.VariantId.ShouldBe(variantId);
     }
 
     [Fact]
@@ -67,9 +67,9 @@ public class ProductAttributeAssignmentTests
         var assignment = CreateTestAssignment();
 
         // Assert
-        assignment.HasValue.Should().BeFalse();
-        assignment.DisplayValue.Should().BeNull();
-        assignment.GetTypedValue().Should().BeNull();
+        assignment.HasValue.ShouldBeFalse();
+        assignment.DisplayValue.ShouldBeNull();
+        assignment.GetTypedValue().ShouldBeNull();
     }
 
     #endregion
@@ -87,9 +87,9 @@ public class ProductAttributeAssignmentTests
         assignment.SetSelectValue(valueId, "Red");
 
         // Assert
-        assignment.AttributeValueId.Should().Be(valueId);
-        assignment.DisplayValue.Should().Be("Red");
-        assignment.HasValue.Should().BeTrue();
+        assignment.AttributeValueId.ShouldBe(valueId);
+        assignment.DisplayValue.ShouldBe("Red");
+        assignment.HasValue.ShouldBeTrue();
     }
 
     [Fact]
@@ -103,8 +103,8 @@ public class ProductAttributeAssignmentTests
         assignment.SetSelectValue(Guid.NewGuid(), "Red");
 
         // Assert
-        assignment.TextValue.Should().BeNull();
-        assignment.AttributeValueId.Should().NotBeNull();
+        assignment.TextValue.ShouldBeNull();
+        assignment.AttributeValueId.ShouldNotBeNull();
     }
 
     [Fact]
@@ -119,7 +119,7 @@ public class ProductAttributeAssignmentTests
         var typed = assignment.GetTypedValue();
 
         // Assert
-        typed.Should().Be(valueId);
+        typed.ShouldBe(valueId);
     }
 
     #endregion
@@ -137,9 +137,9 @@ public class ProductAttributeAssignmentTests
         assignment.SetMultiSelectValue(ids, "Red, Blue");
 
         // Assert
-        assignment.AttributeValueIds.Should().NotBeNullOrEmpty();
-        assignment.DisplayValue.Should().Be("Red, Blue");
-        assignment.HasValue.Should().BeTrue();
+        assignment.AttributeValueIds.ShouldNotBeNullOrEmpty();
+        assignment.DisplayValue.ShouldBe("Red, Blue");
+        assignment.HasValue.ShouldBeTrue();
     }
 
     [Fact]
@@ -156,9 +156,9 @@ public class ProductAttributeAssignmentTests
         var result = assignment.GetMultiSelectValueIds();
 
         // Assert
-        result.Should().HaveCount(2);
-        result.Should().Contain(id1);
-        result.Should().Contain(id2);
+        result.Count().ShouldBe(2);
+        result.ShouldContain(id1);
+        result.ShouldContain(id2);
     }
 
     [Fact]
@@ -171,7 +171,7 @@ public class ProductAttributeAssignmentTests
         var result = assignment.GetMultiSelectValueIds();
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     #endregion
@@ -188,9 +188,9 @@ public class ProductAttributeAssignmentTests
         assignment.SetTextValue("High resolution display");
 
         // Assert
-        assignment.TextValue.Should().Be("High resolution display");
-        assignment.DisplayValue.Should().Be("High resolution display");
-        assignment.HasValue.Should().BeTrue();
+        assignment.TextValue.ShouldBe("High resolution display");
+        assignment.DisplayValue.ShouldBe("High resolution display");
+        assignment.HasValue.ShouldBeTrue();
     }
 
     [Fact]
@@ -204,8 +204,8 @@ public class ProductAttributeAssignmentTests
         assignment.SetTextValue("text value");
 
         // Assert
-        assignment.NumberValue.Should().BeNull();
-        assignment.TextValue.Should().Be("text value");
+        assignment.NumberValue.ShouldBeNull();
+        assignment.TextValue.ShouldBe("text value");
     }
 
     [Fact]
@@ -219,7 +219,7 @@ public class ProductAttributeAssignmentTests
         var typed = assignment.GetTypedValue();
 
         // Assert
-        typed.Should().Be("hello");
+        typed.ShouldBe("hello");
     }
 
     #endregion
@@ -236,9 +236,9 @@ public class ProductAttributeAssignmentTests
         assignment.SetNumberValue(6.7m);
 
         // Assert
-        assignment.NumberValue.Should().Be(6.7m);
-        assignment.DisplayValue.Should().Be("6.7");
-        assignment.HasValue.Should().BeTrue();
+        assignment.NumberValue.ShouldBe(6.7m);
+        assignment.DisplayValue.ShouldBe("6.7");
+        assignment.HasValue.ShouldBeTrue();
     }
 
     [Fact]
@@ -251,7 +251,7 @@ public class ProductAttributeAssignmentTests
         assignment.SetNumberValue(6.7m, "inch");
 
         // Assert
-        assignment.DisplayValue.Should().Be("6.7 inch");
+        assignment.DisplayValue.ShouldBe("6.7 inch");
     }
 
     [Fact]
@@ -264,7 +264,7 @@ public class ProductAttributeAssignmentTests
         assignment.SetNumberValue(100m);
 
         // Assert
-        assignment.DisplayValue.Should().Be("100");
+        assignment.DisplayValue.ShouldBe("100");
     }
 
     [Fact]
@@ -278,7 +278,7 @@ public class ProductAttributeAssignmentTests
         var typed = assignment.GetTypedValue();
 
         // Assert
-        typed.Should().Be(42.5m);
+        typed.ShouldBe(42.5m);
     }
 
     #endregion
@@ -295,9 +295,9 @@ public class ProductAttributeAssignmentTests
         assignment.SetBoolValue(true);
 
         // Assert
-        assignment.BoolValue.Should().BeTrue();
-        assignment.DisplayValue.Should().Be("Yes");
-        assignment.HasValue.Should().BeTrue();
+        assignment.BoolValue.ShouldBe(true);
+        assignment.DisplayValue.ShouldBe("Yes");
+        assignment.HasValue.ShouldBeTrue();
     }
 
     [Fact]
@@ -310,9 +310,9 @@ public class ProductAttributeAssignmentTests
         assignment.SetBoolValue(false);
 
         // Assert
-        assignment.BoolValue.Should().BeFalse();
-        assignment.DisplayValue.Should().Be("No");
-        assignment.HasValue.Should().BeTrue();
+        assignment.BoolValue.ShouldBe(false);
+        assignment.DisplayValue.ShouldBe("No");
+        assignment.HasValue.ShouldBeTrue();
     }
 
     [Fact]
@@ -326,7 +326,7 @@ public class ProductAttributeAssignmentTests
         var typed = assignment.GetTypedValue();
 
         // Assert
-        typed.Should().Be(true);
+        typed.ShouldBe(true);
     }
 
     #endregion
@@ -344,9 +344,9 @@ public class ProductAttributeAssignmentTests
         assignment.SetDateValue(date);
 
         // Assert
-        assignment.DateValue.Should().Be(date.Date);
-        assignment.DisplayValue.Should().Be("2025-06-15");
-        assignment.HasValue.Should().BeTrue();
+        assignment.DateValue.ShouldBe(date.Date);
+        assignment.DisplayValue.ShouldBe("2025-06-15");
+        assignment.HasValue.ShouldBeTrue();
     }
 
     [Fact]
@@ -360,7 +360,7 @@ public class ProductAttributeAssignmentTests
         assignment.SetDateValue(dateTime);
 
         // Assert
-        assignment.DateValue.Should().Be(new DateTime(2025, 6, 15));
+        assignment.DateValue.ShouldBe(new DateTime(2025, 6, 15));
     }
 
     [Fact]
@@ -375,7 +375,7 @@ public class ProductAttributeAssignmentTests
         var typed = assignment.GetTypedValue();
 
         // Assert
-        typed.Should().Be(date.Date);
+        typed.ShouldBe(date.Date);
     }
 
     #endregion
@@ -393,9 +393,9 @@ public class ProductAttributeAssignmentTests
         assignment.SetDateTimeValue(dateTime);
 
         // Assert
-        assignment.DateTimeValue.Should().Be(dateTime);
-        assignment.DisplayValue.Should().Be("2025-06-15 14:30:45");
-        assignment.HasValue.Should().BeTrue();
+        assignment.DateTimeValue.ShouldBe(dateTime);
+        assignment.DisplayValue.ShouldBe("2025-06-15 14:30:45");
+        assignment.HasValue.ShouldBeTrue();
     }
 
     #endregion
@@ -412,9 +412,9 @@ public class ProductAttributeAssignmentTests
         assignment.SetColorValue("#FF0000");
 
         // Assert
-        assignment.ColorValue.Should().Be("#FF0000");
-        assignment.DisplayValue.Should().Be("#FF0000");
-        assignment.HasValue.Should().BeTrue();
+        assignment.ColorValue.ShouldBe("#FF0000");
+        assignment.DisplayValue.ShouldBe("#FF0000");
+        assignment.HasValue.ShouldBeTrue();
     }
 
     [Fact]
@@ -428,7 +428,7 @@ public class ProductAttributeAssignmentTests
         var typed = assignment.GetTypedValue();
 
         // Assert
-        typed.Should().Be("#00FF00");
+        typed.ShouldBe("#00FF00");
     }
 
     #endregion
@@ -445,10 +445,10 @@ public class ProductAttributeAssignmentTests
         assignment.SetRangeValue(10m, 100m);
 
         // Assert
-        assignment.MinRangeValue.Should().Be(10m);
-        assignment.MaxRangeValue.Should().Be(100m);
-        assignment.DisplayValue.Should().Be("10 - 100");
-        assignment.HasValue.Should().BeTrue();
+        assignment.MinRangeValue.ShouldBe(10m);
+        assignment.MaxRangeValue.ShouldBe(100m);
+        assignment.DisplayValue.ShouldBe("10 - 100");
+        assignment.HasValue.ShouldBeTrue();
     }
 
     [Fact]
@@ -461,7 +461,7 @@ public class ProductAttributeAssignmentTests
         assignment.SetRangeValue(10m, 100m, "kg");
 
         // Assert
-        assignment.DisplayValue.Should().Be("10 - 100 kg");
+        assignment.DisplayValue.ShouldBe("10 - 100 kg");
     }
 
     #endregion
@@ -478,9 +478,9 @@ public class ProductAttributeAssignmentTests
         assignment.SetFileValue("https://example.com/spec.pdf");
 
         // Assert
-        assignment.FileUrl.Should().Be("https://example.com/spec.pdf");
-        assignment.DisplayValue.Should().Be("https://example.com/spec.pdf");
-        assignment.HasValue.Should().BeTrue();
+        assignment.FileUrl.ShouldBe("https://example.com/spec.pdf");
+        assignment.DisplayValue.ShouldBe("https://example.com/spec.pdf");
+        assignment.HasValue.ShouldBeTrue();
     }
 
     [Fact]
@@ -494,7 +494,7 @@ public class ProductAttributeAssignmentTests
         var typed = assignment.GetTypedValue();
 
         // Assert
-        typed.Should().Be("https://example.com/doc.pdf");
+        typed.ShouldBe("https://example.com/doc.pdf");
     }
 
     #endregion
@@ -509,27 +509,27 @@ public class ProductAttributeAssignmentTests
 
         // Act - Set various values in sequence
         assignment.SetTextValue("text");
-        assignment.TextValue.Should().Be("text");
+        assignment.TextValue.ShouldBe("text");
 
         assignment.SetNumberValue(42m);
-        assignment.TextValue.Should().BeNull();
-        assignment.NumberValue.Should().Be(42m);
+        assignment.TextValue.ShouldBeNull();
+        assignment.NumberValue.ShouldBe(42m);
 
         assignment.SetBoolValue(true);
-        assignment.NumberValue.Should().BeNull();
-        assignment.BoolValue.Should().BeTrue();
+        assignment.NumberValue.ShouldBeNull();
+        assignment.BoolValue.ShouldBe(true);
 
         assignment.SetColorValue("#000");
-        assignment.BoolValue.Should().BeNull();
-        assignment.ColorValue.Should().Be("#000");
+        assignment.BoolValue.ShouldBeNull();
+        assignment.ColorValue.ShouldBe("#000");
 
         assignment.SetFileValue("file.pdf");
-        assignment.ColorValue.Should().BeNull();
-        assignment.FileUrl.Should().Be("file.pdf");
+        assignment.ColorValue.ShouldBeNull();
+        assignment.FileUrl.ShouldBe("file.pdf");
 
         assignment.SetRangeValue(1m, 10m);
-        assignment.FileUrl.Should().BeNull();
-        assignment.MinRangeValue.Should().Be(1m);
+        assignment.FileUrl.ShouldBeNull();
+        assignment.MinRangeValue.ShouldBe(1m);
     }
 
     #endregion
@@ -543,7 +543,7 @@ public class ProductAttributeAssignmentTests
         var assignment = CreateTestAssignment();
 
         // Assert
-        assignment.HasValue.Should().BeFalse();
+        assignment.HasValue.ShouldBeFalse();
     }
 
     [Fact]
@@ -554,7 +554,7 @@ public class ProductAttributeAssignmentTests
         assignment.SetSelectValue(Guid.NewGuid(), "Red");
 
         // Assert
-        assignment.HasValue.Should().BeTrue();
+        assignment.HasValue.ShouldBeTrue();
     }
 
     [Fact]
@@ -565,7 +565,7 @@ public class ProductAttributeAssignmentTests
         assignment.SetBoolValue(false);
 
         // Assert
-        assignment.HasValue.Should().BeTrue();
+        assignment.HasValue.ShouldBeTrue();
     }
 
     #endregion
@@ -583,11 +583,11 @@ public class ProductAttributeAssignmentTests
         var typed = assignment.GetTypedValue();
 
         // Assert
-        typed.Should().NotBeNull();
+        typed.ShouldNotBeNull();
         // Anonymous type - check via dynamic
         var json = System.Text.Json.JsonSerializer.Serialize(typed);
-        json.Should().Contain("Min");
-        json.Should().Contain("Max");
+        json.ShouldContain("Min");
+        json.ShouldContain("Max");
     }
 
     #endregion

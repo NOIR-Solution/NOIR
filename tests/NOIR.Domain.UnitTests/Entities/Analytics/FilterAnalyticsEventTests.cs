@@ -22,12 +22,12 @@ public class FilterAnalyticsEventTests
             TestSessionId, FilterEventType.FilterApplied, 42, TestTenantId);
 
         // Assert
-        ev.Should().NotBeNull();
-        ev.Id.Should().NotBe(Guid.Empty);
-        ev.SessionId.Should().Be(TestSessionId);
-        ev.EventType.Should().Be(FilterEventType.FilterApplied);
-        ev.ProductCount.Should().Be(42);
-        ev.TenantId.Should().Be(TestTenantId);
+        ev.ShouldNotBeNull();
+        ev.Id.ShouldNotBe(Guid.Empty);
+        ev.SessionId.ShouldBe(TestSessionId);
+        ev.EventType.ShouldBe(FilterEventType.FilterApplied);
+        ev.ProductCount.ShouldBe(42);
+        ev.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -37,12 +37,12 @@ public class FilterAnalyticsEventTests
         var ev = FilterAnalyticsEvent.Create(TestSessionId, FilterEventType.FilterApplied, 0);
 
         // Assert
-        ev.UserId.Should().BeNull();
-        ev.CategorySlug.Should().BeNull();
-        ev.FilterCode.Should().BeNull();
-        ev.FilterValue.Should().BeNull();
-        ev.SearchQuery.Should().BeNull();
-        ev.ClickedProductId.Should().BeNull();
+        ev.UserId.ShouldBeNull();
+        ev.CategorySlug.ShouldBeNull();
+        ev.FilterCode.ShouldBeNull();
+        ev.FilterValue.ShouldBeNull();
+        ev.SearchQuery.ShouldBeNull();
+        ev.ClickedProductId.ShouldBeNull();
     }
 
     [Fact]
@@ -65,16 +65,16 @@ public class FilterAnalyticsEventTests
             clickedProductId: clickedProductId);
 
         // Assert
-        ev.SessionId.Should().Be(TestSessionId);
-        ev.EventType.Should().Be(FilterEventType.FilterApplied);
-        ev.ProductCount.Should().Be(25);
-        ev.UserId.Should().Be("user-456");
-        ev.CategorySlug.Should().Be("electronics");
-        ev.FilterCode.Should().Be("brand");
-        ev.FilterValue.Should().Be("apple");
-        ev.SearchQuery.Should().Be("iphone");
-        ev.ClickedProductId.Should().Be(clickedProductId);
-        ev.TenantId.Should().Be(TestTenantId);
+        ev.SessionId.ShouldBe(TestSessionId);
+        ev.EventType.ShouldBe(FilterEventType.FilterApplied);
+        ev.ProductCount.ShouldBe(25);
+        ev.UserId.ShouldBe("user-456");
+        ev.CategorySlug.ShouldBe("electronics");
+        ev.FilterCode.ShouldBe("brand");
+        ev.FilterValue.ShouldBe("apple");
+        ev.SearchQuery.ShouldBe("iphone");
+        ev.ClickedProductId.ShouldBe(clickedProductId);
+        ev.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public class FilterAnalyticsEventTests
         var ev = FilterAnalyticsEvent.Create(TestSessionId, FilterEventType.FilterApplied, 0, null);
 
         // Assert
-        ev.TenantId.Should().BeNull();
+        ev.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class FilterAnalyticsEventTests
         var ev2 = FilterAnalyticsEvent.Create(TestSessionId, FilterEventType.FilterApplied, 0);
 
         // Assert
-        ev1.Id.Should().NotBe(ev2.Id);
+        ev1.Id.ShouldNotBe(ev2.Id);
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class FilterAnalyticsEventTests
         var ev = FilterAnalyticsEvent.Create(TestSessionId, FilterEventType.FilterApplied, 0);
 
         // Assert
-        ev.ProductCount.Should().Be(0);
+        ev.ProductCount.ShouldBe(0);
     }
 
     #endregion
@@ -120,7 +120,7 @@ public class FilterAnalyticsEventTests
             TestSessionId, "brand", "apple", 15, TestTenantId);
 
         // Assert
-        ev.EventType.Should().Be(FilterEventType.FilterApplied);
+        ev.EventType.ShouldBe(FilterEventType.FilterApplied);
     }
 
     [Fact]
@@ -131,8 +131,8 @@ public class FilterAnalyticsEventTests
             TestSessionId, "color", "red", 10);
 
         // Assert
-        ev.FilterCode.Should().Be("color");
-        ev.FilterValue.Should().Be("red");
+        ev.FilterCode.ShouldBe("color");
+        ev.FilterValue.ShouldBe("red");
     }
 
     [Fact]
@@ -144,7 +144,7 @@ public class FilterAnalyticsEventTests
             categorySlug: "clothing");
 
         // Assert
-        ev.CategorySlug.Should().Be("clothing");
+        ev.CategorySlug.ShouldBe("clothing");
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class FilterAnalyticsEventTests
             userId: "auth-user-789");
 
         // Assert
-        ev.UserId.Should().Be("auth-user-789");
+        ev.UserId.ShouldBe("auth-user-789");
     }
 
     [Fact]
@@ -167,7 +167,7 @@ public class FilterAnalyticsEventTests
             TestSessionId, "brand", "nike", 150);
 
         // Assert
-        ev.ProductCount.Should().Be(150);
+        ev.ProductCount.ShouldBe(150);
     }
 
     [Fact]
@@ -178,8 +178,8 @@ public class FilterAnalyticsEventTests
             TestSessionId, "brand", "adidas", 50);
 
         // Assert
-        ev.SearchQuery.Should().BeNull();
-        ev.ClickedProductId.Should().BeNull();
+        ev.SearchQuery.ShouldBeNull();
+        ev.ClickedProductId.ShouldBeNull();
     }
 
     #endregion
@@ -194,7 +194,7 @@ public class FilterAnalyticsEventTests
             TestSessionId, "wireless headphones", 35, TestTenantId);
 
         // Assert
-        ev.EventType.Should().Be(FilterEventType.SearchPerformed);
+        ev.EventType.ShouldBe(FilterEventType.SearchPerformed);
     }
 
     [Fact]
@@ -205,7 +205,7 @@ public class FilterAnalyticsEventTests
             TestSessionId, "blue running shoes", 12);
 
         // Assert
-        ev.SearchQuery.Should().Be("blue running shoes");
+        ev.SearchQuery.ShouldBe("blue running shoes");
     }
 
     [Fact]
@@ -216,7 +216,7 @@ public class FilterAnalyticsEventTests
             TestSessionId, "laptop", 200);
 
         // Assert
-        ev.ProductCount.Should().Be(200);
+        ev.ProductCount.ShouldBe(200);
     }
 
     [Fact]
@@ -228,7 +228,7 @@ public class FilterAnalyticsEventTests
             categorySlug: "accessories");
 
         // Assert
-        ev.CategorySlug.Should().Be("accessories");
+        ev.CategorySlug.ShouldBe("accessories");
     }
 
     [Fact]
@@ -239,9 +239,9 @@ public class FilterAnalyticsEventTests
             TestSessionId, "test query", 10);
 
         // Assert
-        ev.FilterCode.Should().BeNull();
-        ev.FilterValue.Should().BeNull();
-        ev.ClickedProductId.Should().BeNull();
+        ev.FilterCode.ShouldBeNull();
+        ev.FilterValue.ShouldBeNull();
+        ev.ClickedProductId.ShouldBeNull();
     }
 
     #endregion
@@ -259,7 +259,7 @@ public class FilterAnalyticsEventTests
             TestSessionId, productId, TestTenantId);
 
         // Assert
-        ev.EventType.Should().Be(FilterEventType.ProductClicked);
+        ev.EventType.ShouldBe(FilterEventType.ProductClicked);
     }
 
     [Fact]
@@ -272,7 +272,7 @@ public class FilterAnalyticsEventTests
         var ev = FilterAnalyticsEvent.ProductClicked(TestSessionId, productId);
 
         // Assert
-        ev.ClickedProductId.Should().Be(productId);
+        ev.ClickedProductId.ShouldBe(productId);
     }
 
     [Fact]
@@ -282,7 +282,7 @@ public class FilterAnalyticsEventTests
         var ev = FilterAnalyticsEvent.ProductClicked(TestSessionId, Guid.NewGuid());
 
         // Assert
-        ev.ProductCount.Should().Be(0);
+        ev.ProductCount.ShouldBe(0);
     }
 
     [Fact]
@@ -294,7 +294,7 @@ public class FilterAnalyticsEventTests
             categorySlug: "electronics");
 
         // Assert
-        ev.CategorySlug.Should().Be("electronics");
+        ev.CategorySlug.ShouldBe("electronics");
     }
 
     [Fact]
@@ -304,9 +304,9 @@ public class FilterAnalyticsEventTests
         var ev = FilterAnalyticsEvent.ProductClicked(TestSessionId, Guid.NewGuid());
 
         // Assert
-        ev.FilterCode.Should().BeNull();
-        ev.FilterValue.Should().BeNull();
-        ev.SearchQuery.Should().BeNull();
+        ev.FilterCode.ShouldBeNull();
+        ev.FilterValue.ShouldBeNull();
+        ev.SearchQuery.ShouldBeNull();
     }
 
     #endregion
@@ -324,7 +324,7 @@ public class FilterAnalyticsEventTests
         var ev = FilterAnalyticsEvent.Create(TestSessionId, eventType, 0);
 
         // Assert
-        ev.EventType.Should().Be(eventType);
+        ev.EventType.ShouldBe(eventType);
     }
 
     #endregion

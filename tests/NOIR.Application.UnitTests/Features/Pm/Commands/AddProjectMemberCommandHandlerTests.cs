@@ -65,10 +65,10 @@ public class AddProjectMemberCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        backingList.Should().HaveCount(1);
-        backingList[0].EmployeeId.Should().Be(employeeId);
-        backingList[0].Role.Should().Be(ProjectMemberRole.Member);
+        result.IsSuccess.ShouldBe(true);
+        backingList.Count().ShouldBe(1);
+        backingList[0].EmployeeId.ShouldBe(employeeId);
+        backingList[0].Role.ShouldBe(ProjectMemberRole.Member);
     }
 
     [Fact]
@@ -93,7 +93,7 @@ public class AddProjectMemberCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 
     [Fact]
@@ -110,6 +110,6 @@ public class AddProjectMemberCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 }

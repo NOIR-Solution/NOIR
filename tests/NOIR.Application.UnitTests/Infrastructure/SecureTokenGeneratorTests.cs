@@ -22,7 +22,7 @@ public class SecureTokenGeneratorTests
         var token = _sut.GenerateToken();
 
         // Assert
-        token.Should().NotBeNullOrEmpty();
+        token.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -32,9 +32,9 @@ public class SecureTokenGeneratorTests
         var token = _sut.GenerateToken();
 
         // Assert
-        token.Should().NotContain("+");
-        token.Should().NotContain("/");
-        token.Should().NotContain("=");
+        token.ShouldNotContain("+");
+        token.ShouldNotContain("/");
+        token.ShouldNotContain("=");
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class SecureTokenGeneratorTests
 
         // Assert
         // URL-safe base64 uses - and _ instead of + and /
-        token.Should().MatchRegex("^[A-Za-z0-9_-]+$");
+        token.ShouldMatch("^[A-Za-z0-9_-]+$");
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class SecureTokenGeneratorTests
             .ToList();
 
         // Assert
-        tokens.Should().OnlyHaveUniqueItems();
+        tokens.ShouldBeUnique();
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class SecureTokenGeneratorTests
 
         // Assert
         // 32 bytes in base64 without padding is 43 characters
-        token.Length.Should().BeInRange(42, 44);
+        token.Length.ShouldBeInRange(42, 44);
     }
 
     #endregion
@@ -91,8 +91,8 @@ public class SecureTokenGeneratorTests
         var token = _sut.GenerateToken(byteLength);
 
         // Assert
-        token.Should().NotBeNullOrEmpty();
-        token.Should().MatchRegex("^[A-Za-z0-9_-]+$");
+        token.ShouldNotBeNullOrEmpty();
+        token.ShouldMatch("^[A-Za-z0-9_-]+$");
     }
 
     [Fact]
@@ -102,9 +102,9 @@ public class SecureTokenGeneratorTests
         var token = _sut.GenerateToken(16); // Minimum allowed
 
         // Assert
-        token.Should().NotBeNullOrEmpty();
+        token.ShouldNotBeNullOrEmpty();
         // 16 bytes in base64 without padding is approximately 22 characters
-        token.Length.Should().BeInRange(21, 23);
+        token.Length.ShouldBeInRange(21, 23);
     }
 
     [Fact]
@@ -114,9 +114,9 @@ public class SecureTokenGeneratorTests
         var token = _sut.GenerateToken(256);
 
         // Assert
-        token.Should().NotBeNullOrEmpty();
+        token.ShouldNotBeNullOrEmpty();
         // 256 bytes in base64 is approximately 342 characters
-        token.Length.Should().BeGreaterThan(300);
+        token.Length.ShouldBeGreaterThan(300);
     }
 
     [Theory]
@@ -132,9 +132,9 @@ public class SecureTokenGeneratorTests
         var act = () => _sut.GenerateToken(invalidByteLength);
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>()
-            .WithParameterName("byteLength")
-            .WithMessage("*at least 16 bytes*");
+        var ex = Should.Throw<ArgumentOutOfRangeException>(act);
+        ex.ParamName.ShouldBe("byteLength");
+        ex.Message.ShouldContain("at least 16 bytes");
     }
 
     #endregion
@@ -159,7 +159,7 @@ public class SecureTokenGeneratorTests
         var maxFrequency = charFrequency.Values.Max();
         var maxPercentage = (double)maxFrequency / allChars.Length;
 
-        maxPercentage.Should().BeLessThan(0.1, "character distribution should be roughly uniform");
+        maxPercentage.ShouldBeLessThan(0.1, "character distribution should be roughly uniform");
     }
 
     [Fact]
@@ -172,7 +172,7 @@ public class SecureTokenGeneratorTests
         // Assert
         // Tokens should not share a common prefix (indicating sequential generation)
         var commonPrefixLength = GetCommonPrefixLength(token1, token2);
-        commonPrefixLength.Should().BeLessThan(5, "consecutive tokens should not share significant prefixes");
+        commonPrefixLength.ShouldBeLessThan(5, "consecutive tokens should not share significant prefixes");
     }
 
     [Fact]
@@ -184,9 +184,9 @@ public class SecureTokenGeneratorTests
         var token3 = _sut.GenerateToken();
 
         // Assert
-        token1.Should().NotBe(token2);
-        token2.Should().NotBe(token3);
-        token1.Should().NotBe(token3);
+        token1.ShouldNotBe(token2);
+        token2.ShouldNotBe(token3);
+        token1.ShouldNotBe(token3);
     }
 
     [Fact]
@@ -198,7 +198,7 @@ public class SecureTokenGeneratorTests
             .ToList();
 
         // Assert
-        tokens.Should().OnlyHaveUniqueItems();
+        tokens.ShouldBeUnique();
     }
 
     #endregion
@@ -209,21 +209,21 @@ public class SecureTokenGeneratorTests
     public void Service_ShouldImplementISecureTokenGenerator()
     {
         // Assert
-        _sut.Should().BeAssignableTo<ISecureTokenGenerator>();
+        _sut.ShouldBeAssignableTo<ISecureTokenGenerator>();
     }
 
     [Fact]
     public void Service_ShouldImplementISingletonService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<ISingletonService>();
+        _sut.ShouldBeAssignableTo<ISingletonService>();
     }
 
     [Fact]
     public void Service_ShouldBeSealed()
     {
         // Assert
-        typeof(SecureTokenGenerator).IsSealed.Should().BeTrue();
+        typeof(SecureTokenGenerator).IsSealed.ShouldBe(true);
     }
 
     [Fact]
@@ -233,7 +233,7 @@ public class SecureTokenGeneratorTests
         var generator = new SecureTokenGenerator();
 
         // Assert
-        generator.Should().NotBeNull();
+        generator.ShouldNotBeNull();
     }
 
     #endregion
@@ -252,7 +252,7 @@ public class SecureTokenGeneratorTests
             // Assert
             // Token should be safe for use in URLs without encoding
             Uri.IsWellFormedUriString($"https://example.com/token/{token}", UriKind.Absolute)
-                .Should().BeTrue($"Token '{token}' should be URL-safe");
+                .ShouldBeTrue($"Token '{token}' should be URL-safe");
         }
     }
 
@@ -264,7 +264,7 @@ public class SecureTokenGeneratorTests
         var urlEncoded = Uri.EscapeDataString(token);
 
         // Assert
-        token.Should().Be(urlEncoded, "token should not change when URL encoded");
+        token.ShouldBe(urlEncoded, "token should not change when URL encoded");
     }
 
     #endregion

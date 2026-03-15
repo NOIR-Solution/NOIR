@@ -83,8 +83,8 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var result = await query.FirstOrDefaultAsync();
 
             // Assert
-            result.Should().NotBeNull();
-            result!.Token.Should().Be(token.Token);
+            result.ShouldNotBeNull();
+            result!.Token.ShouldBe(token.Token);
         });
     }
 
@@ -103,9 +103,9 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var results = await query.ToListAsync();
 
             // Assert
-            results.Should().HaveCount(2);
-            results.Should().OnlyContain(t => !t.RevokedAt.HasValue);
-            results.Should().OnlyContain(t => t.UserId == "spec-test-user");
+            results.Count().ShouldBe(2);
+            results.ShouldAllBe(t => !t.RevokedAt.HasValue);
+            results.ShouldAllBe(t => t.UserId == "spec-test-user");
         });
     }
 
@@ -129,8 +129,8 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var results = await query.ToListAsync();
 
             // Assert
-            results.Should().HaveCount(2);
-            results.Should().OnlyContain(t => t.TokenFamily == familyToken.TokenFamily);
+            results.Count().ShouldBe(2);
+            results.ShouldAllBe(t => t.TokenFamily == familyToken.TokenFamily);
         });
     }
 
@@ -149,7 +149,7 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var result = await query.ToListAsync();
 
             // Assert
-            result.Should().HaveCount(1);
+            result.Count().ShouldBe(1);
         });
     }
 
@@ -172,8 +172,8 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var results = await query.ToListAsync();
 
             // Assert
-            results.Should().HaveCountGreaterThanOrEqualTo(2);
-            results.Should().OnlyContain(a => a.EntityType == "User");
+            results.Count().ShouldBeGreaterThanOrEqualTo(2);
+            results.ShouldAllBe(a => a.EntityType == "User");
         });
     }
 
@@ -192,8 +192,8 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var results = await query.ToListAsync();
 
             // Assert
-            results.Should().HaveCountGreaterThanOrEqualTo(1);
-            results.Should().OnlyContain(a => a.EntityType == "User" && a.EntityId == "1");
+            results.Count().ShouldBeGreaterThanOrEqualTo(1);
+            results.ShouldAllBe(a => a.EntityType == "User" && a.EntityId == "1");
         });
     }
 
@@ -212,7 +212,7 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var results = await query.ToListAsync();
 
             // Assert
-            results.Should().HaveCountLessThanOrEqualTo(2);
+            results.Count().ShouldBeLessThanOrEqualTo(2);
         });
     }
 
@@ -235,7 +235,7 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var count = await query.CountAsync();
 
             // Assert
-            count.Should().BeGreaterThanOrEqualTo(3); // We seeded at least 3 audit logs
+            count.ShouldBeGreaterThanOrEqualTo(3); // We seeded at least 3 audit logs
         });
     }
 
@@ -256,7 +256,7 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             // Assert - entities should not be tracked due to AsNoTracking default
             foreach (var token in results)
             {
-                context.Entry(token).State.Should().Be(EntityState.Detached);
+                context.Entry(token).State.ShouldBe(EntityState.Detached);
             }
         });
     }
@@ -280,8 +280,8 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var results = await query.ToListAsync();
 
             // Assert
-            results.Should().NotBeEmpty();
-            results.First().EntityType.Should().NotBeNullOrEmpty();
+            results.ShouldNotBeEmpty();
+            results.First().EntityType.ShouldNotBeNullOrEmpty();
         });
     }
 
@@ -296,8 +296,8 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
         var act = () => SpecificationEvaluator.GetQuery(source, spec);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Selector*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Selector");
     }
 
     #endregion
@@ -319,7 +319,7 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var results = await query.ToListAsync();
 
             // Assert - Should return results (including soft-deleted if any)
-            results.Should().NotBeNull();
+            results.ShouldNotBeNull();
         });
     }
 
@@ -338,7 +338,7 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var results = await query.ToListAsync();
 
             // Assert
-            results.Should().NotBeNull();
+            results.ShouldNotBeNull();
         });
     }
 
@@ -359,7 +359,7 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             // Assert - Should not be tracked
             foreach (var token in results)
             {
-                context.Entry(token).State.Should().Be(EntityState.Detached);
+                context.Entry(token).State.ShouldBe(EntityState.Detached);
             }
         });
     }
@@ -379,7 +379,7 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var results = await query.ToListAsync();
 
             // Assert
-            results.Should().NotBeNull();
+            results.ShouldNotBeNull();
         });
     }
 
@@ -398,7 +398,7 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var results = await query.ToListAsync();
 
             // Assert - Query should execute successfully with multiple tags
-            results.Should().NotBeNull();
+            results.ShouldNotBeNull();
         });
     }
 
@@ -417,7 +417,7 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var results = await query.ToListAsync();
 
             // Assert
-            results.Should().NotBeNull();
+            results.ShouldNotBeNull();
         });
     }
 
@@ -447,8 +447,8 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var results = await query.ToListAsync();
 
             // Assert - First result should be newest
-            results.Should().HaveCountGreaterThanOrEqualTo(2);
-            results.First().CreatedAt.Should().BeOnOrAfter(results.Last().CreatedAt);
+            results.Count().ShouldBeGreaterThanOrEqualTo(2);
+            results.First().CreatedAt.ShouldBeGreaterThanOrEqualTo(results.Last().CreatedAt);
         });
     }
 
@@ -467,7 +467,7 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var results = await query.ToListAsync();
 
             // Assert
-            results.Should().NotBeNull();
+            results.ShouldNotBeNull();
         });
     }
 
@@ -486,7 +486,7 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var results = await query.ToListAsync();
 
             // Assert
-            results.Should().NotBeNull();
+            results.ShouldNotBeNull();
         });
     }
 
@@ -509,7 +509,7 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var results = await query.ToListAsync();
 
             // Assert
-            results.Should().HaveCount(1);
+            results.Count().ShouldBe(1);
         });
     }
 
@@ -531,7 +531,7 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var resultsWithPaging = await queryWithPaging.ToListAsync();
 
             // Assert - Count should be higher than paged results
-            count.Should().BeGreaterThanOrEqualTo(resultsWithPaging.Count);
+            count.ShouldBeGreaterThanOrEqualTo(resultsWithPaging.Count);
         });
     }
 
@@ -554,10 +554,10 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var results = await query.ToListAsync();
 
             // Assert - Entities should be tracked
-            results.Should().NotBeEmpty();
+            results.ShouldNotBeEmpty();
             foreach (var log in results)
             {
-                context.Entry(log).State.Should().Be(EntityState.Unchanged);
+                context.Entry(log).State.ShouldBe(EntityState.Unchanged);
             }
         });
     }
@@ -581,7 +581,7 @@ public class SpecificationEvaluatorTests : IAsyncLifetime
             var results = await query.ToListAsync();
 
             // Assert - All results should match BOTH criteria
-            results.Should().OnlyContain(a => a.EntityType == "User" && a.Operation == nameof(EntityAuditOperation.Added));
+            results.ShouldAllBe(a => a.EntityType == "User" && a.Operation == nameof(EntityAuditOperation.Added));
         });
     }
 

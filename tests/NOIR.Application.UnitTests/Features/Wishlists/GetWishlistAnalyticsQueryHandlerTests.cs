@@ -50,10 +50,10 @@ public class GetWishlistAnalyticsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TotalWishlists.Should().Be(2);
-        result.Value.TotalWishlistItems.Should().Be(3);
-        result.Value.TopProducts.Should().NotBeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TotalWishlists.ShouldBe(2);
+        result.Value.TotalWishlistItems.ShouldBe(3);
+        result.Value.TopProducts.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -87,12 +87,12 @@ public class GetWishlistAnalyticsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TopProducts.Should().HaveCount(2);
-        result.Value.TopProducts[0].ProductId.Should().Be(popularProductId);
-        result.Value.TopProducts[0].WishlistCount.Should().Be(3);
-        result.Value.TopProducts[1].ProductId.Should().Be(lessPopularProductId);
-        result.Value.TopProducts[1].WishlistCount.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TopProducts.Count().ShouldBe(2);
+        result.Value.TopProducts[0].ProductId.ShouldBe(popularProductId);
+        result.Value.TopProducts[0].WishlistCount.ShouldBe(3);
+        result.Value.TopProducts[1].ProductId.ShouldBe(lessPopularProductId);
+        result.Value.TopProducts[1].WishlistCount.ShouldBe(1);
     }
 
     [Fact]
@@ -119,8 +119,8 @@ public class GetWishlistAnalyticsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TopProducts.Should().HaveCountLessThanOrEqualTo(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TopProducts.Count().ShouldBeLessThanOrEqualTo(3);
     }
 
     [Fact]
@@ -139,10 +139,10 @@ public class GetWishlistAnalyticsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TotalWishlists.Should().Be(0);
-        result.Value.TotalWishlistItems.Should().Be(0);
-        result.Value.TopProducts.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TotalWishlists.ShouldBe(0);
+        result.Value.TotalWishlistItems.ShouldBe(0);
+        result.Value.TopProducts.ShouldBeEmpty();
     }
 
     #endregion
@@ -165,7 +165,7 @@ public class GetWishlistAnalyticsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // The default TopCount is 10 (verified from the record definition)
     }
 

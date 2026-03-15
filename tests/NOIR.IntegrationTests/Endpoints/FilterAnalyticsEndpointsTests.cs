@@ -46,7 +46,7 @@ public class FilterAnalyticsEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await _client.PostAsJsonWithEnumsAsync("/api/analytics/filter-events", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class FilterAnalyticsEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/analytics/filter-events", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -84,9 +84,9 @@ public class FilterAnalyticsEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await adminClient.GetAsync("/api/analytics/filter-events/popular");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PopularFiltersResult>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class FilterAnalyticsEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await _client.GetAsync("/api/analytics/filter-events/popular");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class FilterAnalyticsEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await adminClient.GetAsync($"/api/analytics/filter-events/popular?fromDate={from}&toDate={to}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -124,7 +124,7 @@ public class FilterAnalyticsEndpointsTests : IClassFixture<CustomWebApplicationF
         var response = await adminClient.GetAsync("/api/analytics/filter-events/popular?top=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion

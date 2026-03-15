@@ -60,10 +60,10 @@ public class UpdateContactSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Email.Should().Be("contact@example.com");
-        result.Value.Phone.Should().Be("+1 555-123-4567");
-        result.Value.Address.Should().Be("123 Main St, City");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Email.ShouldBe("contact@example.com");
+        result.Value.Phone.ShouldBe("+1 555-123-4567");
+        result.Value.Address.ShouldBe("123 Main St, City");
     }
 
     [Fact]
@@ -115,10 +115,10 @@ public class UpdateContactSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Email.Should().Be("contact@example.com");
-        result.Value.Phone.Should().BeNull();
-        result.Value.Address.Should().Be("123 Main St");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Email.ShouldBe("contact@example.com");
+        result.Value.Phone.ShouldBeNull();
+        result.Value.Address.ShouldBe("123 Main St");
 
         _settingsServiceMock.Verify(x => x.SetSettingAsync(TestTenantId, "contact:email", "contact@example.com", "string", It.IsAny<CancellationToken>()), Times.Once);
         _settingsServiceMock.Verify(x => x.SetSettingAsync(TestTenantId, "contact:phone", string.Empty, "string", It.IsAny<CancellationToken>()), Times.Once);

@@ -15,8 +15,8 @@ public class IdentitySettingsTests
         var settings = new IdentitySettings();
 
         // Assert
-        settings.Password.Should().NotBeNull();
-        settings.Lockout.Should().NotBeNull();
+        settings.Password.ShouldNotBeNull();
+        settings.Lockout.ShouldNotBeNull();
     }
 
     [Fact]
@@ -26,12 +26,12 @@ public class IdentitySettingsTests
         var settings = new PasswordSettings();
 
         // Assert - Production defaults (strong policy)
-        settings.RequireDigit.Should().BeTrue();
-        settings.RequireLowercase.Should().BeTrue();
-        settings.RequireUppercase.Should().BeTrue();
-        settings.RequireNonAlphanumeric.Should().BeTrue();
-        settings.RequiredLength.Should().Be(12);
-        settings.RequiredUniqueChars.Should().Be(4);
+        settings.RequireDigit.ShouldBe(true);
+        settings.RequireLowercase.ShouldBe(true);
+        settings.RequireUppercase.ShouldBe(true);
+        settings.RequireNonAlphanumeric.ShouldBe(true);
+        settings.RequiredLength.ShouldBe(12);
+        settings.RequiredUniqueChars.ShouldBe(4);
     }
 
     [Fact]
@@ -41,9 +41,9 @@ public class IdentitySettingsTests
         var settings = new LockoutSettings();
 
         // Assert - Production defaults
-        settings.DefaultLockoutTimeSpanMinutes.Should().Be(15);
-        settings.MaxFailedAccessAttempts.Should().Be(5);
-        settings.AllowedForNewUsers.Should().BeTrue();
+        settings.DefaultLockoutTimeSpanMinutes.ShouldBe(15);
+        settings.MaxFailedAccessAttempts.ShouldBe(5);
+        settings.AllowedForNewUsers.ShouldBe(true);
     }
 
     #endregion
@@ -54,7 +54,7 @@ public class IdentitySettingsTests
     public void IdentitySettings_SectionName_ShouldBeIdentity()
     {
         // Assert
-        IdentitySettings.SectionName.Should().Be("Identity");
+        IdentitySettings.SectionName.ShouldBe("Identity");
     }
 
     #endregion
@@ -76,12 +76,12 @@ public class IdentitySettingsTests
         };
 
         // Assert
-        settings.RequireDigit.Should().BeFalse();
-        settings.RequireLowercase.Should().BeFalse();
-        settings.RequireUppercase.Should().BeFalse();
-        settings.RequireNonAlphanumeric.Should().BeFalse();
-        settings.RequiredLength.Should().Be(6);
-        settings.RequiredUniqueChars.Should().Be(1);
+        settings.RequireDigit.ShouldBe(false);
+        settings.RequireLowercase.ShouldBe(false);
+        settings.RequireUppercase.ShouldBe(false);
+        settings.RequireNonAlphanumeric.ShouldBe(false);
+        settings.RequiredLength.ShouldBe(6);
+        settings.RequiredUniqueChars.ShouldBe(1);
     }
 
     [Fact]
@@ -96,9 +96,9 @@ public class IdentitySettingsTests
         };
 
         // Assert
-        settings.DefaultLockoutTimeSpanMinutes.Should().Be(5);
-        settings.MaxFailedAccessAttempts.Should().Be(10);
-        settings.AllowedForNewUsers.Should().BeTrue();
+        settings.DefaultLockoutTimeSpanMinutes.ShouldBe(5);
+        settings.MaxFailedAccessAttempts.ShouldBe(10);
+        settings.AllowedForNewUsers.ShouldBe(true);
     }
 
     [Fact]
@@ -119,9 +119,9 @@ public class IdentitySettingsTests
         };
 
         // Assert
-        settings.Password.RequireDigit.Should().BeFalse();
-        settings.Password.RequiredLength.Should().Be(8);
-        settings.Lockout.MaxFailedAccessAttempts.Should().Be(3);
+        settings.Password.RequireDigit.ShouldBe(false);
+        settings.Password.RequiredLength.ShouldBe(8);
+        settings.Lockout.MaxFailedAccessAttempts.ShouldBe(3);
     }
 
     #endregion
@@ -139,7 +139,7 @@ public class IdentitySettingsTests
         var settings = new PasswordSettings { RequiredLength = length };
 
         // Assert
-        settings.RequiredLength.Should().Be(length);
+        settings.RequiredLength.ShouldBe(length);
     }
 
     [Theory]
@@ -152,7 +152,7 @@ public class IdentitySettingsTests
         var settings = new PasswordSettings { RequiredUniqueChars = uniqueChars };
 
         // Assert
-        settings.RequiredUniqueChars.Should().Be(uniqueChars);
+        settings.RequiredUniqueChars.ShouldBe(uniqueChars);
     }
 
     [Theory]
@@ -166,7 +166,7 @@ public class IdentitySettingsTests
         var settings = new LockoutSettings { DefaultLockoutTimeSpanMinutes = minutes };
 
         // Assert
-        settings.DefaultLockoutTimeSpanMinutes.Should().Be(minutes);
+        settings.DefaultLockoutTimeSpanMinutes.ShouldBe(minutes);
     }
 
     [Theory]
@@ -180,7 +180,7 @@ public class IdentitySettingsTests
         var settings = new LockoutSettings { MaxFailedAccessAttempts = attempts };
 
         // Assert
-        settings.MaxFailedAccessAttempts.Should().Be(attempts);
+        settings.MaxFailedAccessAttempts.ShouldBe(attempts);
     }
 
     #endregion

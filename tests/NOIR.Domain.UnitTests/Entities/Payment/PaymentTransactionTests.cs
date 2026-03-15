@@ -62,16 +62,16 @@ public class PaymentTransactionTests
             TestIdempotencyKey, TestTenantId);
 
         // Assert
-        transaction.Should().NotBeNull();
-        transaction.Id.Should().NotBe(Guid.Empty);
-        transaction.TransactionNumber.Should().Be(TestTransactionNumber);
-        transaction.PaymentGatewayId.Should().Be(TestGatewayId);
-        transaction.Provider.Should().Be(TestProvider);
-        transaction.Amount.Should().Be(TestAmount);
-        transaction.Currency.Should().Be(TestCurrency);
-        transaction.PaymentMethod.Should().Be(PaymentMethod.EWallet);
-        transaction.IdempotencyKey.Should().Be(TestIdempotencyKey);
-        transaction.TenantId.Should().Be(TestTenantId);
+        transaction.ShouldNotBeNull();
+        transaction.Id.ShouldNotBe(Guid.Empty);
+        transaction.TransactionNumber.ShouldBe(TestTransactionNumber);
+        transaction.PaymentGatewayId.ShouldBe(TestGatewayId);
+        transaction.Provider.ShouldBe(TestProvider);
+        transaction.Amount.ShouldBe(TestAmount);
+        transaction.Currency.ShouldBe(TestCurrency);
+        transaction.PaymentMethod.ShouldBe(PaymentMethod.EWallet);
+        transaction.IdempotencyKey.ShouldBe(TestIdempotencyKey);
+        transaction.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public class PaymentTransactionTests
         var transaction = CreateTestTransaction();
 
         // Assert
-        transaction.Status.Should().Be(PaymentStatus.Pending);
+        transaction.Status.ShouldBe(PaymentStatus.Pending);
     }
 
     [Fact]
@@ -91,25 +91,25 @@ public class PaymentTransactionTests
         var transaction = CreateTestTransaction();
 
         // Assert
-        transaction.GatewayTransactionId.Should().BeNull();
-        transaction.OrderId.Should().BeNull();
-        transaction.CustomerId.Should().BeNull();
-        transaction.ExchangeRate.Should().BeNull();
-        transaction.GatewayFee.Should().BeNull();
-        transaction.NetAmount.Should().BeNull();
-        transaction.FailureReason.Should().BeNull();
-        transaction.FailureCode.Should().BeNull();
-        transaction.PaymentMethodDetail.Should().BeNull();
-        transaction.PayerInfo.Should().BeNull();
-        transaction.IpAddress.Should().BeNull();
-        transaction.UserAgent.Should().BeNull();
-        transaction.ReturnUrl.Should().BeNull();
-        transaction.GatewayResponseJson.Should().BeNull();
-        transaction.MetadataJson.Should().BeNull();
-        transaction.PaidAt.Should().BeNull();
-        transaction.ExpiresAt.Should().BeNull();
-        transaction.CodCollectorName.Should().BeNull();
-        transaction.CodCollectedAt.Should().BeNull();
+        transaction.GatewayTransactionId.ShouldBeNull();
+        transaction.OrderId.ShouldBeNull();
+        transaction.CustomerId.ShouldBeNull();
+        transaction.ExchangeRate.ShouldBeNull();
+        transaction.GatewayFee.ShouldBeNull();
+        transaction.NetAmount.ShouldBeNull();
+        transaction.FailureReason.ShouldBeNull();
+        transaction.FailureCode.ShouldBeNull();
+        transaction.PaymentMethodDetail.ShouldBeNull();
+        transaction.PayerInfo.ShouldBeNull();
+        transaction.IpAddress.ShouldBeNull();
+        transaction.UserAgent.ShouldBeNull();
+        transaction.ReturnUrl.ShouldBeNull();
+        transaction.GatewayResponseJson.ShouldBeNull();
+        transaction.MetadataJson.ShouldBeNull();
+        transaction.PaidAt.ShouldBeNull();
+        transaction.ExpiresAt.ShouldBeNull();
+        transaction.CodCollectorName.ShouldBeNull();
+        transaction.CodCollectedAt.ShouldBeNull();
     }
 
     [Fact]
@@ -119,10 +119,10 @@ public class PaymentTransactionTests
         var transaction = CreateTestTransaction();
 
         // Assert
-        transaction.Refunds.Should().NotBeNull();
-        transaction.Refunds.Should().BeEmpty();
-        transaction.Installments.Should().NotBeNull();
-        transaction.Installments.Should().BeEmpty();
+        transaction.Refunds.ShouldNotBeNull();
+        transaction.Refunds.ShouldBeEmpty();
+        transaction.Installments.ShouldNotBeNull();
+        transaction.Installments.ShouldBeEmpty();
     }
 
     [Fact]
@@ -132,16 +132,19 @@ public class PaymentTransactionTests
         var transaction = CreateTestTransaction();
 
         // Assert
-        transaction.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PaymentCreatedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                TransactionId = transaction.Id,
-                TransactionNumber = TestTransactionNumber,
-                Amount = TestAmount,
-                Currency = TestCurrency,
-                Provider = TestProvider
-            });
+        var __evt = transaction.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<PaymentCreatedEvent>();
+
+        __evt.TransactionId.ShouldBe(transaction.Id);
+
+        __evt.TransactionNumber.ShouldBe(TestTransactionNumber);
+
+        __evt.Amount.ShouldBe(TestAmount);
+
+        __evt.Currency.ShouldBe(TestCurrency);
+
+        __evt.Provider.ShouldBe(TestProvider);
     }
 
     [Fact]
@@ -151,7 +154,7 @@ public class PaymentTransactionTests
         var transaction = CreateTestTransaction(tenantId: null);
 
         // Assert
-        transaction.TenantId.Should().BeNull();
+        transaction.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -162,7 +165,7 @@ public class PaymentTransactionTests
         var t2 = CreateTestTransaction(transactionNumber: "TXN-002", idempotencyKey: "key-2");
 
         // Assert
-        t1.Id.Should().NotBe(t2.Id);
+        t1.Id.ShouldNotBe(t2.Id);
     }
 
     [Theory]
@@ -178,7 +181,7 @@ public class PaymentTransactionTests
         var transaction = CreateTestTransaction(paymentMethod: method);
 
         // Assert
-        transaction.PaymentMethod.Should().Be(method);
+        transaction.PaymentMethod.ShouldBe(method);
     }
 
     #endregion
@@ -196,7 +199,7 @@ public class PaymentTransactionTests
         transaction.SetOrderId(orderId);
 
         // Assert
-        transaction.OrderId.Should().Be(orderId);
+        transaction.OrderId.ShouldBe(orderId);
     }
 
     [Fact]
@@ -210,7 +213,7 @@ public class PaymentTransactionTests
         transaction.SetCustomerId(customerId);
 
         // Assert
-        transaction.CustomerId.Should().Be(customerId);
+        transaction.CustomerId.ShouldBe(customerId);
     }
 
     #endregion
@@ -227,9 +230,9 @@ public class PaymentTransactionTests
         transaction.SetRequestMetadata("203.0.113.50", "Mozilla/5.0", "https://example.com/return");
 
         // Assert
-        transaction.IpAddress.Should().Be("203.0.113.50");
-        transaction.UserAgent.Should().Be("Mozilla/5.0");
-        transaction.ReturnUrl.Should().Be("https://example.com/return");
+        transaction.IpAddress.ShouldBe("203.0.113.50");
+        transaction.UserAgent.ShouldBe("Mozilla/5.0");
+        transaction.ReturnUrl.ShouldBe("https://example.com/return");
     }
 
     [Fact]
@@ -242,9 +245,9 @@ public class PaymentTransactionTests
         transaction.SetRequestMetadata(null, null, null);
 
         // Assert
-        transaction.IpAddress.Should().BeNull();
-        transaction.UserAgent.Should().BeNull();
-        transaction.ReturnUrl.Should().BeNull();
+        transaction.IpAddress.ShouldBeNull();
+        transaction.UserAgent.ShouldBeNull();
+        transaction.ReturnUrl.ShouldBeNull();
     }
 
     #endregion
@@ -262,7 +265,7 @@ public class PaymentTransactionTests
         transaction.SetExpiresAt(expiresAt);
 
         // Assert
-        transaction.ExpiresAt.Should().Be(expiresAt);
+        transaction.ExpiresAt.ShouldBe(expiresAt);
     }
 
     #endregion
@@ -279,7 +282,7 @@ public class PaymentTransactionTests
         transaction.MarkAsProcessing();
 
         // Assert
-        transaction.Status.Should().Be(PaymentStatus.Processing);
+        transaction.Status.ShouldBe(PaymentStatus.Processing);
     }
 
     [Fact]
@@ -293,14 +296,15 @@ public class PaymentTransactionTests
         transaction.MarkAsProcessing();
 
         // Assert
-        transaction.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PaymentStatusChangedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                TransactionId = transaction.Id,
-                OldStatus = PaymentStatus.Pending,
-                NewStatus = PaymentStatus.Processing
-            });
+        var __evt = transaction.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<PaymentStatusChangedEvent>();
+
+        __evt.TransactionId.ShouldBe(transaction.Id);
+
+        __evt.OldStatus.ShouldBe(PaymentStatus.Pending);
+
+        __evt.NewStatus.ShouldBe(PaymentStatus.Processing);
     }
 
     #endregion
@@ -317,7 +321,7 @@ public class PaymentTransactionTests
         transaction.MarkAsRequiresAction();
 
         // Assert
-        transaction.Status.Should().Be(PaymentStatus.RequiresAction);
+        transaction.Status.ShouldBe(PaymentStatus.RequiresAction);
     }
 
     [Fact]
@@ -331,13 +335,13 @@ public class PaymentTransactionTests
         transaction.MarkAsRequiresAction();
 
         // Assert
-        transaction.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PaymentStatusChangedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                OldStatus = PaymentStatus.Pending,
-                NewStatus = PaymentStatus.RequiresAction
-            });
+        var __evt = transaction.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<PaymentStatusChangedEvent>();
+
+        __evt.OldStatus.ShouldBe(PaymentStatus.Pending);
+
+        __evt.NewStatus.ShouldBe(PaymentStatus.RequiresAction);
     }
 
     #endregion
@@ -355,7 +359,7 @@ public class PaymentTransactionTests
         transaction.MarkAsPaid("GW-TXN-12345");
 
         // Assert
-        transaction.Status.Should().Be(PaymentStatus.Paid);
+        transaction.Status.ShouldBe(PaymentStatus.Paid);
     }
 
     [Fact]
@@ -368,7 +372,7 @@ public class PaymentTransactionTests
         transaction.MarkAsPaid("GW-TXN-12345");
 
         // Assert
-        transaction.GatewayTransactionId.Should().Be("GW-TXN-12345");
+        transaction.GatewayTransactionId.ShouldBe("GW-TXN-12345");
     }
 
     [Fact]
@@ -382,8 +386,8 @@ public class PaymentTransactionTests
         transaction.MarkAsPaid("GW-TXN-12345");
 
         // Assert
-        transaction.PaidAt.Should().NotBeNull();
-        transaction.PaidAt.Should().BeOnOrAfter(beforePaid);
+        transaction.PaidAt.ShouldNotBeNull();
+        transaction.PaidAt!.Value.ShouldBeGreaterThanOrEqualTo(beforePaid);
     }
 
     [Fact]
@@ -397,23 +401,18 @@ public class PaymentTransactionTests
         transaction.MarkAsPaid("GW-TXN-12345");
 
         // Assert
-        transaction.DomainEvents.Should().HaveCount(2);
-        transaction.DomainEvents.Should().ContainSingle(e => e is PaymentStatusChangedEvent)
-            .Which.Should().BeOfType<PaymentStatusChangedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                OldStatus = PaymentStatus.Pending,
-                NewStatus = PaymentStatus.Paid
-            });
-        transaction.DomainEvents.Should().ContainSingle(e => e is PaymentSucceededEvent)
-            .Which.Should().BeOfType<PaymentSucceededEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                TransactionId = transaction.Id,
-                Provider = TestProvider,
-                Amount = TestAmount,
-                GatewayTransactionId = "GW-TXN-12345"
-            });
+        transaction.DomainEvents.Count().ShouldBe(2);
+        var statusEvt = transaction.DomainEvents.Single(e => e is PaymentStatusChangedEvent)
+            .ShouldBeOfType<PaymentStatusChangedEvent>();
+        statusEvt.OldStatus.ShouldBe(PaymentStatus.Pending);
+        statusEvt.NewStatus.ShouldBe(PaymentStatus.Paid);
+
+        var succeededEvt = transaction.DomainEvents.Single(e => e is PaymentSucceededEvent)
+            .ShouldBeOfType<PaymentSucceededEvent>();
+        succeededEvt.TransactionId.ShouldBe(transaction.Id);
+        succeededEvt.Provider.ShouldBe(TestProvider);
+        succeededEvt.Amount.ShouldBe(TestAmount);
+        succeededEvt.GatewayTransactionId.ShouldBe("GW-TXN-12345");
     }
 
     #endregion
@@ -430,7 +429,7 @@ public class PaymentTransactionTests
         transaction.MarkAsFailed("Card declined", "CARD_DECLINED");
 
         // Assert
-        transaction.Status.Should().Be(PaymentStatus.Failed);
+        transaction.Status.ShouldBe(PaymentStatus.Failed);
     }
 
     [Fact]
@@ -443,8 +442,8 @@ public class PaymentTransactionTests
         transaction.MarkAsFailed("Insufficient funds", "INSUFFICIENT_FUNDS");
 
         // Assert
-        transaction.FailureReason.Should().Be("Insufficient funds");
-        transaction.FailureCode.Should().Be("INSUFFICIENT_FUNDS");
+        transaction.FailureReason.ShouldBe("Insufficient funds");
+        transaction.FailureCode.ShouldBe("INSUFFICIENT_FUNDS");
     }
 
     [Fact]
@@ -457,8 +456,8 @@ public class PaymentTransactionTests
         transaction.MarkAsFailed("Unknown error");
 
         // Assert
-        transaction.FailureReason.Should().Be("Unknown error");
-        transaction.FailureCode.Should().BeNull();
+        transaction.FailureReason.ShouldBe("Unknown error");
+        transaction.FailureCode.ShouldBeNull();
     }
 
     [Fact]
@@ -472,23 +471,18 @@ public class PaymentTransactionTests
         transaction.MarkAsFailed("Timeout", "TIMEOUT");
 
         // Assert
-        transaction.DomainEvents.Should().HaveCount(2);
-        transaction.DomainEvents.Should().ContainSingle(e => e is PaymentStatusChangedEvent)
-            .Which.Should().BeOfType<PaymentStatusChangedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                OldStatus = PaymentStatus.Pending,
-                NewStatus = PaymentStatus.Failed,
-                Reason = "Timeout"
-            });
-        transaction.DomainEvents.Should().ContainSingle(e => e is PaymentFailedEvent)
-            .Which.Should().BeOfType<PaymentFailedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                TransactionId = transaction.Id,
-                Reason = "Timeout",
-                FailureCode = "TIMEOUT"
-            });
+        transaction.DomainEvents.Count().ShouldBe(2);
+        var statusEvt = transaction.DomainEvents.Single(e => e is PaymentStatusChangedEvent)
+            .ShouldBeOfType<PaymentStatusChangedEvent>();
+        statusEvt.OldStatus.ShouldBe(PaymentStatus.Pending);
+        statusEvt.NewStatus.ShouldBe(PaymentStatus.Failed);
+        statusEvt.Reason.ShouldBe("Timeout");
+
+        var failedEvt = transaction.DomainEvents.Single(e => e is PaymentFailedEvent)
+            .ShouldBeOfType<PaymentFailedEvent>();
+        failedEvt.TransactionId.ShouldBe(transaction.Id);
+        failedEvt.Reason.ShouldBe("Timeout");
+        failedEvt.FailureCode.ShouldBe("TIMEOUT");
     }
 
     #endregion
@@ -505,7 +499,7 @@ public class PaymentTransactionTests
         transaction.MarkAsCancelled();
 
         // Assert
-        transaction.Status.Should().Be(PaymentStatus.Cancelled);
+        transaction.Status.ShouldBe(PaymentStatus.Cancelled);
     }
 
     [Fact]
@@ -519,13 +513,13 @@ public class PaymentTransactionTests
         transaction.MarkAsCancelled();
 
         // Assert
-        transaction.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PaymentStatusChangedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                OldStatus = PaymentStatus.Pending,
-                NewStatus = PaymentStatus.Cancelled
-            });
+        var __evt = transaction.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<PaymentStatusChangedEvent>();
+
+        __evt.OldStatus.ShouldBe(PaymentStatus.Pending);
+
+        __evt.NewStatus.ShouldBe(PaymentStatus.Cancelled);
     }
 
     #endregion
@@ -542,7 +536,7 @@ public class PaymentTransactionTests
         transaction.MarkAsExpired();
 
         // Assert
-        transaction.Status.Should().Be(PaymentStatus.Expired);
+        transaction.Status.ShouldBe(PaymentStatus.Expired);
     }
 
     [Fact]
@@ -556,13 +550,13 @@ public class PaymentTransactionTests
         transaction.MarkAsExpired();
 
         // Assert
-        transaction.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PaymentStatusChangedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                OldStatus = PaymentStatus.Pending,
-                NewStatus = PaymentStatus.Expired
-            });
+        var __evt = transaction.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<PaymentStatusChangedEvent>();
+
+        __evt.OldStatus.ShouldBe(PaymentStatus.Pending);
+
+        __evt.NewStatus.ShouldBe(PaymentStatus.Expired);
     }
 
     #endregion
@@ -579,7 +573,7 @@ public class PaymentTransactionTests
         transaction.MarkAsCodPending();
 
         // Assert
-        transaction.Status.Should().Be(PaymentStatus.CodPending);
+        transaction.Status.ShouldBe(PaymentStatus.CodPending);
     }
 
     [Fact]
@@ -593,13 +587,13 @@ public class PaymentTransactionTests
         transaction.MarkAsCodPending();
 
         // Assert
-        transaction.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PaymentStatusChangedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                OldStatus = PaymentStatus.Pending,
-                NewStatus = PaymentStatus.CodPending
-            });
+        var __evt = transaction.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<PaymentStatusChangedEvent>();
+
+        __evt.OldStatus.ShouldBe(PaymentStatus.Pending);
+
+        __evt.NewStatus.ShouldBe(PaymentStatus.CodPending);
     }
 
     #endregion
@@ -616,7 +610,7 @@ public class PaymentTransactionTests
         transaction.MarkAsAuthorized();
 
         // Assert
-        transaction.Status.Should().Be(PaymentStatus.Authorized);
+        transaction.Status.ShouldBe(PaymentStatus.Authorized);
     }
 
     [Fact]
@@ -630,13 +624,13 @@ public class PaymentTransactionTests
         transaction.MarkAsAuthorized();
 
         // Assert
-        transaction.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PaymentStatusChangedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                OldStatus = PaymentStatus.Pending,
-                NewStatus = PaymentStatus.Authorized
-            });
+        var __evt = transaction.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<PaymentStatusChangedEvent>();
+
+        __evt.OldStatus.ShouldBe(PaymentStatus.Pending);
+
+        __evt.NewStatus.ShouldBe(PaymentStatus.Authorized);
     }
 
     #endregion
@@ -654,7 +648,7 @@ public class PaymentTransactionTests
         transaction.MarkAsRefunded();
 
         // Assert
-        transaction.Status.Should().Be(PaymentStatus.Refunded);
+        transaction.Status.ShouldBe(PaymentStatus.Refunded);
     }
 
     [Fact]
@@ -669,13 +663,13 @@ public class PaymentTransactionTests
         transaction.MarkAsRefunded();
 
         // Assert
-        transaction.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PaymentStatusChangedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                OldStatus = PaymentStatus.Paid,
-                NewStatus = PaymentStatus.Refunded
-            });
+        var __evt = transaction.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<PaymentStatusChangedEvent>();
+
+        __evt.OldStatus.ShouldBe(PaymentStatus.Paid);
+
+        __evt.NewStatus.ShouldBe(PaymentStatus.Refunded);
     }
 
     #endregion
@@ -693,7 +687,7 @@ public class PaymentTransactionTests
         transaction.ConfirmCodCollection("Driver Nguyen");
 
         // Assert
-        transaction.Status.Should().Be(PaymentStatus.CodCollected);
+        transaction.Status.ShouldBe(PaymentStatus.CodCollected);
     }
 
     [Fact]
@@ -707,7 +701,7 @@ public class PaymentTransactionTests
         transaction.ConfirmCodCollection("Driver Tran");
 
         // Assert
-        transaction.CodCollectorName.Should().Be("Driver Tran");
+        transaction.CodCollectorName.ShouldBe("Driver Tran");
     }
 
     [Fact]
@@ -722,8 +716,8 @@ public class PaymentTransactionTests
         transaction.ConfirmCodCollection("Driver Le");
 
         // Assert
-        transaction.CodCollectedAt.Should().NotBeNull();
-        transaction.CodCollectedAt.Should().BeOnOrAfter(beforeCollection);
+        transaction.CodCollectedAt.ShouldNotBeNull();
+        transaction.CodCollectedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeCollection);
     }
 
     [Fact]
@@ -738,17 +732,17 @@ public class PaymentTransactionTests
         transaction.ConfirmCodCollection("Driver Pham");
 
         // Assert
-        transaction.DomainEvents.Should().HaveCount(2);
-        transaction.DomainEvents.Should().ContainSingle(e => e is PaymentStatusChangedEvent)
-            .Which.Should().BeOfType<PaymentStatusChangedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                OldStatus = PaymentStatus.CodPending,
-                NewStatus = PaymentStatus.CodCollected
-            });
-        transaction.DomainEvents.Should().ContainSingle(e => e is CodCollectedEvent)
-            .Which.Should().BeOfType<CodCollectedEvent>()
-            .Which.CollectorName.Should().Be("Driver Pham");
+        transaction.DomainEvents.Count().ShouldBe(2);
+        var __evt = transaction.DomainEvents.Single(e => e is PaymentStatusChangedEvent)
+
+            .ShouldBeOfType<PaymentStatusChangedEvent>();
+
+        __evt.OldStatus.ShouldBe(PaymentStatus.CodPending);
+
+        __evt.NewStatus.ShouldBe(PaymentStatus.CodCollected);
+        transaction.DomainEvents.Single(e => e is CodCollectedEvent)
+            .ShouldBeOfType<CodCollectedEvent>()
+            .CollectorName.ShouldBe("Driver Pham");
     }
 
     [Fact]
@@ -761,8 +755,8 @@ public class PaymentTransactionTests
         var act = () => transaction.ConfirmCodCollection("Driver");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Only COD payments can be confirmed for collection");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Only COD payments can be confirmed for collection");
     }
 
     [Theory]
@@ -782,8 +776,8 @@ public class PaymentTransactionTests
         var act = () => transaction.ConfirmCodCollection("Driver");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Only COD payments can be confirmed for collection");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Only COD payments can be confirmed for collection");
     }
 
     #endregion
@@ -800,7 +794,7 @@ public class PaymentTransactionTests
         transaction.SetGatewayResponse("{\"vnp_ResponseCode\":\"00\",\"vnp_Amount\":\"50000000\"}");
 
         // Assert
-        transaction.GatewayResponseJson.Should().Be("{\"vnp_ResponseCode\":\"00\",\"vnp_Amount\":\"50000000\"}");
+        transaction.GatewayResponseJson.ShouldBe("{\"vnp_ResponseCode\":\"00\",\"vnp_Amount\":\"50000000\"}");
     }
 
     [Fact]
@@ -813,8 +807,8 @@ public class PaymentTransactionTests
         transaction.SetGatewayFee(15_000m);
 
         // Assert
-        transaction.GatewayFee.Should().Be(15_000m);
-        transaction.NetAmount.Should().Be(985_000m);
+        transaction.GatewayFee.ShouldBe(15_000m);
+        transaction.NetAmount.ShouldBe(985_000m);
     }
 
     [Fact]
@@ -827,8 +821,8 @@ public class PaymentTransactionTests
         transaction.SetGatewayFee(0m);
 
         // Assert
-        transaction.GatewayFee.Should().Be(0m);
-        transaction.NetAmount.Should().Be(500_000m);
+        transaction.GatewayFee.ShouldBe(0m);
+        transaction.NetAmount.ShouldBe(500_000m);
     }
 
     [Fact]
@@ -841,7 +835,7 @@ public class PaymentTransactionTests
         transaction.SetGatewayTransactionId("GW-EXTERNAL-ID-999");
 
         // Assert
-        transaction.GatewayTransactionId.Should().Be("GW-EXTERNAL-ID-999");
+        transaction.GatewayTransactionId.ShouldBe("GW-EXTERNAL-ID-999");
     }
 
     [Fact]
@@ -855,7 +849,7 @@ public class PaymentTransactionTests
         transaction.SetGatewayTransactionId("second-id");
 
         // Assert
-        transaction.GatewayTransactionId.Should().Be("second-id");
+        transaction.GatewayTransactionId.ShouldBe("second-id");
     }
 
     #endregion
@@ -872,7 +866,7 @@ public class PaymentTransactionTests
         transaction.SetMetadataJson("{\"source\":\"checkout\",\"campaign\":\"summer2026\"}");
 
         // Assert
-        transaction.MetadataJson.Should().Be("{\"source\":\"checkout\",\"campaign\":\"summer2026\"}");
+        transaction.MetadataJson.ShouldBe("{\"source\":\"checkout\",\"campaign\":\"summer2026\"}");
     }
 
     [Fact]
@@ -886,7 +880,7 @@ public class PaymentTransactionTests
         transaction.SetMetadataJson("{\"v\":2}");
 
         // Assert
-        transaction.MetadataJson.Should().Be("{\"v\":2}");
+        transaction.MetadataJson.ShouldBe("{\"v\":2}");
     }
 
     #endregion
@@ -905,7 +899,7 @@ public class PaymentTransactionTests
         transaction.MarkAsPaid("GW-001"); // +1 StatusChanged + 1 PaymentSucceeded
 
         // Assert - Created(1) + Processing(1) + Paid(2) = 4
-        transaction.DomainEvents.Should().HaveCount(4);
+        transaction.DomainEvents.Count().ShouldBe(4);
     }
 
     [Fact]
@@ -914,13 +908,13 @@ public class PaymentTransactionTests
         // Arrange
         var transaction = CreateTestTransaction();
         transaction.MarkAsProcessing();
-        transaction.DomainEvents.Should().HaveCountGreaterThan(0);
+        transaction.DomainEvents.Count().ShouldBeGreaterThan(0);
 
         // Act
         transaction.ClearDomainEvents();
 
         // Assert
-        transaction.DomainEvents.Should().BeEmpty();
+        transaction.DomainEvents.ShouldBeEmpty();
     }
 
     #endregion
@@ -934,15 +928,15 @@ public class PaymentTransactionTests
         var transaction = CreateTestTransaction();
 
         // Act & Assert
-        transaction.Status.Should().Be(PaymentStatus.Pending);
+        transaction.Status.ShouldBe(PaymentStatus.Pending);
 
         transaction.MarkAsProcessing();
-        transaction.Status.Should().Be(PaymentStatus.Processing);
+        transaction.Status.ShouldBe(PaymentStatus.Processing);
 
         transaction.MarkAsPaid("GW-TXN-FINAL");
-        transaction.Status.Should().Be(PaymentStatus.Paid);
-        transaction.PaidAt.Should().NotBeNull();
-        transaction.GatewayTransactionId.Should().Be("GW-TXN-FINAL");
+        transaction.Status.ShouldBe(PaymentStatus.Paid);
+        transaction.PaidAt.ShouldNotBeNull();
+        transaction.GatewayTransactionId.ShouldBe("GW-TXN-FINAL");
     }
 
     [Fact]
@@ -956,9 +950,9 @@ public class PaymentTransactionTests
         transaction.MarkAsFailed("Gateway timeout", "GW_TIMEOUT");
 
         // Assert
-        transaction.Status.Should().Be(PaymentStatus.Failed);
-        transaction.FailureReason.Should().Be("Gateway timeout");
-        transaction.FailureCode.Should().Be("GW_TIMEOUT");
+        transaction.Status.ShouldBe(PaymentStatus.Failed);
+        transaction.FailureReason.ShouldBe("Gateway timeout");
+        transaction.FailureCode.ShouldBe("GW_TIMEOUT");
     }
 
     [Fact]
@@ -971,7 +965,7 @@ public class PaymentTransactionTests
         transaction.MarkAsCancelled();
 
         // Assert
-        transaction.Status.Should().Be(PaymentStatus.Cancelled);
+        transaction.Status.ShouldBe(PaymentStatus.Cancelled);
     }
 
     [Fact]
@@ -981,16 +975,16 @@ public class PaymentTransactionTests
         var transaction = CreateCodTransaction();
 
         // Act & Assert
-        transaction.Status.Should().Be(PaymentStatus.Pending);
-        transaction.PaymentMethod.Should().Be(PaymentMethod.COD);
+        transaction.Status.ShouldBe(PaymentStatus.Pending);
+        transaction.PaymentMethod.ShouldBe(PaymentMethod.COD);
 
         transaction.MarkAsCodPending();
-        transaction.Status.Should().Be(PaymentStatus.CodPending);
+        transaction.Status.ShouldBe(PaymentStatus.CodPending);
 
         transaction.ConfirmCodCollection("Delivery Driver A");
-        transaction.Status.Should().Be(PaymentStatus.CodCollected);
-        transaction.CodCollectorName.Should().Be("Delivery Driver A");
-        transaction.CodCollectedAt.Should().NotBeNull();
+        transaction.Status.ShouldBe(PaymentStatus.CodCollected);
+        transaction.CodCollectorName.ShouldBe("Delivery Driver A");
+        transaction.CodCollectedAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -1005,8 +999,8 @@ public class PaymentTransactionTests
         transaction.MarkAsRefunded();
 
         // Assert
-        transaction.Status.Should().Be(PaymentStatus.Refunded);
-        transaction.PaidAt.Should().NotBeNull();
+        transaction.Status.ShouldBe(PaymentStatus.Refunded);
+        transaction.PaidAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -1029,18 +1023,18 @@ public class PaymentTransactionTests
         transaction.SetMetadataJson("{\"checkoutSessionId\":\"sess-123\"}");
 
         // Assert
-        transaction.OrderId.Should().Be(orderId);
-        transaction.CustomerId.Should().Be(customerId);
-        transaction.IpAddress.Should().Be("10.0.0.1");
-        transaction.UserAgent.Should().Be("Chrome/120");
-        transaction.ReturnUrl.Should().Be("https://shop.vn/return");
-        transaction.ExpiresAt.Should().NotBeNull();
-        transaction.Status.Should().Be(PaymentStatus.Paid);
-        transaction.GatewayTransactionId.Should().Be("GW-TXN-FULL");
-        transaction.GatewayFee.Should().Be(30_000m);
-        transaction.NetAmount.Should().Be(1_970_000m);
-        transaction.GatewayResponseJson.Should().Be("{\"code\":\"00\"}");
-        transaction.MetadataJson.Should().Be("{\"checkoutSessionId\":\"sess-123\"}");
+        transaction.OrderId.ShouldBe(orderId);
+        transaction.CustomerId.ShouldBe(customerId);
+        transaction.IpAddress.ShouldBe("10.0.0.1");
+        transaction.UserAgent.ShouldBe("Chrome/120");
+        transaction.ReturnUrl.ShouldBe("https://shop.vn/return");
+        transaction.ExpiresAt.ShouldNotBeNull();
+        transaction.Status.ShouldBe(PaymentStatus.Paid);
+        transaction.GatewayTransactionId.ShouldBe("GW-TXN-FULL");
+        transaction.GatewayFee.ShouldBe(30_000m);
+        transaction.NetAmount.ShouldBe(1_970_000m);
+        transaction.GatewayResponseJson.ShouldBe("{\"code\":\"00\"}");
+        transaction.MetadataJson.ShouldBe("{\"checkoutSessionId\":\"sess-123\"}");
     }
 
     #endregion

@@ -64,10 +64,10 @@ public class NotificationEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await adminClient.GetAsync("/api/notifications");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<NotificationsPagedResponse>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeNull();
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class NotificationEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await _client.GetAsync("/api/notifications");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -90,11 +90,11 @@ public class NotificationEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await adminClient.GetAsync("/api/notifications?page=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<NotificationsPagedResponse>();
-        result.Should().NotBeNull();
-        result!.Page.Should().Be(1);
-        result.PageSize.Should().Be(5);
+        result.ShouldNotBeNull();
+        result!.Page.ShouldBe(1);
+        result.PageSize.ShouldBe(5);
     }
 
     [Fact]
@@ -107,10 +107,10 @@ public class NotificationEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await adminClient.GetAsync("/api/notifications?includeRead=false");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<NotificationsPagedResponse>();
-        result.Should().NotBeNull();
-        result!.Items.Should().OnlyContain(n => !n.IsRead);
+        result.ShouldNotBeNull();
+        result!.Items.ShouldAllBe(n => !n.IsRead);
     }
 
     #endregion
@@ -127,10 +127,10 @@ public class NotificationEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await adminClient.GetAsync("/api/notifications/unread-count");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<UnreadCountResponse>();
-        result.Should().NotBeNull();
-        result!.Count.Should().BeGreaterThanOrEqualTo(0);
+        result.ShouldNotBeNull();
+        result!.Count.ShouldBeGreaterThanOrEqualTo(0);
     }
 
     [Fact]
@@ -140,7 +140,7 @@ public class NotificationEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await _client.GetAsync("/api/notifications/unread-count");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -157,7 +157,7 @@ public class NotificationEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await adminClient.PostAsync($"/api/notifications/{Guid.NewGuid()}/read", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -167,7 +167,7 @@ public class NotificationEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await _client.PostAsync($"/api/notifications/{Guid.NewGuid()}/read", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -184,7 +184,7 @@ public class NotificationEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await adminClient.PostAsync("/api/notifications/read-all", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -194,7 +194,7 @@ public class NotificationEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await _client.PostAsync("/api/notifications/read-all", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -211,7 +211,7 @@ public class NotificationEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await adminClient.DeleteAsync($"/api/notifications/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -221,7 +221,7 @@ public class NotificationEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await _client.DeleteAsync($"/api/notifications/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -238,9 +238,9 @@ public class NotificationEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await adminClient.GetAsync("/api/notifications/preferences");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<IEnumerable<NotificationPreferenceDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -250,7 +250,7 @@ public class NotificationEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await _client.GetAsync("/api/notifications/preferences");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -279,9 +279,9 @@ public class NotificationEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await adminClient.PutAsJsonAsync("/api/notifications/preferences", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<IEnumerable<NotificationPreferenceDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -297,7 +297,7 @@ public class NotificationEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await _client.PutAsJsonAsync("/api/notifications/preferences", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -319,15 +319,15 @@ public class NotificationEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response2 = await userClient2.GetAsync("/api/notifications");
 
         // Assert
-        response1.StatusCode.Should().Be(HttpStatusCode.OK);
-        response2.StatusCode.Should().Be(HttpStatusCode.OK);
+        response1.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response2.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Both should return their own notifications (even if empty)
         var result1 = await response1.Content.ReadFromJsonWithEnumsAsync<NotificationsPagedResponse>();
         var result2 = await response2.Content.ReadFromJsonWithEnumsAsync<NotificationsPagedResponse>();
 
-        result1.Should().NotBeNull();
-        result2.Should().NotBeNull();
+        result1.ShouldNotBeNull();
+        result2.ShouldNotBeNull();
     }
 
     [Fact]
@@ -341,7 +341,7 @@ public class NotificationEndpointsTests : IClassFixture<CustomWebApplicationFact
         var response = await userClient.PostAsync("/api/notifications/read-all", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion

@@ -58,9 +58,9 @@ public class ExportReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Should().BeSameAs(expectedResult);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.ShouldBeSameAs(expectedResult);
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public class ExportReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _reportServiceMock.Verify(
             x => x.ExportReportAsync(
                 ReportType.Revenue,
@@ -122,8 +122,8 @@ public class ExportReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.FileName.Should().Be("report.csv");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.FileName.ShouldBe("report.csv");
         _reportServiceMock.Verify(
             x => x.ExportReportAsync(
                 ReportType.Revenue,
@@ -157,8 +157,8 @@ public class ExportReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.FileName.Should().Be("report.xlsx");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.FileName.ShouldBe("report.xlsx");
         _reportServiceMock.Verify(
             x => x.ExportReportAsync(
                 ReportType.Revenue,
@@ -198,7 +198,7 @@ public class ExportReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _reportServiceMock.Verify(
             x => x.ExportReportAsync(
                 reportType,
@@ -240,10 +240,10 @@ public class ExportReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.FileBytes.Should().BeEquivalentTo(fileBytes);
-        result.Value.ContentType.Should().Be("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        result.Value.FileName.Should().Be("revenue-report-2026.xlsx");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.FileBytes.ShouldBe(fileBytes);
+        result.Value.ContentType.ShouldBe("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        result.Value.FileName.ShouldBe("revenue-report-2026.xlsx");
     }
 
     #endregion
@@ -306,8 +306,8 @@ public class ExportReportQueryHandlerTests
         var act = () => _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("Export service unavailable");
+        (await Should.ThrowAsync<InvalidOperationException>(act))
+            .Message.ShouldBe("Export service unavailable");
     }
 
     #endregion

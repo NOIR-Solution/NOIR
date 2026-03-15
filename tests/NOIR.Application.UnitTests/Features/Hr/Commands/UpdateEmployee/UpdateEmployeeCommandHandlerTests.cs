@@ -67,7 +67,7 @@ public class UpdateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -87,8 +87,8 @@ public class UpdateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-HR-010");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-HR-010");
     }
 
     [Fact]
@@ -115,7 +115,7 @@ public class UpdateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public class UpdateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _hierarchyServiceMock.Verify(
             x => x.GetAncestorChainAsync(managerId, 20, TestTenantId, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -180,8 +180,8 @@ public class UpdateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Message.Should().Contain("cannot be their own manager");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Message.ShouldContain("cannot be their own manager");
     }
 
     [Fact]
@@ -216,7 +216,7 @@ public class UpdateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Message.Should().Contain("circular");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Message.ShouldContain("circular");
     }
 }

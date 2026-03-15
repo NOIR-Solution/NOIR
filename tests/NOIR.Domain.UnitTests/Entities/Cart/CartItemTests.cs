@@ -37,15 +37,15 @@ public class CartItemTests
         var item = CreateTestCartItem(quantity: 3, unitPrice: 25000m);
 
         // Assert
-        item.Should().NotBeNull();
-        item.Id.Should().NotBe(Guid.Empty);
-        item.ProductId.Should().Be(TestProductId);
-        item.ProductVariantId.Should().Be(TestVariantId);
-        item.ProductName.Should().Be("Test Product");
-        item.VariantName.Should().Be("Size: M");
-        item.UnitPrice.Should().Be(25000m);
-        item.Quantity.Should().Be(3);
-        item.ImageUrl.Should().Be("http://img.jpg");
+        item.ShouldNotBeNull();
+        item.Id.ShouldNotBe(Guid.Empty);
+        item.ProductId.ShouldBe(TestProductId);
+        item.ProductVariantId.ShouldBe(TestVariantId);
+        item.ProductName.ShouldBe("Test Product");
+        item.VariantName.ShouldBe("Size: M");
+        item.UnitPrice.ShouldBe(25000m);
+        item.Quantity.ShouldBe(3);
+        item.ImageUrl.ShouldBe("http://img.jpg");
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class CartItemTests
         var item = CreateTestCartItem(imageUrl: null);
 
         // Assert
-        item.ImageUrl.Should().BeNull();
+        item.ImageUrl.ShouldBeNull();
     }
 
     [Fact]
@@ -68,8 +68,8 @@ public class CartItemTests
         var act = () => cart.AddItem(TestProductId, TestVariantId, "Product", "Variant", 10000m, 0);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Quantity must be greater than zero");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Quantity must be greater than zero");
     }
 
     #endregion
@@ -83,7 +83,7 @@ public class CartItemTests
         var item = CreateTestCartItem(quantity: 3, unitPrice: 25000m);
 
         // Act & Assert
-        item.LineTotal.Should().Be(75000m); // 25,000 * 3
+        item.LineTotal.ShouldBe(75000m); // 25,000 * 3
     }
 
     [Theory]
@@ -98,7 +98,7 @@ public class CartItemTests
         var item = CreateTestCartItem(quantity: quantity, unitPrice: unitPrice);
 
         // Act & Assert
-        item.LineTotal.Should().Be(expectedTotal);
+        item.LineTotal.ShouldBe(expectedTotal);
     }
 
     #endregion
@@ -115,7 +115,7 @@ public class CartItemTests
         item.UpdateQuantity(10);
 
         // Assert
-        item.Quantity.Should().Be(10);
+        item.Quantity.ShouldBe(10);
     }
 
     [Fact]
@@ -123,13 +123,13 @@ public class CartItemTests
     {
         // Arrange
         var item = CreateTestCartItem(quantity: 2, unitPrice: 10000m);
-        item.LineTotal.Should().Be(20000m);
+        item.LineTotal.ShouldBe(20000m);
 
         // Act
         item.UpdateQuantity(5);
 
         // Assert
-        item.LineTotal.Should().Be(50000m);
+        item.LineTotal.ShouldBe(50000m);
     }
 
     [Fact]
@@ -142,8 +142,8 @@ public class CartItemTests
         var act = () => item.UpdateQuantity(0);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Quantity must be greater than zero");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Quantity must be greater than zero");
     }
 
     [Fact]
@@ -156,8 +156,8 @@ public class CartItemTests
         var act = () => item.UpdateQuantity(-1);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Quantity must be greater than zero");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Quantity must be greater than zero");
     }
 
     #endregion
@@ -174,7 +174,7 @@ public class CartItemTests
         item.UpdatePrice(15000m);
 
         // Assert
-        item.UnitPrice.Should().Be(15000m);
+        item.UnitPrice.ShouldBe(15000m);
     }
 
     [Fact]
@@ -187,7 +187,7 @@ public class CartItemTests
         item.UpdatePrice(20000m);
 
         // Assert
-        item.LineTotal.Should().Be(60000m); // 20,000 * 3
+        item.LineTotal.ShouldBe(60000m); // 20,000 * 3
     }
 
     [Fact]
@@ -200,7 +200,7 @@ public class CartItemTests
         item.UpdatePrice(0m);
 
         // Assert
-        item.UnitPrice.Should().Be(0m);
+        item.UnitPrice.ShouldBe(0m);
     }
 
     [Fact]
@@ -213,8 +213,8 @@ public class CartItemTests
         var act = () => item.UpdatePrice(-1m);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Unit price cannot be negative");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Unit price cannot be negative");
     }
 
     #endregion
@@ -231,10 +231,10 @@ public class CartItemTests
         item.UpdateProductSnapshot("New Product Name", "New Variant", "http://new-img.jpg", 99000m);
 
         // Assert
-        item.ProductName.Should().Be("New Product Name");
-        item.VariantName.Should().Be("New Variant");
-        item.ImageUrl.Should().Be("http://new-img.jpg");
-        item.UnitPrice.Should().Be(99000m);
+        item.ProductName.ShouldBe("New Product Name");
+        item.VariantName.ShouldBe("New Variant");
+        item.ImageUrl.ShouldBe("http://new-img.jpg");
+        item.UnitPrice.ShouldBe(99000m);
     }
 
     [Fact]
@@ -247,7 +247,7 @@ public class CartItemTests
         item.UpdateProductSnapshot("Name", "Variant", null, 10000m);
 
         // Assert
-        item.ImageUrl.Should().BeNull();
+        item.ImageUrl.ShouldBeNull();
     }
 
     [Fact]
@@ -260,7 +260,7 @@ public class CartItemTests
         item.UpdateProductSnapshot("Name", "Variant", null, 25000m);
 
         // Assert
-        item.LineTotal.Should().Be(100000m); // 25,000 * 4
+        item.LineTotal.ShouldBe(100000m); // 25,000 * 4
     }
 
     #endregion

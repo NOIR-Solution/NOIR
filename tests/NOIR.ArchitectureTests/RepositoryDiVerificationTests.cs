@@ -36,14 +36,14 @@ public class RepositoryDiVerificationTests
         var scopedServiceType = typeof(Application.Common.Interfaces.IScopedService);
         var repoTypes = GetCustomRepositoryTypes().ToList();
 
-        repoTypes.Should().NotBeEmpty(
-            because: "there should be custom repository implementations in Infrastructure.Persistence.Repositories");
+        repoTypes.ShouldNotBeEmpty(
+            "there should be custom repository implementations in Infrastructure.Persistence.Repositories");
 
         // Assert
         foreach (var type in repoTypes)
         {
-            scopedServiceType.IsAssignableFrom(type).Should().BeTrue(
-                because: $"Repository '{type.Name}' must implement IScopedService for Scrutor auto-registration");
+            scopedServiceType.IsAssignableFrom(type).ShouldBeTrue(
+                $"Repository '{type.Name}' must implement IScopedService for Scrutor auto-registration");
         }
     }
 
@@ -56,8 +56,8 @@ public class RepositoryDiVerificationTests
         // Assert
         foreach (var type in repoTypes)
         {
-            type.IsSealed.Should().BeTrue(
-                because: $"Repository '{type.Name}' should be sealed for performance and clarity");
+            type.IsSealed.ShouldBeTrue(
+                $"Repository '{type.Name}' should be sealed for performance and clarity");
         }
     }
 
@@ -74,8 +74,8 @@ public class RepositoryDiVerificationTests
             var implementsIRepo = type.GetInterfaces()
                 .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == iRepositoryGenericDef);
 
-            implementsIRepo.Should().BeTrue(
-                because: $"Repository '{type.Name}' must implement IRepository<TEntity, TId>");
+            implementsIRepo.ShouldBeTrue(
+                $"Repository '{type.Name}' must implement IRepository<TEntity, TId>");
         }
     }
 
@@ -87,28 +87,28 @@ public class RepositoryDiVerificationTests
         var repoNames = repoTypes.Select(t => t.Name).ToList();
 
         // Assert - HR repositories
-        repoNames.Should().Contain("EmployeeRepository",
-            because: "Employee aggregate root needs a custom repository");
-        repoNames.Should().Contain("DepartmentRepository",
-            because: "Department aggregate root needs a custom repository");
+        repoNames.ShouldContain("EmployeeRepository",
+            "Employee aggregate root needs a custom repository");
+        repoNames.ShouldContain("DepartmentRepository",
+            "Department aggregate root needs a custom repository");
 
         // Assert - CRM repositories
-        repoNames.Should().Contain("CrmContactRepository",
-            because: "CrmContact aggregate root needs a custom repository");
-        repoNames.Should().Contain("CrmCompanyRepository",
-            because: "CrmCompany aggregate root needs a custom repository");
-        repoNames.Should().Contain("CrmActivityRepository",
-            because: "CrmActivity aggregate root needs a custom repository");
-        repoNames.Should().Contain("LeadRepository",
-            because: "Lead aggregate root needs a custom repository");
-        repoNames.Should().Contain("PipelineRepository",
-            because: "Pipeline aggregate root needs a custom repository");
+        repoNames.ShouldContain("CrmContactRepository",
+            "CrmContact aggregate root needs a custom repository");
+        repoNames.ShouldContain("CrmCompanyRepository",
+            "CrmCompany aggregate root needs a custom repository");
+        repoNames.ShouldContain("CrmActivityRepository",
+            "CrmActivity aggregate root needs a custom repository");
+        repoNames.ShouldContain("LeadRepository",
+            "Lead aggregate root needs a custom repository");
+        repoNames.ShouldContain("PipelineRepository",
+            "Pipeline aggregate root needs a custom repository");
 
         // Assert - PM repositories
-        repoNames.Should().Contain("ProjectRepository",
-            because: "Project aggregate root needs a custom repository");
-        repoNames.Should().Contain("ProjectTaskRepository",
-            because: "ProjectTask aggregate root needs a custom repository");
+        repoNames.ShouldContain("ProjectRepository",
+            "Project aggregate root needs a custom repository");
+        repoNames.ShouldContain("ProjectTaskRepository",
+            "ProjectTask aggregate root needs a custom repository");
     }
 
     [Theory]
@@ -128,18 +128,18 @@ public class RepositoryDiVerificationTests
         var repoType = GetCustomRepositoryTypes()
             .FirstOrDefault(t => t.Name == repositoryName);
 
-        repoType.Should().NotBeNull(
-            because: $"Repository '{repositoryName}' should exist in Infrastructure.Persistence.Repositories");
+        repoType.ShouldNotBeNull(
+            $"Repository '{repositoryName}' should exist in Infrastructure.Persistence.Repositories");
 
         var entityType = DomainAssembly.GetType(entityFullName);
-        entityType.Should().NotBeNull(
-            because: $"Entity '{entityFullName}' should exist in the Domain assembly");
+        entityType.ShouldNotBeNull(
+            $"Entity '{entityFullName}' should exist in the Domain assembly");
 
         // Act - check IRepository<Entity, Guid> specifically
         var expectedInterface = typeof(Domain.Interfaces.IRepository<,>).MakeGenericType(entityType!, typeof(Guid));
 
         // Assert
-        expectedInterface.IsAssignableFrom(repoType).Should().BeTrue(
-            because: $"Repository '{repositoryName}' must implement IRepository<{entityType!.Name}, Guid>");
+        expectedInterface.IsAssignableFrom(repoType).ShouldBeTrue(
+            $"Repository '{repositoryName}' must implement IRepository<{entityType!.Name}, Guid>");
     }
 }

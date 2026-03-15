@@ -45,8 +45,8 @@ public class InventoryReceiptDomainEventTests
         var receipt = CreateTestReceipt();
 
         // Assert
-        receipt.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<InventoryReceiptCreatedEvent>();
+        receipt.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<InventoryReceiptCreatedEvent>();
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class InventoryReceiptDomainEventTests
 
         // Assert
         var domainEvent = receipt.DomainEvents.OfType<InventoryReceiptCreatedEvent>().Single();
-        domainEvent.ReceiptId.Should().Be(receipt.Id);
+        domainEvent.ReceiptId.ShouldBe(receipt.Id);
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class InventoryReceiptDomainEventTests
 
         // Assert
         var domainEvent = receipt.DomainEvents.OfType<InventoryReceiptCreatedEvent>().Single();
-        domainEvent.ReceiptNumber.Should().Be("SHP-20260226-0005");
+        domainEvent.ReceiptNumber.ShouldBe("SHP-20260226-0005");
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class InventoryReceiptDomainEventTests
 
         // Assert
         var domainEvent = receipt.DomainEvents.OfType<InventoryReceiptCreatedEvent>().Single();
-        domainEvent.Type.Should().Be(InventoryReceiptType.StockIn);
+        domainEvent.Type.ShouldBe(InventoryReceiptType.StockIn);
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class InventoryReceiptDomainEventTests
 
         // Assert
         var domainEvent = receipt.DomainEvents.OfType<InventoryReceiptCreatedEvent>().Single();
-        domainEvent.Type.Should().Be(InventoryReceiptType.StockOut);
+        domainEvent.Type.ShouldBe(InventoryReceiptType.StockOut);
     }
 
     #endregion
@@ -109,8 +109,8 @@ public class InventoryReceiptDomainEventTests
         receipt.Confirm(TestUserId);
 
         // Assert
-        receipt.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<InventoryReceiptConfirmedEvent>();
+        receipt.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<InventoryReceiptConfirmedEvent>();
     }
 
     [Fact]
@@ -126,9 +126,9 @@ public class InventoryReceiptDomainEventTests
 
         // Assert
         var domainEvent = receipt.DomainEvents.OfType<InventoryReceiptConfirmedEvent>().Single();
-        domainEvent.ReceiptId.Should().Be(receipt.Id);
-        domainEvent.ReceiptNumber.Should().Be("RCV-20260226-0002");
-        domainEvent.Type.Should().Be(InventoryReceiptType.StockIn);
+        domainEvent.ReceiptId.ShouldBe(receipt.Id);
+        domainEvent.ReceiptNumber.ShouldBe("RCV-20260226-0002");
+        domainEvent.Type.ShouldBe(InventoryReceiptType.StockIn);
     }
 
     #endregion
@@ -146,8 +146,8 @@ public class InventoryReceiptDomainEventTests
         receipt.Cancel(TestUserId, "Wrong items");
 
         // Assert
-        receipt.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<InventoryReceiptCancelledEvent>();
+        receipt.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<InventoryReceiptCancelledEvent>();
     }
 
     [Fact]
@@ -162,9 +162,9 @@ public class InventoryReceiptDomainEventTests
 
         // Assert
         var domainEvent = receipt.DomainEvents.OfType<InventoryReceiptCancelledEvent>().Single();
-        domainEvent.ReceiptId.Should().Be(receipt.Id);
-        domainEvent.ReceiptNumber.Should().Be("RCV-20260226-0003");
-        domainEvent.CancellationReason.Should().Be("Duplicate receipt");
+        domainEvent.ReceiptId.ShouldBe(receipt.Id);
+        domainEvent.ReceiptNumber.ShouldBe("RCV-20260226-0003");
+        domainEvent.CancellationReason.ShouldBe("Duplicate receipt");
     }
 
     [Fact]
@@ -179,7 +179,7 @@ public class InventoryReceiptDomainEventTests
 
         // Assert
         var domainEvent = receipt.DomainEvents.OfType<InventoryReceiptCancelledEvent>().Single();
-        domainEvent.CancellationReason.Should().BeNull();
+        domainEvent.CancellationReason.ShouldBeNull();
     }
 
     #endregion

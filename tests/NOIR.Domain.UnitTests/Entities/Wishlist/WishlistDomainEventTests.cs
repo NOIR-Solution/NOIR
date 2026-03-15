@@ -30,8 +30,8 @@ public class WishlistDomainEventTests
         var wishlist = CreateTestWishlist();
 
         // Assert
-        wishlist.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<WishlistCreatedEvent>();
+        wishlist.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<WishlistCreatedEvent>();
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class WishlistDomainEventTests
 
         // Assert
         var domainEvent = wishlist.DomainEvents.OfType<WishlistCreatedEvent>().Single();
-        domainEvent.WishlistId.Should().Be(wishlist.Id);
+        domainEvent.WishlistId.ShouldBe(wishlist.Id);
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class WishlistDomainEventTests
 
         // Assert
         var domainEvent = wishlist.DomainEvents.OfType<WishlistCreatedEvent>().Single();
-        domainEvent.UserId.Should().Be("user-789");
+        domainEvent.UserId.ShouldBe("user-789");
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class WishlistDomainEventTests
 
         // Assert
         var domainEvent = wishlist.DomainEvents.OfType<WishlistCreatedEvent>().Single();
-        domainEvent.Name.Should().Be("Holiday Gift Ideas");
+        domainEvent.Name.ShouldBe("Holiday Gift Ideas");
     }
 
     #endregion
@@ -83,8 +83,8 @@ public class WishlistDomainEventTests
         wishlist.AddItem(productId);
 
         // Assert
-        wishlist.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<WishlistItemAddedEvent>();
+        wishlist.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<WishlistItemAddedEvent>();
     }
 
     [Fact]
@@ -100,9 +100,9 @@ public class WishlistDomainEventTests
 
         // Assert
         var domainEvent = wishlist.DomainEvents.OfType<WishlistItemAddedEvent>().Single();
-        domainEvent.WishlistId.Should().Be(wishlist.Id);
-        domainEvent.ProductId.Should().Be(productId);
-        domainEvent.ProductVariantId.Should().BeNull();
+        domainEvent.WishlistId.ShouldBe(wishlist.Id);
+        domainEvent.ProductId.ShouldBe(productId);
+        domainEvent.ProductVariantId.ShouldBeNull();
     }
 
     [Fact]
@@ -119,8 +119,8 @@ public class WishlistDomainEventTests
 
         // Assert
         var domainEvent = wishlist.DomainEvents.OfType<WishlistItemAddedEvent>().Single();
-        domainEvent.ProductId.Should().Be(productId);
-        domainEvent.ProductVariantId.Should().Be(variantId);
+        domainEvent.ProductId.ShouldBe(productId);
+        domainEvent.ProductVariantId.ShouldBe(variantId);
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public class WishlistDomainEventTests
         wishlist.AddItem(productId); // Duplicate
 
         // Assert
-        wishlist.DomainEvents.Should().BeEmpty();
+        wishlist.DomainEvents.ShouldBeEmpty();
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public class WishlistDomainEventTests
         wishlist.AddItem(Guid.NewGuid());
 
         // Assert
-        wishlist.DomainEvents.OfType<WishlistItemAddedEvent>().Should().HaveCount(3);
+        wishlist.DomainEvents.OfType<WishlistItemAddedEvent>().Count().ShouldBe(3);
     }
 
     #endregion
@@ -171,8 +171,8 @@ public class WishlistDomainEventTests
         wishlist.RemoveItem(item.Id);
 
         // Assert
-        wishlist.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<WishlistItemRemovedEvent>();
+        wishlist.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<WishlistItemRemovedEvent>();
     }
 
     [Fact]
@@ -188,8 +188,8 @@ public class WishlistDomainEventTests
 
         // Assert
         var domainEvent = wishlist.DomainEvents.OfType<WishlistItemRemovedEvent>().Single();
-        domainEvent.WishlistId.Should().Be(wishlist.Id);
-        domainEvent.WishlistItemId.Should().Be(item.Id);
+        domainEvent.WishlistId.ShouldBe(wishlist.Id);
+        domainEvent.WishlistItemId.ShouldBe(item.Id);
     }
 
     [Fact]
@@ -204,7 +204,7 @@ public class WishlistDomainEventTests
         wishlist.RemoveItem(Guid.NewGuid()); // Non-existing ID
 
         // Assert
-        wishlist.DomainEvents.Should().BeEmpty();
+        wishlist.DomainEvents.ShouldBeEmpty();
     }
 
     #endregion
@@ -222,8 +222,8 @@ public class WishlistDomainEventTests
         wishlist.GenerateShareToken();
 
         // Assert
-        wishlist.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<WishlistSharedEvent>();
+        wishlist.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<WishlistSharedEvent>();
     }
 
     [Fact]
@@ -238,8 +238,8 @@ public class WishlistDomainEventTests
 
         // Assert
         var domainEvent = wishlist.DomainEvents.OfType<WishlistSharedEvent>().Single();
-        domainEvent.WishlistId.Should().Be(wishlist.Id);
-        domainEvent.UserId.Should().Be("user-share-test");
+        domainEvent.WishlistId.ShouldBe(wishlist.Id);
+        domainEvent.UserId.ShouldBe("user-share-test");
     }
 
     [Fact]
@@ -254,7 +254,7 @@ public class WishlistDomainEventTests
         wishlist.GenerateShareToken();
 
         // Assert
-        wishlist.DomainEvents.OfType<WishlistSharedEvent>().Should().HaveCount(2);
+        wishlist.DomainEvents.OfType<WishlistSharedEvent>().Count().ShouldBe(2);
     }
 
     #endregion

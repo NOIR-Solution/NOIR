@@ -47,9 +47,9 @@ public class RoleIdentityServiceTests
         var result = await _sut.FindByIdAsync(roleId);
 
         // Assert
-        result.Should().NotBeNull();
-        result!.Id.Should().Be(roleId);
-        result.Name.Should().Be("Admin");
+        result.ShouldNotBeNull();
+        result!.Id.ShouldBe(roleId);
+        result.Name.ShouldBe("Admin");
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class RoleIdentityServiceTests
         var result = await _sut.FindByIdAsync(roleId);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -94,17 +94,17 @@ public class RoleIdentityServiceTests
         var result = await _sut.FindByIdAsync(roleId);
 
         // Assert
-        result.Should().NotBeNull();
-        result!.Id.Should().Be(roleId);
-        result.Name.Should().Be("TestRole");
-        result.NormalizedName.Should().Be("TESTROLE");
-        result.Description.Should().Be("Test description");
-        result.ParentRoleId.Should().Be("parent-id");
-        result.TenantId.Should().Be(tenantId);
-        result.IsSystemRole.Should().BeTrue();
-        result.SortOrder.Should().Be(5);
-        result.IconName.Should().Be("shield");
-        result.Color.Should().Be("blue");
+        result.ShouldNotBeNull();
+        result!.Id.ShouldBe(roleId);
+        result.Name.ShouldBe("TestRole");
+        result.NormalizedName.ShouldBe("TESTROLE");
+        result.Description.ShouldBe("Test description");
+        result.ParentRoleId.ShouldBe("parent-id");
+        result.TenantId.ShouldBe(tenantId);
+        result.IsSystemRole.ShouldBe(true);
+        result.SortOrder.ShouldBe(5);
+        result.IconName.ShouldBe("shield");
+        result.Color.ShouldBe("blue");
     }
 
     #endregion
@@ -125,8 +125,8 @@ public class RoleIdentityServiceTests
         var result = await _sut.FindByNameAsync(roleName);
 
         // Assert
-        result.Should().NotBeNull();
-        result!.Name.Should().Be(roleName);
+        result.ShouldNotBeNull();
+        result!.Name.ShouldBe(roleName);
     }
 
     [Fact]
@@ -141,7 +141,7 @@ public class RoleIdentityServiceTests
         var result = await _sut.FindByNameAsync(roleName);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     #endregion
@@ -160,7 +160,7 @@ public class RoleIdentityServiceTests
         var result = await _sut.RoleExistsAsync(roleName);
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -175,7 +175,7 @@ public class RoleIdentityServiceTests
         var result = await _sut.RoleExistsAsync(roleName);
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     #endregion
@@ -194,8 +194,8 @@ public class RoleIdentityServiceTests
         var result = await _sut.CreateRoleAsync(roleName);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
-        result.UserId.Should().NotBeNullOrEmpty(); // Returns roleId
+        result.Succeeded.ShouldBe(true);
+        result.UserId.ShouldNotBeNullOrEmpty(); // Returns roleId
     }
 
     [Fact]
@@ -212,8 +212,8 @@ public class RoleIdentityServiceTests
         var result = await _sut.CreateRoleAsync(roleName);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("Role name already exists");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("Role name already exists");
     }
 
     #endregion
@@ -244,16 +244,16 @@ public class RoleIdentityServiceTests
             "blue");
 
         // Assert
-        result.Succeeded.Should().BeTrue();
-        capturedRole.Should().NotBeNull();
-        capturedRole!.Name.Should().Be("TestRole");
-        capturedRole.Description.Should().Be("Test description");
-        capturedRole.ParentRoleId.Should().Be("parent-id");
-        capturedRole.TenantId.Should().Be(tenantId);
-        capturedRole.IsSystemRole.Should().BeTrue();
-        capturedRole.SortOrder.Should().Be(5);
-        capturedRole.IconName.Should().Be("shield");
-        capturedRole.Color.Should().Be("blue");
+        result.Succeeded.ShouldBe(true);
+        capturedRole.ShouldNotBeNull();
+        capturedRole!.Name.ShouldBe("TestRole");
+        capturedRole.Description.ShouldBe("Test description");
+        capturedRole.ParentRoleId.ShouldBe("parent-id");
+        capturedRole.TenantId.ShouldBe(tenantId);
+        capturedRole.IsSystemRole.ShouldBe(true);
+        capturedRole.SortOrder.ShouldBe(5);
+        capturedRole.IconName.ShouldBe("shield");
+        capturedRole.Color.ShouldBe("blue");
     }
 
     [Fact]
@@ -273,10 +273,10 @@ public class RoleIdentityServiceTests
         var result = await _sut.CreateRoleAsync("TestRole", null, null, null, false, false, 0, null, null);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().HaveCount(2);
-        result.Errors.Should().Contain("Error 1");
-        result.Errors.Should().Contain("Error 2");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.Count().ShouldBe(2);
+        result.Errors.ShouldContain("Error 1");
+        result.Errors.ShouldContain("Error 2");
     }
 
     #endregion
@@ -299,7 +299,7 @@ public class RoleIdentityServiceTests
         var result = await _sut.UpdateRoleAsync(roleId, "NewName");
 
         // Assert
-        result.Succeeded.Should().BeTrue();
+        result.Succeeded.ShouldBe(true);
     }
 
     [Fact]
@@ -314,8 +314,8 @@ public class RoleIdentityServiceTests
         var result = await _sut.UpdateRoleAsync(roleId, "NewName");
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("Role not found.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("Role not found.");
     }
 
     #endregion
@@ -345,13 +345,13 @@ public class RoleIdentityServiceTests
             "red");
 
         // Assert
-        result.Succeeded.Should().BeTrue();
-        role.Name.Should().Be("NewName");
-        role.Description.Should().Be("New description");
-        role.ParentRoleId.Should().Be("new-parent-id");
-        role.SortOrder.Should().Be(10);
-        role.IconName.Should().Be("users");
-        role.Color.Should().Be("red");
+        result.Succeeded.ShouldBe(true);
+        role.Name.ShouldBe("NewName");
+        role.Description.ShouldBe("New description");
+        role.ParentRoleId.ShouldBe("new-parent-id");
+        role.SortOrder.ShouldBe(10);
+        role.IconName.ShouldBe("users");
+        role.Color.ShouldBe("red");
     }
 
     [Fact]
@@ -368,8 +368,8 @@ public class RoleIdentityServiceTests
         var result = await _sut.UpdateRoleAsync(roleId, "NewName", null, null, 0, null, null);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("Cannot rename a system role.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("Cannot rename a system role.");
     }
 
     [Fact]
@@ -388,8 +388,8 @@ public class RoleIdentityServiceTests
         var result = await _sut.UpdateRoleAsync(roleId, "SystemRole", "New description", null, 0, null, null);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
-        role.Description.Should().Be("New description");
+        result.Succeeded.ShouldBe(true);
+        role.Description.ShouldBe("New description");
     }
 
     #endregion
@@ -411,8 +411,8 @@ public class RoleIdentityServiceTests
         var result = await _sut.DeleteRoleAsync(roleId);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("Role not found.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("Role not found.");
     }
 
     [Fact]
@@ -429,8 +429,8 @@ public class RoleIdentityServiceTests
         var result = await _sut.DeleteRoleAsync(roleId);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("Cannot delete a system role.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("Cannot delete a system role.");
     }
 
     // Note: DeleteRoleAsync_WithChildRoles_ShouldReturnFailure test requires complex async queryable mocking
@@ -462,9 +462,9 @@ public class RoleIdentityServiceTests
         var result = await _sut.GetPermissionsAsync(roleId);
 
         // Assert
-        result.Should().HaveCount(2);
-        result.Should().Contain("users.read");
-        result.Should().Contain("users.write");
+        result.Count().ShouldBe(2);
+        result.ShouldContain("users.read");
+        result.ShouldContain("users.write");
     }
 
     [Fact]
@@ -479,7 +479,7 @@ public class RoleIdentityServiceTests
         var result = await _sut.GetPermissionsAsync(roleId);
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -505,7 +505,7 @@ public class RoleIdentityServiceTests
         var result = await _sut.AddPermissionsAsync(roleId, newPermissions);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
+        result.Succeeded.ShouldBe(true);
         _roleManagerMock.Verify(x => x.AddClaimAsync(role, It.Is<Claim>(c => c.Value == "new.permission")), Times.Once);
         _roleManagerMock.Verify(x => x.AddClaimAsync(role, It.Is<Claim>(c => c.Value == "existing.permission")), Times.Never);
     }
@@ -522,8 +522,8 @@ public class RoleIdentityServiceTests
         var result = await _sut.AddPermissionsAsync(roleId, new[] { "permission" });
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("Role not found.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("Role not found.");
     }
 
     [Fact]
@@ -543,7 +543,7 @@ public class RoleIdentityServiceTests
         var result = await _sut.RemovePermissionsAsync(roleId, permissionsToRemove);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
+        result.Succeeded.ShouldBe(true);
         _roleManagerMock.Verify(x => x.RemoveClaimAsync(role, It.Is<Claim>(c => c.Value == "permission.to.remove")), Times.Once);
     }
 
@@ -559,8 +559,8 @@ public class RoleIdentityServiceTests
         var result = await _sut.RemovePermissionsAsync(roleId, new[] { "permission" });
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("Role not found.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("Role not found.");
     }
 
     [Fact]
@@ -589,7 +589,7 @@ public class RoleIdentityServiceTests
         var result = await _sut.SetPermissionsAsync(roleId, newPermissions);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
+        result.Succeeded.ShouldBe(true);
         // Should remove old.permission (not in new set)
         _roleManagerMock.Verify(x => x.RemoveClaimAsync(role, It.Is<Claim>(c => c.Value == "old.permission")), Times.Once);
         // Should add new.permission (not in existing set)
@@ -611,8 +611,8 @@ public class RoleIdentityServiceTests
         var result = await _sut.SetPermissionsAsync(roleId, new[] { "permission" });
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("Role not found.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("Role not found.");
     }
 
     #endregion
@@ -640,9 +640,9 @@ public class RoleIdentityServiceTests
         var result = await _sut.GetEffectivePermissionsAsync(roleId);
 
         // Assert
-        result.Should().HaveCount(2);
-        result.Should().Contain("direct.permission1");
-        result.Should().Contain("direct.permission2");
+        result.Count().ShouldBe(2);
+        result.ShouldContain("direct.permission1");
+        result.ShouldContain("direct.permission2");
     }
 
     [Fact]
@@ -671,9 +671,9 @@ public class RoleIdentityServiceTests
         var result = await _sut.GetEffectivePermissionsAsync(childRoleId);
 
         // Assert
-        result.Should().HaveCount(2);
-        result.Should().Contain("child.permission");
-        result.Should().Contain("parent.permission");
+        result.Count().ShouldBe(2);
+        result.ShouldContain("child.permission");
+        result.ShouldContain("parent.permission");
     }
 
     [Fact]
@@ -700,8 +700,8 @@ public class RoleIdentityServiceTests
         var result = await _sut.GetEffectivePermissionsAsync(childRoleId);
 
         // Assert
-        result.Should().HaveCount(1);
-        result.Should().Contain("child.permission");
+        result.Count().ShouldBe(1);
+        result.ShouldContain("child.permission");
     }
 
     #endregion
@@ -722,8 +722,8 @@ public class RoleIdentityServiceTests
         var result = await _sut.GetRoleHierarchyAsync(roleId);
 
         // Assert
-        result.Should().HaveCount(1);
-        result[0].Id.Should().Be(roleId);
+        result.Count().ShouldBe(1);
+        result[0].Id.ShouldBe(roleId);
     }
 
     [Fact]
@@ -746,10 +746,10 @@ public class RoleIdentityServiceTests
         var result = await _sut.GetRoleHierarchyAsync(childId);
 
         // Assert
-        result.Should().HaveCount(3);
-        result[0].Name.Should().Be("Child");
-        result[1].Name.Should().Be("Parent");
-        result[2].Name.Should().Be("Grandparent");
+        result.Count().ShouldBe(3);
+        result[0].Name.ShouldBe("Child");
+        result[1].Name.ShouldBe("Parent");
+        result[2].Name.ShouldBe("Grandparent");
     }
 
     [Fact]
@@ -770,8 +770,8 @@ public class RoleIdentityServiceTests
         var result = await _sut.GetRoleHierarchyAsync(childId);
 
         // Assert
-        result.Should().HaveCount(1);
-        result[0].Name.Should().Be("Child");
+        result.Count().ShouldBe(1);
+        result[0].Name.ShouldBe("Child");
     }
 
     #endregion
@@ -782,14 +782,14 @@ public class RoleIdentityServiceTests
     public void Service_ShouldImplementIRoleIdentityService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IRoleIdentityService>();
+        _sut.ShouldBeAssignableTo<IRoleIdentityService>();
     }
 
     [Fact]
     public void Service_ShouldImplementIScopedService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IScopedService>();
+        _sut.ShouldBeAssignableTo<IScopedService>();
     }
 
     #endregion

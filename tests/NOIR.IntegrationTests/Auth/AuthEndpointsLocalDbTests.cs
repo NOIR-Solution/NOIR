@@ -68,11 +68,11 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
         var response = await adminClient.PostAsJsonAsync("/api/users", createCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var userDto = await response.Content.ReadFromJsonAsync<UserDto>();
-        userDto.Should().NotBeNull();
-        userDto!.Email.Should().Be(email);
+        userDto.ShouldNotBeNull();
+        userDto!.Email.ShouldBe(email);
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
         var response = await adminClient.PostAsJsonAsync("/api/users", secondCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 
     #endregion
@@ -107,14 +107,14 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
         var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
-        loginResponse.Should().NotBeNull();
-        loginResponse!.Auth.Should().NotBeNull();
-        loginResponse.Auth!.Email.Should().Be(email);
-        loginResponse.Auth.AccessToken.Should().NotBeNullOrEmpty();
-        loginResponse.Auth.RefreshToken.Should().NotBeNullOrEmpty();
+        loginResponse.ShouldNotBeNull();
+        loginResponse!.Auth.ShouldNotBeNull();
+        loginResponse.Auth!.Email.ShouldBe(email);
+        loginResponse.Auth.AccessToken.ShouldNotBeNullOrEmpty();
+        loginResponse.Auth.RefreshToken.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
         var response = await _client.PostAsJsonAsync("/api/auth/login", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -141,7 +141,7 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
         var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -159,13 +159,13 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
         var response = await _client.PostAsJsonAsync("/api/auth/refresh", refreshCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var newAuth = await response.Content.ReadFromJsonAsync<AuthResponse>();
-        newAuth.Should().NotBeNull();
-        newAuth!.AccessToken.Should().NotBeNullOrEmpty();
-        newAuth.RefreshToken.Should().NotBeNullOrEmpty();
-        newAuth.RefreshToken.Should().NotBe(initialAuth.RefreshToken);
+        newAuth.ShouldNotBeNull();
+        newAuth!.AccessToken.ShouldNotBeNullOrEmpty();
+        newAuth.RefreshToken.ShouldNotBeNullOrEmpty();
+        newAuth.RefreshToken.ShouldNotBe(initialAuth.RefreshToken);
     }
 
     [Fact]
@@ -179,7 +179,7 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
         var response = await _client.PostAsJsonAsync("/api/auth/refresh", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -196,7 +196,7 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
         var response = await _client.PostAsJsonAsync("/api/auth/refresh", firstRefresh);
 
         // Assert - Should fail because original token is no longer valid
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.Unauthorized, HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.Unauthorized, HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -214,13 +214,13 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
         var response = await authenticatedClient.GetAsync("/api/auth/me");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var userDto = await response.Content.ReadFromJsonAsync<CurrentUserDto>();
-        userDto.Should().NotBeNull();
-        userDto!.Email.Should().Be(email);
-        userDto.FirstName.Should().Be("John");
-        userDto.LastName.Should().Be("Doe");
+        userDto.ShouldNotBeNull();
+        userDto!.Email.ShouldBe(email);
+        userDto.FirstName.ShouldBe("John");
+        userDto.LastName.ShouldBe("Doe");
     }
 
     [Fact]
@@ -230,7 +230,7 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
         var response = await _client.GetAsync("/api/auth/me");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -250,17 +250,17 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
         var response3 = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
 
         // Assert
-        response1.StatusCode.Should().Be(HttpStatusCode.OK);
-        response2.StatusCode.Should().Be(HttpStatusCode.OK);
-        response3.StatusCode.Should().Be(HttpStatusCode.OK);
+        response1.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response2.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response3.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var login1 = await response1.Content.ReadFromJsonAsync<LoginResponse>();
         var login2 = await response2.Content.ReadFromJsonAsync<LoginResponse>();
         var login3 = await response3.Content.ReadFromJsonAsync<LoginResponse>();
 
         // All should have different refresh tokens
-        login1!.Auth!.RefreshToken.Should().NotBe(login2!.Auth!.RefreshToken);
-        login2.Auth.RefreshToken.Should().NotBe(login3!.Auth!.RefreshToken);
+        login1!.Auth!.RefreshToken.ShouldNotBe(login2!.Auth!.RefreshToken);
+        login2.Auth.RefreshToken.ShouldNotBe(login3!.Auth!.RefreshToken);
     }
 
     #endregion
@@ -277,8 +277,8 @@ public class AuthEndpointsLocalDbTests : IAsyncLifetime
         var response = await _client.PostAsJsonAsync("/api/auth/login", command);
 
         // Assert
-        response.Headers.Should().ContainKey("X-Frame-Options");
-        response.Headers.Should().ContainKey("X-Content-Type-Options");
+        response.Headers.Contains("X-Frame-Options").ShouldBeTrue();
+        response.Headers.Contains("X-Content-Type-Options").ShouldBeTrue();
     }
 
     #endregion

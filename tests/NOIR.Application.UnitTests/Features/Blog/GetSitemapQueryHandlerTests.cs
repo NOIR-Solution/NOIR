@@ -75,10 +75,10 @@ public class GetSitemapQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNullOrEmpty();
-        result.Value.Should().Contain("<urlset");
-        result.Value.Should().Contain("http://www.sitemaps.org/schemas/sitemap/0.9");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNullOrEmpty();
+        result.Value.ShouldContain("<urlset");
+        result.Value.ShouldContain("http://www.sitemaps.org/schemas/sitemap/0.9");
     }
 
     [Fact]
@@ -98,10 +98,10 @@ public class GetSitemapQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Contain("<loc>/blog</loc>");
-        result.Value.Should().Contain("<priority>0.9</priority>");
-        result.Value.Should().Contain("<changefreq>daily</changefreq>");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldContain("<loc>/blog</loc>");
+        result.Value.ShouldContain("<priority>0.9</priority>");
+        result.Value.ShouldContain("<changefreq>daily</changefreq>");
     }
 
     [Fact]
@@ -127,11 +127,11 @@ public class GetSitemapQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Contain("<loc>/blog/first-article</loc>");
-        result.Value.Should().Contain("<loc>/blog/second-article</loc>");
-        result.Value.Should().Contain("<priority>0.8</priority>");
-        result.Value.Should().Contain("<changefreq>weekly</changefreq>");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldContain("<loc>/blog/first-article</loc>");
+        result.Value.ShouldContain("<loc>/blog/second-article</loc>");
+        result.Value.ShouldContain("<priority>0.8</priority>");
+        result.Value.ShouldContain("<changefreq>weekly</changefreq>");
     }
 
     [Fact]
@@ -157,10 +157,10 @@ public class GetSitemapQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Contain("<loc>/blog/category/tech</loc>");
-        result.Value.Should().Contain("<loc>/blog/category/science</loc>");
-        result.Value.Should().Contain("<priority>0.6</priority>");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldContain("<loc>/blog/category/tech</loc>");
+        result.Value.ShouldContain("<loc>/blog/category/science</loc>");
+        result.Value.ShouldContain("<priority>0.6</priority>");
     }
 
     #endregion
@@ -186,9 +186,9 @@ public class GetSitemapQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Contain("http://www.google.com/schemas/sitemap-image/1.1");
-        result.Value.Should().Contain("https://example.com/image.jpg");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldContain("http://www.google.com/schemas/sitemap-image/1.1");
+        result.Value.ShouldContain("https://example.com/image.jpg");
     }
 
     [Fact]
@@ -210,8 +210,8 @@ public class GetSitemapQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotContain("xmlns:image");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotContain("xmlns:image");
     }
 
     [Fact]
@@ -236,8 +236,8 @@ public class GetSitemapQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Contain("https://example.com/design.jpg");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldContain("https://example.com/design.jpg");
     }
 
     #endregion
@@ -261,9 +261,9 @@ public class GetSitemapQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Contain("<urlset");
-        result.Value.Should().Contain("<loc>/blog</loc>");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldContain("<urlset");
+        result.Value.ShouldContain("<loc>/blog</loc>");
     }
 
     #endregion
@@ -290,11 +290,11 @@ public class GetSitemapQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var doc = new System.Xml.XmlDocument();
         doc.LoadXml(result.Value);
-        doc.DocumentElement.Should().NotBeNull();
-        doc.DocumentElement!.Name.Should().Be("urlset");
+        doc.DocumentElement.ShouldNotBeNull();
+        doc.DocumentElement!.Name.ShouldBe("urlset");
     }
 
     [Fact]
@@ -316,8 +316,8 @@ public class GetSitemapQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Contain("<lastmod>");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldContain("<lastmod>");
     }
 
     #endregion
@@ -331,7 +331,7 @@ public class GetSitemapQueryHandlerTests
         var query = new GetSitemapQuery();
 
         // Assert
-        query.IncludeImages.Should().BeTrue();
+        query.IncludeImages.ShouldBe(true);
     }
 
     #endregion

@@ -177,7 +177,7 @@ public class AddProductOptionCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -196,7 +196,7 @@ public class AddProductOptionCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -215,7 +215,7 @@ public class AddProductOptionCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Theory]
@@ -262,7 +262,7 @@ public class AddProductOptionCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -281,7 +281,7 @@ public class AddProductOptionCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]

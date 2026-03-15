@@ -33,9 +33,9 @@ public class GetProjectByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Test Project");
-        result.Value.Slug.Should().Be("test-project");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Test Project");
+        result.Value.Slug.ShouldBe("test-project");
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class GetProjectByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 
     [Fact]

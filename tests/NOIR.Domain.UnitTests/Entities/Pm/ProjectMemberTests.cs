@@ -22,13 +22,13 @@ public class ProjectMemberTests
             TestProjectId, TestEmployeeId, ProjectMemberRole.Member, TestTenantId);
 
         // Assert
-        member.Should().NotBeNull();
-        member.Id.Should().NotBe(Guid.Empty);
-        member.ProjectId.Should().Be(TestProjectId);
-        member.EmployeeId.Should().Be(TestEmployeeId);
-        member.Role.Should().Be(ProjectMemberRole.Member);
-        member.JoinedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
-        member.TenantId.Should().Be(TestTenantId);
+        member.ShouldNotBeNull();
+        member.Id.ShouldNotBe(Guid.Empty);
+        member.ProjectId.ShouldBe(TestProjectId);
+        member.EmployeeId.ShouldBe(TestEmployeeId);
+        member.Role.ShouldBe(ProjectMemberRole.Member);
+        member.JoinedAt.ShouldBe(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
+        member.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class ProjectMemberTests
             TestProjectId, TestEmployeeId, ProjectMemberRole.Owner, TestTenantId);
 
         // Assert
-        member.Role.Should().Be(ProjectMemberRole.Owner);
+        member.Role.ShouldBe(ProjectMemberRole.Owner);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class ProjectMemberTests
             TestProjectId, TestEmployeeId, ProjectMemberRole.Manager, TestTenantId);
 
         // Assert
-        member.Role.Should().Be(ProjectMemberRole.Manager);
+        member.Role.ShouldBe(ProjectMemberRole.Manager);
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class ProjectMemberTests
             TestProjectId, TestEmployeeId, ProjectMemberRole.Viewer, TestTenantId);
 
         // Assert
-        member.Role.Should().Be(ProjectMemberRole.Viewer);
+        member.Role.ShouldBe(ProjectMemberRole.Viewer);
     }
 
     [Fact]
@@ -75,8 +75,8 @@ public class ProjectMemberTests
             TestProjectId, TestEmployeeId, ProjectMemberRole.Member, TestTenantId);
 
         // Assert
-        member.JoinedAt.Should().BeOnOrAfter(beforeCreate);
-        member.JoinedAt.Should().BeOnOrBefore(DateTimeOffset.UtcNow);
+        member.JoinedAt.ShouldBeGreaterThanOrEqualTo(beforeCreate);
+        member.JoinedAt.ShouldBeLessThanOrEqualTo(DateTimeOffset.UtcNow);
     }
 
     #endregion
@@ -94,7 +94,7 @@ public class ProjectMemberTests
         member.ChangeRole(ProjectMemberRole.Manager);
 
         // Assert
-        member.Role.Should().Be(ProjectMemberRole.Manager);
+        member.Role.ShouldBe(ProjectMemberRole.Manager);
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class ProjectMemberTests
         member.ChangeRole(ProjectMemberRole.Owner);
 
         // Assert
-        member.Role.Should().Be(ProjectMemberRole.Owner);
+        member.Role.ShouldBe(ProjectMemberRole.Owner);
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public class ProjectMemberTests
         member.ChangeRole(ProjectMemberRole.Viewer);
 
         // Assert
-        member.Role.Should().Be(ProjectMemberRole.Viewer);
+        member.Role.ShouldBe(ProjectMemberRole.Viewer);
     }
 
     [Fact]
@@ -139,9 +139,9 @@ public class ProjectMemberTests
         member.ChangeRole(ProjectMemberRole.Manager);
 
         // Assert
-        member.ProjectId.Should().Be(originalProjectId);
-        member.EmployeeId.Should().Be(originalEmployeeId);
-        member.JoinedAt.Should().Be(originalJoinedAt);
+        member.ProjectId.ShouldBe(originalProjectId);
+        member.EmployeeId.ShouldBe(originalEmployeeId);
+        member.JoinedAt.ShouldBe(originalJoinedAt);
     }
 
     #endregion

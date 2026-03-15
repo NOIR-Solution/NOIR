@@ -33,9 +33,9 @@ public class GetTaskByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Title.Should().Be("Test Task");
-        result.Value.TaskNumber.Should().Be("PRJ-001");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Title.ShouldBe("Test Task");
+        result.Value.TaskNumber.ShouldBe("PRJ-001");
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class GetTaskByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 
     [Fact]

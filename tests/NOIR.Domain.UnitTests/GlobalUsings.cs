@@ -2,7 +2,7 @@
 
 // Testing Framework
 global using Xunit;
-global using FluentAssertions;
+global using Shouldly;
 
 // System
 global using System;

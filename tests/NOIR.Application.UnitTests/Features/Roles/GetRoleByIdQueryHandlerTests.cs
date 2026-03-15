@@ -92,13 +92,13 @@ public class GetRoleByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(roleId);
-        result.Value.Name.Should().Be("Administrator");
-        result.Value.Description.Should().Be("Admin role with full access");
-        result.Value.UserCount.Should().Be(5);
-        result.Value.Permissions.Should().BeEquivalentTo(permissions);
-        result.Value.EffectivePermissions.Should().BeEquivalentTo(effectivePermissions);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(roleId);
+        result.Value.Name.ShouldBe("Administrator");
+        result.Value.Description.ShouldBe("Admin role with full access");
+        result.Value.UserCount.ShouldBe(5);
+        result.Value.Permissions.ShouldBe(permissions);
+        result.Value.EffectivePermissions.ShouldBe(effectivePermissions);
     }
 
     [Fact]
@@ -133,8 +133,8 @@ public class GetRoleByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsSystemRole.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsSystemRole.ShouldBe(true);
     }
 
     [Fact]
@@ -177,9 +177,9 @@ public class GetRoleByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ParentRoleId.Should().Be(parentRoleId);
-        result.Value.ParentRoleName.Should().Be("Administrator");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ParentRoleId.ShouldBe(parentRoleId);
+        result.Value.ParentRoleName.ShouldBe("Administrator");
     }
 
     [Fact]
@@ -214,9 +214,9 @@ public class GetRoleByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ParentRoleId.Should().BeNull();
-        result.Value.ParentRoleName.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ParentRoleId.ShouldBeNull();
+        result.Value.ParentRoleName.ShouldBeNull();
     }
 
     [Fact]
@@ -252,8 +252,8 @@ public class GetRoleByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TenantId.Should().Be(tenantId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -296,20 +296,20 @@ public class GetRoleByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Id.Should().Be(roleId);
-        dto.Name.Should().Be("FullRole");
-        dto.NormalizedName.Should().Be("FULLROLE");
-        dto.Description.Should().Be("Full description");
-        dto.TenantId.Should().Be(tenantId);
-        dto.IsSystemRole.Should().BeFalse();
-        dto.SortOrder.Should().Be(10);
-        dto.IconName.Should().Be("shield");
-        dto.Color.Should().Be("#FF5733");
-        dto.UserCount.Should().Be(25);
-        dto.Permissions.Should().HaveCount(1);
-        dto.EffectivePermissions.Should().HaveCount(2);
+        dto.Id.ShouldBe(roleId);
+        dto.Name.ShouldBe("FullRole");
+        dto.NormalizedName.ShouldBe("FULLROLE");
+        dto.Description.ShouldBe("Full description");
+        dto.TenantId.ShouldBe(tenantId);
+        dto.IsSystemRole.ShouldBe(false);
+        dto.SortOrder.ShouldBe(10);
+        dto.IconName.ShouldBe("shield");
+        dto.Color.ShouldBe("#FF5733");
+        dto.UserCount.ShouldBe(25);
+        dto.Permissions.Count().ShouldBe(1);
+        dto.EffectivePermissions.Count().ShouldBe(2);
     }
 
     #endregion
@@ -332,8 +332,8 @@ public class GetRoleByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.RoleNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.RoleNotFound);
     }
 
     [Fact]
@@ -444,10 +444,10 @@ public class GetRoleByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Permissions.Should().BeEmpty();
-        result.Value.EffectivePermissions.Should().BeEmpty();
-        result.Value.UserCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Permissions.ShouldBeEmpty();
+        result.Value.EffectivePermissions.ShouldBeEmpty();
+        result.Value.UserCount.ShouldBe(0);
     }
 
     [Fact]
@@ -487,9 +487,9 @@ public class GetRoleByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ParentRoleId.Should().Be(parentRoleId);
-        result.Value.ParentRoleName.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ParentRoleId.ShouldBe(parentRoleId);
+        result.Value.ParentRoleName.ShouldBeNull();
     }
 
     #endregion

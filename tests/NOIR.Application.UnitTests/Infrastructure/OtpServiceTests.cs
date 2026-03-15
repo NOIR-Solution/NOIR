@@ -35,8 +35,8 @@ public class OtpServiceTests
         var otp = _sut.GenerateOtp();
 
         // Assert
-        otp.Should().NotBeNullOrEmpty();
-        otp.Length.Should().Be(_settings.OtpLength);
+        otp.ShouldNotBeNullOrEmpty();
+        otp.Length.ShouldBe(_settings.OtpLength);
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public class OtpServiceTests
         var otp = _sut.GenerateOtp();
 
         // Assert
-        otp.Should().MatchRegex("^[0-9]+$");
+        otp.ShouldMatch("^[0-9]+$");
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class OtpServiceTests
 
         // Assert - Most should be unique (some collisions possible with 6-digit OTPs)
         var uniqueCount = otps.Distinct().Count();
-        uniqueCount.Should().BeGreaterThan(90); // Allow for some collisions
+        uniqueCount.ShouldBeGreaterThan(90); // Allow for some collisions
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class OtpServiceTests
         var otps = Enumerable.Range(0, 1000).Select(_ => _sut.GenerateOtp()).ToList();
 
         // Assert - All should have consistent length
-        otps.Should().OnlyContain(otp => otp.Length == _settings.OtpLength);
+        otps.ShouldAllBe(otp => otp.Length == _settings.OtpLength);
     }
 
     #endregion
@@ -85,8 +85,8 @@ public class OtpServiceTests
         var otp = _sut.GenerateOtp(length);
 
         // Assert
-        otp.Length.Should().Be(length);
-        otp.Should().MatchRegex("^[0-9]+$");
+        otp.Length.ShouldBe(length);
+        otp.ShouldMatch("^[0-9]+$");
     }
 
     [Theory]
@@ -101,7 +101,7 @@ public class OtpServiceTests
         var act = () => _sut.GenerateOtp(invalidLength);
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>();
+        Should.Throw<ArgumentOutOfRangeException>(act);
     }
 
     [Fact]
@@ -111,8 +111,8 @@ public class OtpServiceTests
         var otp = _sut.GenerateOtp(4);
 
         // Assert
-        otp.Length.Should().Be(4);
-        otp.Should().MatchRegex("^[0-9]+$");
+        otp.Length.ShouldBe(4);
+        otp.ShouldMatch("^[0-9]+$");
     }
 
     [Fact]
@@ -122,8 +122,8 @@ public class OtpServiceTests
         var otp = _sut.GenerateOtp(10);
 
         // Assert
-        otp.Length.Should().Be(10);
-        otp.Should().MatchRegex("^[0-9]+$");
+        otp.Length.ShouldBe(10);
+        otp.ShouldMatch("^[0-9]+$");
     }
 
     #endregion
@@ -140,8 +140,8 @@ public class OtpServiceTests
         var hash = _sut.HashOtp(otp);
 
         // Assert
-        hash.Should().NotBeNullOrEmpty();
-        hash.Should().StartWith("$2"); // Bcrypt hash prefix
+        hash.ShouldNotBeNullOrEmpty();
+        hash.ShouldStartWith("$2"); // Bcrypt hash prefix
     }
 
     [Fact]
@@ -155,7 +155,7 @@ public class OtpServiceTests
         var hash2 = _sut.HashOtp(otp);
 
         // Assert - Bcrypt uses random salt, so hashes should differ
-        hash1.Should().NotBe(hash2);
+        hash1.ShouldNotBe(hash2);
     }
 
     [Fact]
@@ -169,7 +169,7 @@ public class OtpServiceTests
         var isValid = _sut.VerifyOtp(otp, hash);
 
         // Assert
-        isValid.Should().BeTrue();
+        isValid.ShouldBe(true);
     }
 
     [Theory]
@@ -183,8 +183,8 @@ public class OtpServiceTests
         var hash = _sut.HashOtp(otp);
 
         // Assert
-        hash.Should().NotBeNullOrEmpty();
-        hash.Should().StartWith("$2");
+        hash.ShouldNotBeNullOrEmpty();
+        hash.ShouldStartWith("$2");
     }
 
     #endregion
@@ -202,7 +202,7 @@ public class OtpServiceTests
         var result = _sut.VerifyOtp(otp, hash);
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -217,7 +217,7 @@ public class OtpServiceTests
         var result = _sut.VerifyOtp(incorrectOtp, hash);
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -227,7 +227,7 @@ public class OtpServiceTests
         var result = _sut.VerifyOtp("123456", "invalid-hash");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -237,7 +237,7 @@ public class OtpServiceTests
         var result = _sut.VerifyOtp("123456", "");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -247,7 +247,7 @@ public class OtpServiceTests
         var result = _sut.VerifyOtp("123456", null!);
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Theory]
@@ -264,7 +264,7 @@ public class OtpServiceTests
         var result = _sut.VerifyOtp(otp, hash);
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -280,9 +280,9 @@ public class OtpServiceTests
         var result3 = _sut.VerifyOtp("12345", hash);  // Missing digit
 
         // Assert
-        result1.Should().BeFalse();
-        result2.Should().BeFalse();
-        result3.Should().BeFalse();
+        result1.ShouldBe(false);
+        result2.ShouldBe(false);
+        result3.ShouldBe(false);
     }
 
     #endregion
@@ -298,7 +298,7 @@ public class OtpServiceTests
         var masked = _sut.MaskEmail(email);
 
         // Assert
-        masked.Should().Be(expected);
+        masked.ShouldBe(expected);
     }
 
     [Fact]
@@ -311,8 +311,8 @@ public class OtpServiceTests
         var masked = _sut.MaskEmail(email);
 
         // Assert
-        masked.Should().Contain("***");
-        masked.Should().NotBe(email);
+        masked.ShouldContain("***");
+        masked.ShouldNotBe(email);
     }
 
     [Theory]
@@ -325,9 +325,9 @@ public class OtpServiceTests
         var masked = _sut.MaskEmail(email);
 
         // Assert
-        masked.Should().NotBeNullOrEmpty();
-        masked.Should().Contain("@");
-        masked.Should().Contain("***");
+        masked.ShouldNotBeNullOrEmpty();
+        masked.ShouldContain("@");
+        masked.ShouldContain("***");
     }
 
     #endregion
@@ -357,8 +357,8 @@ public class OtpServiceTests
 
         foreach (var count in digitCounts)
         {
-            count.Should().BeGreaterThan((int)(expectedCount - tolerance));
-            count.Should().BeLessThan((int)(expectedCount + tolerance));
+            count.ShouldBeGreaterThan((int)(expectedCount - tolerance));
+            count.ShouldBeLessThan((int)(expectedCount + tolerance));
         }
     }
 
@@ -373,7 +373,7 @@ public class OtpServiceTests
 
         // Assert - Verify the hash has appropriate cost factor
         // $2a$10$ or $2b$10$ indicates work factor of 10
-        hash.Should().MatchRegex(@"^\$2[aby]\$\d{2}\$");
+        hash.ShouldMatch(@"^\$2[aby]\$\d{2}\$");
     }
 
     #endregion

@@ -92,15 +92,15 @@ public class GetActivityDetailsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Entry.Id.Should().Be(activityId);
-        result.Value.Entry.DisplayContext.Should().Be("Users");
-        result.Value.Entry.OperationType.Should().Be("Update");
-        result.Value.InputParameters.Should().NotBeNullOrEmpty();
-        result.Value.OutputResult.Should().NotBeNullOrEmpty();
-        result.Value.HttpRequest.Should().NotBeNull();
-        result.Value.EntityChanges.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Entry.Id.ShouldBe(activityId);
+        result.Value.Entry.DisplayContext.ShouldBe("Users");
+        result.Value.Entry.OperationType.ShouldBe("Update");
+        result.Value.InputParameters.ShouldNotBeNullOrEmpty();
+        result.Value.OutputResult.ShouldNotBeNullOrEmpty();
+        result.Value.HttpRequest.ShouldNotBeNull();
+        result.Value.EntityChanges.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -120,17 +120,17 @@ public class GetActivityDetailsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var details = result.Value;
-        details.Entry.UserEmail.Should().Be("admin@noir.local");
-        details.Entry.ActionDescription.Should().Be("Updated user John Doe");
-        details.Entry.TargetDisplayName.Should().Be("John Doe");
-        details.Entry.IsSuccess.Should().BeTrue();
-        details.Entry.DurationMs.Should().Be(150);
-        details.Entry.EntityChangeCount.Should().Be(2);
-        details.HttpRequest!.Method.Should().Be("PUT");
-        details.HttpRequest.Path.Should().Be("/api/users/123");
-        details.HttpRequest.StatusCode.Should().Be(200);
+        details.Entry.UserEmail.ShouldBe("admin@noir.local");
+        details.Entry.ActionDescription.ShouldBe("Updated user John Doe");
+        details.Entry.TargetDisplayName.ShouldBe("John Doe");
+        details.Entry.IsSuccess.ShouldBe(true);
+        details.Entry.DurationMs.ShouldBe(150);
+        details.Entry.EntityChangeCount.ShouldBe(2);
+        details.HttpRequest!.Method.ShouldBe("PUT");
+        details.HttpRequest.Path.ShouldBe("/api/users/123");
+        details.HttpRequest.StatusCode.ShouldBe(200);
     }
 
     [Fact]
@@ -174,10 +174,10 @@ public class GetActivityDetailsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Entry.IsSuccess.Should().BeFalse();
-        result.Value.ErrorMessage.Should().Be("User not found");
-        result.Value.EntityChanges.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Entry.IsSuccess.ShouldBe(false);
+        result.Value.ErrorMessage.ShouldBe("User not found");
+        result.Value.EntityChanges.ShouldBeEmpty();
     }
 
     #endregion
@@ -201,9 +201,9 @@ public class GetActivityDetailsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Message.Should().Contain(nonExistentId.ToString());
-        result.Error.Code.Should().Be(ErrorCodes.Business.NotFound);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Message.ShouldContain(nonExistentId.ToString());
+        result.Error.Code.ShouldBe(ErrorCodes.Business.NotFound);
     }
 
     [Fact]
@@ -223,8 +223,8 @@ public class GetActivityDetailsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(ErrorCodes.Business.NotFound);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe(ErrorCodes.Business.NotFound);
     }
 
     #endregion
@@ -321,9 +321,9 @@ public class GetActivityDetailsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.Forbidden);
-        result.Error.Code.Should().Be(ErrorCodes.Auth.Forbidden);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.Forbidden);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.Forbidden);
     }
 
     #endregion

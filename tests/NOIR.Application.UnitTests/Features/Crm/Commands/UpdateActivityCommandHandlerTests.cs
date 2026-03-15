@@ -52,11 +52,11 @@ public class UpdateActivityCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        activity.Type.Should().Be(ActivityType.Meeting);
-        activity.Subject.Should().Be("Updated subject");
-        activity.Description.Should().Be("Updated description");
-        activity.DurationMinutes.Should().Be(60);
+        result.IsSuccess.ShouldBe(true);
+        activity.Type.ShouldBe(ActivityType.Meeting);
+        activity.Subject.ShouldBe("Updated subject");
+        activity.Description.ShouldBe("Updated description");
+        activity.DurationMinutes.ShouldBe(60);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -76,7 +76,7 @@ public class UpdateActivityCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

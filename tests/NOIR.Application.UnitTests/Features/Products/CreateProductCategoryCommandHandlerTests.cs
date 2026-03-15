@@ -92,11 +92,11 @@ public class CreateProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be(command.Name);
-        result.Value.Slug.Should().Be(command.Slug.ToLowerInvariant());
-        result.Value.Description.Should().Be(command.Description);
-        result.Value.SortOrder.Should().Be(command.SortOrder);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe(command.Name);
+        result.Value.Slug.ShouldBe(command.Slug.ToLowerInvariant());
+        result.Value.Description.ShouldBe(command.Description);
+        result.Value.SortOrder.ShouldBe(command.SortOrder);
 
         _categoryRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<ProductCategory>(), It.IsAny<CancellationToken>()),
@@ -138,9 +138,9 @@ public class CreateProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ParentId.Should().Be(parentId);
-        result.Value.ParentName.Should().Be(parentCategory.Name);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ParentId.ShouldBe(parentId);
+        result.Value.ParentName.ShouldBe(parentCategory.Name);
     }
 
     [Fact]
@@ -169,9 +169,9 @@ public class CreateProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.MetaTitle.Should().Be("SEO Title");
-        result.Value.MetaDescription.Should().Be("SEO Description");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.MetaTitle.ShouldBe("SEO Title");
+        result.Value.MetaDescription.ShouldBe("SEO Description");
     }
 
     [Fact]
@@ -198,8 +198,8 @@ public class CreateProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ImageUrl.Should().Be("https://example.com/image.jpg");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ImageUrl.ShouldBe("https://example.com/image.jpg");
     }
 
     [Fact]
@@ -226,8 +226,8 @@ public class CreateProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SortOrder.Should().Be(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SortOrder.ShouldBe(5);
     }
 
     #endregion
@@ -251,10 +251,10 @@ public class CreateProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Conflict);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-001");
-        result.Error.Message.Should().Contain("already exists");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Conflict);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-001");
+        result.Error.Message.ShouldContain("already exists");
 
         _categoryRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<ProductCategory>(), It.IsAny<CancellationToken>()),
@@ -291,10 +291,10 @@ public class CreateProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-002");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-002");
+        result.Error.Message.ShouldContain("not found");
 
         _categoryRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<ProductCategory>(), It.IsAny<CancellationToken>()),
@@ -366,9 +366,9 @@ public class CreateProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ParentId.Should().BeNull();
-        result.Value.ParentName.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ParentId.ShouldBeNull();
+        result.Value.ParentName.ShouldBeNull();
 
         _categoryRepositoryMock.Verify(
             x => x.FirstOrDefaultAsync(It.IsAny<ProductCategoryByIdSpec>(), It.IsAny<CancellationToken>()),
@@ -399,8 +399,8 @@ public class CreateProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Description.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Description.ShouldBeNull();
     }
 
     [Fact]
@@ -429,8 +429,8 @@ public class CreateProductCategoryCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        capturedCategory.Should().NotBeNull();
-        capturedCategory!.TenantId.Should().Be(TestTenantId);
+        capturedCategory.ShouldNotBeNull();
+        capturedCategory!.TenantId.ShouldBe(TestTenantId);
     }
 
     #endregion

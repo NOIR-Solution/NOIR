@@ -32,20 +32,20 @@ public class ExcelExportServiceTests
         var result = _service.CreateExcelFile("Products", headers, rows);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Length.Should().BeGreaterThan(0);
+        result.ShouldNotBeNull();
+        result.Length.ShouldBeGreaterThan(0);
 
         // Verify it's a valid XLSX file by reading it back
         using var stream = new MemoryStream(result);
         using var workbook = new XLWorkbook(stream);
         var worksheet = workbook.Worksheets.First();
 
-        worksheet.Name.Should().Be("Products");
-        worksheet.Cell(1, 1).Value.ToString().Should().Be("Name");
-        worksheet.Cell(1, 2).Value.ToString().Should().Be("Price");
-        worksheet.Cell(1, 3).Value.ToString().Should().Be("Quantity");
-        worksheet.Cell(2, 1).Value.ToString().Should().Be("Widget A");
-        worksheet.Cell(3, 1).Value.ToString().Should().Be("Widget B");
+        worksheet.Name.ShouldBe("Products");
+        worksheet.Cell(1, 1).Value.ToString().ShouldBe("Name");
+        worksheet.Cell(1, 2).Value.ToString().ShouldBe("Price");
+        worksheet.Cell(1, 3).Value.ToString().ShouldBe("Quantity");
+        worksheet.Cell(2, 1).Value.ToString().ShouldBe("Widget A");
+        worksheet.Cell(3, 1).Value.ToString().ShouldBe("Widget B");
     }
 
     [Fact]
@@ -59,20 +59,20 @@ public class ExcelExportServiceTests
         var result = _service.CreateExcelFile("Customers", headers, rows);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Length.Should().BeGreaterThan(0);
+        result.ShouldNotBeNull();
+        result.Length.ShouldBeGreaterThan(0);
 
         using var stream = new MemoryStream(result);
         using var workbook = new XLWorkbook(stream);
         var worksheet = workbook.Worksheets.First();
 
-        worksheet.Name.Should().Be("Customers");
-        worksheet.Cell(1, 1).Value.ToString().Should().Be("Name");
-        worksheet.Cell(1, 2).Value.ToString().Should().Be("Email");
-        worksheet.Cell(1, 3).Value.ToString().Should().Be("Phone");
+        worksheet.Name.ShouldBe("Customers");
+        worksheet.Cell(1, 1).Value.ToString().ShouldBe("Name");
+        worksheet.Cell(1, 2).Value.ToString().ShouldBe("Email");
+        worksheet.Cell(1, 3).Value.ToString().ShouldBe("Phone");
 
         // Row 2 should be empty (no data rows)
-        worksheet.Cell(2, 1).IsEmpty().Should().BeTrue();
+        worksheet.Cell(2, 1).IsEmpty().ShouldBe(true);
     }
 
     [Fact]
@@ -90,17 +90,17 @@ public class ExcelExportServiceTests
         var result = _service.CreateExcelFile("Products", headers, rows);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Length.Should().BeGreaterThan(0);
+        result.ShouldNotBeNull();
+        result.Length.ShouldBeGreaterThan(0);
 
         using var stream = new MemoryStream(result);
         using var workbook = new XLWorkbook(stream);
         var worksheet = workbook.Worksheets.First();
 
-        worksheet.Cell(2, 1).Value.ToString().Should().Be("Product A");
-        worksheet.Cell(2, 2).IsEmpty().Should().BeTrue();
-        worksheet.Cell(3, 1).IsEmpty().Should().BeTrue();
-        worksheet.Cell(3, 2).Value.ToString().Should().Be("Description B");
+        worksheet.Cell(2, 1).Value.ToString().ShouldBe("Product A");
+        worksheet.Cell(2, 2).IsEmpty().ShouldBe(true);
+        worksheet.Cell(3, 1).IsEmpty().ShouldBe(true);
+        worksheet.Cell(3, 2).Value.ToString().ShouldBe("Description B");
     }
 
     [Fact]
@@ -118,19 +118,19 @@ public class ExcelExportServiceTests
         var result = _service.CreateExcelFile("Mixed", headers, rows);
 
         // Assert
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
 
         using var stream = new MemoryStream(result);
         using var workbook = new XLWorkbook(stream);
         var worksheet = workbook.Worksheets.First();
 
-        worksheet.Cell(2, 1).Value.ToString().Should().Be("text");
-        worksheet.Cell(2, 2).GetValue<decimal>().Should().Be(123.45m);
-        worksheet.Cell(2, 3).GetValue<int>().Should().Be(42);
-        worksheet.Cell(2, 4).Value.ToString().Should().Be("2026-03-01 10:30:00");
-        worksheet.Cell(2, 5).Value.ToString().Should().Be("Yes");
-        worksheet.Cell(2, 6).GetValue<long>().Should().Be(999999L);
-        worksheet.Cell(2, 7).GetValue<double>().Should().Be(3.14);
+        worksheet.Cell(2, 1).Value.ToString().ShouldBe("text");
+        worksheet.Cell(2, 2).GetValue<decimal>().ShouldBe(123.45m);
+        worksheet.Cell(2, 3).GetValue<int>().ShouldBe(42);
+        worksheet.Cell(2, 4).Value.ToString().ShouldBe("2026-03-01 10:30:00");
+        worksheet.Cell(2, 5).Value.ToString().ShouldBe("Yes");
+        worksheet.Cell(2, 6).GetValue<long>().ShouldBe(999999L);
+        worksheet.Cell(2, 7).GetValue<double>().ShouldBe(3.14);
     }
 
     [Fact]
@@ -151,7 +151,7 @@ public class ExcelExportServiceTests
         using var workbook = new XLWorkbook(stream);
         var worksheet = workbook.Worksheets.First();
 
-        worksheet.Cell(2, 1).Value.ToString().Should().Be("No");
+        worksheet.Cell(2, 1).Value.ToString().ShouldBe("No");
     }
 
     [Fact]
@@ -169,8 +169,8 @@ public class ExcelExportServiceTests
         using var workbook = new XLWorkbook(stream);
         var worksheet = workbook.Worksheets.First();
 
-        worksheet.Cell(1, 1).Style.Font.Bold.Should().BeTrue();
-        worksheet.Cell(1, 2).Style.Font.Bold.Should().BeTrue();
+        worksheet.Cell(1, 1).Style.Font.Bold.ShouldBe(true);
+        worksheet.Cell(1, 2).Style.Font.Bold.ShouldBe(true);
     }
 
     [Fact]
@@ -192,7 +192,7 @@ public class ExcelExportServiceTests
         var worksheet = workbook.Worksheets.First();
 
         // Verify the file was generated without error (FreezeRows was called)
-        worksheet.RowCount().Should().BeGreaterThanOrEqualTo(1);
+        worksheet.RowCount().ShouldBeGreaterThanOrEqualTo(1);
     }
 
     #endregion

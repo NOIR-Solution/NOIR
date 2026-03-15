@@ -111,12 +111,12 @@ public class ConfigureShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.ProviderCode.Should().Be(ShippingProviderCode.GHTK);
-        result.Value.DisplayName.Should().Be("Giao Hang Tiet Kiem");
-        result.Value.IsActive.Should().BeTrue();
-        result.Value.Environment.Should().Be(GatewayEnvironment.Sandbox);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.ProviderCode.ShouldBe(ShippingProviderCode.GHTK);
+        result.Value.DisplayName.ShouldBe("Giao Hang Tiet Kiem");
+        result.Value.IsActive.ShouldBe(true);
+        result.Value.Environment.ShouldBe(GatewayEnvironment.Sandbox);
 
         _providerRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<ShippingProvider>(), It.IsAny<CancellationToken>()),
@@ -152,8 +152,8 @@ public class ConfigureShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.HasCredentials.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.HasCredentials.ShouldBe(true);
 
         _encryptionServiceMock.Verify(
             x => x.Encrypt(It.Is<string>(s => s.Contains("ApiKey"))),
@@ -188,10 +188,10 @@ public class ConfigureShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        addedProvider.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        addedProvider.ShouldNotBeNull();
         // SupportedServices is serialized as JSON array of enum values
-        addedProvider!.SupportedServices.Should().NotBeNullOrEmpty();
+        addedProvider!.SupportedServices.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -220,8 +220,8 @@ public class ConfigureShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(false);
     }
 
     [Fact]
@@ -252,9 +252,9 @@ public class ConfigureShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProviderCode.Should().Be(ShippingProviderCode.GHN);
-        result.Value.DisplayName.Should().Be("Giao Hang Nhanh");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProviderCode.ShouldBe(ShippingProviderCode.GHN);
+        result.Value.DisplayName.ShouldBe("Giao Hang Nhanh");
     }
 
     #endregion
@@ -276,9 +276,9 @@ public class ConfigureShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.Conflict);
-        result.Error.Message.Should().Contain("already exists");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.Conflict);
+        result.Error.Message.ShouldContain("already exists");
 
         _providerRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<ShippingProvider>(), It.IsAny<CancellationToken>()),
@@ -359,8 +359,8 @@ public class ConfigureShippingProviderCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        addedProvider.Should().NotBeNull();
-        addedProvider!.TenantId.Should().Be(TestTenantId);
+        addedProvider.ShouldNotBeNull();
+        addedProvider!.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -399,9 +399,9 @@ public class ConfigureShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        addedProvider.Should().NotBeNull();
-        addedProvider!.ApiBaseUrl.Should().Be("https://custom-api.example.com");
+        result.IsSuccess.ShouldBe(true);
+        addedProvider.ShouldNotBeNull();
+        addedProvider!.ApiBaseUrl.ShouldBe("https://custom-api.example.com");
     }
 
     [Fact]
@@ -430,8 +430,8 @@ public class ConfigureShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Environment.Should().Be(GatewayEnvironment.Production);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Environment.ShouldBe(GatewayEnvironment.Production);
     }
 
     #endregion

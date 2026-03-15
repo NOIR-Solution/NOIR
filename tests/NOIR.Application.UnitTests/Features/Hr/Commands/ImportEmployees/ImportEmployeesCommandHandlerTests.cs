@@ -93,10 +93,10 @@ public class ImportEmployeesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SuccessCount.Should().Be(2);
-        result.Value.FailedCount.Should().Be(0);
-        result.Value.Errors.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SuccessCount.ShouldBe(2);
+        result.Value.FailedCount.ShouldBe(0);
+        result.Value.Errors.ShouldBeEmpty();
 
         _employeeRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Employee>(), It.IsAny<CancellationToken>()),
@@ -137,10 +137,10 @@ public class ImportEmployeesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.FailedCount.Should().Be(1);
-        result.Value.Errors.Should().HaveCount(1);
-        result.Value.Errors[0].Message.Should().Contain("already exists");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.FailedCount.ShouldBe(1);
+        result.Value.Errors.Count().ShouldBe(1);
+        result.Value.Errors[0].Message.ShouldContain("already exists");
     }
 
     [Fact]
@@ -161,11 +161,11 @@ public class ImportEmployeesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.FailedCount.Should().Be(1);
-        result.Value.Errors.Should().HaveCount(1);
-        result.Value.Errors[0].Message.Should().Contain("INVALID_DEPT");
-        result.Value.Errors[0].Message.Should().Contain("not found");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.FailedCount.ShouldBe(1);
+        result.Value.Errors.Count().ShouldBe(1);
+        result.Value.Errors[0].Message.ShouldContain("INVALID_DEPT");
+        result.Value.Errors[0].Message.ShouldContain("not found");
     }
 
     [Fact]
@@ -180,6 +180,6 @@ public class ImportEmployeesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert — handler requires at least header + 1 data row
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
     }
 }

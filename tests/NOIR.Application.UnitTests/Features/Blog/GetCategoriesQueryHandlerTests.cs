@@ -74,8 +74,8 @@ public class GetCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -99,8 +99,8 @@ public class GetCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -129,13 +129,13 @@ public class GetCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value[0];
-        dto.Id.Should().Be(categoryId);
-        dto.Name.Should().Be("Technology");
-        dto.Slug.Should().Be("technology");
-        dto.Description.Should().Be("Tech articles");
-        dto.SortOrder.Should().Be(1);
+        dto.Id.ShouldBe(categoryId);
+        dto.Name.ShouldBe("Technology");
+        dto.Slug.ShouldBe("technology");
+        dto.Description.ShouldBe("Tech articles");
+        dto.SortOrder.ShouldBe(1);
     }
 
     [Fact]
@@ -154,8 +154,8 @@ public class GetCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     #endregion
@@ -184,9 +184,9 @@ public class GetCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
-        result.Value.All(c => c.ParentId == null).Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
+        result.Value.All(c => c.ParentId == null).ShouldBe(true);
     }
 
     [Fact]
@@ -212,8 +212,8 @@ public class GetCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
     }
 
     #endregion
@@ -241,8 +241,8 @@ public class GetCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
     }
 
     #endregion
@@ -272,12 +272,12 @@ public class GetCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
 
         var childCategory = result.Value.First(c => c.Name == "Programming");
-        childCategory.ParentId.Should().Be(parentId);
-        childCategory.ParentName.Should().Be("Technology");
+        childCategory.ParentId.ShouldBe(parentId);
+        childCategory.ParentName.ShouldBe("Technology");
     }
 
     [Fact]
@@ -303,8 +303,8 @@ public class GetCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value[0].ChildCount.Should().Be(0); // Empty Children collection in mock
+        result.IsSuccess.ShouldBe(true);
+        result.Value[0].ChildCount.ShouldBe(0); // Empty Children collection in mock
     }
 
     #endregion
@@ -336,8 +336,8 @@ public class GetCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value[0].PostCount.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value[0].PostCount.ShouldBe(3);
     }
 
     #endregion
@@ -367,11 +367,11 @@ public class GetCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(3);
-        result.Value.Should().Contain(c => c.SortOrder == 1);
-        result.Value.Should().Contain(c => c.SortOrder == 2);
-        result.Value.Should().Contain(c => c.SortOrder == 3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(3);
+        result.Value.ShouldContain(c => c.SortOrder == 1);
+        result.Value.ShouldContain(c => c.SortOrder == 2);
+        result.Value.ShouldContain(c => c.SortOrder == 3);
     }
 
     #endregion
@@ -400,8 +400,8 @@ public class GetCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -425,8 +425,8 @@ public class GetCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
     }
 
     #endregion

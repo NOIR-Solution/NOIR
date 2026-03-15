@@ -86,7 +86,7 @@ public class CreateProjectCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _projectRepoMock.Verify(
             x => x.AddAsync(It.IsAny<Project>(), It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(
@@ -108,7 +108,7 @@ public class CreateProjectCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _projectRepoMock.Verify(
             x => x.AddAsync(It.IsAny<Project>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -136,7 +136,7 @@ public class CreateProjectCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Verify 4 default columns were added
         _dbContextMock.Verify(
             x => x.ProjectColumns, Times.AtLeastOnce);
@@ -165,7 +165,7 @@ public class CreateProjectCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Verify member was added
         _dbContextMock.Verify(
             x => x.ProjectMembers, Times.AtLeastOnce);

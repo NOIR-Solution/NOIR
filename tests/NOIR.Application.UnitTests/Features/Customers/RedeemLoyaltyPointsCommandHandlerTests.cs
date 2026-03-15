@@ -59,9 +59,9 @@ public class RedeemLoyaltyPointsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.LoyaltyPoints.Should().Be(700);
-        result.Value.LifetimeLoyaltyPoints.Should().Be(1000); // Lifetime never decreases
+        result.IsSuccess.ShouldBe(true);
+        result.Value.LoyaltyPoints.ShouldBe(700);
+        result.Value.LifetimeLoyaltyPoints.ShouldBe(1000); // Lifetime never decreases
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -87,9 +87,9 @@ public class RedeemLoyaltyPointsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.LoyaltyPoints.Should().Be(0);
-        result.Value.LifetimeLoyaltyPoints.Should().Be(500);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.LoyaltyPoints.ShouldBe(0);
+        result.Value.LifetimeLoyaltyPoints.ShouldBe(500);
     }
 
     #endregion
@@ -112,8 +112,8 @@ public class RedeemLoyaltyPointsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CUSTOMER-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CUSTOMER-002");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -143,8 +143,8 @@ public class RedeemLoyaltyPointsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CUSTOMER-004");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CUSTOMER-004");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -170,8 +170,8 @@ public class RedeemLoyaltyPointsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CUSTOMER-004");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CUSTOMER-004");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -197,8 +197,8 @@ public class RedeemLoyaltyPointsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CUSTOMER-004");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CUSTOMER-004");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),

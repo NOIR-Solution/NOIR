@@ -55,9 +55,9 @@ public class GetKanbanBoardQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProjectName.Should().Be("Test Project");
-        result.Value.Columns.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProjectName.ShouldBe("Test Project");
+        result.Value.Columns.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class GetKanbanBoardQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public class GetKanbanBoardQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Columns.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Columns.ShouldBeEmpty();
     }
 }

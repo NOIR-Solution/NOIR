@@ -93,9 +93,9 @@ public class GetLegalPagesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.ShouldBeEmpty();
     }
 
     [Fact]
@@ -112,11 +112,11 @@ public class GetLegalPagesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
-        result.Value.Should().AllSatisfy(p => p.IsInherited.Should().BeTrue());
-        result.Value.Select(p => p.Slug).Should().Contain("terms-of-service");
-        result.Value.Select(p => p.Slug).Should().Contain("privacy-policy");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
+        result.Value.ShouldAllBe(p => p.IsInherited == true);
+        result.Value.Select(p => p.Slug).ShouldContain("terms-of-service");
+        result.Value.Select(p => p.Slug).ShouldContain("privacy-policy");
     }
 
     #endregion
@@ -137,11 +137,11 @@ public class GetLegalPagesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
-        result.Value[0].Title.Should().Be("Tenant Terms");
-        result.Value[0].IsInherited.Should().BeFalse();
-        result.Value[0].Id.Should().Be(tenantTerms.Id);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
+        result.Value[0].Title.ShouldBe("Tenant Terms");
+        result.Value[0].IsInherited.ShouldBe(false);
+        result.Value[0].Id.ShouldBe(tenantTerms.Id);
     }
 
     [Fact]
@@ -160,18 +160,18 @@ public class GetLegalPagesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
 
         var terms = result.Value.FirstOrDefault(p => p.Slug == "terms-of-service");
-        terms.Should().NotBeNull();
-        terms!.Title.Should().Be("Tenant Terms");
-        terms.IsInherited.Should().BeFalse();
+        terms.ShouldNotBeNull();
+        terms!.Title.ShouldBe("Tenant Terms");
+        terms.IsInherited.ShouldBe(false);
 
         var privacy = result.Value.FirstOrDefault(p => p.Slug == "privacy-policy");
-        privacy.Should().NotBeNull();
-        privacy!.Title.Should().Be("Platform Privacy");
-        privacy.IsInherited.Should().BeTrue();
+        privacy.ShouldNotBeNull();
+        privacy!.Title.ShouldBe("Platform Privacy");
+        privacy.IsInherited.ShouldBe(true);
     }
 
     #endregion
@@ -195,10 +195,10 @@ public class GetLegalPagesQueryHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
-        result.Value[0].Title.Should().Be("Platform Terms");
-        result.Value[0].IsInherited.Should().BeFalse(); // Platform pages are not inherited for platform users
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
+        result.Value[0].Title.ShouldBe("Platform Terms");
+        result.Value[0].IsInherited.ShouldBe(false); // Platform pages are not inherited for platform users
     }
 
     #endregion
@@ -220,11 +220,11 @@ public class GetLegalPagesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(3);
-        result.Value[0].Slug.Should().Be("a-page");
-        result.Value[1].Slug.Should().Be("m-page");
-        result.Value[2].Slug.Should().Be("z-page");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(3);
+        result.Value[0].Slug.ShouldBe("a-page");
+        result.Value[1].Slug.ShouldBe("m-page");
+        result.Value[2].Slug.ShouldBe("z-page");
     }
 
     #endregion

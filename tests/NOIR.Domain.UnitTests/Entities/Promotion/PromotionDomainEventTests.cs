@@ -45,8 +45,8 @@ public class PromotionDomainEventTests
         var promotion = CreateTestPromotion();
 
         // Assert
-        promotion.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PromotionCreatedEvent>();
+        promotion.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<PromotionCreatedEvent>();
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class PromotionDomainEventTests
 
         // Assert
         var domainEvent = promotion.DomainEvents.OfType<PromotionCreatedEvent>().Single();
-        domainEvent.PromotionId.Should().Be(promotion.Id);
+        domainEvent.PromotionId.ShouldBe(promotion.Id);
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class PromotionDomainEventTests
 
         // Assert
         var domainEvent = promotion.DomainEvents.OfType<PromotionCreatedEvent>().Single();
-        domainEvent.Code.Should().Be("SUMMER2026");
+        domainEvent.Code.ShouldBe("SUMMER2026");
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class PromotionDomainEventTests
 
         // Assert
         var domainEvent = promotion.DomainEvents.OfType<PromotionCreatedEvent>().Single();
-        domainEvent.Name.Should().Be("Winter Clearance");
+        domainEvent.Name.ShouldBe("Winter Clearance");
     }
 
     #endregion
@@ -97,8 +97,8 @@ public class PromotionDomainEventTests
         promotion.Activate();
 
         // Assert
-        promotion.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PromotionActivatedEvent>();
+        promotion.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<PromotionActivatedEvent>();
     }
 
     [Fact]
@@ -113,8 +113,8 @@ public class PromotionDomainEventTests
 
         // Assert
         var domainEvent = promotion.DomainEvents.OfType<PromotionActivatedEvent>().Single();
-        domainEvent.PromotionId.Should().Be(promotion.Id);
-        domainEvent.Code.Should().Be("FLASH50");
+        domainEvent.PromotionId.ShouldBe(promotion.Id);
+        domainEvent.Code.ShouldBe("FLASH50");
     }
 
     [Fact]
@@ -129,8 +129,8 @@ public class PromotionDomainEventTests
         promotion.Activate();
 
         // Assert
-        promotion.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PromotionActivatedEvent>();
+        promotion.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<PromotionActivatedEvent>();
     }
 
     #endregion
@@ -149,8 +149,8 @@ public class PromotionDomainEventTests
         promotion.Deactivate();
 
         // Assert
-        promotion.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PromotionDeactivatedEvent>();
+        promotion.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<PromotionDeactivatedEvent>();
     }
 
     [Fact]
@@ -166,8 +166,8 @@ public class PromotionDomainEventTests
 
         // Assert
         var domainEvent = promotion.DomainEvents.OfType<PromotionDeactivatedEvent>().Single();
-        domainEvent.PromotionId.Should().Be(promotion.Id);
-        domainEvent.Code.Should().Be("WINTER25");
+        domainEvent.PromotionId.ShouldBe(promotion.Id);
+        domainEvent.Code.ShouldBe("WINTER25");
     }
 
     #endregion
@@ -185,8 +185,8 @@ public class PromotionDomainEventTests
         promotion.IncrementUsage();
 
         // Assert
-        promotion.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<PromotionAppliedEvent>();
+        promotion.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<PromotionAppliedEvent>();
     }
 
     [Fact]
@@ -201,9 +201,9 @@ public class PromotionDomainEventTests
 
         // Assert
         var domainEvent = promotion.DomainEvents.OfType<PromotionAppliedEvent>().Single();
-        domainEvent.PromotionId.Should().Be(promotion.Id);
-        domainEvent.Code.Should().Be("APPLY10");
-        domainEvent.NewUsageCount.Should().Be(1);
+        domainEvent.PromotionId.ShouldBe(promotion.Id);
+        domainEvent.Code.ShouldBe("APPLY10");
+        domainEvent.NewUsageCount.ShouldBe(1);
     }
 
     [Fact]
@@ -220,7 +220,7 @@ public class PromotionDomainEventTests
 
         // Assert
         var domainEvent = promotion.DomainEvents.OfType<PromotionAppliedEvent>().Single();
-        domainEvent.NewUsageCount.Should().Be(3);
+        domainEvent.NewUsageCount.ShouldBe(3);
     }
 
     [Fact]
@@ -236,7 +236,7 @@ public class PromotionDomainEventTests
         promotion.IncrementUsage();
 
         // Assert
-        promotion.DomainEvents.OfType<PromotionAppliedEvent>().Should().HaveCount(3);
+        promotion.DomainEvents.OfType<PromotionAppliedEvent>().Count().ShouldBe(3);
     }
 
     #endregion

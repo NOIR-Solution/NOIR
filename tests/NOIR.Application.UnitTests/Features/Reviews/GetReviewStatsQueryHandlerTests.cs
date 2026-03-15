@@ -62,10 +62,10 @@ public class GetReviewStatsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TotalReviews.Should().Be(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TotalReviews.ShouldBe(5);
         // Average: (5+4+3+4+5) / 5 = 21/5 = 4.2
-        result.Value.AverageRating.Should().Be(4.2m);
+        result.Value.AverageRating.ShouldBe(4.2m);
     }
 
     [Fact]
@@ -94,12 +94,12 @@ public class GetReviewStatsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.RatingDistribution[1].Should().Be(1);
-        result.Value.RatingDistribution[2].Should().Be(0);
-        result.Value.RatingDistribution[3].Should().Be(1);
-        result.Value.RatingDistribution[4].Should().Be(1);
-        result.Value.RatingDistribution[5].Should().Be(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.RatingDistribution[1].ShouldBe(1);
+        result.Value.RatingDistribution[2].ShouldBe(0);
+        result.Value.RatingDistribution[3].ShouldBe(1);
+        result.Value.RatingDistribution[4].ShouldBe(1);
+        result.Value.RatingDistribution[5].ShouldBe(2);
     }
 
     [Fact]
@@ -120,14 +120,14 @@ public class GetReviewStatsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TotalReviews.Should().Be(0);
-        result.Value.AverageRating.Should().Be(0m);
-        result.Value.RatingDistribution[1].Should().Be(0);
-        result.Value.RatingDistribution[2].Should().Be(0);
-        result.Value.RatingDistribution[3].Should().Be(0);
-        result.Value.RatingDistribution[4].Should().Be(0);
-        result.Value.RatingDistribution[5].Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TotalReviews.ShouldBe(0);
+        result.Value.AverageRating.ShouldBe(0m);
+        result.Value.RatingDistribution[1].ShouldBe(0);
+        result.Value.RatingDistribution[2].ShouldBe(0);
+        result.Value.RatingDistribution[3].ShouldBe(0);
+        result.Value.RatingDistribution[4].ShouldBe(0);
+        result.Value.RatingDistribution[5].ShouldBe(0);
     }
 
     [Fact]
@@ -152,10 +152,10 @@ public class GetReviewStatsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TotalReviews.Should().Be(1);
-        result.Value.AverageRating.Should().Be(3.0m);
-        result.Value.RatingDistribution[3].Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TotalReviews.ShouldBe(1);
+        result.Value.AverageRating.ShouldBe(3.0m);
+        result.Value.RatingDistribution[3].ShouldBe(1);
     }
 
     [Fact]
@@ -182,9 +182,9 @@ public class GetReviewStatsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Average: (5+4+4) / 3 = 13/3 = 4.333... -> rounds to 4.3
-        result.Value.AverageRating.Should().Be(4.3m);
+        result.Value.AverageRating.ShouldBe(4.3m);
     }
 
     #endregion
@@ -234,9 +234,13 @@ public class GetReviewStatsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.RatingDistribution.Should().HaveCount(5);
-        result.Value.RatingDistribution.Should().ContainKeys(1, 2, 3, 4, 5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.RatingDistribution.Count().ShouldBe(5);
+        result.Value.RatingDistribution.ShouldContainKey(1);
+        result.Value.RatingDistribution.ShouldContainKey(2);
+        result.Value.RatingDistribution.ShouldContainKey(3);
+        result.Value.RatingDistribution.ShouldContainKey(4);
+        result.Value.RatingDistribution.ShouldContainKey(5);
     }
 
     #endregion

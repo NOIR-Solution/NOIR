@@ -80,11 +80,11 @@ public class CreateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.EmployeeCode.Should().Be("EMP-001");
-        result.Value.FirstName.Should().Be("John");
-        result.Value.LastName.Should().Be("Doe");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.EmployeeCode.ShouldBe("EMP-001");
+        result.Value.FirstName.ShouldBe("John");
+        result.Value.LastName.ShouldBe("Doe");
 
         _employeeRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Employee>(), It.IsAny<CancellationToken>()),
@@ -111,8 +111,8 @@ public class CreateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-HR-001");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-HR-001");
     }
 
     [Fact]
@@ -133,8 +133,8 @@ public class CreateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-HR-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-HR-002");
     }
 
     [Fact]
@@ -158,7 +158,7 @@ public class CreateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _codeGeneratorMock.Verify(
             x => x.GenerateNextAsync(TestTenantId, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -189,8 +189,8 @@ public class CreateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-HR-003");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-HR-003");
     }
 
     [Fact]
@@ -220,7 +220,7 @@ public class CreateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-HR-004");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-HR-004");
     }
 }

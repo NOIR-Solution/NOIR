@@ -55,11 +55,11 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/users");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<PaginatedList<UserListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeEmpty();
-        result.Items.Should().Contain(u => u.Email == "admin@noir.local");
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeEmpty();
+        result.Items.ShouldContain(u => u.Email == "admin@noir.local");
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/users");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -82,11 +82,11 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/users?pageNumber=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<PaginatedList<UserListDto>>();
-        result.Should().NotBeNull();
-        result!.PageNumber.Should().Be(1);
-        result.Items.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.PageNumber.ShouldBe(1);
+        result.Items.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     [Fact]
@@ -99,10 +99,10 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/users?search=admin");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<PaginatedList<UserListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().Contain(u => u.Email.Contains("admin"));
+        result.ShouldNotBeNull();
+        result!.Items.ShouldContain(u => u.Email.Contains("admin"));
     }
 
     #endregion
@@ -124,10 +124,10 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/users/{userId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var user = await response.Content.ReadFromJsonAsync<UserProfileDto>();
-        user.Should().NotBeNull();
-        user!.Id.Should().Be(userId);
+        user.ShouldNotBeNull();
+        user!.Id.ShouldBe(userId);
     }
 
     [Fact]
@@ -140,7 +140,7 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/users/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -158,7 +158,7 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
 
         // Get the user details first
         var getResponse = await adminClient.GetAsync($"/api/users/{auth.UserId}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Update the user
         var newFirstName = "UpdatedFirst";
@@ -169,11 +169,11 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/users/{auth.UserId}", updateCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updatedUser = await response.Content.ReadFromJsonAsync<UserDto>();
-        updatedUser.Should().NotBeNull();
-        updatedUser!.FirstName.Should().Be(newFirstName);
-        updatedUser.LastName.Should().Be(newLastName);
+        updatedUser.ShouldNotBeNull();
+        updatedUser!.FirstName.ShouldBe(newFirstName);
+        updatedUser.LastName.ShouldBe(newLastName);
     }
 
     [Fact]
@@ -188,7 +188,7 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/users/{invalidId}", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -207,10 +207,10 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/users/{auth.UserId}", updateCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updatedUser = await response.Content.ReadFromJsonAsync<UserDto>();
-        updatedUser.Should().NotBeNull();
-        updatedUser!.LockoutEnabled.Should().BeTrue();
+        updatedUser.ShouldNotBeNull();
+        updatedUser!.LockoutEnabled.ShouldBeTrue();
     }
 
     #endregion
@@ -230,7 +230,7 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/users/{auth.UserId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -243,7 +243,7 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/users/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -265,7 +265,7 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/users/{adminUser.Id}");
 
         // Assert - Should not allow deleting admin user
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -287,10 +287,10 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/users/{adminUser.Id}/roles");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var roles = await response.Content.ReadFromJsonAsync<IReadOnlyList<string>>();
-        roles.Should().NotBeNull();
-        roles.Should().Contain("Admin");
+        roles.ShouldNotBeNull();
+        roles.ShouldContain("Admin");
     }
 
     [Fact]
@@ -314,10 +314,10 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/users/{auth.UserId}/roles", assignCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updatedUser = await response.Content.ReadFromJsonAsync<UserDto>();
-        updatedUser.Should().NotBeNull();
-        updatedUser!.Roles.Should().Contain(roleName);
+        updatedUser.ShouldNotBeNull();
+        updatedUser!.Roles.ShouldContain(roleName);
     }
 
     [Fact]
@@ -336,7 +336,7 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/users/{auth.UserId}/roles", assignCommand);
 
         // Assert - Returns NotFound because the role doesn't exist
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -351,7 +351,7 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/users/{invalidId}/roles", assignCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -373,11 +373,11 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/users/{adminUser.Id}/permissions");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var permissions = await response.Content.ReadFromJsonAsync<UserPermissionsDto>();
-        permissions.Should().NotBeNull();
-        permissions!.UserId.Should().Be(adminUser.Id);
-        permissions.Permissions.Should().NotBeEmpty();
+        permissions.ShouldNotBeNull();
+        permissions!.UserId.ShouldBe(adminUser.Id);
+        permissions.Permissions.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -390,7 +390,7 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/users/{Guid.NewGuid()}/permissions");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -409,7 +409,7 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await userClient.PutAsJsonAsync($"/api/users/{auth.UserId}/roles", assignCommand);
 
         // Assert - Should be forbidden as regular user doesn't have manage-roles permission
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -423,7 +423,7 @@ public class UserEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await userClient.PutAsJsonAsync($"/api/users/{auth.UserId}", updateCommand);
 
         // Assert - Should be forbidden as this is an admin endpoint
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion

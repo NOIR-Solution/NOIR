@@ -41,10 +41,10 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/pm/projects");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<ProjectListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeNull();
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/pm/projects");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -67,10 +67,10 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/pm/projects?page=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<ProjectListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.Items.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     #endregion
@@ -87,9 +87,9 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/pm/projects/search?q=test");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<List<ProjectSearchDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/pm/projects/search?q=test");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -117,10 +117,10 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/pm/projects/{project.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<ProjectDto>();
-        result.Should().NotBeNull();
-        result!.Id.Should().Be(project.Id);
+        result.ShouldNotBeNull();
+        result!.Id.ShouldBe(project.Id);
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/pm/projects/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync($"/api/pm/projects/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -161,11 +161,11 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/pm/projects", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var project = await response.Content.ReadFromJsonWithEnumsAsync<ProjectDto>();
-        project.Should().NotBeNull();
-        project!.Name.Should().Be(request.Name);
-        project.ProjectCode.Should().StartWith("PRJ-");
+        project.ShouldNotBeNull();
+        project!.Name.ShouldBe(request.Name);
+        project.ProjectCode.ShouldStartWith("PRJ-");
     }
 
     [Fact]
@@ -178,7 +178,7 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonWithEnumsAsync("/api/pm/projects", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -202,11 +202,11 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/pm/projects/{project.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await response.Content.ReadFromJsonWithEnumsAsync<ProjectDto>();
-        updated.Should().NotBeNull();
-        updated!.Name.Should().Be("Updated Project Name");
-        updated.Description.Should().Be("Updated description");
+        updated.ShouldNotBeNull();
+        updated!.Name.ShouldBe("Updated Project Name");
+        updated.Description.ShouldBe("Updated description");
     }
 
     [Fact]
@@ -220,7 +220,7 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/pm/projects/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -238,10 +238,10 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/pm/projects/{project.Id}/archive", new { });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<ProjectDto>();
-        result.Should().NotBeNull();
-        result!.Status.Should().Be(ProjectStatus.Archived);
+        result.ShouldNotBeNull();
+        result!.Status.ShouldBe(ProjectStatus.Archived);
     }
 
     [Fact]
@@ -254,7 +254,7 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/pm/projects/{Guid.NewGuid()}/archive", new { });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -274,10 +274,10 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/pm/projects/{project.Id}/status", statusRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<ProjectDto>();
-        result.Should().NotBeNull();
-        result!.Status.Should().Be(ProjectStatus.OnHold);
+        result.ShouldNotBeNull();
+        result!.Status.ShouldBe(ProjectStatus.OnHold);
     }
 
     [Fact]
@@ -291,7 +291,7 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/pm/projects/{Guid.NewGuid()}/status", statusRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -309,11 +309,11 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/pm/projects/{project.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Verify it's deleted (soft delete - should return not found)
         var getResponse = await adminClient.GetAsync($"/api/pm/projects/{project.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -326,7 +326,7 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/pm/projects/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -344,10 +344,10 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/pm/projects/{project.Id}/board");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<KanbanBoardDto>();
-        result.Should().NotBeNull();
-        result!.ProjectId.Should().Be(project.Id);
+        result.ShouldNotBeNull();
+        result!.ProjectId.ShouldBe(project.Id);
     }
 
     [Fact]
@@ -360,7 +360,7 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/pm/projects/{Guid.NewGuid()}/board");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -378,9 +378,9 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/pm/projects/{project.Id}/labels");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<List<TaskLabelDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -395,11 +395,11 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonWithEnumsAsync($"/api/pm/projects/{project.Id}/labels", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var label = await response.Content.ReadFromJsonWithEnumsAsync<TaskLabelDto>();
-        label.Should().NotBeNull();
-        label!.Name.Should().Be("Bug");
-        label.Color.Should().Be("#EF4444");
+        label.ShouldNotBeNull();
+        label!.Name.ShouldBe("Bug");
+        label.Color.ShouldBe("#EF4444");
     }
 
     [Fact]
@@ -417,10 +417,10 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/projects/{project.Id}/labels/{label.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await response.Content.ReadFromJsonWithEnumsAsync<TaskLabelDto>();
-        updated.Should().NotBeNull();
-        updated!.Name.Should().Be("Feature");
+        updated.ShouldNotBeNull();
+        updated!.Name.ShouldBe("Feature");
     }
 
     [Fact]
@@ -436,7 +436,7 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/projects/{project.Id}/labels/{label.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -457,10 +457,10 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/projects/{project.Id}/columns", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var column = await response.Content.ReadFromJsonWithEnumsAsync<ProjectColumnDto>();
-        column.Should().NotBeNull();
-        column!.Name.Should().Be(uniqueName);
+        column.ShouldNotBeNull();
+        column!.Name.ShouldBe(uniqueName);
     }
 
     [Fact]
@@ -484,10 +484,10 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/projects/{project.Id}/columns/{column!.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await response.Content.ReadFromJsonWithEnumsAsync<ProjectColumnDto>();
-        updated.Should().NotBeNull();
-        updated!.Name.Should().Be("QA Testing");
+        updated.ShouldNotBeNull();
+        updated!.Name.ShouldBe("QA Testing");
     }
 
     #endregion
@@ -505,9 +505,9 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/pm/projects/{project.Id}/members");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<List<ProjectMemberDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -525,11 +525,11 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/projects/{project.Id}/members", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var member = await response.Content.ReadFromJsonWithEnumsAsync<ProjectMemberDto>();
-        member.Should().NotBeNull();
-        member!.EmployeeId.Should().Be(employee.Id);
-        member.Role.Should().Be(ProjectMemberRole.Member);
+        member.ShouldNotBeNull();
+        member!.EmployeeId.ShouldBe(employee.Id);
+        member.Role.ShouldBe(ProjectMemberRole.Member);
     }
 
     [Fact]
@@ -544,7 +544,7 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/projects/{Guid.NewGuid()}/members", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -567,7 +567,7 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/projects/{project.Id}/members/{member!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -592,10 +592,10 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/projects/{project.Id}/members/{member!.Id}/role", roleRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await response.Content.ReadFromJsonWithEnumsAsync<ProjectMemberDto>();
-        updated.Should().NotBeNull();
-        updated!.Role.Should().Be(ProjectMemberRole.Manager);
+        updated.ShouldNotBeNull();
+        updated!.Role.ShouldBe(ProjectMemberRole.Manager);
     }
 
     #endregion
@@ -622,9 +622,9 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/projects/{project.Id}/columns/reorder", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<List<ProjectColumnDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -653,7 +653,7 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/projects/{project.Id}/columns/{column!.Id}?moveToColumnId={targetColumnId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -668,7 +668,7 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/projects/{project.Id}/columns/{Guid.NewGuid()}?moveToColumnId={Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -688,10 +688,10 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/projects/{project.Id}/status", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<ProjectDto>();
-        result.Should().NotBeNull();
-        result!.Status.Should().Be(ProjectStatus.Archived);
+        result.ShouldNotBeNull();
+        result!.Status.ShouldBe(ProjectStatus.Archived);
     }
 
     [Fact]
@@ -707,7 +707,7 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/pm/projects/{project.Id}/status", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -723,26 +723,26 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Create
         var createRequest = CreateTestProjectRequest();
         var createResponse = await adminClient.PostAsJsonWithEnumsAsync("/api/pm/projects", createRequest);
-        createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        createResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var created = await createResponse.Content.ReadFromJsonWithEnumsAsync<ProjectDto>();
-        created.Should().NotBeNull();
+        created.ShouldNotBeNull();
 
         // Read
         var getResponse = await adminClient.GetAsync($"/api/pm/projects/{created!.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Update
         var updateRequest = new UpdateProjectRequest(
             "Lifecycle Updated Project",
             Description: "Updated via lifecycle test");
         var updateResponse = await adminClient.PutAsJsonWithEnumsAsync($"/api/pm/projects/{created.Id}", updateRequest);
-        updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        updateResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await updateResponse.Content.ReadFromJsonWithEnumsAsync<ProjectDto>();
-        updated!.Name.Should().Be("Lifecycle Updated Project");
+        updated!.Name.ShouldBe("Lifecycle Updated Project");
 
         // Delete
         var deleteResponse = await adminClient.DeleteAsync($"/api/pm/projects/{created.Id}");
-        deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        deleteResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -755,7 +755,7 @@ public class ProjectEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         await _factory.ExecuteWithTenantAsync(sp =>
         {
             var repository = sp.GetRequiredService<IRepository<Project, Guid>>();
-            repository.Should().NotBeNull();
+            repository.ShouldNotBeNull();
             return Task.CompletedTask;
         });
     }

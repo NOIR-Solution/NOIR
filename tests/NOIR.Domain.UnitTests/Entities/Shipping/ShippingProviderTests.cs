@@ -38,13 +38,13 @@ public class ShippingProviderTests
         var provider = CreateTestProvider();
 
         // Assert
-        provider.Should().NotBeNull();
-        provider.Id.Should().NotBe(Guid.Empty);
-        provider.ProviderCode.Should().Be(TestProviderCode);
-        provider.DisplayName.Should().Be(TestDisplayName);
-        provider.ProviderName.Should().Be(TestProviderName);
-        provider.Environment.Should().Be(TestEnvironment);
-        provider.TenantId.Should().Be(TestTenantId);
+        provider.ShouldNotBeNull();
+        provider.Id.ShouldNotBe(Guid.Empty);
+        provider.ProviderCode.ShouldBe(TestProviderCode);
+        provider.DisplayName.ShouldBe(TestDisplayName);
+        provider.ProviderName.ShouldBe(TestProviderName);
+        provider.Environment.ShouldBe(TestEnvironment);
+        provider.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class ShippingProviderTests
         var provider = CreateTestProvider();
 
         // Assert
-        provider.IsActive.Should().BeFalse();
+        provider.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class ShippingProviderTests
         var provider = CreateTestProvider();
 
         // Assert
-        provider.HealthStatus.Should().Be(ShippingProviderHealthStatus.Unknown);
+        provider.HealthStatus.ShouldBe(ShippingProviderHealthStatus.Unknown);
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class ShippingProviderTests
         var provider = CreateTestProvider();
 
         // Assert
-        provider.SupportsCod.Should().BeTrue();
+        provider.SupportsCod.ShouldBeTrue();
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public class ShippingProviderTests
         var provider = CreateTestProvider();
 
         // Assert
-        provider.SupportsInsurance.Should().BeFalse();
+        provider.SupportsInsurance.ShouldBeFalse();
     }
 
     [Fact]
@@ -94,17 +94,17 @@ public class ShippingProviderTests
         var provider = CreateTestProvider();
 
         // Assert
-        provider.EncryptedCredentials.Should().BeNull();
-        provider.WebhookSecret.Should().BeNull();
-        provider.WebhookUrl.Should().BeNull();
-        provider.MinWeightGrams.Should().BeNull();
-        provider.MaxWeightGrams.Should().BeNull();
-        provider.MinCodAmount.Should().BeNull();
-        provider.MaxCodAmount.Should().BeNull();
-        provider.ApiBaseUrl.Should().BeNull();
-        provider.TrackingUrlTemplate.Should().BeNull();
-        provider.LastHealthCheck.Should().BeNull();
-        provider.Metadata.Should().BeNull();
+        provider.EncryptedCredentials.ShouldBeNull();
+        provider.WebhookSecret.ShouldBeNull();
+        provider.WebhookUrl.ShouldBeNull();
+        provider.MinWeightGrams.ShouldBeNull();
+        provider.MaxWeightGrams.ShouldBeNull();
+        provider.MinCodAmount.ShouldBeNull();
+        provider.MaxCodAmount.ShouldBeNull();
+        provider.ApiBaseUrl.ShouldBeNull();
+        provider.TrackingUrlTemplate.ShouldBeNull();
+        provider.LastHealthCheck.ShouldBeNull();
+        provider.Metadata.ShouldBeNull();
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class ShippingProviderTests
         var provider = CreateTestProvider();
 
         // Assert
-        provider.SortOrder.Should().Be(0);
+        provider.SortOrder.ShouldBe(0);
     }
 
     [Fact]
@@ -124,7 +124,7 @@ public class ShippingProviderTests
         var provider = CreateTestProvider();
 
         // Assert
-        provider.SupportedServices.Should().Be("[]");
+        provider.SupportedServices.ShouldBe("[]");
     }
 
     [Fact]
@@ -134,13 +134,13 @@ public class ShippingProviderTests
         var provider = CreateTestProvider();
 
         // Assert
-        provider.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ShippingProviderCreatedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                ProviderId = provider.Id,
-                ProviderCode = TestProviderCode
-            });
+        var __evt = provider.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<ShippingProviderCreatedEvent>();
+
+        __evt.ProviderId.ShouldBe(provider.Id);
+
+        __evt.ProviderCode.ShouldBe(TestProviderCode);
     }
 
     [Fact]
@@ -150,7 +150,7 @@ public class ShippingProviderTests
         var provider = CreateTestProvider(tenantId: null);
 
         // Assert
-        provider.TenantId.Should().BeNull();
+        provider.TenantId.ShouldBeNull();
     }
 
     [Theory]
@@ -168,7 +168,7 @@ public class ShippingProviderTests
         var provider = CreateTestProvider(providerCode: code);
 
         // Assert
-        provider.ProviderCode.Should().Be(code);
+        provider.ProviderCode.ShouldBe(code);
     }
 
     [Theory]
@@ -180,7 +180,7 @@ public class ShippingProviderTests
         var provider = CreateTestProvider(environment: env);
 
         // Assert
-        provider.Environment.Should().Be(env);
+        provider.Environment.ShouldBe(env);
     }
 
     [Fact]
@@ -191,7 +191,7 @@ public class ShippingProviderTests
         var provider2 = CreateTestProvider();
 
         // Assert
-        provider1.Id.Should().NotBe(provider2.Id);
+        provider1.Id.ShouldNotBe(provider2.Id);
     }
 
     #endregion
@@ -210,8 +210,8 @@ public class ShippingProviderTests
         provider.Configure(encryptedCreds, webhookSecret);
 
         // Assert
-        provider.EncryptedCredentials.Should().Be(encryptedCreds);
-        provider.WebhookSecret.Should().Be(webhookSecret);
+        provider.EncryptedCredentials.ShouldBe(encryptedCreds);
+        provider.WebhookSecret.ShouldBe(webhookSecret);
     }
 
     [Fact]
@@ -224,8 +224,8 @@ public class ShippingProviderTests
         provider.Configure("encrypted_creds", null);
 
         // Assert
-        provider.EncryptedCredentials.Should().Be("encrypted_creds");
-        provider.WebhookSecret.Should().BeNull();
+        provider.EncryptedCredentials.ShouldBe("encrypted_creds");
+        provider.WebhookSecret.ShouldBeNull();
     }
 
     [Fact]
@@ -239,8 +239,8 @@ public class ShippingProviderTests
         provider.Configure("new_creds", "new_secret");
 
         // Assert
-        provider.EncryptedCredentials.Should().Be("new_creds");
-        provider.WebhookSecret.Should().Be("new_secret");
+        provider.EncryptedCredentials.ShouldBe("new_creds");
+        provider.WebhookSecret.ShouldBe("new_secret");
     }
 
     #endregion
@@ -252,13 +252,13 @@ public class ShippingProviderTests
     {
         // Arrange
         var provider = CreateTestProvider();
-        provider.IsActive.Should().BeFalse();
+        provider.IsActive.ShouldBeFalse();
 
         // Act
         provider.Activate();
 
         // Assert
-        provider.IsActive.Should().BeTrue();
+        provider.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -267,13 +267,13 @@ public class ShippingProviderTests
         // Arrange
         var provider = CreateTestProvider();
         provider.Activate();
-        provider.IsActive.Should().BeTrue();
+        provider.IsActive.ShouldBeTrue();
 
         // Act
         provider.Deactivate();
 
         // Assert
-        provider.IsActive.Should().BeFalse();
+        provider.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -287,7 +287,7 @@ public class ShippingProviderTests
         provider.Activate();
 
         // Assert
-        provider.IsActive.Should().BeTrue();
+        provider.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -295,13 +295,13 @@ public class ShippingProviderTests
     {
         // Arrange
         var provider = CreateTestProvider();
-        provider.IsActive.Should().BeFalse();
+        provider.IsActive.ShouldBeFalse();
 
         // Act
         provider.Deactivate();
 
         // Assert
-        provider.IsActive.Should().BeFalse();
+        provider.IsActive.ShouldBeFalse();
     }
 
     #endregion
@@ -318,7 +318,7 @@ public class ShippingProviderTests
         provider.SetWebhookUrl("https://api.example.com/webhooks/shipping/ghtk");
 
         // Assert
-        provider.WebhookUrl.Should().Be("https://api.example.com/webhooks/shipping/ghtk");
+        provider.WebhookUrl.ShouldBe("https://api.example.com/webhooks/shipping/ghtk");
     }
 
     [Fact]
@@ -331,7 +331,7 @@ public class ShippingProviderTests
         provider.SetApiBaseUrl("https://services.giaohangtietkiem.vn");
 
         // Assert
-        provider.ApiBaseUrl.Should().Be("https://services.giaohangtietkiem.vn");
+        provider.ApiBaseUrl.ShouldBe("https://services.giaohangtietkiem.vn");
     }
 
     [Fact]
@@ -344,7 +344,7 @@ public class ShippingProviderTests
         provider.SetTrackingUrlTemplate("https://track.ghtk.vn/{trackingNumber}");
 
         // Assert
-        provider.TrackingUrlTemplate.Should().Be("https://track.ghtk.vn/{trackingNumber}");
+        provider.TrackingUrlTemplate.ShouldBe("https://track.ghtk.vn/{trackingNumber}");
     }
 
     [Fact]
@@ -357,8 +357,8 @@ public class ShippingProviderTests
         provider.SetWeightLimits(100, 50_000);
 
         // Assert
-        provider.MinWeightGrams.Should().Be(100);
-        provider.MaxWeightGrams.Should().Be(50_000);
+        provider.MinWeightGrams.ShouldBe(100);
+        provider.MaxWeightGrams.ShouldBe(50_000);
     }
 
     [Fact]
@@ -372,8 +372,8 @@ public class ShippingProviderTests
         provider.SetWeightLimits(null, null);
 
         // Assert
-        provider.MinWeightGrams.Should().BeNull();
-        provider.MaxWeightGrams.Should().BeNull();
+        provider.MinWeightGrams.ShouldBeNull();
+        provider.MaxWeightGrams.ShouldBeNull();
     }
 
     [Fact]
@@ -386,8 +386,8 @@ public class ShippingProviderTests
         provider.SetCodLimits(10_000m, 20_000_000m);
 
         // Assert
-        provider.MinCodAmount.Should().Be(10_000m);
-        provider.MaxCodAmount.Should().Be(20_000_000m);
+        provider.MinCodAmount.ShouldBe(10_000m);
+        provider.MaxCodAmount.ShouldBe(20_000_000m);
     }
 
     [Fact]
@@ -401,8 +401,8 @@ public class ShippingProviderTests
         provider.SetCodLimits(null, null);
 
         // Assert
-        provider.MinCodAmount.Should().BeNull();
-        provider.MaxCodAmount.Should().BeNull();
+        provider.MinCodAmount.ShouldBeNull();
+        provider.MaxCodAmount.ShouldBeNull();
     }
 
     [Fact]
@@ -415,7 +415,7 @@ public class ShippingProviderTests
         provider.SetSupportedServices("""["Standard","Express","Same Day"]""");
 
         // Assert
-        provider.SupportedServices.Should().Be("""["Standard","Express","Same Day"]""");
+        provider.SupportedServices.ShouldBe("""["Standard","Express","Same Day"]""");
     }
 
     [Fact]
@@ -428,7 +428,7 @@ public class ShippingProviderTests
         provider.SetCodSupport(true);
 
         // Assert
-        provider.SupportsCod.Should().BeTrue();
+        provider.SupportsCod.ShouldBeTrue();
     }
 
     [Fact]
@@ -441,7 +441,7 @@ public class ShippingProviderTests
         provider.SetCodSupport(false);
 
         // Assert
-        provider.SupportsCod.Should().BeFalse();
+        provider.SupportsCod.ShouldBeFalse();
     }
 
     [Fact]
@@ -454,7 +454,7 @@ public class ShippingProviderTests
         provider.SetInsuranceSupport(true);
 
         // Assert
-        provider.SupportsInsurance.Should().BeTrue();
+        provider.SupportsInsurance.ShouldBeTrue();
     }
 
     [Fact]
@@ -467,7 +467,7 @@ public class ShippingProviderTests
         provider.SetInsuranceSupport(false);
 
         // Assert
-        provider.SupportsInsurance.Should().BeFalse();
+        provider.SupportsInsurance.ShouldBeFalse();
     }
 
     [Fact]
@@ -480,7 +480,7 @@ public class ShippingProviderTests
         provider.SetSortOrder(5);
 
         // Assert
-        provider.SortOrder.Should().Be(5);
+        provider.SortOrder.ShouldBe(5);
     }
 
     [Fact]
@@ -493,7 +493,7 @@ public class ShippingProviderTests
         provider.UpdateDisplayName("GHTK Premium");
 
         // Assert
-        provider.DisplayName.Should().Be("GHTK Premium");
+        provider.DisplayName.ShouldBe("GHTK Premium");
     }
 
     [Fact]
@@ -506,7 +506,7 @@ public class ShippingProviderTests
         provider.UpdateEnvironment(GatewayEnvironment.Production);
 
         // Assert
-        provider.Environment.Should().Be(GatewayEnvironment.Production);
+        provider.Environment.ShouldBe(GatewayEnvironment.Production);
     }
 
     [Fact]
@@ -520,7 +520,7 @@ public class ShippingProviderTests
         provider.UpdateCredentials("new_encrypted_creds");
 
         // Assert
-        provider.EncryptedCredentials.Should().Be("new_encrypted_creds");
+        provider.EncryptedCredentials.ShouldBe("new_encrypted_creds");
     }
 
     [Fact]
@@ -533,7 +533,7 @@ public class ShippingProviderTests
         provider.SetMetadata("""{"region":"south","priority":"high"}""");
 
         // Assert
-        provider.Metadata.Should().Be("""{"region":"south","priority":"high"}""");
+        provider.Metadata.ShouldBe("""{"region":"south","priority":"high"}""");
     }
 
     [Fact]
@@ -547,7 +547,7 @@ public class ShippingProviderTests
         provider.SetMetadata(null);
 
         // Assert
-        provider.Metadata.Should().BeNull();
+        provider.Metadata.ShouldBeNull();
     }
 
     #endregion
@@ -565,9 +565,9 @@ public class ShippingProviderTests
         provider.UpdateHealthStatus(ShippingProviderHealthStatus.Healthy);
 
         // Assert
-        provider.HealthStatus.Should().Be(ShippingProviderHealthStatus.Healthy);
-        provider.LastHealthCheck.Should().NotBeNull();
-        provider.LastHealthCheck.Should().BeOnOrAfter(beforeUpdate);
+        provider.HealthStatus.ShouldBe(ShippingProviderHealthStatus.Healthy);
+        provider.LastHealthCheck.ShouldNotBeNull();
+        provider.LastHealthCheck!.Value.ShouldBeGreaterThanOrEqualTo(beforeUpdate);
     }
 
     [Fact]
@@ -580,8 +580,8 @@ public class ShippingProviderTests
         provider.UpdateHealthStatus(ShippingProviderHealthStatus.Degraded);
 
         // Assert
-        provider.HealthStatus.Should().Be(ShippingProviderHealthStatus.Degraded);
-        provider.LastHealthCheck.Should().NotBeNull();
+        provider.HealthStatus.ShouldBe(ShippingProviderHealthStatus.Degraded);
+        provider.LastHealthCheck.ShouldNotBeNull();
     }
 
     [Fact]
@@ -594,8 +594,8 @@ public class ShippingProviderTests
         provider.UpdateHealthStatus(ShippingProviderHealthStatus.Unhealthy);
 
         // Assert
-        provider.HealthStatus.Should().Be(ShippingProviderHealthStatus.Unhealthy);
-        provider.LastHealthCheck.Should().NotBeNull();
+        provider.HealthStatus.ShouldBe(ShippingProviderHealthStatus.Unhealthy);
+        provider.LastHealthCheck.ShouldNotBeNull();
     }
 
     [Fact]
@@ -611,8 +611,8 @@ public class ShippingProviderTests
         provider.UpdateHealthStatus(ShippingProviderHealthStatus.Degraded);
 
         // Assert
-        provider.HealthStatus.Should().Be(ShippingProviderHealthStatus.Degraded);
-        provider.LastHealthCheck.Should().BeOnOrAfter(firstCheck!.Value);
+        provider.HealthStatus.ShouldBe(ShippingProviderHealthStatus.Degraded);
+        provider.LastHealthCheck!.Value.ShouldBeGreaterThanOrEqualTo(firstCheck!.Value);
     }
 
     #endregion
@@ -630,7 +630,7 @@ public class ShippingProviderTests
         var url = provider.GetTrackingUrl("TRK-12345");
 
         // Assert
-        url.Should().Be("https://track.ghtk.vn/TRK-12345");
+        url.ShouldBe("https://track.ghtk.vn/TRK-12345");
     }
 
     [Fact]
@@ -638,13 +638,13 @@ public class ShippingProviderTests
     {
         // Arrange
         var provider = CreateTestProvider();
-        provider.TrackingUrlTemplate.Should().BeNull();
+        provider.TrackingUrlTemplate.ShouldBeNull();
 
         // Act
         var url = provider.GetTrackingUrl("TRK-12345");
 
         // Assert
-        url.Should().BeNull();
+        url.ShouldBeNull();
     }
 
     [Fact]
@@ -658,7 +658,7 @@ public class ShippingProviderTests
         var url = provider.GetTrackingUrl("TRK-12345");
 
         // Assert
-        url.Should().BeNull();
+        url.ShouldBeNull();
     }
 
     [Fact]
@@ -672,7 +672,7 @@ public class ShippingProviderTests
         var url = provider.GetTrackingUrl("GHN-ABC-789");
 
         // Assert
-        url.Should().Be("https://tracking.ghn.dev/package?code=GHN-ABC-789&lang=vi");
+        url.ShouldBe("https://tracking.ghn.dev/package?code=GHN-ABC-789&lang=vi");
     }
 
     #endregion
@@ -705,21 +705,21 @@ public class ShippingProviderTests
         provider.UpdateHealthStatus(ShippingProviderHealthStatus.Healthy);
 
         // Assert
-        provider.IsActive.Should().BeTrue();
-        provider.EncryptedCredentials.Should().Be("encrypted_api_key_json");
-        provider.WebhookSecret.Should().Be("webhook_secret_ghn");
-        provider.WebhookUrl.Should().Be("https://api.example.com/webhooks/ghn");
-        provider.ApiBaseUrl.Should().Be("https://online-gateway.ghn.vn");
-        provider.MinWeightGrams.Should().Be(100);
-        provider.MaxWeightGrams.Should().Be(50_000);
-        provider.MinCodAmount.Should().Be(0m);
-        provider.MaxCodAmount.Should().Be(10_000_000m);
-        provider.SupportsCod.Should().BeTrue();
-        provider.SupportsInsurance.Should().BeTrue();
-        provider.SortOrder.Should().Be(1);
-        provider.HealthStatus.Should().Be(ShippingProviderHealthStatus.Healthy);
-        provider.LastHealthCheck.Should().NotBeNull();
-        provider.GetTrackingUrl("TRK-999").Should().Be("https://tracking.ghn.dev/TRK-999");
+        provider.IsActive.ShouldBeTrue();
+        provider.EncryptedCredentials.ShouldBe("encrypted_api_key_json");
+        provider.WebhookSecret.ShouldBe("webhook_secret_ghn");
+        provider.WebhookUrl.ShouldBe("https://api.example.com/webhooks/ghn");
+        provider.ApiBaseUrl.ShouldBe("https://online-gateway.ghn.vn");
+        provider.MinWeightGrams.ShouldBe(100);
+        provider.MaxWeightGrams.ShouldBe(50_000);
+        provider.MinCodAmount.ShouldBe(0m);
+        provider.MaxCodAmount.ShouldBe(10_000_000m);
+        provider.SupportsCod.ShouldBeTrue();
+        provider.SupportsInsurance.ShouldBeTrue();
+        provider.SortOrder.ShouldBe(1);
+        provider.HealthStatus.ShouldBe(ShippingProviderHealthStatus.Healthy);
+        provider.LastHealthCheck.ShouldNotBeNull();
+        provider.GetTrackingUrl("TRK-999").ShouldBe("https://tracking.ghn.dev/TRK-999");
     }
 
     [Fact]
@@ -727,13 +727,13 @@ public class ShippingProviderTests
     {
         // Arrange
         var provider = CreateTestProvider();
-        provider.DomainEvents.Should().HaveCountGreaterThan(0);
+        provider.DomainEvents.Count().ShouldBeGreaterThan(0);
 
         // Act
         provider.ClearDomainEvents();
 
         // Assert
-        provider.DomainEvents.Should().BeEmpty();
+        provider.DomainEvents.ShouldBeEmpty();
     }
 
     #endregion

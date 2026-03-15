@@ -98,11 +98,11 @@ public class GetStockHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.TotalCount.Should().Be(5);
-        result.Value.PageNumber.Should().Be(1);
-        result.Value.PageSize.Should().Be(20);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.TotalCount.ShouldBe(5);
+        result.Value.PageNumber.ShouldBe(1);
+        result.Value.PageSize.ShouldBe(20);
     }
 
     [Fact]
@@ -128,14 +128,14 @@ public class GetStockHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.TotalCount.Should().Be(10);
-        result.Value.PageNumber.Should().Be(2);
-        result.Value.PageSize.Should().Be(5);
-        result.Value.TotalPages.Should().Be(2);
-        result.Value.HasPreviousPage.Should().BeTrue();
-        result.Value.HasNextPage.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.TotalCount.ShouldBe(10);
+        result.Value.PageNumber.ShouldBe(2);
+        result.Value.PageSize.ShouldBe(5);
+        result.Value.TotalPages.ShouldBe(2);
+        result.Value.HasPreviousPage.ShouldBe(true);
+        result.Value.HasNextPage.ShouldBe(false);
     }
 
     [Fact]
@@ -167,19 +167,19 @@ public class GetStockHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var item = result.Value.Items.First();
-        item.Id.Should().Be(movement.Id);
-        item.ProductVariantId.Should().Be(TestVariantId);
-        item.ProductId.Should().Be(TestProductId);
-        item.MovementType.Should().Be(InventoryMovementType.Adjustment);
-        item.QuantityBefore.Should().Be(100);
-        item.QuantityMoved.Should().Be(-5);
-        item.QuantityAfter.Should().Be(95);
-        item.Reference.Should().Be("ORD-001");
-        item.Notes.Should().Be("Manual adjustment");
-        item.UserId.Should().Be("test-user-id");
-        item.CorrelationId.Should().Be("test-correlation-id");
+        item.Id.ShouldBe(movement.Id);
+        item.ProductVariantId.ShouldBe(TestVariantId);
+        item.ProductId.ShouldBe(TestProductId);
+        item.MovementType.ShouldBe(InventoryMovementType.Adjustment);
+        item.QuantityBefore.ShouldBe(100);
+        item.QuantityMoved.ShouldBe(-5);
+        item.QuantityAfter.ShouldBe(95);
+        item.Reference.ShouldBe("ORD-001");
+        item.Notes.ShouldBe("Manual adjustment");
+        item.UserId.ShouldBe("test-user-id");
+        item.CorrelationId.ShouldBe("test-correlation-id");
     }
 
     [Theory]
@@ -214,8 +214,8 @@ public class GetStockHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.First().MovementType.Should().Be(movementType);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.First().MovementType.ShouldBe(movementType);
     }
 
     #endregion
@@ -244,12 +244,12 @@ public class GetStockHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
-        result.Value.TotalPages.Should().Be(0);
-        result.Value.HasPreviousPage.Should().BeFalse();
-        result.Value.HasNextPage.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
+        result.Value.TotalPages.ShouldBe(0);
+        result.Value.HasPreviousPage.ShouldBe(false);
+        result.Value.HasNextPage.ShouldBe(false);
     }
 
     #endregion
@@ -317,13 +317,13 @@ public class GetStockHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PageNumber.Should().Be(page);
-        result.Value.PageSize.Should().Be(pageSize);
-        result.Value.TotalCount.Should().Be(totalCount);
-        result.Value.TotalPages.Should().Be((int)Math.Ceiling((double)totalCount / pageSize));
-        result.Value.HasPreviousPage.Should().Be(page > 1);
-        result.Value.HasNextPage.Should().Be(page < result.Value.TotalPages);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PageNumber.ShouldBe(page);
+        result.Value.PageSize.ShouldBe(pageSize);
+        result.Value.TotalCount.ShouldBe(totalCount);
+        result.Value.TotalPages.ShouldBe((int)Math.Ceiling((double)totalCount / pageSize));
+        result.Value.HasPreviousPage.ShouldBe(page > 1);
+        result.Value.HasNextPage.ShouldBe(page < result.Value.TotalPages);
     }
 
     [Fact]
@@ -361,12 +361,12 @@ public class GetStockHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var item = result.Value.Items.First();
-        item.Reference.Should().BeNull();
-        item.Notes.Should().BeNull();
-        item.UserId.Should().BeNull();
-        item.CorrelationId.Should().BeNull();
+        item.Reference.ShouldBeNull();
+        item.Notes.ShouldBeNull();
+        item.UserId.ShouldBeNull();
+        item.CorrelationId.ShouldBeNull();
     }
 
     [Fact]
@@ -396,11 +396,11 @@ public class GetStockHistoryQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var item = result.Value.Items.First();
-        item.QuantityBefore.Should().Be(100);
-        item.QuantityMoved.Should().Be(-25);
-        item.QuantityAfter.Should().Be(75); // 100 + (-25) = 75
+        item.QuantityBefore.ShouldBe(100);
+        item.QuantityMoved.ShouldBe(-25);
+        item.QuantityAfter.ShouldBe(75); // 100 + (-25) = 75
     }
 
     #endregion

@@ -95,7 +95,7 @@ public class FilterProductsQueryHandlerTests
     public void Constructor_WithValidDependencies_ShouldCreateInstance()
     {
         // Assert
-        _handler.Should().NotBeNull();
+        _handler.ShouldNotBeNull();
     }
 
     #endregion
@@ -115,11 +115,11 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().BeEmpty();
-        result.Value.Total.Should().Be(0);
-        result.Value.Page.Should().Be(1);
-        result.Value.PageSize.Should().Be(24);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.ShouldBeEmpty();
+        result.Value.Total.ShouldBe(0);
+        result.Value.Page.ShouldBe(1);
+        result.Value.PageSize.ShouldBe(24);
     }
 
     [Fact]
@@ -138,9 +138,9 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().HaveCount(2);
-        result.Value.Total.Should().Be(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.Count().ShouldBe(2);
+        result.Value.Total.ShouldBe(2);
     }
 
     [Fact]
@@ -166,10 +166,10 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().HaveCount(1);
-        result.Value.Products[0].Name.Should().Be("Active Product");
-        result.Value.Total.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.Count().ShouldBe(1);
+        result.Value.Products[0].Name.ShouldBe("Active Product");
+        result.Value.Total.ShouldBe(1);
     }
 
     #endregion
@@ -192,7 +192,7 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Category lookup was performed via ProductCategories DbSet
         _dbContextMock.Verify(x => x.ProductCategories, Times.Once);
     }
@@ -213,9 +213,9 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // When category not found, category filter is not applied, so all active products returned
-        result.Value.Products.Should().HaveCount(1);
+        result.Value.Products.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -231,7 +231,7 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // ProductCategories should not be accessed when CategorySlug is null
         _dbContextMock.Verify(x => x.ProductCategories, Times.Never);
     }
@@ -249,7 +249,7 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _dbContextMock.Verify(x => x.ProductCategories, Times.Never);
     }
 
@@ -276,10 +276,10 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Only the expensive product has MaxPrice >= 100m
-        result.Value.Products.Should().HaveCount(1);
-        result.Value.Products[0].Name.Should().Be("Expensive Product");
+        result.Value.Products.Count().ShouldBe(1);
+        result.Value.Products[0].Name.ShouldBe("Expensive Product");
     }
 
     [Fact]
@@ -301,9 +301,9 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().HaveCount(1);
-        result.Value.Products[0].Name.Should().Be("Cheap Product");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.Count().ShouldBe(1);
+        result.Value.Products[0].Name.ShouldBe("Cheap Product");
     }
 
     [Fact]
@@ -330,9 +330,9 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().HaveCount(1);
-        result.Value.Products[0].Name.Should().Be("Mid");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.Count().ShouldBe(1);
+        result.Value.Products[0].Name.ShouldBe("Mid");
     }
 
     #endregion
@@ -360,9 +360,9 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().HaveCount(1);
-        result.Value.Products[0].Name.Should().Be("In Stock");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.Count().ShouldBe(1);
+        result.Value.Products[0].Name.ShouldBe("In Stock");
     }
 
     [Fact]
@@ -386,8 +386,8 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.Count().ShouldBe(2);
     }
 
     #endregion
@@ -412,9 +412,9 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().HaveCount(1);
-        result.Value.Products[0].Name.Should().Be("Gaming Laptop");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.Count().ShouldBe(1);
+        result.Value.Products[0].Name.ShouldBe("Gaming Laptop");
     }
 
     [Fact]
@@ -433,8 +433,8 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -453,8 +453,8 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -473,8 +473,8 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -493,9 +493,9 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().HaveCount(1);
-        result.Value.Products[0].Name.Should().Be("MacBook Pro 16");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.Count().ShouldBe(1);
+        result.Value.Products[0].Name.ShouldBe("MacBook Pro 16");
     }
 
     #endregion
@@ -521,11 +521,11 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Page.Should().Be(1);
-        result.Value.PageSize.Should().Be(24);
-        result.Value.Products.Should().HaveCount(24);
-        result.Value.Total.Should().Be(30);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Page.ShouldBe(1);
+        result.Value.PageSize.ShouldBe(24);
+        result.Value.Products.Count().ShouldBe(24);
+        result.Value.Total.ShouldBe(30);
     }
 
     [Fact]
@@ -547,10 +547,10 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Page.Should().Be(2);
-        result.Value.Products.Should().HaveCount(6); // 30 - 24 = 6 remaining
-        result.Value.Total.Should().Be(30);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Page.ShouldBe(2);
+        result.Value.Products.Count().ShouldBe(6); // 30 - 24 = 6 remaining
+        result.Value.Total.ShouldBe(30);
     }
 
     [Fact]
@@ -572,10 +572,10 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().HaveCount(5);
-        result.Value.PageSize.Should().Be(5);
-        result.Value.Total.Should().Be(15);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.Count().ShouldBe(5);
+        result.Value.PageSize.ShouldBe(5);
+        result.Value.Total.ShouldBe(15);
     }
 
     [Fact]
@@ -597,9 +597,9 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().BeEmpty();
-        result.Value.Total.Should().Be(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.ShouldBeEmpty();
+        result.Value.Total.ShouldBe(5);
     }
 
     #endregion
@@ -623,8 +623,8 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Facets.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Facets.ShouldNotBeNull();
     }
 
     [Fact]
@@ -640,10 +640,10 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Facets.Should().NotBeNull();
-        result.Value.Facets.Brands.Should().BeEmpty();
-        result.Value.Facets.Attributes.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Facets.ShouldNotBeNull();
+        result.Value.Facets.Brands.ShouldBeEmpty();
+        result.Value.Facets.Attributes.ShouldBeEmpty();
     }
 
     #endregion
@@ -663,8 +663,8 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.AppliedFilters.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.AppliedFilters.ShouldBeEmpty();
     }
 
     [Fact]
@@ -686,11 +686,11 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.AppliedFilters.Should().ContainKey("color");
-        result.Value.AppliedFilters["color"].Should().Contain("red");
-        result.Value.AppliedFilters["color"].Should().Contain("blue");
-        result.Value.AppliedFilters.Should().ContainKey("size");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.AppliedFilters.ShouldContainKey("color");
+        result.Value.AppliedFilters["color"].ShouldContain("red");
+        result.Value.AppliedFilters["color"].ShouldContain("blue");
+        result.Value.AppliedFilters.ShouldContainKey("size");
     }
 
     #endregion
@@ -740,9 +740,9 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().HaveCount(1);
-        result.Value.Products[0].Name.Should().Be("Matching Product");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.Count().ShouldBe(1);
+        result.Value.Products[0].Name.ShouldBe("Matching Product");
     }
 
     #endregion
@@ -773,19 +773,19 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.Count().ShouldBe(1);
 
         var dto = result.Value.Products[0];
-        dto.Id.Should().Be(productId);
-        dto.Name.Should().Be("Test Laptop");
-        dto.Slug.Should().Be("test-laptop");
-        dto.Status.Should().Be(ProductStatus.Active);
-        dto.MinPrice.Should().Be(999m);
-        dto.MaxPrice.Should().Be(1499m);
-        dto.Currency.Should().Be("VND");
-        dto.InStock.Should().BeTrue();
-        dto.TotalStock.Should().Be(25);
+        dto.Id.ShouldBe(productId);
+        dto.Name.ShouldBe("Test Laptop");
+        dto.Slug.ShouldBe("test-laptop");
+        dto.Status.ShouldBe(ProductStatus.Active);
+        dto.MinPrice.ShouldBe(999m);
+        dto.MaxPrice.ShouldBe(1499m);
+        dto.Currency.ShouldBe("VND");
+        dto.InStock.ShouldBe(true);
+        dto.TotalStock.ShouldBe(25);
     }
 
     #endregion
@@ -808,7 +808,7 @@ public class FilterProductsQueryHandlerTests
         var result = await _handler.Handle(query, token);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     [Fact]
@@ -817,17 +817,17 @@ public class FilterProductsQueryHandlerTests
         // Arrange & Assert - verify default values on the query record
         var query = new FilterProductsQuery();
 
-        query.Sort.Should().Be("newest");
-        query.Order.Should().Be(SortOrder.Descending);
-        query.Page.Should().Be(1);
-        query.PageSize.Should().Be(24);
-        query.InStockOnly.Should().BeFalse();
-        query.CategorySlug.Should().BeNull();
-        query.Brands.Should().BeNull();
-        query.SearchQuery.Should().BeNull();
-        query.PriceMin.Should().BeNull();
-        query.PriceMax.Should().BeNull();
-        query.AttributeFilters.Should().BeNull();
+        query.Sort.ShouldBe("newest");
+        query.Order.ShouldBe(SortOrder.Descending);
+        query.Page.ShouldBe(1);
+        query.PageSize.ShouldBe(24);
+        query.InStockOnly.ShouldBe(false);
+        query.CategorySlug.ShouldBeNull();
+        query.Brands.ShouldBeNull();
+        query.SearchQuery.ShouldBeNull();
+        query.PriceMin.ShouldBeNull();
+        query.PriceMax.ShouldBeNull();
+        query.AttributeFilters.ShouldBeNull();
     }
 
     #endregion

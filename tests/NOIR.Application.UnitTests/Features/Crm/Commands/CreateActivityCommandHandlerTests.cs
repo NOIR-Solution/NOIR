@@ -50,9 +50,9 @@ public class CreateActivityCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Type.Should().Be(ActivityType.Call);
-        result.Value.Subject.Should().Be("Follow-up call");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Type.ShouldBe(ActivityType.Call);
+        result.Value.Subject.ShouldBe("Follow-up call");
 
         _activityRepoMock.Verify(
             x => x.AddAsync(It.IsAny<CrmActivity>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -73,7 +73,7 @@ public class CreateActivityCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _activityRepoMock.Verify(
             x => x.AddAsync(It.IsAny<CrmActivity>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -91,7 +91,7 @@ public class CreateActivityCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _activityRepoMock.Verify(
             x => x.AddAsync(It.IsAny<CrmActivity>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -110,6 +110,6 @@ public class CreateActivityCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 }

@@ -96,21 +96,21 @@ public class ShippingOrderTests
         var order = CreateTestShippingOrder();
 
         // Assert
-        order.Should().NotBeNull();
-        order.Id.Should().NotBe(Guid.Empty);
-        order.OrderId.Should().Be(TestOrderId);
-        order.ProviderId.Should().Be(TestProviderId);
-        order.ProviderCode.Should().Be(TestProviderCode);
-        order.ServiceTypeCode.Should().Be(TestServiceTypeCode);
-        order.ServiceTypeName.Should().Be(TestServiceTypeName);
-        order.PickupAddressJson.Should().Be(TestPickupAddressJson);
-        order.DeliveryAddressJson.Should().Be(TestDeliveryAddressJson);
-        order.SenderJson.Should().Be(TestSenderJson);
-        order.RecipientJson.Should().Be(TestRecipientJson);
-        order.ItemsJson.Should().Be(TestItemsJson);
-        order.WeightGrams.Should().Be(TestWeightGrams);
-        order.DeclaredValue.Should().Be(TestDeclaredValue);
-        order.TenantId.Should().Be(TestTenantId);
+        order.ShouldNotBeNull();
+        order.Id.ShouldNotBe(Guid.Empty);
+        order.OrderId.ShouldBe(TestOrderId);
+        order.ProviderId.ShouldBe(TestProviderId);
+        order.ProviderCode.ShouldBe(TestProviderCode);
+        order.ServiceTypeCode.ShouldBe(TestServiceTypeCode);
+        order.ServiceTypeName.ShouldBe(TestServiceTypeName);
+        order.PickupAddressJson.ShouldBe(TestPickupAddressJson);
+        order.DeliveryAddressJson.ShouldBe(TestDeliveryAddressJson);
+        order.SenderJson.ShouldBe(TestSenderJson);
+        order.RecipientJson.ShouldBe(TestRecipientJson);
+        order.ItemsJson.ShouldBe(TestItemsJson);
+        order.WeightGrams.ShouldBe(TestWeightGrams);
+        order.DeclaredValue.ShouldBe(TestDeclaredValue);
+        order.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class ShippingOrderTests
         var order = CreateTestShippingOrder();
 
         // Assert
-        order.Status.Should().Be(ShippingStatus.Draft);
+        order.Status.ShouldBe(ShippingStatus.Draft);
     }
 
     [Fact]
@@ -130,10 +130,10 @@ public class ShippingOrderTests
         var order = CreateTestShippingOrder();
 
         // Assert
-        order.BaseRate.Should().Be(0);
-        order.CodFee.Should().Be(0);
-        order.InsuranceFee.Should().Be(0);
-        order.TotalShippingFee.Should().Be(0);
+        order.BaseRate.ShouldBe(0);
+        order.CodFee.ShouldBe(0);
+        order.InsuranceFee.ShouldBe(0);
+        order.TotalShippingFee.ShouldBe(0);
     }
 
     [Fact]
@@ -143,13 +143,13 @@ public class ShippingOrderTests
         var order = CreateTestShippingOrder();
 
         // Assert
-        order.ProviderOrderId.Should().BeNull();
-        order.LabelUrl.Should().BeNull();
-        order.TrackingUrl.Should().BeNull();
-        order.EstimatedDeliveryDate.Should().BeNull();
-        order.ActualDeliveryDate.Should().BeNull();
-        order.PickedUpAt.Should().BeNull();
-        order.ProviderRawResponse.Should().BeNull();
+        order.ProviderOrderId.ShouldBeNull();
+        order.LabelUrl.ShouldBeNull();
+        order.TrackingUrl.ShouldBeNull();
+        order.EstimatedDeliveryDate.ShouldBeNull();
+        order.ActualDeliveryDate.ShouldBeNull();
+        order.PickedUpAt.ShouldBeNull();
+        order.ProviderRawResponse.ShouldBeNull();
     }
 
     [Fact]
@@ -159,7 +159,7 @@ public class ShippingOrderTests
         var order = CreateTestShippingOrder();
 
         // Assert
-        order.TrackingNumber.Should().BeEmpty();
+        order.TrackingNumber.ShouldBeEmpty();
     }
 
     [Fact]
@@ -169,8 +169,8 @@ public class ShippingOrderTests
         var order = CreateTestShippingOrder();
 
         // Assert
-        order.TrackingEvents.Should().NotBeNull();
-        order.TrackingEvents.Should().BeEmpty();
+        order.TrackingEvents.ShouldNotBeNull();
+        order.TrackingEvents.ShouldBeEmpty();
     }
 
     [Fact]
@@ -180,7 +180,7 @@ public class ShippingOrderTests
         var order = CreateTestShippingOrder(codAmount: 500_000m);
 
         // Assert
-        order.CodAmount.Should().Be(500_000m);
+        order.CodAmount.ShouldBe(500_000m);
     }
 
     [Fact]
@@ -190,7 +190,7 @@ public class ShippingOrderTests
         var order = CreateTestShippingOrder(codAmount: null);
 
         // Assert
-        order.CodAmount.Should().BeNull();
+        order.CodAmount.ShouldBeNull();
     }
 
     [Fact]
@@ -200,7 +200,7 @@ public class ShippingOrderTests
         var order = CreateTestShippingOrder(isFreeship: true);
 
         // Assert
-        order.IsFreeship.Should().BeTrue();
+        order.IsFreeship.ShouldBeTrue();
     }
 
     [Fact]
@@ -210,7 +210,7 @@ public class ShippingOrderTests
         var order = CreateTestShippingOrder(isFreeship: false);
 
         // Assert
-        order.IsFreeship.Should().BeFalse();
+        order.IsFreeship.ShouldBeFalse();
     }
 
     [Fact]
@@ -220,7 +220,7 @@ public class ShippingOrderTests
         var order = CreateTestShippingOrder(notes: "Handle with care");
 
         // Assert
-        order.Notes.Should().Be("Handle with care");
+        order.Notes.ShouldBe("Handle with care");
     }
 
     [Fact]
@@ -230,7 +230,7 @@ public class ShippingOrderTests
         var order = CreateTestShippingOrder(notes: null);
 
         // Assert
-        order.Notes.Should().BeNull();
+        order.Notes.ShouldBeNull();
     }
 
     [Fact]
@@ -240,7 +240,7 @@ public class ShippingOrderTests
         var order = CreateTestShippingOrder(tenantId: null);
 
         // Assert
-        order.TenantId.Should().BeNull();
+        order.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -250,14 +250,15 @@ public class ShippingOrderTests
         var order = CreateTestShippingOrder();
 
         // Assert
-        order.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ShippingOrderCreatedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                ShippingOrderId = order.Id,
-                OrderId = TestOrderId,
-                ProviderCode = TestProviderCode
-            });
+        var __evt = order.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<ShippingOrderCreatedEvent>();
+
+        __evt.ShippingOrderId.ShouldBe(order.Id);
+
+        __evt.OrderId.ShouldBe(TestOrderId);
+
+        __evt.ProviderCode.ShouldBe(TestProviderCode);
     }
 
     [Theory]
@@ -275,7 +276,7 @@ public class ShippingOrderTests
         var order = CreateTestShippingOrder(providerCode: code);
 
         // Assert
-        order.ProviderCode.Should().Be(code);
+        order.ProviderCode.ShouldBe(code);
     }
 
     [Fact]
@@ -286,7 +287,7 @@ public class ShippingOrderTests
         var order2 = CreateTestShippingOrder();
 
         // Assert
-        order1.Id.Should().NotBe(order2.Id);
+        order1.Id.ShouldNotBe(order2.Id);
     }
 
     #endregion
@@ -313,15 +314,15 @@ public class ShippingOrderTests
             """{"status":"created"}""");
 
         // Assert
-        order.TrackingNumber.Should().Be("TRK-12345");
-        order.ProviderOrderId.Should().Be("PROV-ORD-001");
-        order.LabelUrl.Should().Be("https://label.example.com/label.pdf");
-        order.TrackingUrl.Should().Be("https://track.example.com/TRK-12345");
-        order.BaseRate.Should().Be(30_000m);
-        order.CodFee.Should().Be(5_000m);
-        order.InsuranceFee.Should().Be(2_000m);
-        order.EstimatedDeliveryDate.Should().Be(estimatedDelivery);
-        order.ProviderRawResponse.Should().Be("""{"status":"created"}""");
+        order.TrackingNumber.ShouldBe("TRK-12345");
+        order.ProviderOrderId.ShouldBe("PROV-ORD-001");
+        order.LabelUrl.ShouldBe("https://label.example.com/label.pdf");
+        order.TrackingUrl.ShouldBe("https://track.example.com/TRK-12345");
+        order.BaseRate.ShouldBe(30_000m);
+        order.CodFee.ShouldBe(5_000m);
+        order.InsuranceFee.ShouldBe(2_000m);
+        order.EstimatedDeliveryDate.ShouldBe(estimatedDelivery);
+        order.ProviderRawResponse.ShouldBe("""{"status":"created"}""");
     }
 
     [Fact]
@@ -336,7 +337,7 @@ public class ShippingOrderTests
             estimatedDeliveryDate: null, rawResponse: null);
 
         // Assert - TotalShippingFee = BaseRate + CodFee + InsuranceFee
-        order.TotalShippingFee.Should().Be(37_000m);
+        order.TotalShippingFee.ShouldBe(37_000m);
     }
 
     [Fact]
@@ -351,7 +352,7 @@ public class ShippingOrderTests
             estimatedDeliveryDate: null, rawResponse: null);
 
         // Assert
-        order.TotalShippingFee.Should().Be(0m);
+        order.TotalShippingFee.ShouldBe(0m);
     }
 
     [Fact]
@@ -359,14 +360,14 @@ public class ShippingOrderTests
     {
         // Arrange
         var order = CreateTestShippingOrder();
-        order.Status.Should().Be(ShippingStatus.Draft);
+        order.Status.ShouldBe(ShippingStatus.Draft);
 
         // Act
         order.SetProviderResponse("TRK-001", null, null, null,
             25_000m, 0m, 0m, null, null);
 
         // Assert
-        order.Status.Should().Be(ShippingStatus.AwaitingPickup);
+        order.Status.ShouldBe(ShippingStatus.AwaitingPickup);
     }
 
     [Fact]
@@ -381,14 +382,15 @@ public class ShippingOrderTests
             25_000m, 0m, 0m, null, null);
 
         // Assert
-        order.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ShippingOrderSubmittedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                ShippingOrderId = order.Id,
-                TrackingNumber = "TRK-SUBMIT",
-                ProviderCode = TestProviderCode
-            });
+        var __evt = order.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<ShippingOrderSubmittedEvent>();
+
+        __evt.ShippingOrderId.ShouldBe(order.Id);
+
+        __evt.TrackingNumber.ShouldBe("TRK-SUBMIT");
+
+        __evt.ProviderCode.ShouldBe(TestProviderCode);
     }
 
     [Fact]
@@ -409,11 +411,11 @@ public class ShippingOrderTests
             rawResponse: null);
 
         // Assert
-        order.ProviderOrderId.Should().BeNull();
-        order.LabelUrl.Should().BeNull();
-        order.TrackingUrl.Should().BeNull();
-        order.EstimatedDeliveryDate.Should().BeNull();
-        order.ProviderRawResponse.Should().BeNull();
+        order.ProviderOrderId.ShouldBeNull();
+        order.LabelUrl.ShouldBeNull();
+        order.TrackingUrl.ShouldBeNull();
+        order.EstimatedDeliveryDate.ShouldBeNull();
+        order.ProviderRawResponse.ShouldBeNull();
     }
 
     #endregion
@@ -431,9 +433,9 @@ public class ShippingOrderTests
         order.UpdateStatus(ShippingStatus.PickedUp, "Warehouse A");
 
         // Assert
-        order.Status.Should().Be(ShippingStatus.PickedUp);
-        order.PickedUpAt.Should().NotBeNull();
-        order.PickedUpAt.Should().BeOnOrAfter(beforeUpdate);
+        order.Status.ShouldBe(ShippingStatus.PickedUp);
+        order.PickedUpAt.ShouldNotBeNull();
+        order.PickedUpAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeUpdate);
     }
 
     [Fact]
@@ -447,9 +449,9 @@ public class ShippingOrderTests
         order.UpdateStatus(ShippingStatus.Delivered, "Customer address");
 
         // Assert
-        order.Status.Should().Be(ShippingStatus.Delivered);
-        order.ActualDeliveryDate.Should().NotBeNull();
-        order.ActualDeliveryDate.Should().BeOnOrAfter(beforeUpdate);
+        order.Status.ShouldBe(ShippingStatus.Delivered);
+        order.ActualDeliveryDate.ShouldNotBeNull();
+        order.ActualDeliveryDate!.Value.ShouldBeGreaterThanOrEqualTo(beforeUpdate);
     }
 
     [Fact]
@@ -462,9 +464,9 @@ public class ShippingOrderTests
         order.UpdateStatus(ShippingStatus.InTransit, "Distribution center");
 
         // Assert
-        order.Status.Should().Be(ShippingStatus.InTransit);
-        order.PickedUpAt.Should().BeNull();
-        order.ActualDeliveryDate.Should().BeNull();
+        order.Status.ShouldBe(ShippingStatus.InTransit);
+        order.PickedUpAt.ShouldBeNull();
+        order.ActualDeliveryDate.ShouldBeNull();
     }
 
     [Fact]
@@ -478,16 +480,19 @@ public class ShippingOrderTests
         order.UpdateStatus(ShippingStatus.InTransit, "Hub B");
 
         // Assert
-        order.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ShippingOrderStatusChangedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                ShippingOrderId = order.Id,
-                TrackingNumber = "TRK-EVT",
-                PreviousStatus = ShippingStatus.AwaitingPickup,
-                NewStatus = ShippingStatus.InTransit,
-                Location = "Hub B"
-            });
+        var __evt = order.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<ShippingOrderStatusChangedEvent>();
+
+        __evt.ShippingOrderId.ShouldBe(order.Id);
+
+        __evt.TrackingNumber.ShouldBe("TRK-EVT");
+
+        __evt.PreviousStatus.ShouldBe(ShippingStatus.AwaitingPickup);
+
+        __evt.NewStatus.ShouldBe(ShippingStatus.InTransit);
+
+        __evt.Location.ShouldBe("Hub B");
     }
 
     [Fact]
@@ -501,9 +506,9 @@ public class ShippingOrderTests
         order.UpdateStatus(ShippingStatus.InTransit);
 
         // Assert
-        order.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ShippingOrderStatusChangedEvent>()
-            .Which.Location.Should().BeNull();
+        order.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ShippingOrderStatusChangedEvent>()
+            .Location.ShouldBeNull();
     }
 
     [Theory]
@@ -520,7 +525,7 @@ public class ShippingOrderTests
         order.UpdateStatus(targetStatus);
 
         // Assert
-        order.Status.Should().Be(targetStatus);
+        order.Status.ShouldBe(targetStatus);
     }
 
     #endregion
@@ -541,8 +546,8 @@ public class ShippingOrderTests
         order.AddTrackingEvent(trackingEvent);
 
         // Assert
-        order.TrackingEvents.Should().HaveCount(1);
-        order.TrackingEvents.Should().Contain(trackingEvent);
+        order.TrackingEvents.Count().ShouldBe(1);
+        order.TrackingEvents.ShouldContain(trackingEvent);
     }
 
     [Fact]
@@ -550,7 +555,7 @@ public class ShippingOrderTests
     {
         // Arrange
         var order = CreateSubmittedShippingOrder();
-        order.Status.Should().Be(ShippingStatus.AwaitingPickup);
+        order.Status.ShouldBe(ShippingStatus.AwaitingPickup);
         var trackingEvent = ShippingTrackingEvent.Create(
             order.Id, "IN_TRANSIT", ShippingStatus.InTransit,
             "Package in transit", "Hub B",
@@ -560,7 +565,7 @@ public class ShippingOrderTests
         order.AddTrackingEvent(trackingEvent);
 
         // Assert
-        order.Status.Should().Be(ShippingStatus.InTransit);
+        order.Status.ShouldBe(ShippingStatus.InTransit);
     }
 
     [Fact]
@@ -578,8 +583,8 @@ public class ShippingOrderTests
         order.AddTrackingEvent(trackingEvent);
 
         // Assert - no status change event raised because status is the same
-        order.DomainEvents.Should().BeEmpty();
-        order.TrackingEvents.Should().HaveCount(1);
+        order.DomainEvents.ShouldBeEmpty();
+        order.TrackingEvents.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -603,9 +608,9 @@ public class ShippingOrderTests
         order.AddTrackingEvent(event3);
 
         // Assert
-        order.TrackingEvents.Should().HaveCount(3);
-        order.Status.Should().Be(ShippingStatus.Delivered);
-        order.ActualDeliveryDate.Should().NotBeNull();
+        order.TrackingEvents.Count().ShouldBe(3);
+        order.Status.ShouldBe(ShippingStatus.Delivered);
+        order.ActualDeliveryDate.ShouldNotBeNull();
     }
 
     [Fact]
@@ -622,8 +627,8 @@ public class ShippingOrderTests
         order.AddTrackingEvent(trackingEvent);
 
         // Assert
-        order.PickedUpAt.Should().NotBeNull();
-        order.PickedUpAt.Should().BeOnOrAfter(beforeAdd);
+        order.PickedUpAt.ShouldNotBeNull();
+        order.PickedUpAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeAdd);
     }
 
     #endregion
@@ -640,7 +645,7 @@ public class ShippingOrderTests
         order.Cancel("No longer needed");
 
         // Assert
-        order.Status.Should().Be(ShippingStatus.Cancelled);
+        order.Status.ShouldBe(ShippingStatus.Cancelled);
     }
 
     [Fact]
@@ -653,7 +658,7 @@ public class ShippingOrderTests
         order.Cancel("Customer cancelled order");
 
         // Assert
-        order.Status.Should().Be(ShippingStatus.Cancelled);
+        order.Status.ShouldBe(ShippingStatus.Cancelled);
     }
 
     [Fact]
@@ -666,7 +671,7 @@ public class ShippingOrderTests
         order.Cancel("Out of stock");
 
         // Assert
-        order.Notes.Should().Be("Cancelled: Out of stock");
+        order.Notes.ShouldBe("Cancelled: Out of stock");
     }
 
     [Fact]
@@ -679,7 +684,7 @@ public class ShippingOrderTests
         order.Cancel("Customer request");
 
         // Assert
-        order.Notes.Should().Be("Initial notes\nCancelled: Customer request");
+        order.Notes.ShouldBe("Initial notes\nCancelled: Customer request");
     }
 
     [Fact]
@@ -692,8 +697,8 @@ public class ShippingOrderTests
         order.Cancel();
 
         // Assert
-        order.Status.Should().Be(ShippingStatus.Cancelled);
-        order.Notes.Should().Be("Cancelled: ");
+        order.Status.ShouldBe(ShippingStatus.Cancelled);
+        order.Notes.ShouldBe("Cancelled: ");
     }
 
     [Fact]
@@ -708,15 +713,17 @@ public class ShippingOrderTests
         order.Cancel(reason);
 
         // Assert
-        order.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ShippingOrderCancelledEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                ShippingOrderId = order.Id,
-                TrackingNumber = "TRK-CANCEL",
-                PreviousStatus = ShippingStatus.AwaitingPickup,
-                Reason = reason
-            });
+        var __evt = order.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<ShippingOrderCancelledEvent>();
+
+        __evt.ShippingOrderId.ShouldBe(order.Id);
+
+        __evt.TrackingNumber.ShouldBe("TRK-CANCEL");
+
+        __evt.PreviousStatus.ShouldBe(ShippingStatus.AwaitingPickup);
+
+        __evt.Reason.ShouldBe(reason);
     }
 
     [Fact]
@@ -730,8 +737,8 @@ public class ShippingOrderTests
         var act = () => order.Cancel("Too late");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot cancel shipping order in status Delivered");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot cancel shipping order in status Delivered");
     }
 
     [Fact]
@@ -745,8 +752,8 @@ public class ShippingOrderTests
         var act = () => order.Cancel("Second cancel");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot cancel shipping order in status Cancelled");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot cancel shipping order in status Cancelled");
     }
 
     [Theory]
@@ -776,8 +783,8 @@ public class ShippingOrderTests
         var act = () => order.Cancel("Reason");
 
         // Assert
-        act.Should().NotThrow();
-        order.Status.Should().Be(ShippingStatus.Cancelled);
+        act.ShouldNotThrow();
+        order.Status.ShouldBe(ShippingStatus.Cancelled);
     }
 
     #endregion
@@ -795,7 +802,7 @@ public class ShippingOrderTests
         order.SetEstimatedDeliveryDate(estimatedDate);
 
         // Assert
-        order.EstimatedDeliveryDate.Should().Be(estimatedDate);
+        order.EstimatedDeliveryDate.ShouldBe(estimatedDate);
     }
 
     [Fact]
@@ -803,13 +810,13 @@ public class ShippingOrderTests
     {
         // Arrange
         var order = CreateSubmittedShippingOrder();
-        order.EstimatedDeliveryDate.Should().NotBeNull();
+        order.EstimatedDeliveryDate.ShouldNotBeNull();
 
         // Act
         order.SetEstimatedDeliveryDate(null);
 
         // Assert
-        order.EstimatedDeliveryDate.Should().BeNull();
+        order.EstimatedDeliveryDate.ShouldBeNull();
     }
 
     [Fact]
@@ -825,7 +832,7 @@ public class ShippingOrderTests
         order.SetEstimatedDeliveryDate(secondDate);
 
         // Assert
-        order.EstimatedDeliveryDate.Should().Be(secondDate);
+        order.EstimatedDeliveryDate.ShouldBe(secondDate);
     }
 
     #endregion
@@ -837,31 +844,31 @@ public class ShippingOrderTests
     {
         // Arrange
         var order = CreateTestShippingOrder();
-        order.Status.Should().Be(ShippingStatus.Draft);
+        order.Status.ShouldBe(ShippingStatus.Draft);
 
         // Act - Submit to provider
         order.SetProviderResponse("TRK-FULL", "PROV-001", null, null,
             25_000m, 3_000m, 1_000m, DateTimeOffset.UtcNow.AddDays(3), null);
-        order.Status.Should().Be(ShippingStatus.AwaitingPickup);
-        order.TotalShippingFee.Should().Be(29_000m);
+        order.Status.ShouldBe(ShippingStatus.AwaitingPickup);
+        order.TotalShippingFee.ShouldBe(29_000m);
 
         // Act - Picked up
         order.UpdateStatus(ShippingStatus.PickedUp, "Sender warehouse");
-        order.Status.Should().Be(ShippingStatus.PickedUp);
-        order.PickedUpAt.Should().NotBeNull();
+        order.Status.ShouldBe(ShippingStatus.PickedUp);
+        order.PickedUpAt.ShouldNotBeNull();
 
         // Act - In transit
         order.UpdateStatus(ShippingStatus.InTransit, "Distribution center");
-        order.Status.Should().Be(ShippingStatus.InTransit);
+        order.Status.ShouldBe(ShippingStatus.InTransit);
 
         // Act - Out for delivery
         order.UpdateStatus(ShippingStatus.OutForDelivery, "Local hub");
-        order.Status.Should().Be(ShippingStatus.OutForDelivery);
+        order.Status.ShouldBe(ShippingStatus.OutForDelivery);
 
         // Act - Delivered
         order.UpdateStatus(ShippingStatus.Delivered, "Customer address");
-        order.Status.Should().Be(ShippingStatus.Delivered);
-        order.ActualDeliveryDate.Should().NotBeNull();
+        order.Status.ShouldBe(ShippingStatus.Delivered);
+        order.ActualDeliveryDate.ShouldNotBeNull();
     }
 
     [Fact]
@@ -879,7 +886,7 @@ public class ShippingOrderTests
         // ShippingOrderStatusChangedEvent raised
 
         // Assert - Created(1) + Submitted(1) + StatusChanged(1) = 3
-        order.DomainEvents.Should().HaveCount(3);
+        order.DomainEvents.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -887,13 +894,13 @@ public class ShippingOrderTests
     {
         // Arrange
         var order = CreateTestShippingOrder();
-        order.DomainEvents.Should().HaveCountGreaterThan(0);
+        order.DomainEvents.Count().ShouldBeGreaterThan(0);
 
         // Act
         order.ClearDomainEvents();
 
         // Assert
-        order.DomainEvents.Should().BeEmpty();
+        order.DomainEvents.ShouldBeEmpty();
     }
 
     #endregion

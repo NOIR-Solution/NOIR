@@ -101,12 +101,12 @@ public class TestGatewayConnectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Success.Should().BeTrue();
-        result.Value.Message.Should().Be("Connection successful");
-        result.Value.ResponseTimeMs.Should().NotBeNull();
-        result.Value.ErrorCode.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Success.ShouldBe(true);
+        result.Value.Message.ShouldBe("Connection successful");
+        result.Value.ResponseTimeMs.ShouldNotBeNull();
+        result.Value.ErrorCode.ShouldBeNull();
 
         _operationLoggerMock.Verify(x => x.CompleteSuccessAsync(
             It.IsAny<Guid>(),
@@ -138,9 +138,9 @@ public class TestGatewayConnectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().BeTrue();
-        result.Value.Message.Should().Contain("degraded");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(true);
+        result.Value.Message.ShouldContain("degraded");
     }
 
     #endregion
@@ -161,9 +161,9 @@ public class TestGatewayConnectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.GatewayNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.GatewayNotFound);
 
         _gatewayFactoryMock.Verify(x => x.GetProviderWithCredentialsAsync(
             It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -184,10 +184,10 @@ public class TestGatewayConnectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().BeFalse();
-        result.Value.ErrorCode.Should().Be("NO_CREDENTIALS");
-        result.Value.Message.Should().Contain("no credentials configured");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(false);
+        result.Value.ErrorCode.ShouldBe("NO_CREDENTIALS");
+        result.Value.Message.ShouldContain("no credentials configured");
     }
 
     [Fact]
@@ -209,10 +209,10 @@ public class TestGatewayConnectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().BeFalse();
-        result.Value.ErrorCode.Should().Be("PROVIDER_UNAVAILABLE");
-        result.Value.Message.Should().Contain("not available");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(false);
+        result.Value.ErrorCode.ShouldBe("PROVIDER_UNAVAILABLE");
+        result.Value.Message.ShouldContain("not available");
 
         _operationLoggerMock.Verify(x => x.CompleteFailedAsync(
             It.IsAny<Guid>(),
@@ -247,10 +247,10 @@ public class TestGatewayConnectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().BeFalse();
-        result.Value.ErrorCode.Should().Be("GATEWAY_UNHEALTHY");
-        result.Value.Message.Should().Contain("unhealthy");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(false);
+        result.Value.ErrorCode.ShouldBe("GATEWAY_UNHEALTHY");
+        result.Value.Message.ShouldContain("unhealthy");
     }
 
     [Fact]
@@ -276,10 +276,10 @@ public class TestGatewayConnectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().BeFalse();
-        result.Value.ErrorCode.Should().Be("CONNECTION_FAILED");
-        result.Value.Message.Should().Contain("Network unreachable");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(false);
+        result.Value.ErrorCode.ShouldBe("CONNECTION_FAILED");
+        result.Value.Message.ShouldContain("Network unreachable");
     }
 
     [Fact]
@@ -305,10 +305,10 @@ public class TestGatewayConnectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().BeFalse();
-        result.Value.ErrorCode.Should().Be("TIMEOUT");
-        result.Value.Message.Should().Contain("timed out");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(false);
+        result.Value.ErrorCode.ShouldBe("TIMEOUT");
+        result.Value.Message.ShouldContain("timed out");
     }
 
     [Fact]
@@ -334,10 +334,10 @@ public class TestGatewayConnectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().BeFalse();
-        result.Value.ErrorCode.Should().Be("UNEXPECTED_ERROR");
-        result.Value.Message.Should().Contain("Unexpected error");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(false);
+        result.Value.ErrorCode.ShouldBe("UNEXPECTED_ERROR");
+        result.Value.Message.ShouldContain("Unexpected error");
     }
 
     #endregion

@@ -36,7 +36,7 @@ public class WishlistEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/wishlists");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -49,7 +49,7 @@ public class WishlistEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/wishlists", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class WishlistEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync($"/api/wishlists/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class WishlistEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.DeleteAsync($"/api/wishlists/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -86,9 +86,9 @@ public class WishlistEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/wishlists");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<List<WishlistDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     #endregion
@@ -107,10 +107,10 @@ public class WishlistEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/wishlists", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var wishlist = await response.Content.ReadFromJsonAsync<WishlistDto>();
-        wishlist.Should().NotBeNull();
-        wishlist!.Name.Should().Be(uniqueName);
+        wishlist.ShouldNotBeNull();
+        wishlist!.Name.ShouldBe(uniqueName);
     }
 
     [Fact]
@@ -125,11 +125,11 @@ public class WishlistEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/wishlists", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var wishlist = await response.Content.ReadFromJsonAsync<WishlistDto>();
-        wishlist.Should().NotBeNull();
-        wishlist!.Name.Should().Be(uniqueName);
-        wishlist.IsPublic.Should().BeTrue();
+        wishlist.ShouldNotBeNull();
+        wishlist!.Name.ShouldBe(uniqueName);
+        wishlist.IsPublic.ShouldBeTrue();
     }
 
     #endregion
@@ -153,11 +153,11 @@ public class WishlistEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/wishlists/{createdWishlist!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var wishlist = await response.Content.ReadFromJsonAsync<WishlistDetailDto>();
-        wishlist.Should().NotBeNull();
-        wishlist!.Id.Should().Be(createdWishlist.Id);
-        wishlist.Name.Should().Be(uniqueName);
+        wishlist.ShouldNotBeNull();
+        wishlist!.Id.ShouldBe(createdWishlist.Id);
+        wishlist.Name.ShouldBe(uniqueName);
     }
 
     [Fact]
@@ -170,7 +170,7 @@ public class WishlistEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/wishlists/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -200,11 +200,11 @@ public class WishlistEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/wishlists/{createdWishlist!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Verify it's deleted
         var getResponse = await adminClient.GetAsync($"/api/wishlists/{createdWishlist.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -217,7 +217,7 @@ public class WishlistEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/wishlists/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -231,7 +231,7 @@ public class WishlistEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/wishlists/analytics?topCount=10");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -244,9 +244,9 @@ public class WishlistEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/wishlists/analytics?topCount=10");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<WishlistAnalyticsDto>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     #endregion
@@ -260,7 +260,7 @@ public class WishlistEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/wishlists/shared/non-existent-token");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion

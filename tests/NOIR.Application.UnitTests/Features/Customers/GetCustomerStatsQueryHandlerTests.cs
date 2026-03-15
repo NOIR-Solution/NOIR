@@ -56,8 +56,8 @@ public class GetCustomerStatsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TotalCustomers.Should().Be(100);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TotalCustomers.ShouldBe(100);
     }
 
     [Fact]
@@ -86,12 +86,12 @@ public class GetCustomerStatsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SegmentDistribution.Should().NotBeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SegmentDistribution.ShouldNotBeEmpty();
 
         // Should have an entry for each CustomerSegment enum value
         var segmentValues = Enum.GetValues<CustomerSegment>();
-        result.Value.SegmentDistribution.Should().HaveCount(segmentValues.Length);
+        result.Value.SegmentDistribution.Count().ShouldBe(segmentValues.Length);
     }
 
     [Fact]
@@ -120,12 +120,12 @@ public class GetCustomerStatsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TierDistribution.Should().NotBeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TierDistribution.ShouldNotBeEmpty();
 
         // Should have an entry for each CustomerTier enum value
         var tierValues = Enum.GetValues<CustomerTier>();
-        result.Value.TierDistribution.Should().HaveCount(tierValues.Length);
+        result.Value.TierDistribution.Count().ShouldBe(tierValues.Length);
     }
 
     [Fact]
@@ -160,10 +160,10 @@ public class GetCustomerStatsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TopSpenders.Should().HaveCount(2);
-        result.Value.TopSpenders[0].Email.Should().Be("spender1@example.com");
-        result.Value.TopSpenders[1].Email.Should().Be("spender2@example.com");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TopSpenders.Count().ShouldBe(2);
+        result.Value.TopSpenders[0].Email.ShouldBe("spender1@example.com");
+        result.Value.TopSpenders[1].Email.ShouldBe("spender2@example.com");
     }
 
     [Fact]
@@ -192,10 +192,10 @@ public class GetCustomerStatsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TotalCustomers.Should().Be(0);
-        result.Value.ActiveCustomers.Should().Be(0);
-        result.Value.TopSpenders.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TotalCustomers.ShouldBe(0);
+        result.Value.ActiveCustomers.ShouldBe(0);
+        result.Value.TopSpenders.ShouldBeEmpty();
     }
 
     #endregion

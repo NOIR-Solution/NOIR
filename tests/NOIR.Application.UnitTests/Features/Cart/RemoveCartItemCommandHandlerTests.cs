@@ -100,10 +100,10 @@ public class RemoveCartItemCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Items.Should().HaveCount(initialItemCount - 1);
-        result.Value.Items.Should().NotContain(i => i.Id == itemId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Items.Count().ShouldBe(initialItemCount - 1);
+        result.Value.Items.ShouldNotContain(i => i.Id == itemId);
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -131,9 +131,9 @@ public class RemoveCartItemCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.IsEmpty.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.IsEmpty.ShouldBe(true);
     }
 
     [Fact]
@@ -159,8 +159,8 @@ public class RemoveCartItemCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
     }
 
     #endregion
@@ -184,9 +184,9 @@ public class RemoveCartItemCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain("Cart");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Message.ShouldContain("Cart");
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -210,9 +210,9 @@ public class RemoveCartItemCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.Forbidden);
-        result.Error.Message.Should().Contain("Cart");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.Forbidden);
+        result.Error.Message.ShouldContain("Cart");
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -241,8 +241,8 @@ public class RemoveCartItemCommandHandlerTests
 
         // Assert
         // RemoveItem doesn't throw if item doesn't exist
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1); // Original item still there
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1); // Original item still there
     }
 
     [Fact]
@@ -265,8 +265,8 @@ public class RemoveCartItemCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.Validation);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -331,11 +331,11 @@ public class RemoveCartItemCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(cartId);
-        result.Value.UserId.Should().Be(TestUserId);
-        result.Value.Status.Should().Be(CartStatus.Active);
-        result.Value.Currency.Should().Be("VND");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(cartId);
+        result.Value.UserId.ShouldBe(TestUserId);
+        result.Value.Status.ShouldBe(CartStatus.Active);
+        result.Value.Currency.ShouldBe("VND");
     }
 
     #endregion

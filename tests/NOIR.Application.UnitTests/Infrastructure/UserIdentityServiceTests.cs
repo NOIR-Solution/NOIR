@@ -69,11 +69,11 @@ public class UserIdentityServiceTests
         var result = await _sut.FindByIdAsync(userId);
 
         // Assert
-        result.Should().NotBeNull();
-        result!.Id.Should().Be(userId);
-        result.Email.Should().Be(user.Email);
-        result.FirstName.Should().Be(user.FirstName);
-        result.LastName.Should().Be(user.LastName);
+        result.ShouldNotBeNull();
+        result!.Id.ShouldBe(userId);
+        result.Email.ShouldBe(user.Email);
+        result.FirstName.ShouldBe(user.FirstName);
+        result.LastName.ShouldBe(user.LastName);
     }
 
     [Fact]
@@ -88,7 +88,7 @@ public class UserIdentityServiceTests
         var result = await _sut.FindByIdAsync(userId);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -155,8 +155,8 @@ public class UserIdentityServiceTests
         var result = await _sut.FindByEmailAsync(email, null);
 
         // Assert
-        result.Should().NotBeNull();
-        result!.Email.Should().Be(email);
+        result.ShouldNotBeNull();
+        result!.Email.ShouldBe(email);
     }
 
     [Fact]
@@ -173,7 +173,7 @@ public class UserIdentityServiceTests
         var result = await _sut.FindByEmailAsync(email, null);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -212,8 +212,8 @@ public class UserIdentityServiceTests
         var result = await _sut.FindByEmailAsync(email, tenantId);
 
         // Assert
-        result.Should().NotBeNull();
-        result!.Email.Should().Be(email);
+        result.ShouldNotBeNull();
+        result!.Email.ShouldBe(email);
     }
 
     #endregion
@@ -233,7 +233,7 @@ public class UserIdentityServiceTests
         var result = _sut.NormalizeEmail(email);
 
         // Assert
-        result.Should().Be(normalized);
+        result.ShouldBe(normalized);
     }
 
     [Fact]
@@ -248,7 +248,7 @@ public class UserIdentityServiceTests
         var result = _sut.NormalizeEmail(email);
 
         // Assert
-        result.Should().Be(email);
+        result.ShouldBe(email);
     }
 
     #endregion
@@ -272,10 +272,10 @@ public class UserIdentityServiceTests
         var result = await _sut.CheckPasswordSignInAsync(userId, password);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
-        result.IsLockedOut.Should().BeFalse();
-        result.IsNotAllowed.Should().BeFalse();
-        result.RequiresTwoFactor.Should().BeFalse();
+        result.Succeeded.ShouldBe(true);
+        result.IsLockedOut.ShouldBe(false);
+        result.IsNotAllowed.ShouldBe(false);
+        result.RequiresTwoFactor.ShouldBe(false);
     }
 
     [Fact]
@@ -295,7 +295,7 @@ public class UserIdentityServiceTests
         var result = await _sut.CheckPasswordSignInAsync(userId, password);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
+        result.Succeeded.ShouldBe(false);
     }
 
     [Fact]
@@ -315,8 +315,8 @@ public class UserIdentityServiceTests
         var result = await _sut.CheckPasswordSignInAsync(userId, password);
 
         // Assert
-        result.IsLockedOut.Should().BeTrue();
-        result.Succeeded.Should().BeFalse();
+        result.IsLockedOut.ShouldBe(true);
+        result.Succeeded.ShouldBe(false);
     }
 
     [Fact]
@@ -331,10 +331,10 @@ public class UserIdentityServiceTests
         var result = await _sut.CheckPasswordSignInAsync(userId, "password");
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.IsLockedOut.Should().BeFalse();
-        result.IsNotAllowed.Should().BeFalse();
-        result.RequiresTwoFactor.Should().BeFalse();
+        result.Succeeded.ShouldBe(false);
+        result.IsLockedOut.ShouldBe(false);
+        result.IsNotAllowed.ShouldBe(false);
+        result.RequiresTwoFactor.ShouldBe(false);
     }
 
     [Fact]
@@ -354,8 +354,8 @@ public class UserIdentityServiceTests
         var result = await _sut.CheckPasswordSignInAsync(userId, password);
 
         // Assert
-        result.RequiresTwoFactor.Should().BeTrue();
-        result.Succeeded.Should().BeFalse();
+        result.RequiresTwoFactor.ShouldBe(true);
+        result.Succeeded.ShouldBe(false);
     }
 
     [Fact]
@@ -396,8 +396,8 @@ public class UserIdentityServiceTests
         var result = await _sut.CreateUserAsync(dto, password);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
-        result.UserId.Should().NotBeNullOrEmpty();
+        result.Succeeded.ShouldBe(true);
+        result.UserId.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -415,8 +415,8 @@ public class UserIdentityServiceTests
         var result = await _sut.CreateUserAsync(dto, password);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("Password too weak");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("Password too weak");
     }
 
     [Fact]
@@ -435,14 +435,14 @@ public class UserIdentityServiceTests
         await _sut.CreateUserAsync(dto, password);
 
         // Assert
-        capturedUser.Should().NotBeNull();
-        capturedUser!.Email.Should().Be(dto.Email);
-        capturedUser.UserName.Should().Be(dto.Email); // Platform users: UserName = Email
-        capturedUser.FirstName.Should().Be(dto.FirstName);
-        capturedUser.LastName.Should().Be(dto.LastName);
-        capturedUser.DisplayName.Should().Be(dto.DisplayName);
-        capturedUser.IsActive.Should().BeTrue();
-        capturedUser.TenantId.Should().BeNull();
+        capturedUser.ShouldNotBeNull();
+        capturedUser!.Email.ShouldBe(dto.Email);
+        capturedUser.UserName.ShouldBe(dto.Email); // Platform users: UserName = Email
+        capturedUser.FirstName.ShouldBe(dto.FirstName);
+        capturedUser.LastName.ShouldBe(dto.LastName);
+        capturedUser.DisplayName.ShouldBe(dto.DisplayName);
+        capturedUser.IsActive.ShouldBe(true);
+        capturedUser.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -463,12 +463,12 @@ public class UserIdentityServiceTests
         await _sut.CreateUserAsync(dto, password);
 
         // Assert
-        capturedUser.Should().NotBeNull();
-        capturedUser!.Email.Should().Be(email);
-        capturedUser.UserName.Should().Be($"{email}#{tenantId}"); // Tenant users: UserName = email#tenantId
-        capturedUser.FirstName.Should().Be(dto.FirstName);
-        capturedUser.LastName.Should().Be(dto.LastName);
-        capturedUser.TenantId.Should().Be(tenantId);
+        capturedUser.ShouldNotBeNull();
+        capturedUser!.Email.ShouldBe(email);
+        capturedUser.UserName.ShouldBe($"{email}#{tenantId}"); // Tenant users: UserName = email#tenantId
+        capturedUser.FirstName.ShouldBe(dto.FirstName);
+        capturedUser.LastName.ShouldBe(dto.LastName);
+        capturedUser.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -482,8 +482,8 @@ public class UserIdentityServiceTests
         var result = await _sut.CreateUserAsync(dto, password);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("Email is required.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("Email is required.");
     }
 
     [Fact]
@@ -497,8 +497,8 @@ public class UserIdentityServiceTests
         var result = await _sut.CreateUserAsync(dto, password);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("Password is required.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("Password is required.");
     }
 
     #endregion
@@ -522,8 +522,8 @@ public class UserIdentityServiceTests
         var result = await _sut.UpdateUserAsync(userId, updates);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
-        result.UserId.Should().Be(userId);
+        result.Succeeded.ShouldBe(true);
+        result.UserId.ShouldBe(userId);
     }
 
     [Fact]
@@ -540,8 +540,8 @@ public class UserIdentityServiceTests
         var result = await _sut.UpdateUserAsync(userId, updates);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("User not found.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("User not found.");
     }
 
     [Fact]
@@ -562,8 +562,8 @@ public class UserIdentityServiceTests
         await _sut.UpdateUserAsync(userId, updates);
 
         // Assert
-        user.FirstName.Should().Be("NewFirstName");
-        user.LastName.Should().Be(originalLastName); // Should remain unchanged
+        user.FirstName.ShouldBe("NewFirstName");
+        user.LastName.ShouldBe(originalLastName); // Should remain unchanged
     }
 
     [Fact]
@@ -584,7 +584,7 @@ public class UserIdentityServiceTests
         await _sut.UpdateUserAsync(userId, updates);
 
         // Assert
-        user.FirstName.Should().BeNull();
+        user.FirstName.ShouldBeNull();
     }
 
     [Fact]
@@ -610,12 +610,12 @@ public class UserIdentityServiceTests
         await _sut.UpdateUserAsync(userId, updates);
 
         // Assert
-        user.FirstName.Should().Be("NewFirst");
-        user.LastName.Should().Be("NewLast");
-        user.DisplayName.Should().Be("NewDisplay");
-        user.PhoneNumber.Should().Be("1234567890");
-        user.AvatarUrl.Should().Be("/avatars/new.png");
-        user.IsActive.Should().BeFalse();
+        user.FirstName.ShouldBe("NewFirst");
+        user.LastName.ShouldBe("NewLast");
+        user.DisplayName.ShouldBe("NewDisplay");
+        user.PhoneNumber.ShouldBe("1234567890");
+        user.AvatarUrl.ShouldBe("/avatars/new.png");
+        user.IsActive.ShouldBe(false);
     }
 
     #endregion
@@ -641,11 +641,11 @@ public class UserIdentityServiceTests
         var result = await _sut.SoftDeleteUserAsync(userId, deletedBy);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
-        user.IsDeleted.Should().BeTrue();
-        user.DeletedAt.Should().Be(now);
-        user.DeletedBy.Should().Be(deletedBy);
-        user.IsActive.Should().BeFalse();
+        result.Succeeded.ShouldBe(true);
+        user.IsDeleted.ShouldBe(true);
+        user.DeletedAt.ShouldBe(now);
+        user.DeletedBy.ShouldBe(deletedBy);
+        user.IsActive.ShouldBe(false);
     }
 
     [Fact]
@@ -660,8 +660,8 @@ public class UserIdentityServiceTests
         var result = await _sut.SoftDeleteUserAsync(userId, "admin");
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("User not found.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("User not found.");
     }
 
     #endregion
@@ -687,11 +687,11 @@ public class UserIdentityServiceTests
         var result = await _sut.SetUserLockoutAsync(userId, true, lockedBy);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
-        user.IsActive.Should().BeFalse();
-        user.LockoutEnd.Should().Be(DateTimeOffset.MaxValue);
-        user.LockedAt.Should().Be(now);
-        user.LockedBy.Should().Be(lockedBy);
+        result.Succeeded.ShouldBe(true);
+        user.IsActive.ShouldBe(false);
+        user.LockoutEnd.ShouldBe(DateTimeOffset.MaxValue);
+        user.LockedAt.ShouldBe(now);
+        user.LockedBy.ShouldBe(lockedBy);
     }
 
     [Fact]
@@ -714,11 +714,11 @@ public class UserIdentityServiceTests
         var result = await _sut.SetUserLockoutAsync(userId, false);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
-        user.IsActive.Should().BeTrue();
-        user.LockoutEnd.Should().BeNull();
-        user.LockedAt.Should().BeNull();
-        user.LockedBy.Should().BeNull();
+        result.Succeeded.ShouldBe(true);
+        user.IsActive.ShouldBe(true);
+        user.LockoutEnd.ShouldBeNull();
+        user.LockedAt.ShouldBeNull();
+        user.LockedBy.ShouldBeNull();
     }
 
     [Fact]
@@ -733,8 +733,8 @@ public class UserIdentityServiceTests
         var result = await _sut.SetUserLockoutAsync(userId, true);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("User not found.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("User not found.");
     }
 
     #endregion
@@ -765,8 +765,8 @@ public class UserIdentityServiceTests
         var result = await _sut.ResetPasswordAsync(userId, newPassword);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
-        user.PasswordLastChangedAt.Should().Be(now);
+        result.Succeeded.ShouldBe(true);
+        user.PasswordLastChangedAt.ShouldBe(now);
     }
 
     [Fact]
@@ -781,8 +781,8 @@ public class UserIdentityServiceTests
         var result = await _sut.ResetPasswordAsync(userId, "NewPassword123!");
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("User not found.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("User not found.");
     }
 
     [Fact]
@@ -806,8 +806,8 @@ public class UserIdentityServiceTests
         var result = await _sut.ResetPasswordAsync(userId, newPassword);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("Password too weak");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("Password too weak");
     }
 
     #endregion
@@ -836,8 +836,8 @@ public class UserIdentityServiceTests
         var result = await _sut.ChangePasswordAsync(userId, currentPassword, newPassword);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
-        user.PasswordLastChangedAt.Should().Be(now);
+        result.Succeeded.ShouldBe(true);
+        user.PasswordLastChangedAt.ShouldBe(now);
     }
 
     [Fact]
@@ -857,8 +857,8 @@ public class UserIdentityServiceTests
         var result = await _sut.ChangePasswordAsync(userId, "wrong", "NewPassword123!");
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("Incorrect password");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("Incorrect password");
     }
 
     [Fact]
@@ -873,8 +873,8 @@ public class UserIdentityServiceTests
         var result = await _sut.ChangePasswordAsync(userId, "old", "new");
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("User not found.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("User not found.");
     }
 
     #endregion
@@ -906,10 +906,10 @@ public class UserIdentityServiceTests
         var result = await _sut.UpdateEmailAsync(userId, newEmail);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
-        user.Email.Should().Be(newEmail);
+        result.Succeeded.ShouldBe(true);
+        user.Email.ShouldBe(newEmail);
         // Platform user (TenantId = null): UserName = email
-        user.UserName.Should().Be(newEmail);
+        user.UserName.ShouldBe(newEmail);
     }
 
     [Fact]
@@ -937,8 +937,8 @@ public class UserIdentityServiceTests
         var result = await _sut.UpdateEmailAsync(userId, newEmail);
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("Email is already in use in this tenant.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("Email is already in use in this tenant.");
     }
 
     [Fact]
@@ -966,7 +966,7 @@ public class UserIdentityServiceTests
         var result = await _sut.UpdateEmailAsync(userId, sameEmail);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
+        result.Succeeded.ShouldBe(true);
     }
 
     [Fact]
@@ -981,8 +981,8 @@ public class UserIdentityServiceTests
         var result = await _sut.UpdateEmailAsync(userId, "new@example.com");
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("User not found.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("User not found.");
     }
 
     #endregion
@@ -1006,9 +1006,9 @@ public class UserIdentityServiceTests
         var result = await _sut.GetRolesAsync(userId);
 
         // Assert
-        result.Should().HaveCount(2);
-        result.Should().Contain("Admin");
-        result.Should().Contain("User");
+        result.Count().ShouldBe(2);
+        result.ShouldContain("Admin");
+        result.ShouldContain("User");
     }
 
     [Fact]
@@ -1023,7 +1023,7 @@ public class UserIdentityServiceTests
         var result = await _sut.GetRolesAsync(userId);
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -1043,7 +1043,7 @@ public class UserIdentityServiceTests
         var result = await _sut.AddToRolesAsync(userId, roles);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
+        result.Succeeded.ShouldBe(true);
     }
 
     [Fact]
@@ -1058,8 +1058,8 @@ public class UserIdentityServiceTests
         var result = await _sut.AddToRolesAsync(userId, new[] { "Admin" });
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("User not found.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("User not found.");
     }
 
     [Fact]
@@ -1079,7 +1079,7 @@ public class UserIdentityServiceTests
         var result = await _sut.RemoveFromRolesAsync(userId, roles);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
+        result.Succeeded.ShouldBe(true);
     }
 
     [Fact]
@@ -1094,8 +1094,8 @@ public class UserIdentityServiceTests
         var result = await _sut.RemoveFromRolesAsync(userId, new[] { "Admin" });
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("User not found.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("User not found.");
     }
 
     [Fact]
@@ -1114,7 +1114,7 @@ public class UserIdentityServiceTests
         var result = await _sut.IsInRoleAsync(userId, "Admin");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -1133,7 +1133,7 @@ public class UserIdentityServiceTests
         var result = await _sut.IsInRoleAsync(userId, "Admin");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -1148,7 +1148,7 @@ public class UserIdentityServiceTests
         var result = await _sut.IsInRoleAsync(userId, "Admin");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -1173,7 +1173,7 @@ public class UserIdentityServiceTests
         var result = await _sut.AssignRolesAsync(userId, newRoles, replaceExisting: true);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
+        result.Succeeded.ShouldBe(true);
         _userManagerMock.Verify(x => x.RemoveFromRolesAsync(user, It.Is<IEnumerable<string>>(r => r.Contains("OldRole1") && r.Contains("OldRole2"))), Times.Once);
         _userManagerMock.Verify(x => x.AddToRolesAsync(user, It.Is<IEnumerable<string>>(r => r.Contains("NewRole1") && r.Contains("NewRole2"))), Times.Once);
     }
@@ -1198,7 +1198,7 @@ public class UserIdentityServiceTests
         var result = await _sut.AssignRolesAsync(userId, newRoles, replaceExisting: false);
 
         // Assert
-        result.Succeeded.Should().BeTrue();
+        result.Succeeded.ShouldBe(true);
         _userManagerMock.Verify(x => x.AddToRolesAsync(user, It.Is<IEnumerable<string>>(r => r.Contains("NewRole") && !r.Contains("ExistingRole"))), Times.Once);
         _userManagerMock.Verify(x => x.RemoveFromRolesAsync(It.IsAny<ApplicationUser>(), It.IsAny<IEnumerable<string>>()), Times.Never);
     }
@@ -1215,8 +1215,8 @@ public class UserIdentityServiceTests
         var result = await _sut.AssignRolesAsync(userId, new[] { "Admin" });
 
         // Assert
-        result.Succeeded.Should().BeFalse();
-        result.Errors.Should().Contain("User not found.");
+        result.Succeeded.ShouldBe(false);
+        result.Errors.ShouldContain("User not found.");
     }
 
     #endregion
@@ -1227,14 +1227,14 @@ public class UserIdentityServiceTests
     public void Service_ShouldImplementIUserIdentityService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IUserIdentityService>();
+        _sut.ShouldBeAssignableTo<IUserIdentityService>();
     }
 
     [Fact]
     public void Service_ShouldImplementIScopedService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IScopedService>();
+        _sut.ShouldBeAssignableTo<IScopedService>();
     }
 
     #endregion

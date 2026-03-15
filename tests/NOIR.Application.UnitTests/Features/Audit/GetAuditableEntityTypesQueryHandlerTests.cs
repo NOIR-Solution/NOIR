@@ -39,12 +39,12 @@ public class GetAuditableEntityTypesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(4);
-        result.Value.Should().Contain("User");
-        result.Value.Should().Contain("Tenant");
-        result.Value.Should().Contain("Role");
-        result.Value.Should().Contain("Permission");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(4);
+        result.Value.ShouldContain("User");
+        result.Value.ShouldContain("Tenant");
+        result.Value.ShouldContain("Role");
+        result.Value.ShouldContain("Permission");
     }
 
     [Fact]
@@ -63,9 +63,9 @@ public class GetAuditableEntityTypesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
-        result.Value.Should().ContainSingle().Which.Should().Be("User");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
+        result.Value.ShouldHaveSingleItem().ShouldBe("User");
     }
 
     [Fact]
@@ -93,9 +93,9 @@ public class GetAuditableEntityTypesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(7);
-        result.Value.Should().OnlyHaveUniqueItems();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(7);
+        result.Value.ShouldBeUnique();
     }
 
     #endregion
@@ -116,8 +116,8 @@ public class GetAuditableEntityTypesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     #endregion

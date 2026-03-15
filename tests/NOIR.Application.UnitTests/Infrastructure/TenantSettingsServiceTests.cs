@@ -25,7 +25,7 @@ public class TenantSettingsServiceTests
     {
         // Assert - Service should implement the interface
         var service = CreateService();
-        service.Should().BeAssignableTo<ITenantSettingsService>();
+        service.ShouldBeAssignableTo<ITenantSettingsService>();
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class TenantSettingsServiceTests
     {
         // Assert - Verify service can be created
         var service = CreateService();
-        service.Should().NotBeNull();
+        service.ShouldNotBeNull();
     }
 
     #endregion
@@ -55,9 +55,9 @@ public class TenantSettingsServiceTests
         var result = JsonSerializer.Deserialize<TestSettings>(jsonValue, options);
 
         // Assert
-        result.Should().NotBeNull();
-        result!.Enabled.Should().BeTrue();
-        result.Limit.Should().Be(50);
+        result.ShouldNotBeNull();
+        result!.Enabled.ShouldBe(true);
+        result.Limit.ShouldBe(50);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class TenantSettingsServiceTests
         }
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     #endregion
@@ -92,11 +92,11 @@ public class TenantSettingsServiceTests
         var setting = TenantSetting.CreatePlatformDefault("new_key", "new_value", "string");
 
         // Assert
-        setting.Should().NotBeNull();
-        setting.TenantId.Should().BeNull();
-        setting.Key.Should().Be("new_key");
-        setting.Value.Should().Be("new_value");
-        setting.IsPlatformDefault.Should().BeTrue();
+        setting.ShouldNotBeNull();
+        setting.TenantId.ShouldBeNull();
+        setting.Key.ShouldBe("new_key");
+        setting.Value.ShouldBe("new_value");
+        setting.IsPlatformDefault.ShouldBe(true);
     }
 
     [Fact]
@@ -106,11 +106,11 @@ public class TenantSettingsServiceTests
         var setting = TenantSetting.CreateTenantOverride(TestTenantId, "tenant_key", "tenant_value", "string");
 
         // Assert
-        setting.Should().NotBeNull();
-        setting.TenantId.Should().Be(TestTenantId);
-        setting.Key.Should().Be("tenant_key");
-        setting.Value.Should().Be("tenant_value");
-        setting.IsTenantOverride.Should().BeTrue();
+        setting.ShouldNotBeNull();
+        setting.TenantId.ShouldBe(TestTenantId);
+        setting.Key.ShouldBe("tenant_key");
+        setting.Value.ShouldBe("tenant_value");
+        setting.IsTenantOverride.ShouldBe(true);
     }
 
     [Fact]
@@ -123,7 +123,7 @@ public class TenantSettingsServiceTests
         setting.UpdateValue("new_value");
 
         // Assert
-        setting.Value.Should().Be("new_value");
+        setting.Value.ShouldBe("new_value");
     }
 
     #endregion
@@ -140,8 +140,8 @@ public class TenantSettingsServiceTests
         var serialized = JsonSerializer.Serialize(settings);
 
         // Assert
-        serialized.Should().Contain("\"Enabled\":true");
-        serialized.Should().Contain("\"Limit\":100");
+        serialized.ShouldContain("\"Enabled\":true");
+        serialized.ShouldContain("\"Limit\":100");
     }
 
     #endregion
@@ -154,7 +154,7 @@ public class TenantSettingsServiceTests
         // This is verified by the return value pattern in the service
         // The service returns false when no setting is found to delete
         var service = CreateService();
-        service.Should().NotBeNull();
+        service.ShouldNotBeNull();
     }
 
     #endregion
@@ -171,8 +171,8 @@ public class TenantSettingsServiceTests
         var setting = TenantSetting.CreateTenantOverride(TestTenantId, "my_key", "my_value");
 
         // Assert
-        setting.TenantId.Should().Be(TestTenantId);
-        setting.Key.Should().Be("my_key");
+        setting.TenantId.ShouldBe(TestTenantId);
+        setting.Key.ShouldBe("my_key");
     }
 
     #endregion
@@ -207,10 +207,10 @@ public class TenantSettingsServiceTests
         }
 
         // Assert
-        result["setting_a"].Should().Be("default_a"); // Platform default
-        result["setting_b"].Should().Be("tenant_b");  // Tenant override
-        result["setting_c"].Should().Be("default_c"); // Platform default
-        result["setting_d"].Should().Be("tenant_d");  // Tenant only
+        result["setting_a"].ShouldBe("default_a"); // Platform default
+        result["setting_b"].ShouldBe("tenant_b");  // Tenant override
+        result["setting_c"].ShouldBe("default_c"); // Platform default
+        result["setting_d"].ShouldBe("tenant_d");  // Tenant only
     }
 
     #endregion
@@ -237,11 +237,11 @@ public class TenantSettingsServiceTests
             .ToDictionary(s => s.Key, s => s.Value);
 
         // Assert
-        emailSettings.Should().HaveCount(3);
-        emailSettings.Should().ContainKey("email.smtp_host");
-        emailSettings.Should().ContainKey("email.smtp_port");
-        emailSettings.Should().ContainKey("email.sender");
-        emailSettings.Should().NotContainKey("security.password_length");
+        emailSettings.Count().ShouldBe(3);
+        emailSettings.ShouldContainKey("email.smtp_host");
+        emailSettings.ShouldContainKey("email.smtp_port");
+        emailSettings.ShouldContainKey("email.sender");
+        emailSettings.ShouldNotContainKey("security.password_length");
     }
 
     #endregion
@@ -255,7 +255,7 @@ public class TenantSettingsServiceTests
         var service = CreateService();
 
         // Assert
-        service.Should().BeAssignableTo<ITenantSettingsService>();
+        service.ShouldBeAssignableTo<ITenantSettingsService>();
     }
 
     [Fact]
@@ -265,7 +265,7 @@ public class TenantSettingsServiceTests
         var service = CreateService();
 
         // Assert
-        service.Should().BeAssignableTo<IScopedService>();
+        service.ShouldBeAssignableTo<IScopedService>();
     }
 
     #endregion
@@ -279,7 +279,7 @@ public class TenantSettingsServiceTests
         var setting = TenantSetting.CreatePlatformDefault("  MY_KEY  ", "value");
 
         // Assert
-        setting.Key.Should().Be("my_key");
+        setting.Key.ShouldBe("my_key");
     }
 
     [Fact]
@@ -289,9 +289,9 @@ public class TenantSettingsServiceTests
         var setting = TenantSetting.CreatePlatformDefault("key", "value");
 
         // Assert
-        setting.TenantId.Should().BeNull();
-        setting.IsPlatformDefault.Should().BeTrue();
-        setting.IsTenantOverride.Should().BeFalse();
+        setting.TenantId.ShouldBeNull();
+        setting.IsPlatformDefault.ShouldBe(true);
+        setting.IsTenantOverride.ShouldBe(false);
     }
 
     [Fact]
@@ -301,9 +301,9 @@ public class TenantSettingsServiceTests
         var setting = TenantSetting.CreateTenantOverride(TestTenantId, "key", "value");
 
         // Assert
-        setting.TenantId.Should().Be(TestTenantId);
-        setting.IsPlatformDefault.Should().BeFalse();
-        setting.IsTenantOverride.Should().BeTrue();
+        setting.TenantId.ShouldBe(TestTenantId);
+        setting.IsPlatformDefault.ShouldBe(false);
+        setting.IsTenantOverride.ShouldBe(true);
     }
 
     [Fact]
@@ -316,7 +316,7 @@ public class TenantSettingsServiceTests
         setting.UpdateValue("new_value");
 
         // Assert
-        setting.Value.Should().Be("new_value");
+        setting.Value.ShouldBe("new_value");
     }
 
     [Fact]
@@ -329,8 +329,8 @@ public class TenantSettingsServiceTests
         setting.UpdateMetadata("New description", "new_category");
 
         // Assert
-        setting.Description.Should().Be("New description");
-        setting.Category.Should().Be("new_category");
+        setting.Description.ShouldBe("New description");
+        setting.Category.ShouldBe("new_category");
     }
 
     [Theory]
@@ -343,7 +343,7 @@ public class TenantSettingsServiceTests
         var act = () => TenantSetting.CreatePlatformDefault(invalidKey!, "value");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -353,7 +353,7 @@ public class TenantSettingsServiceTests
         var act = () => TenantSetting.CreatePlatformDefault("key", null!);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>();
+        Should.Throw<ArgumentNullException>(act);
     }
 
     [Theory]
@@ -366,7 +366,7 @@ public class TenantSettingsServiceTests
         var act = () => TenantSetting.CreateTenantOverride(invalidTenantId!, "key", "value");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -378,9 +378,9 @@ public class TenantSettingsServiceTests
         var decimalSetting = TenantSetting.CreatePlatformDefault("decimal_val", "3.14", "decimal");
 
         // Assert
-        intSetting.GetIntValue().Should().Be(42);
-        boolSetting.GetBoolValue().Should().BeTrue();
-        decimalSetting.GetDecimalValue().Should().Be(3.14m);
+        intSetting.GetIntValue().ShouldBe(42);
+        boolSetting.GetBoolValue().ShouldBe(true);
+        decimalSetting.GetDecimalValue().ShouldBe(3.14m);
     }
 
     #endregion

@@ -51,7 +51,7 @@ public class ResourceAuthorizationServiceTests : IAsyncLifetime
             var result = await authService.AuthorizeAsync(userId, resource, "read");
 
             // Assert
-            result.Should().BeTrue();
+            result.ShouldBeTrue();
         });
     }
 
@@ -71,10 +71,10 @@ public class ResourceAuthorizationServiceTests : IAsyncLifetime
             };
 
             // Act & Assert
-            (await authService.AuthorizeAsync(userId, resource, "read")).Should().BeTrue();
-            (await authService.AuthorizeAsync(userId, resource, "edit")).Should().BeTrue();
-            (await authService.AuthorizeAsync(userId, resource, "delete")).Should().BeTrue();
-            (await authService.AuthorizeAsync(userId, resource, "share")).Should().BeTrue();
+            (await authService.AuthorizeAsync(userId, resource, "read")).ShouldBeTrue();
+            (await authService.AuthorizeAsync(userId, resource, "edit")).ShouldBeTrue();
+            (await authService.AuthorizeAsync(userId, resource, "delete")).ShouldBeTrue();
+            (await authService.AuthorizeAsync(userId, resource, "share")).ShouldBeTrue();
         });
     }
 
@@ -97,7 +97,7 @@ public class ResourceAuthorizationServiceTests : IAsyncLifetime
             var result = await authService.GetEffectivePermissionAsync(userId, resource);
 
             // Assert
-            result.Should().Be(SharePermission.Admin);
+            result.ShouldBe(SharePermission.Admin);
         });
     }
 
@@ -137,7 +137,7 @@ public class ResourceAuthorizationServiceTests : IAsyncLifetime
             var result = await authService.AuthorizeAsync(userId, resource, "edit");
 
             // Assert
-            result.Should().BeTrue();
+            result.ShouldBeTrue();
         });
     }
 
@@ -173,7 +173,7 @@ public class ResourceAuthorizationServiceTests : IAsyncLifetime
             var result = await authService.AuthorizeAsync(userId, resource, "edit");
 
             // Assert
-            result.Should().BeFalse();
+            result.ShouldBeFalse();
         });
     }
 
@@ -210,7 +210,7 @@ public class ResourceAuthorizationServiceTests : IAsyncLifetime
             var result = await authService.AuthorizeAsync(userId, resource, "read");
 
             // Assert
-            result.Should().BeFalse();
+            result.ShouldBeFalse();
         });
     }
 
@@ -245,7 +245,7 @@ public class ResourceAuthorizationServiceTests : IAsyncLifetime
             var result = await authService.GetEffectivePermissionAsync(userId, resource);
 
             // Assert
-            result.Should().Be(SharePermission.Comment);
+            result.ShouldBe(SharePermission.Comment);
         });
     }
 
@@ -289,7 +289,7 @@ public class ResourceAuthorizationServiceTests : IAsyncLifetime
             var result = await authService.AuthorizeAsync(userId, childResource, "edit");
 
             // Assert
-            result.Should().BeTrue();
+            result.ShouldBeTrue();
         });
     }
 
@@ -328,7 +328,7 @@ public class ResourceAuthorizationServiceTests : IAsyncLifetime
             var result = await authService.GetEffectivePermissionAsync(userId, childResource);
 
             // Assert
-            result.Should().Be(SharePermission.Admin);
+            result.ShouldBe(SharePermission.Admin);
         });
     }
 
@@ -355,7 +355,7 @@ public class ResourceAuthorizationServiceTests : IAsyncLifetime
             var result = await authService.AuthorizeAsync(userId, resource, "read");
 
             // Assert
-            result.Should().BeFalse();
+            result.ShouldBeFalse();
         });
     }
 
@@ -378,7 +378,7 @@ public class ResourceAuthorizationServiceTests : IAsyncLifetime
             var result = await authService.GetEffectivePermissionAsync(userId, resource);
 
             // Assert
-            result.Should().BeNull();
+            result.ShouldBeNull();
         });
     }
 
@@ -407,8 +407,8 @@ public class ResourceAuthorizationServiceTests : IAsyncLifetime
             var results = await authService.GetAccessibleResourcesAsync(userId, "document");
 
             // Assert
-            results.Should().HaveCount(3);
-            results.Select(r => r.Permission).Should().BeEquivalentTo([
+            results.Count().ShouldBe(3);
+            results.Select(r => r.Permission).ShouldBe([
                 SharePermission.View,
                 SharePermission.Edit,
                 SharePermission.Admin

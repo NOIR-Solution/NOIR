@@ -78,10 +78,10 @@ public class UpdateProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Value.Should().Be("crimson");
-        result.Value.DisplayValue.Should().Be("Crimson Red");
-        result.Value.ColorCode.Should().Be("#DC143C");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Value.ShouldBe("crimson");
+        result.Value.DisplayValue.ShouldBe("Crimson Red");
+        result.Value.ColorCode.ShouldBe("#DC143C");
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -118,10 +118,10 @@ public class UpdateProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ColorCode.Should().Be("#0077BE");
-        result.Value.SwatchUrl.Should().Be("https://example.com/swatch/blue.png");
-        result.Value.IconUrl.Should().Be("https://example.com/icons/blue.svg");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ColorCode.ShouldBe("#0077BE");
+        result.Value.SwatchUrl.ShouldBe("https://example.com/swatch/blue.png");
+        result.Value.IconUrl.ShouldBe("https://example.com/icons/blue.svg");
     }
 
     [Fact]
@@ -157,9 +157,9 @@ public class UpdateProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SortOrder.Should().Be(99);
-        result.Value.IsActive.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SortOrder.ShouldBe(99);
+        result.Value.IsActive.ShouldBe(false);
     }
 
     #endregion
@@ -194,8 +194,8 @@ public class UpdateProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Attribute.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Attribute.NotFound);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -227,8 +227,8 @@ public class UpdateProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Attribute.ValueNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Attribute.ValueNotFound);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -308,14 +308,14 @@ public class UpdateProductAttributeValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Value.Should().Be("new_value");
-        result.Value.DisplayValue.Should().Be("New Display Value");
-        result.Value.ColorCode.Should().Be("#FFFFFF");
-        result.Value.SwatchUrl.Should().Be("https://example.com/swatch.png");
-        result.Value.IconUrl.Should().Be("https://example.com/icon.svg");
-        result.Value.SortOrder.Should().Be(50);
-        result.Value.IsActive.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Value.ShouldBe("new_value");
+        result.Value.DisplayValue.ShouldBe("New Display Value");
+        result.Value.ColorCode.ShouldBe("#FFFFFF");
+        result.Value.SwatchUrl.ShouldBe("https://example.com/swatch.png");
+        result.Value.IconUrl.ShouldBe("https://example.com/icon.svg");
+        result.Value.SortOrder.ShouldBe(50);
+        result.Value.IsActive.ShouldBe(false);
     }
 
     #endregion

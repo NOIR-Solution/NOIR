@@ -45,8 +45,8 @@ public class DeleteTaskCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(task.Id);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(task.Id);
         _taskRepoMock.Verify(x => x.Remove(task), Times.Once);
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -66,7 +66,7 @@ public class DeleteTaskCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _taskRepoMock.Verify(x => x.Remove(It.IsAny<ProjectTask>()), Times.Never);
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
@@ -90,9 +90,9 @@ public class DeleteTaskCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TaskNumber.Should().Be("PRJ-42");
-        result.Value.Title.Should().Be("Feature Implementation");
-        result.Value.ProjectId.Should().Be(projectId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TaskNumber.ShouldBe("PRJ-42");
+        result.Value.Title.ShouldBe("Feature Implementation");
+        result.Value.ProjectId.ShouldBe(projectId);
     }
 }

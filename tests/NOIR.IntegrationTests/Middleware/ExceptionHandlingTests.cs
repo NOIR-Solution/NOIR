@@ -30,10 +30,10 @@ public class ExceptionHandlingTests
         });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("Validation Error");
+        content.ShouldContain("Validation Error");
         // Note: The validation error message may not include field names in all cases
     }
 
@@ -51,10 +51,10 @@ public class ExceptionHandlingTests
         });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("Validation Error");
+        content.ShouldContain("Validation Error");
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class ExceptionHandlingTests
         });
 
         // Assert - Could be 400 (validation) or 401 (auth fails for non-existent user)
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.BadRequest, HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.BadRequest, HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -88,10 +88,10 @@ public class ExceptionHandlingTests
         });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("Validation Error");
+        content.ShouldContain("Validation Error");
     }
 
     #endregion
@@ -108,7 +108,7 @@ public class ExceptionHandlingTests
         var response = await client.GetAsync("/api/auth/me");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -123,7 +123,7 @@ public class ExceptionHandlingTests
         var response = await client.GetAsync("/api/auth/me");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -140,7 +140,7 @@ public class ExceptionHandlingTests
         var response = await client.GetAsync("/api/auth/me");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -157,7 +157,7 @@ public class ExceptionHandlingTests
         var response = await client.GetAsync("/api/nonexistent/resource");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -175,7 +175,7 @@ public class ExceptionHandlingTests
 
         // Assert
         // Login with non-existent user returns 401 Unauthorized
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -196,7 +196,7 @@ public class ExceptionHandlingTests
         });
 
         // Assert
-        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
+        response.Content.Headers.ContentType?.MediaType.ShouldBe("application/problem+json");
     }
 
     [Fact]
@@ -214,7 +214,7 @@ public class ExceptionHandlingTests
 
         // Assert
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("correlationId");
+        content.ShouldContain("correlationId");
     }
 
     [Fact]
@@ -232,7 +232,7 @@ public class ExceptionHandlingTests
 
         // Assert
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("title");
+        content.ShouldContain("title");
     }
 
     [Fact]
@@ -250,8 +250,8 @@ public class ExceptionHandlingTests
 
         // Assert
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("status");
-        content.Should().Contain("400");
+        content.ShouldContain("status");
+        content.ShouldContain("400");
     }
 
     #endregion
@@ -271,7 +271,7 @@ public class ExceptionHandlingTests
         });
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -287,7 +287,7 @@ public class ExceptionHandlingTests
         });
 
         // Assert - The invalid token should return either 400 (bad format) or 401 (not authorized)
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.BadRequest, HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.BadRequest, HttpStatusCode.Unauthorized);
     }
 
     #endregion

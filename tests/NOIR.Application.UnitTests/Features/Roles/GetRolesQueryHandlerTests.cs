@@ -91,9 +91,9 @@ public class GetRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(3);
-        result.Value.TotalCount.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(3);
+        result.Value.TotalCount.ShouldBe(3);
     }
 
     [Fact]
@@ -124,9 +124,9 @@ public class GetRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items[0].Name.Should().Be("Admin");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items[0].Name.ShouldBe("Admin");
     }
 
     [Fact]
@@ -159,8 +159,8 @@ public class GetRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -191,9 +191,9 @@ public class GetRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items[0].IsSystemRole.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items[0].IsSystemRole.ShouldBe(false);
     }
 
     [Fact]
@@ -239,18 +239,18 @@ public class GetRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value.Items[0];
-        dto.Id.Should().Be("role-1");
-        dto.Name.Should().Be("FullRole");
-        dto.Description.Should().Be("Full description");
-        dto.ParentRoleId.Should().Be("parent-role");
-        dto.IsSystemRole.Should().BeTrue();
-        dto.SortOrder.Should().Be(10);
-        dto.IconName.Should().Be("shield");
-        dto.Color.Should().Be("#FF5733");
-        dto.UserCount.Should().Be(25);
-        dto.PermissionCount.Should().Be(12);
+        dto.Id.ShouldBe("role-1");
+        dto.Name.ShouldBe("FullRole");
+        dto.Description.ShouldBe("Full description");
+        dto.ParentRoleId.ShouldBe("parent-role");
+        dto.IsSystemRole.ShouldBe(true);
+        dto.SortOrder.ShouldBe(10);
+        dto.IconName.ShouldBe("shield");
+        dto.Color.ShouldBe("#FF5733");
+        dto.UserCount.ShouldBe(25);
+        dto.PermissionCount.ShouldBe(12);
     }
 
     [Fact]
@@ -282,8 +282,8 @@ public class GetRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items[0].UserCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items[0].UserCount.ShouldBe(0);
     }
 
     #endregion
@@ -322,11 +322,11 @@ public class GetRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.TotalCount.Should().Be(25);
-        result.Value.PageNumber.Should().Be(2);
-        result.Value.TotalPages.Should().Be(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.TotalCount.ShouldBe(25);
+        result.Value.PageNumber.ShouldBe(2);
+        result.Value.TotalPages.ShouldBe(5);
     }
 
     [Fact]
@@ -358,10 +358,10 @@ public class GetRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(2);
-        result.Value.TotalCount.Should().Be(10);
-        result.Value.TotalPages.Should().Be(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(2);
+        result.Value.TotalCount.ShouldBe(10);
+        result.Value.TotalPages.ShouldBe(5);
     }
 
     [Fact]
@@ -393,10 +393,10 @@ public class GetRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(2);
-        result.Value.TotalCount.Should().Be(7);
-        result.Value.HasNextPage.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(2);
+        result.Value.TotalCount.ShouldBe(7);
+        result.Value.HasNextPage.ShouldBe(false);
     }
 
     #endregion
@@ -427,9 +427,9 @@ public class GetRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
     }
 
     [Fact]
@@ -456,9 +456,9 @@ public class GetRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
     }
 
     #endregion
@@ -533,8 +533,8 @@ public class GetRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
 
         _roleIdentityServiceMock.Verify(
             x => x.GetRolesPaginatedAsync("admin", 1, 20, tenantId, true, It.IsAny<string?>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),
@@ -574,7 +574,7 @@ public class GetRolesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         _roleIdentityServiceMock.Verify(
             x => x.GetRolesPaginatedAsync("manager", 2, 10, tenantId, false, It.IsAny<string?>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()),

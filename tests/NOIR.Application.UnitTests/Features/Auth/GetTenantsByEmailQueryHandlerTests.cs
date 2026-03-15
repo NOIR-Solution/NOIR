@@ -64,13 +64,13 @@ public class GetTenantsByEmailQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Email.Should().Be(email);
-        result.Value.Tenants.Should().HaveCount(1);
-        result.Value.SingleTenant.Should().BeTrue();
-        result.Value.AutoSelectedTenantId.Should().Be("tenant-abc");
-        result.Value.AutoSelectedTenantIdentifier.Should().Be("test-tenant");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Email.ShouldBe(email);
+        result.Value.Tenants.Count().ShouldBe(1);
+        result.Value.SingleTenant.ShouldBe(true);
+        result.Value.AutoSelectedTenantId.ShouldBe("tenant-abc");
+        result.Value.AutoSelectedTenantIdentifier.ShouldBe("test-tenant");
     }
 
     [Fact]
@@ -94,11 +94,11 @@ public class GetTenantsByEmailQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var tenant = result.Value.Tenants.First();
-        tenant.TenantId.Should().Be("acme-tenant-id");
-        tenant.Name.Should().Be("ACME Corporation");
-        tenant.Identifier.Should().Be("acme");
+        tenant.TenantId.ShouldBe("acme-tenant-id");
+        tenant.Name.ShouldBe("ACME Corporation");
+        tenant.Identifier.ShouldBe("acme");
     }
 
     #endregion
@@ -127,11 +127,11 @@ public class GetTenantsByEmailQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Tenants.Should().HaveCount(3);
-        result.Value.SingleTenant.Should().BeFalse();
-        result.Value.AutoSelectedTenantId.Should().BeNull();
-        result.Value.AutoSelectedTenantIdentifier.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Tenants.Count().ShouldBe(3);
+        result.Value.SingleTenant.ShouldBe(false);
+        result.Value.AutoSelectedTenantId.ShouldBeNull();
+        result.Value.AutoSelectedTenantIdentifier.ShouldBeNull();
     }
 
     [Fact]
@@ -155,9 +155,9 @@ public class GetTenantsByEmailQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Tenants[0].TenantId.Should().Be("first");
-        result.Value.Tenants[1].TenantId.Should().Be("second");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Tenants[0].TenantId.ShouldBe("first");
+        result.Value.Tenants[1].TenantId.ShouldBe("second");
     }
 
     #endregion
@@ -180,12 +180,12 @@ public class GetTenantsByEmailQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Email.Should().Be(email);
-        result.Value.Tenants.Should().BeEmpty();
-        result.Value.SingleTenant.Should().BeFalse();
-        result.Value.AutoSelectedTenantId.Should().BeNull();
-        result.Value.AutoSelectedTenantIdentifier.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Email.ShouldBe(email);
+        result.Value.Tenants.ShouldBeEmpty();
+        result.Value.SingleTenant.ShouldBe(false);
+        result.Value.AutoSelectedTenantId.ShouldBeNull();
+        result.Value.AutoSelectedTenantIdentifier.ShouldBeNull();
     }
 
     [Fact]
@@ -204,8 +204,8 @@ public class GetTenantsByEmailQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert - Returns success with empty tenants (timing attack prevention)
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Tenants.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Tenants.ShouldBeEmpty();
     }
 
     #endregion
@@ -225,9 +225,9 @@ public class GetTenantsByEmailQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Validation.Required);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Validation.Required);
     }
 
     [Fact]
@@ -240,8 +240,8 @@ public class GetTenantsByEmailQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.Validation);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
     }
 
     #endregion
@@ -341,11 +341,11 @@ public class GetTenantsByEmailQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Tenants.Should().HaveCount(1);
-        result.Value.Tenants[0].TenantId.Should().BeNull();
-        result.Value.SingleTenant.Should().BeTrue();
-        result.Value.AutoSelectedTenantId.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Tenants.Count().ShouldBe(1);
+        result.Value.Tenants[0].TenantId.ShouldBeNull();
+        result.Value.SingleTenant.ShouldBe(true);
+        result.Value.AutoSelectedTenantId.ShouldBeNull();
     }
 
     #endregion

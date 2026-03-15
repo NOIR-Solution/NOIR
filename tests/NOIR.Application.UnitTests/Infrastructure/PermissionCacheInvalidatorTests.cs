@@ -30,21 +30,21 @@ public class PermissionCacheInvalidatorTests
         var invalidator = new PermissionCacheInvalidator(_cacheMock.Object, _userManagerMock.Object);
 
         // Assert
-        invalidator.Should().NotBeNull();
+        invalidator.ShouldNotBeNull();
     }
 
     [Fact]
     public void Service_ShouldImplementIPermissionCacheInvalidator()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IPermissionCacheInvalidator>();
+        _sut.ShouldBeAssignableTo<IPermissionCacheInvalidator>();
     }
 
     [Fact]
     public void Service_ShouldImplementIScopedService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IScopedService>();
+        _sut.ShouldBeAssignableTo<IScopedService>();
     }
 
     #endregion
@@ -58,7 +58,7 @@ public class PermissionCacheInvalidatorTests
         var act = () => PermissionCacheInvalidator.RegisterCachedUser("test-user");
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class PermissionCacheInvalidatorTests
         };
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     #endregion
@@ -105,7 +105,7 @@ public class PermissionCacheInvalidatorTests
         _sut.InvalidateUser(userId);
 
         // Assert
-        removedKey.Should().Be("permissions:test-user-123");
+        removedKey.ShouldBe("permissions:test-user-123");
     }
 
     [Fact]
@@ -185,7 +185,7 @@ public class PermissionCacheInvalidatorTests
         var act = () => _sut.InvalidateAll();
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -216,7 +216,7 @@ public class PermissionCacheInvalidatorTests
         });
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -245,7 +245,7 @@ public class PermissionCacheInvalidatorTests
         };
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     #endregion
@@ -257,7 +257,7 @@ public class PermissionCacheInvalidatorTests
     {
         // Assert
         var method = typeof(PermissionCacheInvalidator).GetMethod("InvalidateUser");
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
     }
 
     [Fact]
@@ -265,7 +265,7 @@ public class PermissionCacheInvalidatorTests
     {
         // Assert
         var method = typeof(PermissionCacheInvalidator).GetMethod("InvalidateRoleAsync");
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
     }
 
     [Fact]
@@ -273,7 +273,7 @@ public class PermissionCacheInvalidatorTests
     {
         // Assert
         var method = typeof(PermissionCacheInvalidator).GetMethod("InvalidateAll");
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
     }
 
     [Fact]
@@ -281,8 +281,8 @@ public class PermissionCacheInvalidatorTests
     {
         // Assert
         var method = typeof(PermissionCacheInvalidator).GetMethod("RegisterCachedUser");
-        method.Should().NotBeNull();
-        method!.IsStatic.Should().BeTrue();
+        method.ShouldNotBeNull();
+        method!.IsStatic.ShouldBe(true);
     }
 
     #endregion

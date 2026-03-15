@@ -49,8 +49,8 @@ public class ChangeTaskStatusCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        task.Status.Should().Be(ProjectTaskStatus.InProgress);
+        result.IsSuccess.ShouldBe(true);
+        task.Status.ShouldBe(ProjectTaskStatus.InProgress);
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -76,9 +76,9 @@ public class ChangeTaskStatusCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        task.Status.Should().Be(ProjectTaskStatus.Done);
-        task.CompletedAt.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        task.Status.ShouldBe(ProjectTaskStatus.Done);
+        task.CompletedAt.ShouldNotBeNull();
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -97,7 +97,7 @@ public class ChangeTaskStatusCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }

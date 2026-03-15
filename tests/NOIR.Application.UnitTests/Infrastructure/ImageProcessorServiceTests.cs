@@ -72,12 +72,12 @@ public class ImageProcessorServiceTests
         var result = await _sut.ProcessAsync(stream, "test-image.jpg", options);
 
         // Assert
-        result.Success.Should().BeTrue();
-        result.ErrorMessage.Should().BeNull();
-        result.Slug.Should().NotBeNullOrEmpty();
-        result.Variants.Should().NotBeEmpty();
-        result.Metadata.Should().NotBeNull();
-        result.ProcessingTimeMs.Should().BeGreaterThanOrEqualTo(0);
+        result.Success.ShouldBe(true);
+        result.ErrorMessage.ShouldBeNull();
+        result.Slug.ShouldNotBeNullOrEmpty();
+        result.Variants.ShouldNotBeEmpty();
+        result.Metadata.ShouldNotBeNull();
+        result.ProcessingTimeMs.ShouldBeGreaterThanOrEqualTo(0);
     }
 
     [Fact]
@@ -95,11 +95,11 @@ public class ImageProcessorServiceTests
         var result = await _sut.ProcessAsync(stream, "test.jpg", options);
 
         // Assert
-        result.Success.Should().BeTrue();
-        result.ThumbHash.Should().NotBeNullOrEmpty();
+        result.Success.ShouldBe(true);
+        result.ThumbHash.ShouldNotBeNullOrEmpty();
         // ThumbHash should be valid Base64
         var action = () => Convert.FromBase64String(result.ThumbHash!);
-        action.Should().NotThrow();
+        action.ShouldNotThrow();
     }
 
     [Fact]
@@ -117,9 +117,9 @@ public class ImageProcessorServiceTests
         var result = await _sut.ProcessAsync(stream, "test.jpg", options);
 
         // Assert
-        result.Success.Should().BeTrue();
-        result.DominantColor.Should().NotBeNullOrEmpty();
-        result.DominantColor.Should().StartWith("#");
+        result.Success.ShouldBe(true);
+        result.DominantColor.ShouldNotBeNullOrEmpty();
+        result.DominantColor.ShouldStartWith("#");
     }
 
     [Fact]
@@ -137,8 +137,8 @@ public class ImageProcessorServiceTests
         var result = await _sut.ProcessAsync(stream, "test.jpg", options);
 
         // Assert
-        result.Success.Should().BeTrue();
-        result.ThumbHash.Should().BeNull();
+        result.Success.ShouldBe(true);
+        result.ThumbHash.ShouldBeNull();
     }
 
     [Fact]
@@ -152,9 +152,9 @@ public class ImageProcessorServiceTests
         var result = await _sut.ProcessAsync(stream, "My Test Image.jpg", options);
 
         // Assert
-        result.Success.Should().BeTrue();
-        result.Slug.Should().StartWith("my-test-image");
-        result.Slug.Should().MatchRegex(@"^my-test-image_[a-f0-9]{8}$");
+        result.Success.ShouldBe(true);
+        result.Slug.ShouldStartWith("my-test-image");
+        result.Slug.ShouldMatch(@"^my-test-image_[a-f0-9]{8}$");
     }
 
     [Fact]
@@ -168,11 +168,11 @@ public class ImageProcessorServiceTests
         var result = await _sut.ProcessAsync(stream, "test.png", options);
 
         // Assert
-        result.Success.Should().BeTrue();
-        result.Metadata.Should().NotBeNull();
-        result.Metadata!.Width.Should().Be(800);
-        result.Metadata.Height.Should().Be(600);
-        result.Metadata.Format.Should().Be("PNG");
+        result.Success.ShouldBe(true);
+        result.Metadata.ShouldNotBeNull();
+        result.Metadata!.Width.ShouldBe(800);
+        result.Metadata.Height.ShouldBe(600);
+        result.Metadata.Format.ShouldBe("PNG");
     }
 
     [Fact]
@@ -192,9 +192,9 @@ public class ImageProcessorServiceTests
         var result = await _sut.ProcessAsync(stream, "test.jpg", options);
 
         // Assert
-        result.Success.Should().BeTrue();
-        result.Variants.Should().HaveCount(2);
-        result.Variants.Should().OnlyContain(v => v.Variant == ImageVariant.Thumb || v.Variant == ImageVariant.Medium);
+        result.Success.ShouldBe(true);
+        result.Variants.Count().ShouldBe(2);
+        result.Variants.ShouldAllBe(v => v.Variant == ImageVariant.Thumb || v.Variant == ImageVariant.Medium);
     }
 
     [Fact]
@@ -208,8 +208,8 @@ public class ImageProcessorServiceTests
         var result = await _sut.ProcessAsync(stream, "test.jpg", options);
 
         // Assert
-        result.Success.Should().BeFalse();
-        result.ErrorMessage.Should().NotBeNullOrEmpty();
+        result.Success.ShouldBe(false);
+        result.ErrorMessage.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -229,7 +229,7 @@ public class ImageProcessorServiceTests
         var result = await _sut.ProcessAsync(stream, "test.jpg", options);
 
         // Assert
-        result.Success.Should().BeTrue();
+        result.Success.ShouldBe(true);
         _fileStorageMock.Verify(
             x => x.UploadAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.AtLeastOnce);
@@ -253,7 +253,7 @@ public class ImageProcessorServiceTests
         var result = await _sut.ProcessAsync(stream, "test.jpg", options);
 
         // Assert
-        result.Success.Should().BeTrue();
+        result.Success.ShouldBe(true);
         _fileStorageMock.Verify(
             x => x.UploadAsync(It.IsAny<string>(), It.IsAny<Stream>(), "custom-folder", It.IsAny<CancellationToken>()),
             Times.AtLeastOnce);
@@ -275,9 +275,9 @@ public class ImageProcessorServiceTests
         var result = await _sut.ProcessAsync(stream, "small.jpg", options);
 
         // Assert
-        result.Success.Should().BeTrue();
+        result.Success.ShouldBe(true);
         // Should not generate Large variant for small images (no upscaling)
-        result.Variants.Should().NotContain(v => v.Variant == ImageVariant.Large);
+        result.Variants.ShouldNotContain(v => v.Variant == ImageVariant.Large);
     }
 
     [Fact]
@@ -296,11 +296,11 @@ public class ImageProcessorServiceTests
         var result = await _sut.ProcessAsync(stream, "large.jpg", options);
 
         // Assert
-        result.Success.Should().BeTrue();
+        result.Success.ShouldBe(true);
         // SEO-optimized: 3 variants (Thumb, Medium, Large)
-        result.Variants.Should().Contain(v => v.Variant == ImageVariant.Thumb);
-        result.Variants.Should().Contain(v => v.Variant == ImageVariant.Medium);
-        result.Variants.Should().Contain(v => v.Variant == ImageVariant.Large);
+        result.Variants.ShouldContain(v => v.Variant == ImageVariant.Thumb);
+        result.Variants.ShouldContain(v => v.Variant == ImageVariant.Medium);
+        result.Variants.ShouldContain(v => v.Variant == ImageVariant.Large);
     }
 
     #endregion
@@ -317,8 +317,8 @@ public class ImageProcessorServiceTests
         using var result = await _sut.GenerateVariantAsync(stream, ImageVariant.Medium, OutputFormat.Jpeg);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Length.Should().BeGreaterThan(0);
+        result.ShouldNotBeNull();
+        result.Length.ShouldBeGreaterThan(0);
     }
 
     [Fact]
@@ -331,13 +331,13 @@ public class ImageProcessorServiceTests
         using var result = await _sut.GenerateVariantAsync(stream, ImageVariant.Medium, OutputFormat.WebP);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Length.Should().BeGreaterThan(0);
+        result.ShouldNotBeNull();
+        result.Length.ShouldBeGreaterThan(0);
 
         // Verify it's a valid image
         result.Position = 0;
         var info = await Image.IdentifyAsync(result);
-        info.Should().NotBeNull();
+        info.ShouldNotBeNull();
     }
 
     [Fact]
@@ -350,14 +350,14 @@ public class ImageProcessorServiceTests
         using var result = await _sut.GenerateVariantAsync(stream, ImageVariant.Large, OutputFormat.Jpeg);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Length.Should().BeGreaterThan(0);
+        result.ShouldNotBeNull();
+        result.Length.ShouldBeGreaterThan(0);
 
         // Verify it's JPEG
         result.Position = 0;
         var info = await Image.IdentifyAsync(result);
-        info.Should().NotBeNull();
-        info.Metadata.DecodedImageFormat?.Name.Should().Be("JPEG");
+        info.ShouldNotBeNull();
+        info.Metadata.DecodedImageFormat?.Name.ShouldBe("JPEG");
     }
 
     [Fact]
@@ -370,11 +370,11 @@ public class ImageProcessorServiceTests
         using var result = await _sut.GenerateVariantAsync(stream, ImageVariant.Thumb, OutputFormat.Png);
 
         // Assert
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
         result.Position = 0;
         var info = await Image.IdentifyAsync(result);
-        info.Should().NotBeNull();
-        info.Metadata.DecodedImageFormat?.Name.Should().Be("PNG");
+        info.ShouldNotBeNull();
+        info.Metadata.DecodedImageFormat?.Name.ShouldBe("PNG");
     }
 
     [Fact]
@@ -389,8 +389,8 @@ public class ImageProcessorServiceTests
         // Assert
         result.Position = 0;
         var info = await Image.IdentifyAsync(result);
-        info.Width.Should().BeLessThanOrEqualTo(_settings.MediumSize);
-        info.Height.Should().BeLessThanOrEqualTo(_settings.MediumSize);
+        info.Width.ShouldBeLessThanOrEqualTo(_settings.MediumSize);
+        info.Height.ShouldBeLessThanOrEqualTo(_settings.MediumSize);
     }
 
     [Fact]
@@ -406,7 +406,7 @@ public class ImageProcessorServiceTests
         result.Position = 0;
         var info = await Image.IdentifyAsync(result);
         var aspectRatio = (double)info.Width / info.Height;
-        aspectRatio.Should().BeApproximately(2.0, 0.05);
+        aspectRatio.ShouldBe(2.0, 0.05);
     }
 
     [Fact]
@@ -434,9 +434,9 @@ public class ImageProcessorServiceTests
         var result = await _sut.GetMetadataAsync(stream);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Width.Should().Be(800);
-        result.Height.Should().Be(600);
+        result.ShouldNotBeNull();
+        result.Width.ShouldBe(800);
+        result.Height.ShouldBe(600);
     }
 
     [Fact]
@@ -449,8 +449,8 @@ public class ImageProcessorServiceTests
         var result = await _sut.GetMetadataAsync(stream);
 
         // Assert
-        result.Format.Should().NotBeNullOrEmpty();
-        result.MimeType.Should().NotBeNullOrEmpty();
+        result.Format.ShouldNotBeNullOrEmpty();
+        result.MimeType.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -475,8 +475,8 @@ public class ImageProcessorServiceTests
         var result = await _sut.GetMetadataAsync(stream);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Width.Should().Be(200);
+        result.ShouldNotBeNull();
+        result.Width.ShouldBe(200);
     }
 
     #endregion
@@ -493,9 +493,9 @@ public class ImageProcessorServiceTests
         var result = await _sut.GenerateThumbHashAsync(stream);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
+        result.ShouldNotBeNullOrEmpty();
         var action = () => Convert.FromBase64String(result);
-        action.Should().NotThrow();
+        action.ShouldNotThrow();
     }
 
     #endregion
@@ -512,9 +512,9 @@ public class ImageProcessorServiceTests
         var result = await _sut.ExtractDominantColorAsync(stream);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
-        result.Should().StartWith("#");
-        result.Should().HaveLength(7);
+        result.ShouldNotBeNullOrEmpty();
+        result.ShouldStartWith("#");
+        result.Length.ShouldBe(7);
     }
 
     #endregion
@@ -531,7 +531,7 @@ public class ImageProcessorServiceTests
         var result = await _sut.IsValidImageAsync(stream, "test.jpg");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -544,7 +544,7 @@ public class ImageProcessorServiceTests
         var result = await _sut.IsValidImageAsync(stream, "test.png");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -557,7 +557,7 @@ public class ImageProcessorServiceTests
         var result = await _sut.IsValidImageAsync(stream, "test.txt");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -570,7 +570,7 @@ public class ImageProcessorServiceTests
         var result = await _sut.IsValidImageAsync(stream, "test.jpg");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -583,7 +583,7 @@ public class ImageProcessorServiceTests
         var result = await _sut.IsValidImageAsync(stream, "testfile");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -596,7 +596,7 @@ public class ImageProcessorServiceTests
         var result = await _sut.IsValidImageAsync(stream, "");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -610,7 +610,7 @@ public class ImageProcessorServiceTests
         var result = await _sut.IsValidImageAsync(stream, "test.jpg");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     #endregion
@@ -631,9 +631,9 @@ public class ImageProcessorServiceTests
         var result = _sut.GenerateSrcset("/media", variants);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
-        result.Should().Contain("/media/test-thumb.jpg 150w");
-        result.Should().Contain("/media/test-medium.jpg 640w");
+        result.ShouldNotBeNullOrEmpty();
+        result.ShouldContain("/media/test-thumb.jpg 150w");
+        result.ShouldContain("/media/test-medium.jpg 640w");
     }
 
     [Fact]
@@ -646,7 +646,7 @@ public class ImageProcessorServiceTests
         var result = _sut.GenerateSrcset("/media", variants);
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     #endregion
@@ -671,7 +671,7 @@ public class ImageProcessorServiceTests
         var result = await _sut.ProcessAsync(stream, "test.jpg", options);
 
         // Assert
-        result.Success.Should().BeTrue();
+        result.Success.ShouldBe(true);
     }
 
     [Fact]
@@ -691,9 +691,9 @@ public class ImageProcessorServiceTests
         var result = await _sut.ProcessAsync(stream, "test.jpg", options);
 
         // Assert
-        result.Success.Should().BeTrue();
-        result.Variants.Should().Contain(v => v.Format == OutputFormat.Jpeg);
-        result.Variants.Should().Contain(v => v.Format == OutputFormat.WebP);
+        result.Success.ShouldBe(true);
+        result.Variants.ShouldContain(v => v.Format == OutputFormat.Jpeg);
+        result.Variants.ShouldContain(v => v.Format == OutputFormat.WebP);
     }
 
     [Fact]
@@ -713,7 +713,7 @@ public class ImageProcessorServiceTests
         var result = await _sut.ProcessAsync(stream, "tiny.jpg", options);
 
         // Assert
-        result.Success.Should().BeTrue();
+        result.Success.ShouldBe(true);
     }
 
     [Fact]
@@ -728,7 +728,7 @@ public class ImageProcessorServiceTests
         // Assert
         result.Position = 0;
         var info = await Image.IdentifyAsync(result);
-        Math.Max(info.Width, info.Height).Should().BeLessThanOrEqualTo(_settings.ThumbSize);
+        Math.Max(info.Width, info.Height).ShouldBeLessThanOrEqualTo(_settings.ThumbSize);
     }
 
     #endregion

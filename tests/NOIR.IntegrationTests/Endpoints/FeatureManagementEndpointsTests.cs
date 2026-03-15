@@ -49,19 +49,19 @@ public class FeatureManagementEndpointsTests : IClassFixture<CustomWebApplicatio
         var response = await adminClient.GetAsync("/api/features/current-tenant");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<Dictionary<string, EffectiveFeatureState>>();
-        result.Should().NotBeNull();
-        result.Should().NotBeEmpty("there should be feature states for the current tenant");
+        result.ShouldNotBeNull();
+        result.ShouldNotBeEmpty("there should be feature states for the current tenant");
 
         // Core modules should be present
-        result.Should().ContainKey(ModuleNames.Core.Auth);
-        result.Should().ContainKey(ModuleNames.Core.Users);
-        result.Should().ContainKey(ModuleNames.Core.Dashboard);
+        result.ShouldContainKey(ModuleNames.Core.Auth);
+        result.ShouldContainKey(ModuleNames.Core.Users);
+        result.ShouldContainKey(ModuleNames.Core.Dashboard);
 
         // Core modules should always be effective
-        result![ModuleNames.Core.Auth].IsCore.Should().BeTrue();
-        result[ModuleNames.Core.Auth].IsEffective.Should().BeTrue();
+        result![ModuleNames.Core.Auth].IsCore.ShouldBeTrue();
+        result[ModuleNames.Core.Auth].IsEffective.ShouldBeTrue();
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class FeatureManagementEndpointsTests : IClassFixture<CustomWebApplicatio
         var response = await _client.GetAsync("/api/features/current-tenant");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -88,20 +88,19 @@ public class FeatureManagementEndpointsTests : IClassFixture<CustomWebApplicatio
         var response = await adminClient.GetAsync("/api/features/catalog");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<ModuleCatalogDto>();
-        result.Should().NotBeNull();
-        result!.Modules.Should().NotBeEmpty("the catalog should contain module definitions");
-        result.Modules.Count.Should().BeGreaterThanOrEqualTo(30,
-            because: "there should be at least 30 module definitions");
+        result.ShouldNotBeNull();
+        result!.Modules.ShouldNotBeEmpty("the catalog should contain module definitions");
+        result.Modules.Count.ShouldBeGreaterThanOrEqualTo(30);
 
         // Verify core modules are present
-        result.Modules.Should().Contain(m => m.Name == ModuleNames.Core.Auth && m.IsCore);
-        result.Modules.Should().Contain(m => m.Name == ModuleNames.Core.Users && m.IsCore);
+        result.Modules.ShouldContain(m => m.Name == ModuleNames.Core.Auth && m.IsCore);
+        result.Modules.ShouldContain(m => m.Name == ModuleNames.Core.Users && m.IsCore);
 
         // Verify non-core modules are present
-        result.Modules.Should().Contain(m => m.Name == ModuleNames.Content.Blog && !m.IsCore);
-        result.Modules.Should().Contain(m => m.Name == ModuleNames.Ecommerce.Products && !m.IsCore);
+        result.Modules.ShouldContain(m => m.Name == ModuleNames.Content.Blog && !m.IsCore);
+        result.Modules.ShouldContain(m => m.Name == ModuleNames.Ecommerce.Products && !m.IsCore);
     }
 
     [Fact]
@@ -111,7 +110,7 @@ public class FeatureManagementEndpointsTests : IClassFixture<CustomWebApplicatio
         var response = await _client.GetAsync("/api/features/catalog");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -131,11 +130,11 @@ public class FeatureManagementEndpointsTests : IClassFixture<CustomWebApplicatio
             var toggleResponse = await adminClient.PutAsJsonAsync("/api/features/toggle", toggleRequest);
 
             // Assert - Verify the toggle command response is correct
-            toggleResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            toggleResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
             var toggleResult = await toggleResponse.Content.ReadFromJsonAsync<TenantFeatureStateDto>();
-            toggleResult.Should().NotBeNull();
-            toggleResult!.FeatureName.Should().Be(ModuleNames.Content.Blog);
-            toggleResult.IsEnabled.Should().BeFalse();
+            toggleResult.ShouldNotBeNull();
+            toggleResult!.FeatureName.ShouldBe(ModuleNames.Content.Blog);
+            toggleResult.IsEnabled.ShouldBeFalse();
 
             // Note: We cannot verify via GetCurrentTenantFeatures because the test infrastructure
             // uses AllFeaturesEnabledFeatureChecker which always reports features as enabled.
@@ -159,7 +158,7 @@ public class FeatureManagementEndpointsTests : IClassFixture<CustomWebApplicatio
         var response = await _client.PutAsJsonAsync("/api/features/toggle", toggleRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -173,7 +172,7 @@ public class FeatureManagementEndpointsTests : IClassFixture<CustomWebApplicatio
         var response = await adminClient.PutAsJsonAsync("/api/features/toggle", toggleRequest);
 
         // Assert - Core modules cannot be toggled
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -187,7 +186,7 @@ public class FeatureManagementEndpointsTests : IClassFixture<CustomWebApplicatio
         var response = await adminClient.PutAsJsonAsync("/api/features/toggle", toggleRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -207,11 +206,11 @@ public class FeatureManagementEndpointsTests : IClassFixture<CustomWebApplicatio
             var response = await platformClient.PutAsJsonAsync("/api/features/tenant/default/availability", request);
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.StatusCode.ShouldBe(HttpStatusCode.OK);
             var result = await response.Content.ReadFromJsonAsync<TenantFeatureStateDto>();
-            result.Should().NotBeNull();
-            result!.FeatureName.Should().Be(ModuleNames.Content.Blog);
-            result.IsAvailable.Should().BeFalse();
+            result.ShouldNotBeNull();
+            result!.FeatureName.ShouldBe(ModuleNames.Content.Blog);
+            result.IsAvailable.ShouldBeFalse();
         }
         finally
         {
@@ -231,7 +230,7 @@ public class FeatureManagementEndpointsTests : IClassFixture<CustomWebApplicatio
         var response = await _client.PutAsJsonAsync("/api/features/tenant/default/availability", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -248,14 +247,14 @@ public class FeatureManagementEndpointsTests : IClassFixture<CustomWebApplicatio
         var response = await platformClient.GetAsync("/api/features/tenant/default");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<ModuleCatalogDto>();
-        result.Should().NotBeNull();
-        result!.Modules.Should().NotBeEmpty("the catalog should contain modules with tenant-specific states");
+        result.ShouldNotBeNull();
+        result!.Modules.ShouldNotBeEmpty("the catalog should contain modules with tenant-specific states");
 
         // Core modules should be present
-        result.Modules.Should().Contain(m => m.Name == ModuleNames.Core.Auth && m.IsCore);
-        result.Modules.Should().Contain(m => m.Name == ModuleNames.Core.Users && m.IsCore);
+        result.Modules.ShouldContain(m => m.Name == ModuleNames.Core.Auth && m.IsCore);
+        result.Modules.ShouldContain(m => m.Name == ModuleNames.Core.Users && m.IsCore);
     }
 
     [Fact]
@@ -265,7 +264,7 @@ public class FeatureManagementEndpointsTests : IClassFixture<CustomWebApplicatio
         var response = await _client.GetAsync("/api/features/tenant/default");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion

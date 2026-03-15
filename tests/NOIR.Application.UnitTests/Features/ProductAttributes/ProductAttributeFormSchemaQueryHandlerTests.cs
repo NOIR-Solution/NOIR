@@ -1,4 +1,3 @@
-using FluentAssertions;
 using NOIR.Application.Features.ProductAttributes.Queries.GetProductAttributeFormSchema;
 using NOIR.Domain.Entities.Product;
 using Xunit;
@@ -45,8 +44,8 @@ public class ProductAttributeFormSchemaQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Product.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Product.NotFound);
     }
 
     [Fact]
@@ -83,14 +82,14 @@ public class ProductAttributeFormSchemaQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProductId.Should().Be(productId);
-        result.Value.CategoryName.Should().Be("Electronics");
-        result.Value.Fields.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProductId.ShouldBe(productId);
+        result.Value.CategoryName.ShouldBe("Electronics");
+        result.Value.Fields.Count().ShouldBe(1);
 
         var field = result.Value.Fields.First();
-        field.Code.Should().Be("color");
-        field.IsRequired.Should().BeTrue();
+        field.Code.ShouldBe("color");
+        field.IsRequired.ShouldBe(true);
     }
 
     [Fact]
@@ -122,10 +121,10 @@ public class ProductAttributeFormSchemaQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategoryId.Should().BeNull();
-        result.Value.CategoryName.Should().BeNull();
-        result.Value.Fields.Should().NotBeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategoryId.ShouldBeNull();
+        result.Value.CategoryName.ShouldBeNull();
+        result.Value.Fields.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -163,11 +162,11 @@ public class ProductAttributeFormSchemaQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Fields.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Fields.Count().ShouldBe(1);
 
         var field = result.Value.Fields.First();
-        field.CurrentValue.Should().Be("Samsung");
+        field.CurrentValue.ShouldBe("Samsung");
     }
 
     [Fact]
@@ -206,11 +205,11 @@ public class ProductAttributeFormSchemaQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Fields.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Fields.Count().ShouldBe(1);
 
         var field = result.Value.Fields.First();
-        field.CurrentValue.Should().Be("Large");
+        field.CurrentValue.ShouldBe("Large");
     }
 
     [Fact]
@@ -249,10 +248,10 @@ public class ProductAttributeFormSchemaQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // When category has no linked attributes, the handler falls back to all active attributes
-        result.Value.Fields.Should().NotBeEmpty();
-        result.Value.Fields.First().Code.Should().Be("weight");
+        result.Value.Fields.ShouldNotBeEmpty();
+        result.Value.Fields.First().Code.ShouldBe("weight");
     }
 
     #region Helper Methods

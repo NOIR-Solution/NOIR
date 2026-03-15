@@ -70,9 +70,9 @@ public class ConfirmOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(OrderStatus.Confirmed);
-        result.Value.ConfirmedAt.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(OrderStatus.Confirmed);
+        result.Value.ConfirmedAt.ShouldNotBeNull();
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -111,8 +111,8 @@ public class ConfirmOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
     }
 
     #endregion
@@ -135,10 +135,10 @@ public class ConfirmOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be(ErrorCodes.Order.NotFound);
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.NotFound);
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -168,10 +168,10 @@ public class ConfirmOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidConfirmTransition);
-        result.Error.Message.Should().Contain("Cannot confirm order");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.InvalidConfirmTransition);
+        result.Error.Message.ShouldContain("Cannot confirm order");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -197,9 +197,9 @@ public class ConfirmOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Order.InvalidConfirmTransition);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.InvalidConfirmTransition);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -269,14 +269,14 @@ public class ConfirmOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.OrderNumber.Should().Be("ORD-20250126-0042");
-        result.Value.CustomerEmail.Should().Be("john@example.com");
-        result.Value.CustomerName.Should().Be("John Doe");
-        result.Value.CustomerPhone.Should().Be("0901234567");
-        result.Value.SubTotal.Should().Be(200.00m);
-        result.Value.GrandTotal.Should().Be(220.00m);
-        result.Value.Status.Should().Be(OrderStatus.Confirmed);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.OrderNumber.ShouldBe("ORD-20250126-0042");
+        result.Value.CustomerEmail.ShouldBe("john@example.com");
+        result.Value.CustomerName.ShouldBe("John Doe");
+        result.Value.CustomerPhone.ShouldBe("0901234567");
+        result.Value.SubTotal.ShouldBe(200.00m);
+        result.Value.GrandTotal.ShouldBe(220.00m);
+        result.Value.Status.ShouldBe(OrderStatus.Confirmed);
     }
 
     #endregion

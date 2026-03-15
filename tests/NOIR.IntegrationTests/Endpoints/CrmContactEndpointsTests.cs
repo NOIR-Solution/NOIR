@@ -39,10 +39,10 @@ public class CrmContactEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.GetAsync("/api/crm/contacts");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<ContactListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeNull();
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class CrmContactEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await _client.GetAsync("/api/crm/contacts");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -65,10 +65,10 @@ public class CrmContactEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.GetAsync("/api/crm/contacts?page=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<ContactListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.Items.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     #endregion
@@ -89,13 +89,13 @@ public class CrmContactEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.GetAsync($"/api/crm/contacts/{createdContact!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var contact = await response.Content.ReadFromJsonWithEnumsAsync<ContactDto>();
-        contact.Should().NotBeNull();
-        contact!.Id.Should().Be(createdContact.Id);
-        contact.FirstName.Should().Be(createRequest.FirstName);
-        contact.LastName.Should().Be(createRequest.LastName);
-        contact.Email.Should().Be(createRequest.Email);
+        contact.ShouldNotBeNull();
+        contact!.Id.ShouldBe(createdContact.Id);
+        contact.FirstName.ShouldBe(createRequest.FirstName);
+        contact.LastName.ShouldBe(createRequest.LastName);
+        contact.Email.ShouldBe(createRequest.Email);
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class CrmContactEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.GetAsync($"/api/crm/contacts/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -126,13 +126,13 @@ public class CrmContactEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/crm/contacts", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var contact = await response.Content.ReadFromJsonWithEnumsAsync<ContactDto>();
-        contact.Should().NotBeNull();
-        contact!.FirstName.Should().Be(request.FirstName);
-        contact.LastName.Should().Be(request.LastName);
-        contact.Email.Should().Be(request.Email);
-        contact.Source.Should().Be(ContactSource.Web);
+        contact.ShouldNotBeNull();
+        contact!.FirstName.ShouldBe(request.FirstName);
+        contact.LastName.ShouldBe(request.LastName);
+        contact.Email.ShouldBe(request.Email);
+        contact.Source.ShouldBe(ContactSource.Web);
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public class CrmContactEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await _client.PostAsJsonWithEnumsAsync("/api/crm/contacts", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -174,12 +174,12 @@ public class CrmContactEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/crm/contacts/{createdContact!.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updatedContact = await response.Content.ReadFromJsonWithEnumsAsync<ContactDto>();
-        updatedContact.Should().NotBeNull();
-        updatedContact!.FirstName.Should().Be("UpdatedFirst");
-        updatedContact.LastName.Should().Be("UpdatedLast");
-        updatedContact.Source.Should().Be(ContactSource.Referral);
+        updatedContact.ShouldNotBeNull();
+        updatedContact!.FirstName.ShouldBe("UpdatedFirst");
+        updatedContact.LastName.ShouldBe("UpdatedLast");
+        updatedContact.Source.ShouldBe(ContactSource.Referral);
     }
 
     [Fact]
@@ -197,7 +197,7 @@ public class CrmContactEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/crm/contacts/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -218,11 +218,11 @@ public class CrmContactEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.DeleteAsync($"/api/crm/contacts/{createdContact!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Verify it's deleted (soft delete - should return not found)
         var getResponse = await adminClient.GetAsync($"/api/crm/contacts/{createdContact.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -235,7 +235,7 @@ public class CrmContactEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.DeleteAsync($"/api/crm/contacts/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -251,16 +251,16 @@ public class CrmContactEndpointsTests : IClassFixture<CustomWebApplicationFactor
         // Create
         var createRequest = CreateTestContactRequest();
         var createResponse = await adminClient.PostAsJsonWithEnumsAsync("/api/crm/contacts", createRequest);
-        createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        createResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var created = await createResponse.Content.ReadFromJsonWithEnumsAsync<ContactDto>();
-        created.Should().NotBeNull();
+        created.ShouldNotBeNull();
         var contactId = created!.Id;
 
         // Read
         var getResponse = await adminClient.GetAsync($"/api/crm/contacts/{contactId}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var fetched = await getResponse.Content.ReadFromJsonWithEnumsAsync<ContactDto>();
-        fetched!.FirstName.Should().Be(createRequest.FirstName);
+        fetched!.FirstName.ShouldBe(createRequest.FirstName);
 
         // Update
         var updateRequest = new UpdateContactRequest(
@@ -270,18 +270,18 @@ public class CrmContactEndpointsTests : IClassFixture<CustomWebApplicationFactor
             Source: ContactSource.Social,
             Notes: "Updated via CRUD test");
         var updateResponse = await adminClient.PutAsJsonWithEnumsAsync($"/api/crm/contacts/{contactId}", updateRequest);
-        updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        updateResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await updateResponse.Content.ReadFromJsonWithEnumsAsync<ContactDto>();
-        updated!.FirstName.Should().Be("CrudUpdated");
-        updated.Source.Should().Be(ContactSource.Social);
+        updated!.FirstName.ShouldBe("CrudUpdated");
+        updated.Source.ShouldBe(ContactSource.Social);
 
         // Delete
         var deleteResponse = await adminClient.DeleteAsync($"/api/crm/contacts/{contactId}");
-        deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        deleteResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Verify deleted
         var verifyResponse = await adminClient.GetAsync($"/api/crm/contacts/{contactId}");
-        verifyResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        verifyResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -339,7 +339,7 @@ public class CrmContactEndpointsTests : IClassFixture<CustomWebApplicationFactor
         var response = await adminClient.DeleteAsync($"/api/crm/contacts/{contact.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     #endregion

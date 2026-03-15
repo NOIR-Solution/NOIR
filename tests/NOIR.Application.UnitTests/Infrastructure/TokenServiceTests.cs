@@ -44,8 +44,8 @@ public class TokenServiceTests
         var token = await _sut.GenerateAccessTokenAsync("user123", "test@example.com");
 
         // Assert
-        token.Should().NotBeNullOrEmpty();
-        token.Split('.').Should().HaveCount(3); // JWT has 3 parts
+        token.ShouldNotBeNullOrEmpty();
+        token.Split('.').Count().ShouldBe(3); // JWT has 3 parts
     }
 
     [Fact]
@@ -55,12 +55,12 @@ public class TokenServiceTests
         var token = await _sut.GenerateAccessTokenAsync("user123", "test@example.com", "tenant-1");
 
         // Assert
-        token.Should().NotBeNullOrEmpty();
+        token.ShouldNotBeNullOrEmpty();
 
         // Decode and verify tenant claim exists
         var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(token);
-        jwtToken.Claims.Should().Contain(c => c.Type == "tenant_id" && c.Value == "tenant-1");
+        jwtToken.Claims.ShouldContain(c => c.Type == "tenant_id" && c.Value == "tenant-1");
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class TokenServiceTests
         // Assert
         var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(token);
-        jwtToken.Claims.Should().Contain(c =>
+        jwtToken.Claims.ShouldContain(c =>
             c.Type == ClaimTypes.NameIdentifier && c.Value == "user123");
     }
 
@@ -85,7 +85,7 @@ public class TokenServiceTests
         // Assert
         var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(token);
-        jwtToken.Claims.Should().Contain(c =>
+        jwtToken.Claims.ShouldContain(c =>
             c.Type == ClaimTypes.Email && c.Value == "test@example.com");
     }
 
@@ -102,7 +102,7 @@ public class TokenServiceTests
         // Assert
         var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(token);
-        jwtToken.ValidTo.Should().BeCloseTo(
+        jwtToken.ValidTo.ShouldBe(
             now.AddMinutes(_jwtSettings.ExpirationInMinutes).UtcDateTime,
             TimeSpan.FromSeconds(5));
     }
@@ -116,8 +116,8 @@ public class TokenServiceTests
         // Assert
         var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(token);
-        jwtToken.Issuer.Should().Be(_jwtSettings.Issuer);
-        jwtToken.Audiences.Should().Contain(_jwtSettings.Audience);
+        jwtToken.Issuer.ShouldBe(_jwtSettings.Issuer);
+        jwtToken.Audiences.ShouldContain(_jwtSettings.Audience);
     }
 
     #endregion
@@ -131,7 +131,7 @@ public class TokenServiceTests
         var token = _sut.GenerateRefreshToken();
 
         // Assert
-        token.Should().NotBeNullOrEmpty();
+        token.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -142,7 +142,7 @@ public class TokenServiceTests
 
         // Assert
         var action = () => Convert.FromBase64String(token);
-        action.Should().NotThrow();
+        action.ShouldNotThrow();
     }
 
     [Fact]
@@ -153,7 +153,7 @@ public class TokenServiceTests
 
         // Assert
         var decoded = Convert.FromBase64String(token);
-        decoded.Should().HaveCount(64);
+        decoded.Count().ShouldBe(64);
     }
 
     [Fact]
@@ -163,7 +163,7 @@ public class TokenServiceTests
         var tokens = Enumerable.Range(0, 10).Select(_ => _sut.GenerateRefreshToken()).ToList();
 
         // Assert
-        tokens.Should().OnlyHaveUniqueItems();
+        tokens.ShouldBeUnique();
     }
 
     #endregion
@@ -177,8 +177,8 @@ public class TokenServiceTests
         var pair = await _sut.GenerateTokenPairAsync("user123", "test@example.com");
 
         // Assert
-        pair.AccessToken.Should().NotBeNullOrEmpty();
-        pair.RefreshToken.Should().NotBeNullOrEmpty();
+        pair.AccessToken.ShouldNotBeNullOrEmpty();
+        pair.RefreshToken.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -192,7 +192,7 @@ public class TokenServiceTests
         var pair = await _sut.GenerateTokenPairAsync("user123", "test@example.com");
 
         // Assert
-        pair.ExpiresAt.Should().BeCloseTo(
+        pair.ExpiresAt.ShouldBe(
             now.AddMinutes(_jwtSettings.ExpirationInMinutes),
             TimeSpan.FromSeconds(5));
     }
@@ -206,7 +206,7 @@ public class TokenServiceTests
         // Assert
         var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(pair.AccessToken);
-        jwtToken.Claims.Should().Contain(c => c.Type == "tenant_id" && c.Value == "tenant-1");
+        jwtToken.Claims.ShouldContain(c => c.Type == "tenant_id" && c.Value == "tenant-1");
     }
 
     #endregion
@@ -224,7 +224,7 @@ public class TokenServiceTests
         var expiry = _sut.GetRefreshTokenExpiry();
 
         // Assert
-        expiry.Should().Be(now.AddDays(_jwtSettings.RefreshTokenExpirationInDays));
+        expiry.ShouldBe(now.AddDays(_jwtSettings.RefreshTokenExpirationInDays));
     }
 
     #endregion
@@ -241,7 +241,7 @@ public class TokenServiceTests
         var result = _sut.IsRefreshTokenFormatValid(validToken);
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -251,7 +251,7 @@ public class TokenServiceTests
         var result = _sut.IsRefreshTokenFormatValid("");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -261,7 +261,7 @@ public class TokenServiceTests
         var result = _sut.IsRefreshTokenFormatValid(null!);
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -271,7 +271,7 @@ public class TokenServiceTests
         var result = _sut.IsRefreshTokenFormatValid("   ");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -281,7 +281,7 @@ public class TokenServiceTests
         var result = _sut.IsRefreshTokenFormatValid("not-valid-base64!");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -294,7 +294,7 @@ public class TokenServiceTests
         var result = _sut.IsRefreshTokenFormatValid(shortToken);
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     #endregion
@@ -311,8 +311,8 @@ public class TokenServiceTests
         var principal = _sut.GetPrincipalFromExpiredToken(token);
 
         // Assert
-        principal.Should().NotBeNull();
-        principal!.FindFirst(ClaimTypes.NameIdentifier)?.Value.Should().Be("user123");
+        principal.ShouldNotBeNull();
+        principal!.FindFirst(ClaimTypes.NameIdentifier)?.Value.ShouldBe("user123");
     }
 
     [Fact]
@@ -322,7 +322,7 @@ public class TokenServiceTests
         var principal = _sut.GetPrincipalFromExpiredToken("invalid-token");
 
         // Assert
-        principal.Should().BeNull();
+        principal.ShouldBeNull();
     }
 
     [Fact]
@@ -332,7 +332,7 @@ public class TokenServiceTests
         var principal = _sut.GetPrincipalFromExpiredToken("");
 
         // Assert
-        principal.Should().BeNull();
+        principal.ShouldBeNull();
     }
 
     [Fact]
@@ -342,7 +342,7 @@ public class TokenServiceTests
         var principal = _sut.GetPrincipalFromExpiredToken("part1.part2.part3");
 
         // Assert
-        principal.Should().BeNull();
+        principal.ShouldBeNull();
     }
 
     #endregion

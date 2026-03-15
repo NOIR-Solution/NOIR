@@ -59,15 +59,15 @@ public class ShippingTrackingEventTests
             TestTenantId);
 
         // Assert
-        trackingEvent.Should().NotBeNull();
-        trackingEvent.Id.Should().NotBe(Guid.Empty);
-        trackingEvent.ShippingOrderId.Should().Be(TestShippingOrderId);
-        trackingEvent.EventType.Should().Be(TestEventType);
-        trackingEvent.Status.Should().Be(TestStatus);
-        trackingEvent.Description.Should().Be(TestDescription);
-        trackingEvent.Location.Should().Be(TestLocation);
-        trackingEvent.EventDate.Should().Be(eventDate);
-        trackingEvent.TenantId.Should().Be(TestTenantId);
+        trackingEvent.ShouldNotBeNull();
+        trackingEvent.Id.ShouldNotBe(Guid.Empty);
+        trackingEvent.ShippingOrderId.ShouldBe(TestShippingOrderId);
+        trackingEvent.EventType.ShouldBe(TestEventType);
+        trackingEvent.Status.ShouldBe(TestStatus);
+        trackingEvent.Description.ShouldBe(TestDescription);
+        trackingEvent.Location.ShouldBe(TestLocation);
+        trackingEvent.EventDate.ShouldBe(eventDate);
+        trackingEvent.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -80,8 +80,8 @@ public class ShippingTrackingEventTests
         var trackingEvent = CreateTestTrackingEvent();
 
         // Assert
-        trackingEvent.ReceivedAt.Should().BeOnOrAfter(beforeCreate);
-        trackingEvent.ReceivedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
+        trackingEvent.ReceivedAt.ShouldBeGreaterThanOrEqualTo(beforeCreate);
+        trackingEvent.ReceivedAt.ShouldBe(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class ShippingTrackingEventTests
         var trackingEvent = CreateTestTrackingEvent(location: null);
 
         // Assert
-        trackingEvent.Location.Should().BeNull();
+        trackingEvent.Location.ShouldBeNull();
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public class ShippingTrackingEventTests
         var trackingEvent = CreateTestTrackingEvent(rawPayload: rawPayload);
 
         // Assert
-        trackingEvent.RawPayload.Should().Be(rawPayload);
+        trackingEvent.RawPayload.ShouldBe(rawPayload);
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class ShippingTrackingEventTests
         var trackingEvent = CreateTestTrackingEvent(rawPayload: null);
 
         // Assert
-        trackingEvent.RawPayload.Should().BeNull();
+        trackingEvent.RawPayload.ShouldBeNull();
     }
 
     [Fact]
@@ -124,7 +124,7 @@ public class ShippingTrackingEventTests
         var trackingEvent = CreateTestTrackingEvent(tenantId: null);
 
         // Assert
-        trackingEvent.TenantId.Should().BeNull();
+        trackingEvent.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class ShippingTrackingEventTests
         var event2 = CreateTestTrackingEvent();
 
         // Assert
-        event1.Id.Should().NotBe(event2.Id);
+        event1.Id.ShouldNotBe(event2.Id);
     }
 
     #endregion
@@ -159,7 +159,7 @@ public class ShippingTrackingEventTests
         var trackingEvent = CreateTestTrackingEvent(status: status);
 
         // Assert
-        trackingEvent.Status.Should().Be(status);
+        trackingEvent.Status.ShouldBe(status);
     }
 
     #endregion
@@ -180,7 +180,7 @@ public class ShippingTrackingEventTests
         var trackingEvent = CreateTestTrackingEvent(eventType: eventType);
 
         // Assert
-        trackingEvent.EventType.Should().Be(eventType);
+        trackingEvent.EventType.ShouldBe(eventType);
     }
 
     #endregion
@@ -197,7 +197,7 @@ public class ShippingTrackingEventTests
         var trackingEvent = CreateTestTrackingEvent(eventDate: pastDate);
 
         // Assert
-        trackingEvent.EventDate.Should().Be(pastDate);
+        trackingEvent.EventDate.ShouldBe(pastDate);
     }
 
     [Fact]
@@ -210,7 +210,7 @@ public class ShippingTrackingEventTests
         var trackingEvent = CreateTestTrackingEvent(eventDate: eventDate);
 
         // Assert
-        trackingEvent.EventDate.Should().BeBefore(trackingEvent.ReceivedAt);
+        trackingEvent.EventDate.ShouldBeLessThan(trackingEvent.ReceivedAt);
     }
 
     [Fact]
@@ -223,7 +223,7 @@ public class ShippingTrackingEventTests
         var trackingEvent = CreateTestTrackingEvent(eventDate: futureDate);
 
         // Assert
-        trackingEvent.EventDate.Should().Be(futureDate);
+        trackingEvent.EventDate.ShouldBe(futureDate);
     }
 
     #endregion
@@ -249,8 +249,8 @@ public class ShippingTrackingEventTests
         shippingOrder.AddTrackingEvent(trackingEvent);
 
         // Assert
-        shippingOrder.TrackingEvents.Should().Contain(trackingEvent);
-        shippingOrder.Status.Should().Be(ShippingStatus.InTransit);
+        shippingOrder.TrackingEvents.ShouldContain(trackingEvent);
+        shippingOrder.Status.ShouldBe(ShippingStatus.InTransit);
     }
 
     [Fact]
@@ -263,7 +263,7 @@ public class ShippingTrackingEventTests
         var trackingEvent = CreateTestTrackingEvent(rawPayload: largePayload);
 
         // Assert
-        trackingEvent.RawPayload.Should().HaveLength(10_000);
+        trackingEvent.RawPayload.Length.ShouldBe(10_000);
     }
 
     #endregion

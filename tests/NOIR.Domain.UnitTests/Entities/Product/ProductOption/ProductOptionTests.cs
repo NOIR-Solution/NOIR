@@ -41,13 +41,13 @@ public class ProductOptionTests
         var option = product.AddOption("Color", "Color");
 
         // Assert
-        option.Should().NotBeNull();
-        option.Id.Should().NotBe(Guid.Empty);
-        option.ProductId.Should().Be(product.Id);
-        option.Name.Should().Be("color");
-        option.DisplayName.Should().Be("Color");
-        option.SortOrder.Should().Be(0);
-        option.TenantId.Should().Be(TestTenantId);
+        option.ShouldNotBeNull();
+        option.Id.ShouldNotBe(Guid.Empty);
+        option.ProductId.ShouldBe(product.Id);
+        option.Name.ShouldBe("color");
+        option.DisplayName.ShouldBe("Color");
+        option.SortOrder.ShouldBe(0);
+        option.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class ProductOptionTests
         var option = CreateTestOption(name: "Shoe Size");
 
         // Assert
-        option.Name.Should().Be("shoe_size");
+        option.Name.ShouldBe("shoe_size");
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class ProductOptionTests
         var option = CreateTestOption(name: "COLOR");
 
         // Assert
-        option.Name.Should().Be("color");
+        option.Name.ShouldBe("color");
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class ProductOptionTests
         var option = CreateTestOption(name: "Material", displayName: null);
 
         // Assert
-        option.DisplayName.Should().Be("Material");
+        option.DisplayName.ShouldBe("Material");
     }
 
     [Fact]
@@ -87,7 +87,7 @@ public class ProductOptionTests
         var option = CreateTestOption(name: "size", displayName: "Clothing Size");
 
         // Assert
-        option.DisplayName.Should().Be("Clothing Size");
+        option.DisplayName.ShouldBe("Clothing Size");
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class ProductOptionTests
         var option = product.AddOption("Color");
 
         // Assert
-        option.SortOrder.Should().Be(0);
+        option.SortOrder.ShouldBe(0);
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class ProductOptionTests
         var second = product.AddOption("Size");
 
         // Assert
-        second.SortOrder.Should().Be(1);
+        second.SortOrder.ShouldBe(1);
     }
 
     [Fact]
@@ -129,7 +129,7 @@ public class ProductOptionTests
         var third = product.AddOption("Material");
 
         // Assert
-        third.SortOrder.Should().Be(2);
+        third.SortOrder.ShouldBe(2);
     }
 
     #endregion
@@ -146,9 +146,9 @@ public class ProductOptionTests
         option.Update("Shoe Size", "Shoe Size", 3);
 
         // Assert
-        option.Name.Should().Be("shoe_size");
-        option.DisplayName.Should().Be("Shoe Size");
-        option.SortOrder.Should().Be(3);
+        option.Name.ShouldBe("shoe_size");
+        option.DisplayName.ShouldBe("Shoe Size");
+        option.SortOrder.ShouldBe(3);
     }
 
     [Fact]
@@ -161,7 +161,7 @@ public class ProductOptionTests
         option.Update("Screen Resolution", null, 0);
 
         // Assert
-        option.Name.Should().Be("screen_resolution");
+        option.Name.ShouldBe("screen_resolution");
     }
 
     [Fact]
@@ -174,7 +174,7 @@ public class ProductOptionTests
         option.Update("Material", null, 0);
 
         // Assert
-        option.DisplayName.Should().Be("Material");
+        option.DisplayName.ShouldBe("Material");
     }
 
     [Fact]
@@ -187,7 +187,7 @@ public class ProductOptionTests
         option.Update("size", "Clothing Size", 1);
 
         // Assert
-        option.DisplayName.Should().Be("Clothing Size");
+        option.DisplayName.ShouldBe("Clothing Size");
     }
 
     #endregion
@@ -204,11 +204,11 @@ public class ProductOptionTests
         var value = option.AddValue("red", "Red");
 
         // Assert
-        option.Values.Should().ContainSingle();
-        value.Should().NotBeNull();
-        value.OptionId.Should().Be(option.Id);
-        value.Value.Should().Be("red");
-        value.DisplayValue.Should().Be("Red");
+        option.Values.ShouldHaveSingleItem();
+        value.ShouldNotBeNull();
+        value.OptionId.ShouldBe(option.Id);
+        value.Value.ShouldBe("red");
+        value.DisplayValue.ShouldBe("Red");
     }
 
     [Fact]
@@ -221,7 +221,7 @@ public class ProductOptionTests
         var value = option.AddValue("red", "Red");
 
         // Assert
-        value.SortOrder.Should().Be(0);
+        value.SortOrder.ShouldBe(0);
     }
 
     [Fact]
@@ -235,7 +235,7 @@ public class ProductOptionTests
         var second = option.AddValue("blue", "Blue");
 
         // Assert
-        second.SortOrder.Should().Be(1);
+        second.SortOrder.ShouldBe(1);
     }
 
     [Fact]
@@ -250,7 +250,7 @@ public class ProductOptionTests
         option.AddValue("green", "Green");
 
         // Assert
-        option.Values.Should().HaveCount(3);
+        option.Values.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -263,7 +263,7 @@ public class ProductOptionTests
         var value = option.AddValue("red");
 
         // Assert
-        value.DisplayValue.Should().Be("red");
+        value.DisplayValue.ShouldBe("red");
     }
 
     [Fact]
@@ -276,7 +276,7 @@ public class ProductOptionTests
         var value = option.AddValue("red", "Red");
 
         // Assert
-        value.TenantId.Should().Be(TestTenantId);
+        value.TenantId.ShouldBe(TestTenantId);
     }
 
     #endregion
@@ -294,7 +294,7 @@ public class ProductOptionTests
         option.RemoveValue(value.Id);
 
         // Assert
-        option.Values.Should().BeEmpty();
+        option.Values.ShouldBeEmpty();
     }
 
     [Fact]
@@ -308,7 +308,7 @@ public class ProductOptionTests
         option.RemoveValue(Guid.NewGuid());
 
         // Assert
-        option.Values.Should().HaveCount(1);
+        option.Values.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -324,8 +324,8 @@ public class ProductOptionTests
         option.RemoveValue(blue.Id);
 
         // Assert
-        option.Values.Should().HaveCount(2);
-        option.Values.Should().NotContain(v => v.Value == "blue");
+        option.Values.Count().ShouldBe(2);
+        option.Values.ShouldNotContain(v => v.Value == "blue");
     }
 
     #endregion

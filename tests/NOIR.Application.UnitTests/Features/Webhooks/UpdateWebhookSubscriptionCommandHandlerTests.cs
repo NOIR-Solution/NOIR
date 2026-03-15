@@ -80,9 +80,9 @@ public class UpdateWebhookSubscriptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Updated Webhook");
-        result.Value.EventPatterns.Should().Be("order.*,payment.*");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Updated Webhook");
+        result.Value.EventPatterns.ShouldBe("order.*,payment.*");
     }
 
     [Fact]
@@ -141,8 +141,8 @@ public class UpdateWebhookSubscriptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Url.Should().Be("https://api.example.com/new-hook");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Url.ShouldBe("https://api.example.com/new-hook");
     }
 
     [Fact]
@@ -191,8 +191,8 @@ public class UpdateWebhookSubscriptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-WEBHOOK-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-WEBHOOK-002");
     }
 
     [Fact]
@@ -221,8 +221,8 @@ public class UpdateWebhookSubscriptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-WEBHOOK-001");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-WEBHOOK-001");
     }
 
     #endregion

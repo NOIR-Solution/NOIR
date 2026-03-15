@@ -85,7 +85,7 @@ public class ValueObjectTests
         var address2 = new Address("123 Main St", "Springfield", "12345");
 
         // Act & Assert
-        address1.Equals(address2).Should().BeTrue();
+        address1.Equals(address2).ShouldBeTrue();
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class ValueObjectTests
         var address2 = new Address("456 Oak Ave", "Springfield", "12345");
 
         // Act & Assert
-        address1.Equals(address2).Should().BeFalse();
+        address1.Equals(address2).ShouldBeFalse();
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class ValueObjectTests
         var money = new Money(100m, "USD");
 
         // Act & Assert
-        address.Equals(money).Should().BeFalse();
+        address.Equals(money).ShouldBeFalse();
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public class ValueObjectTests
         var address = new Address("123 Main St", "Springfield", "12345");
 
         // Act & Assert
-        address.Equals(null).Should().BeFalse();
+        address.Equals(null).ShouldBeFalse();
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public class ValueObjectTests
         var address = new Address("123 Main St", "Springfield", "12345");
 
         // Act & Assert
-        address.Equals(address).Should().BeTrue();
+        address.Equals(address).ShouldBeTrue();
     }
 
     [Fact]
@@ -138,7 +138,7 @@ public class ValueObjectTests
         object address2 = new Address("123 Main St", "Springfield", "12345");
 
         // Act & Assert
-        address1.Equals(address2).Should().BeTrue();
+        address1.Equals(address2).ShouldBeTrue();
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public class ValueObjectTests
         object? nullObject = null;
 
         // Act & Assert
-        address.Equals(nullObject).Should().BeFalse();
+        address.Equals(nullObject).ShouldBeFalse();
     }
 
     [Fact]
@@ -160,7 +160,7 @@ public class ValueObjectTests
         object notAValueObject = "not a value object";
 
         // Act & Assert
-        address.Equals(notAValueObject).Should().BeFalse();
+        address.Equals(notAValueObject).ShouldBeFalse();
     }
 
     #endregion
@@ -175,7 +175,7 @@ public class ValueObjectTests
         var value2 = new OptionalValue(null, 42);
 
         // Act & Assert
-        value1.Equals(value2).Should().BeTrue();
+        value1.Equals(value2).ShouldBeTrue();
     }
 
     [Fact]
@@ -186,7 +186,7 @@ public class ValueObjectTests
         var value2 = new OptionalValue("has value", 42);
 
         // Act & Assert
-        value1.Equals(value2).Should().BeFalse();
+        value1.Equals(value2).ShouldBeFalse();
     }
 
     [Fact]
@@ -197,7 +197,7 @@ public class ValueObjectTests
         var value2 = new OptionalValue("value2", 42);
 
         // Act & Assert
-        value1.Equals(value2).Should().BeFalse();
+        value1.Equals(value2).ShouldBeFalse();
     }
 
     #endregion
@@ -212,7 +212,7 @@ public class ValueObjectTests
         var address2 = new Address("123 Main St", "Springfield", "12345");
 
         // Act & Assert
-        address1.GetHashCode().Should().Be(address2.GetHashCode());
+        address1.GetHashCode().ShouldBe(address2.GetHashCode());
     }
 
     [Fact]
@@ -224,7 +224,7 @@ public class ValueObjectTests
 
         // Act & Assert
         // Different values typically produce different hashes
-        address1.GetHashCode().Should().NotBe(address2.GetHashCode());
+        address1.GetHashCode().ShouldNotBe(address2.GetHashCode());
     }
 
     [Fact]
@@ -239,7 +239,9 @@ public class ValueObjectTests
         var hash3 = address.GetHashCode();
 
         // Assert
-        hash1.Should().Be(hash2).And.Be(hash3);
+        hash1.ShouldBe(hash2);
+
+        hash1.ShouldBe(hash3);
     }
 
     [Fact]
@@ -252,7 +254,7 @@ public class ValueObjectTests
         var act = () => value.GetHashCode();
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -265,7 +267,7 @@ public class ValueObjectTests
         var act = () => empty.GetHashCode();
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -277,7 +279,7 @@ public class ValueObjectTests
         var money2 = new Money(100m, "EUR");
 
         // Act & Assert
-        money1.GetHashCode().Should().NotBe(money2.GetHashCode());
+        money1.GetHashCode().ShouldNotBe(money2.GetHashCode());
     }
 
     #endregion
@@ -292,7 +294,7 @@ public class ValueObjectTests
         var address2 = new Address("123 Main St", "Springfield", "12345");
 
         // Act & Assert
-        (address1 == address2).Should().BeTrue();
+        (address1 == address2).ShouldBeTrue();
     }
 
     [Fact]
@@ -303,7 +305,7 @@ public class ValueObjectTests
         var address2 = new Address("456 Oak Ave", "Springfield", "12345");
 
         // Act & Assert
-        (address1 == address2).Should().BeFalse();
+        (address1 == address2).ShouldBeFalse();
     }
 
     [Fact]
@@ -314,7 +316,7 @@ public class ValueObjectTests
         Address? address2 = null;
 
         // Act & Assert
-        (address1 == address2).Should().BeTrue();
+        (address1 == address2).ShouldBeTrue();
     }
 
     [Fact]
@@ -325,7 +327,7 @@ public class ValueObjectTests
         var address2 = new Address("123 Main St", "Springfield", "12345");
 
         // Act & Assert
-        (address1 == address2).Should().BeFalse();
+        (address1 == address2).ShouldBeFalse();
     }
 
     [Fact]
@@ -336,7 +338,7 @@ public class ValueObjectTests
         Address? address2 = null;
 
         // Act & Assert
-        (address1 == address2).Should().BeFalse();
+        (address1 == address2).ShouldBeFalse();
     }
 
     [Fact]
@@ -347,7 +349,7 @@ public class ValueObjectTests
         var address2 = new Address("456 Oak Ave", "Springfield", "12345");
 
         // Act & Assert
-        (address1 != address2).Should().BeTrue();
+        (address1 != address2).ShouldBeTrue();
     }
 
     [Fact]
@@ -358,7 +360,7 @@ public class ValueObjectTests
         var address2 = new Address("123 Main St", "Springfield", "12345");
 
         // Act & Assert
-        (address1 != address2).Should().BeFalse();
+        (address1 != address2).ShouldBeFalse();
     }
 
     #endregion
@@ -380,7 +382,7 @@ public class ValueObjectTests
         var money2 = new Money(amount2, currency2);
 
         // Act & Assert
-        money1.Equals(money2).Should().Be(expected);
+        money1.Equals(money2).ShouldBe(expected);
     }
 
     [Fact]
@@ -393,8 +395,8 @@ public class ValueObjectTests
         // Act & Assert
         // Decimal equality respects trailing zeros in internal representation
         // but the values are mathematically equal
-        (money1.Amount == money2.Amount).Should().BeTrue();
-        money1.Equals(money2).Should().BeTrue();
+        (money1.Amount == money2.Amount).ShouldBeTrue();
+        money1.Equals(money2).ShouldBeTrue();
     }
 
     #endregion
@@ -409,7 +411,7 @@ public class ValueObjectTests
         var empty2 = new EmptyValueObject();
 
         // Act & Assert
-        empty1.Equals(empty2).Should().BeTrue();
+        empty1.Equals(empty2).ShouldBeTrue();
     }
 
     [Fact]
@@ -420,7 +422,7 @@ public class ValueObjectTests
         var empty2 = new EmptyValueObject();
 
         // Act & Assert
-        empty1.GetHashCode().Should().Be(empty2.GetHashCode());
+        empty1.GetHashCode().ShouldBe(empty2.GetHashCode());
     }
 
     #endregion
@@ -439,8 +441,8 @@ public class ValueObjectTests
         };
 
         // Act & Assert
-        dictionary.ContainsKey(sameAddress).Should().BeTrue();
-        dictionary[sameAddress].Should().Be("Home");
+        dictionary.ContainsKey(sameAddress).ShouldBeTrue();
+        dictionary[sameAddress].ShouldBe("Home");
     }
 
     [Fact]
@@ -454,7 +456,7 @@ public class ValueObjectTests
         var set = new HashSet<Address> { address1, address2, address3 };
 
         // Act & Assert
-        set.Count.Should().Be(2); // address1 and address2 are equal, so only 2 items
+        set.Count.ShouldBe(2); // address1 and address2 are equal, so only 2 items
     }
 
     #endregion

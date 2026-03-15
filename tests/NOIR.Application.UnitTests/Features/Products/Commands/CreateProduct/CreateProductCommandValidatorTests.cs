@@ -696,7 +696,7 @@ public class CreateProductCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -713,7 +713,7 @@ public class CreateProductCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -730,7 +730,7 @@ public class CreateProductCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -747,7 +747,7 @@ public class CreateProductCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     // ===== Image Child Validation =====
@@ -784,7 +784,7 @@ public class CreateProductCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -801,7 +801,7 @@ public class CreateProductCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -818,6 +818,6 @@ public class CreateProductCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 }

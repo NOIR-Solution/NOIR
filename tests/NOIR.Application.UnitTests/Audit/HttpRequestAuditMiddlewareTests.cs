@@ -22,10 +22,10 @@ public class HttpRequestAuditMiddlewareTests
         var result = InvokeSanitizeBody(body);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"email\":\"test@test.com\"");
-        result.Should().Contain("[REDACTED]");
-        result.Should().NotContain("secret123");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"email\":\"test@test.com\"");
+        result.ShouldContain("[REDACTED]");
+        result.ShouldNotContain("secret123");
     }
 
     [Fact]
@@ -38,9 +38,9 @@ public class HttpRequestAuditMiddlewareTests
         var result = InvokeSanitizeBody(body);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("[REDACTED]");
-        result.Should().NotContain("eyJhbGciOiJIUzI1NiJ9");
+        result.ShouldNotBeNull();
+        result.ShouldContain("[REDACTED]");
+        result.ShouldNotContain("eyJhbGciOiJIUzI1NiJ9");
     }
 
     [Fact]
@@ -53,10 +53,10 @@ public class HttpRequestAuditMiddlewareTests
         var result = InvokeSanitizeBody(body);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"email\":\"test@test.com\"");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"email\":\"test@test.com\"");
         var redactedCount = result!.Split("[REDACTED]").Length - 1;
-        redactedCount.Should().Be(3); // password, secret, apiKey
+        redactedCount.ShouldBe(3); // password, secret, apiKey
     }
 
     [Fact]
@@ -69,9 +69,9 @@ public class HttpRequestAuditMiddlewareTests
         var result = InvokeSanitizeBody(body);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("[REDACTED]");
-        result.Should().NotContain("hash123");
+        result.ShouldNotBeNull();
+        result.ShouldContain("[REDACTED]");
+        result.ShouldNotContain("hash123");
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public class HttpRequestAuditMiddlewareTests
         var result = InvokeSanitizeBody(body);
 
         // Assert
-        result.Should().Be("This is plain text content");
+        result.ShouldBe("This is plain text content");
     }
 
     [Fact]
@@ -94,7 +94,7 @@ public class HttpRequestAuditMiddlewareTests
         var result = InvokeSanitizeBody("");
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public class HttpRequestAuditMiddlewareTests
         var result = InvokeSanitizeBody(null);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -117,8 +117,8 @@ public class HttpRequestAuditMiddlewareTests
         var result = InvokeSanitizeBody(body);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Contain("\"tags\":[\"tag1\",\"tag2\",\"tag3\"]");
+        result.ShouldNotBeNull();
+        result.ShouldContain("\"tags\":[\"tag1\",\"tag2\",\"tag3\"]");
     }
 
     [Fact]
@@ -131,9 +131,9 @@ public class HttpRequestAuditMiddlewareTests
         var result = InvokeSanitizeBody(body);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().NotContain("4111111111111111");
-        result.Should().NotContain("\"cvv\":\"123\"");
+        result.ShouldNotBeNull();
+        result.ShouldNotContain("4111111111111111");
+        result.ShouldNotContain("\"cvv\":\"123\"");
     }
 
     #endregion
@@ -154,9 +154,9 @@ public class HttpRequestAuditMiddlewareTests
         var result = InvokeGetSanitizedHeaders(headers);
 
         // Assert
-        result.Should().Contain("\"Content-Type\":\"application/json\"");
-        result.Should().Contain("\"Authorization\":\"[REDACTED]\"");
-        result.Should().NotContain("Bearer eyJhbGciOiJIUzI1NiJ9");
+        result.ShouldContain("\"Content-Type\":\"application/json\"");
+        result.ShouldContain("\"Authorization\":\"[REDACTED]\"");
+        result.ShouldNotContain("Bearer eyJhbGciOiJIUzI1NiJ9");
     }
 
     [Fact]
@@ -173,9 +173,9 @@ public class HttpRequestAuditMiddlewareTests
         var result = InvokeGetSanitizedHeaders(headers);
 
         // Assert
-        result.Should().Contain("\"Accept\":\"application/json\"");
-        result.Should().Contain("\"Cookie\":\"[REDACTED]\"");
-        result.Should().NotContain("session=abc123");
+        result.ShouldContain("\"Accept\":\"application/json\"");
+        result.ShouldContain("\"Cookie\":\"[REDACTED]\"");
+        result.ShouldNotContain("session=abc123");
     }
 
     [Fact]
@@ -191,8 +191,8 @@ public class HttpRequestAuditMiddlewareTests
         var result = InvokeGetSanitizedHeaders(headers);
 
         // Assert
-        result.Should().Contain("\"X-Api-Key\":\"[REDACTED]\"");
-        result.Should().NotContain("sk-1234567890abcdef");
+        result.ShouldContain("\"X-Api-Key\":\"[REDACTED]\"");
+        result.ShouldNotContain("sk-1234567890abcdef");
     }
 
     [Fact]
@@ -208,8 +208,8 @@ public class HttpRequestAuditMiddlewareTests
         var result = InvokeGetSanitizedHeaders(headers);
 
         // Assert
-        result.Should().Contain("\"X-Auth-Token\":\"[REDACTED]\"");
-        result.Should().NotContain("token123");
+        result.ShouldContain("\"X-Auth-Token\":\"[REDACTED]\"");
+        result.ShouldNotContain("token123");
     }
 
     [Fact]
@@ -229,7 +229,7 @@ public class HttpRequestAuditMiddlewareTests
 
         // Assert
         var redactedCount = result.Split("[REDACTED]").Length - 1;
-        redactedCount.Should().Be(4);
+        redactedCount.ShouldBe(4);
     }
 
     [Fact]
@@ -247,10 +247,10 @@ public class HttpRequestAuditMiddlewareTests
         var result = InvokeGetSanitizedHeaders(headers);
 
         // Assert
-        result.Should().NotContain("[REDACTED]");
-        result.Should().Contain("\"Content-Type\":\"application/json\"");
-        result.Should().Contain("\"Accept\":\"application/json\"");
-        result.Should().Contain("\"User-Agent\":\"Mozilla/5.0\"");
+        result.ShouldNotContain("[REDACTED]");
+        result.ShouldContain("\"Content-Type\":\"application/json\"");
+        result.ShouldContain("\"Accept\":\"application/json\"");
+        result.ShouldContain("\"User-Agent\":\"Mozilla/5.0\"");
     }
 
     #endregion
@@ -270,7 +270,7 @@ public class HttpRequestAuditMiddlewareTests
         var excludedPaths = GetExcludedPaths();
 
         // Assert
-        excludedPaths.Should().Contain(path);
+        excludedPaths.ShouldContain(path);
     }
 
     #endregion
@@ -287,7 +287,7 @@ public class HttpRequestAuditMiddlewareTests
         var result = InvokeTruncate(value, 100);
 
         // Assert
-        result.Should().Be("Hello World");
+        result.ShouldBe("Hello World");
     }
 
     [Fact]
@@ -300,8 +300,8 @@ public class HttpRequestAuditMiddlewareTests
         var result = InvokeTruncate(value, 20);
 
         // Assert
-        result.Should().Be("This is a very long ");
-        result!.Length.Should().Be(20);
+        result.ShouldBe("This is a very long ");
+        result!.Length.ShouldBe(20);
     }
 
     [Fact]
@@ -311,7 +311,7 @@ public class HttpRequestAuditMiddlewareTests
         var result = InvokeTruncate(null, 100);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -324,7 +324,7 @@ public class HttpRequestAuditMiddlewareTests
         var result = InvokeTruncate(value, 5);
 
         // Assert
-        result.Should().Be("Exact");
+        result.ShouldBe("Exact");
     }
 
     #endregion
@@ -345,7 +345,7 @@ public class HttpRequestAuditMiddlewareTests
         var method = typeof(HttpRequestAuditMiddleware)
             .GetMethod("GetClientIpAddress", BindingFlags.NonPublic | BindingFlags.Static);
 
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
     }
 
     #endregion

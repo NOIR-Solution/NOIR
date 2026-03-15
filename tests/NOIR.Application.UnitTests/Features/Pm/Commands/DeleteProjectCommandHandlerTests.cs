@@ -44,7 +44,7 @@ public class DeleteProjectCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _projectRepoMock.Verify(
             x => x.Remove(It.IsAny<Project>()), Times.Once);
         _unitOfWorkMock.Verify(
@@ -65,7 +65,7 @@ public class DeleteProjectCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _projectRepoMock.Verify(
             x => x.Remove(It.IsAny<Project>()), Times.Never);
     }

@@ -15,13 +15,13 @@ public class CustomerSegmentationJobTests
     [Fact]
     public void Job_ShouldImplementIScopedService()
     {
-        typeof(CustomerSegmentationJob).Should().Implement<IScopedService>();
+        typeof(CustomerSegmentationJob).GetInterfaces().ShouldContain(typeof(IScopedService));
     }
 
     [Fact]
     public void Job_ShouldBePublicClass()
     {
-        typeof(CustomerSegmentationJob).IsPublic.Should().BeTrue();
+        typeof(CustomerSegmentationJob).IsPublic.ShouldBe(true);
     }
 
     [Fact]
@@ -30,16 +30,16 @@ public class CustomerSegmentationJobTests
         var method = typeof(CustomerSegmentationJob)
             .GetMethod("ExecuteAsync", [typeof(CancellationToken)]);
 
-        method.Should().NotBeNull();
-        method!.ReturnType.Should().Be(typeof(Task));
+        method.ShouldNotBeNull();
+        method!.ReturnType.ShouldBe(typeof(Task));
     }
 
     [Fact]
     public void Job_ShouldUseCorrectModuleFeatureName()
     {
         // Verify the constant is well-defined (not null/empty)
-        ModuleNames.Ecommerce.Customers.Should().NotBeNullOrEmpty();
-        ModuleNames.Ecommerce.Customers.Should().Be("Ecommerce.Customers");
+        ModuleNames.Ecommerce.Customers.ShouldNotBeNullOrEmpty();
+        ModuleNames.Ecommerce.Customers.ShouldBe("Ecommerce.Customers");
     }
 
     #endregion
@@ -60,7 +60,7 @@ public class CustomerSegmentationJobTests
 
         customer.RecalculateSegment();
 
-        customer.Segment.Should().Be(CustomerSegment.New);
+        customer.Segment.ShouldBe(CustomerSegment.New);
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class CustomerSegmentationJobTests
 
         customer.RecalculateSegment();
 
-        customer.Segment.Should().Be(CustomerSegment.New);
+        customer.Segment.ShouldBe(CustomerSegment.New);
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public class CustomerSegmentationJobTests
 
         customer.RecalculateSegment();
 
-        customer.Segment.Should().Be(CustomerSegment.VIP);
+        customer.Segment.ShouldBe(CustomerSegment.VIP);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public class CustomerSegmentationJobTests
 
         customer.RecalculateSegment();
 
-        customer.Segment.Should().Be(CustomerSegment.Active);
+        customer.Segment.ShouldBe(CustomerSegment.Active);
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public class CustomerSegmentationJobTests
 
         customer.RecalculateSegment();
 
-        customer.Segment.Should().Be(CustomerSegment.AtRisk);
+        customer.Segment.ShouldBe(CustomerSegment.AtRisk);
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class CustomerSegmentationJobTests
 
         customer.RecalculateSegment();
 
-        customer.Segment.Should().Be(CustomerSegment.Dormant);
+        customer.Segment.ShouldBe(CustomerSegment.Dormant);
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public class CustomerSegmentationJobTests
 
         customer.RecalculateSegment();
 
-        customer.Segment.Should().Be(CustomerSegment.Lost);
+        customer.Segment.ShouldBe(CustomerSegment.Lost);
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class CustomerSegmentationJobTests
 
         customer.RecalculateSegment();
 
-        customer.Segment.Should().Be(firstSegment);
+        customer.Segment.ShouldBe(firstSegment);
     }
 
     #endregion

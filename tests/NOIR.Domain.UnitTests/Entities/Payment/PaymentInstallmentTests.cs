@@ -50,15 +50,15 @@ public class PaymentInstallmentTests
             transactionId, 1, 3, 500_000m, "VND", dueDate, TestTenantId);
 
         // Assert
-        installment.Should().NotBeNull();
-        installment.Id.Should().NotBe(Guid.Empty);
-        installment.PaymentTransactionId.Should().Be(transactionId);
-        installment.InstallmentNumber.Should().Be(1);
-        installment.TotalInstallments.Should().Be(3);
-        installment.Amount.Should().Be(500_000m);
-        installment.Currency.Should().Be("VND");
-        installment.DueDate.Should().Be(dueDate);
-        installment.TenantId.Should().Be(TestTenantId);
+        installment.ShouldNotBeNull();
+        installment.Id.ShouldNotBe(Guid.Empty);
+        installment.PaymentTransactionId.ShouldBe(transactionId);
+        installment.InstallmentNumber.ShouldBe(1);
+        installment.TotalInstallments.ShouldBe(3);
+        installment.Amount.ShouldBe(500_000m);
+        installment.Currency.ShouldBe("VND");
+        installment.DueDate.ShouldBe(dueDate);
+        installment.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class PaymentInstallmentTests
         var installment = CreateTestInstallment();
 
         // Assert
-        installment.Status.Should().Be(InstallmentStatus.Scheduled);
+        installment.Status.ShouldBe(InstallmentStatus.Scheduled);
     }
 
     [Fact]
@@ -78,9 +78,9 @@ public class PaymentInstallmentTests
         var installment = CreateTestInstallment();
 
         // Assert
-        installment.PaidAt.Should().BeNull();
-        installment.GatewayReference.Should().BeNull();
-        installment.FailureReason.Should().BeNull();
+        installment.PaidAt.ShouldBeNull();
+        installment.GatewayReference.ShouldBeNull();
+        installment.FailureReason.ShouldBeNull();
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class PaymentInstallmentTests
         var installment = CreateTestInstallment();
 
         // Assert
-        installment.RetryCount.Should().Be(0);
+        installment.RetryCount.ShouldBe(0);
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class PaymentInstallmentTests
         var installment = CreateTestInstallment(tenantId: null);
 
         // Assert
-        installment.TenantId.Should().BeNull();
+        installment.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public class PaymentInstallmentTests
         var installment = CreateTestInstallment(currency: "USD");
 
         // Assert
-        installment.Currency.Should().Be("USD");
+        installment.Currency.ShouldBe("USD");
     }
 
     [Fact]
@@ -121,7 +121,7 @@ public class PaymentInstallmentTests
         var installment2 = CreateTestInstallment(installmentNumber: 2);
 
         // Assert
-        installment1.Id.Should().NotBe(installment2.Id);
+        installment1.Id.ShouldNotBe(installment2.Id);
     }
 
     [Theory]
@@ -134,8 +134,8 @@ public class PaymentInstallmentTests
         var installment = CreateTestInstallment(installmentNumber: number, totalInstallments: total);
 
         // Assert
-        installment.InstallmentNumber.Should().Be(number);
-        installment.TotalInstallments.Should().Be(total);
+        installment.InstallmentNumber.ShouldBe(number);
+        installment.TotalInstallments.ShouldBe(total);
     }
 
     #endregion
@@ -152,7 +152,7 @@ public class PaymentInstallmentTests
         installment.MarkAsPending();
 
         // Assert
-        installment.Status.Should().Be(InstallmentStatus.Pending);
+        installment.Status.ShouldBe(InstallmentStatus.Pending);
     }
 
     [Fact]
@@ -167,10 +167,10 @@ public class PaymentInstallmentTests
         installment.MarkAsPending();
 
         // Assert
-        installment.Amount.Should().Be(originalAmount);
-        installment.DueDate.Should().Be(originalDueDate);
-        installment.PaidAt.Should().BeNull();
-        installment.GatewayReference.Should().BeNull();
+        installment.Amount.ShouldBe(originalAmount);
+        installment.DueDate.ShouldBe(originalDueDate);
+        installment.PaidAt.ShouldBeNull();
+        installment.GatewayReference.ShouldBeNull();
     }
 
     #endregion
@@ -188,7 +188,7 @@ public class PaymentInstallmentTests
         installment.MarkAsPaid("GW-REF-12345");
 
         // Assert
-        installment.Status.Should().Be(InstallmentStatus.Paid);
+        installment.Status.ShouldBe(InstallmentStatus.Paid);
     }
 
     [Fact]
@@ -203,8 +203,8 @@ public class PaymentInstallmentTests
         installment.MarkAsPaid("GW-REF-12345");
 
         // Assert
-        installment.PaidAt.Should().NotBeNull();
-        installment.PaidAt.Should().BeOnOrAfter(beforePaid);
+        installment.PaidAt.ShouldNotBeNull();
+        installment.PaidAt!.Value.ShouldBeGreaterThanOrEqualTo(beforePaid);
     }
 
     [Fact]
@@ -218,7 +218,7 @@ public class PaymentInstallmentTests
         installment.MarkAsPaid("GW-REF-ABC");
 
         // Assert
-        installment.GatewayReference.Should().Be("GW-REF-ABC");
+        installment.GatewayReference.ShouldBe("GW-REF-ABC");
     }
 
     #endregion
@@ -236,7 +236,7 @@ public class PaymentInstallmentTests
         installment.MarkAsFailed("Insufficient funds");
 
         // Assert
-        installment.Status.Should().Be(InstallmentStatus.Failed);
+        installment.Status.ShouldBe(InstallmentStatus.Failed);
     }
 
     [Fact]
@@ -250,7 +250,7 @@ public class PaymentInstallmentTests
         installment.MarkAsFailed("Card declined");
 
         // Assert
-        installment.FailureReason.Should().Be("Card declined");
+        installment.FailureReason.ShouldBe("Card declined");
     }
 
     [Fact]
@@ -259,13 +259,13 @@ public class PaymentInstallmentTests
         // Arrange
         var installment = CreateTestInstallment();
         installment.MarkAsPending();
-        installment.RetryCount.Should().Be(0);
+        installment.RetryCount.ShouldBe(0);
 
         // Act
         installment.MarkAsFailed("First failure");
 
         // Assert
-        installment.RetryCount.Should().Be(1);
+        installment.RetryCount.ShouldBe(1);
     }
 
     [Fact]
@@ -280,8 +280,8 @@ public class PaymentInstallmentTests
         installment.MarkAsFailed("Failure 3");
 
         // Assert
-        installment.RetryCount.Should().Be(3);
-        installment.FailureReason.Should().Be("Failure 3");
+        installment.RetryCount.ShouldBe(3);
+        installment.FailureReason.ShouldBe("Failure 3");
     }
 
     [Fact]
@@ -295,7 +295,7 @@ public class PaymentInstallmentTests
         installment.MarkAsFailed("Second reason");
 
         // Assert
-        installment.FailureReason.Should().Be("Second reason");
+        installment.FailureReason.ShouldBe("Second reason");
     }
 
     #endregion
@@ -312,7 +312,7 @@ public class PaymentInstallmentTests
         installment.Cancel();
 
         // Assert
-        installment.Status.Should().Be(InstallmentStatus.Cancelled);
+        installment.Status.ShouldBe(InstallmentStatus.Cancelled);
     }
 
     [Fact]
@@ -326,7 +326,7 @@ public class PaymentInstallmentTests
         installment.Cancel();
 
         // Assert
-        installment.Status.Should().Be(InstallmentStatus.Cancelled);
+        installment.Status.ShouldBe(InstallmentStatus.Cancelled);
     }
 
     #endregion
@@ -344,7 +344,7 @@ public class PaymentInstallmentTests
         installment.ResetForRetry();
 
         // Assert
-        installment.Status.Should().Be(InstallmentStatus.Pending);
+        installment.Status.ShouldBe(InstallmentStatus.Pending);
     }
 
     [Fact]
@@ -353,13 +353,13 @@ public class PaymentInstallmentTests
         // Arrange
         var installment = CreateTestInstallment();
         installment.MarkAsFailed("Some error");
-        installment.FailureReason.Should().NotBeNull();
+        installment.FailureReason.ShouldNotBeNull();
 
         // Act
         installment.ResetForRetry();
 
         // Assert
-        installment.FailureReason.Should().BeNull();
+        installment.FailureReason.ShouldBeNull();
     }
 
     [Fact]
@@ -369,13 +369,13 @@ public class PaymentInstallmentTests
         var installment = CreateTestInstallment();
         installment.MarkAsFailed("Error 1");
         installment.MarkAsFailed("Error 2");
-        installment.RetryCount.Should().Be(2);
+        installment.RetryCount.ShouldBe(2);
 
         // Act
         installment.ResetForRetry();
 
         // Assert
-        installment.RetryCount.Should().Be(2);
+        installment.RetryCount.ShouldBe(2);
     }
 
     #endregion
@@ -389,15 +389,15 @@ public class PaymentInstallmentTests
         var installment = CreateTestInstallment();
 
         // Act & Assert
-        installment.Status.Should().Be(InstallmentStatus.Scheduled);
+        installment.Status.ShouldBe(InstallmentStatus.Scheduled);
 
         installment.MarkAsPending();
-        installment.Status.Should().Be(InstallmentStatus.Pending);
+        installment.Status.ShouldBe(InstallmentStatus.Pending);
 
         installment.MarkAsPaid("GW-SUCCESS-001");
-        installment.Status.Should().Be(InstallmentStatus.Paid);
-        installment.PaidAt.Should().NotBeNull();
-        installment.GatewayReference.Should().Be("GW-SUCCESS-001");
+        installment.Status.ShouldBe(InstallmentStatus.Paid);
+        installment.PaidAt.ShouldNotBeNull();
+        installment.GatewayReference.ShouldBe("GW-SUCCESS-001");
     }
 
     [Fact]
@@ -409,24 +409,24 @@ public class PaymentInstallmentTests
         // Act - first attempt fails
         installment.MarkAsPending();
         installment.MarkAsFailed("Network timeout");
-        installment.RetryCount.Should().Be(1);
+        installment.RetryCount.ShouldBe(1);
 
         // Retry
         installment.ResetForRetry();
-        installment.Status.Should().Be(InstallmentStatus.Pending);
-        installment.FailureReason.Should().BeNull();
+        installment.Status.ShouldBe(InstallmentStatus.Pending);
+        installment.FailureReason.ShouldBeNull();
 
         // Second attempt fails
         installment.MarkAsFailed("Insufficient funds");
-        installment.RetryCount.Should().Be(2);
+        installment.RetryCount.ShouldBe(2);
 
         // Retry again
         installment.ResetForRetry();
 
         // Third attempt succeeds
         installment.MarkAsPaid("GW-SUCCESS-003");
-        installment.Status.Should().Be(InstallmentStatus.Paid);
-        installment.RetryCount.Should().Be(2);
+        installment.Status.ShouldBe(InstallmentStatus.Paid);
+        installment.RetryCount.ShouldBe(2);
     }
 
     [Fact]
@@ -436,10 +436,10 @@ public class PaymentInstallmentTests
         var installment = CreateTestInstallment();
 
         // Act & Assert
-        installment.Status.Should().Be(InstallmentStatus.Scheduled);
+        installment.Status.ShouldBe(InstallmentStatus.Scheduled);
 
         installment.Cancel();
-        installment.Status.Should().Be(InstallmentStatus.Cancelled);
+        installment.Status.ShouldBe(InstallmentStatus.Cancelled);
     }
 
     #endregion

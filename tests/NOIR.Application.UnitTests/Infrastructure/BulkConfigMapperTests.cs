@@ -21,11 +21,11 @@ public class BulkConfigMapperTests
         var result = BulkConfigMapper.ToBulkConfig(null, dbContext);
 
         // Assert
-        result.Should().NotBeNull();
-        result.BatchSize.Should().Be(2000);  // Default from BulkOperationConfig
-        result.SetOutputIdentity.Should().BeFalse();
-        result.PreserveInsertOrder.Should().BeTrue();
-        result.WithHoldlock.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result.BatchSize.ShouldBe(2000);  // Default from BulkOperationConfig
+        result.SetOutputIdentity.ShouldBe(false);
+        result.PreserveInsertOrder.ShouldBe(true);
+        result.WithHoldlock.ShouldBe(true);
     }
 
     [Fact]
@@ -39,13 +39,13 @@ public class BulkConfigMapperTests
         var result = BulkConfigMapper.ToBulkConfig(config, dbContext);
 
         // Assert
-        result.Should().NotBeNull();
-        result.BatchSize.Should().Be(2000);
-        result.SetOutputIdentity.Should().BeFalse();
-        result.PreserveInsertOrder.Should().BeTrue();
-        result.WithHoldlock.Should().BeTrue();
-        result.IncludeGraph.Should().BeFalse();
-        result.CalculateStats.Should().BeFalse();
+        result.ShouldNotBeNull();
+        result.BatchSize.ShouldBe(2000);
+        result.SetOutputIdentity.ShouldBe(false);
+        result.PreserveInsertOrder.ShouldBe(true);
+        result.WithHoldlock.ShouldBe(true);
+        result.IncludeGraph.ShouldBe(false);
+        result.CalculateStats.ShouldBe(false);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class BulkConfigMapperTests
         var result = BulkConfigMapper.ToBulkConfig(config, dbContext);
 
         // Assert
-        result.BatchSize.Should().Be(5000);
+        result.BatchSize.ShouldBe(5000);
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class BulkConfigMapperTests
         var result = BulkConfigMapper.ToBulkConfig(config, dbContext);
 
         // Assert
-        result.SetOutputIdentity.Should().BeTrue();
+        result.SetOutputIdentity.ShouldBe(true);
     }
 
     [Fact]
@@ -87,7 +87,7 @@ public class BulkConfigMapperTests
         var result = BulkConfigMapper.ToBulkConfig(config, dbContext);
 
         // Assert
-        result.PreserveInsertOrder.Should().BeFalse();
+        result.PreserveInsertOrder.ShouldBe(false);
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class BulkConfigMapperTests
         var result = BulkConfigMapper.ToBulkConfig(config, dbContext);
 
         // Assert
-        result.BulkCopyTimeout.Should().Be(120);
+        result.BulkCopyTimeout.ShouldBe(120);
     }
 
     [Fact]
@@ -115,7 +115,7 @@ public class BulkConfigMapperTests
         var result = BulkConfigMapper.ToBulkConfig(config, dbContext);
 
         // Assert - When input is null, timeout is not explicitly set
-        result.BulkCopyTimeout.Should().BeNull();
+        result.BulkCopyTimeout.ShouldBeNull();
     }
 
     [Fact]
@@ -129,7 +129,7 @@ public class BulkConfigMapperTests
         var result = BulkConfigMapper.ToBulkConfig(config, dbContext);
 
         // Assert
-        result.WithHoldlock.Should().BeFalse();
+        result.WithHoldlock.ShouldBe(false);
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public class BulkConfigMapperTests
         var result = BulkConfigMapper.ToBulkConfig(config, dbContext);
 
         // Assert
-        result.IncludeGraph.Should().BeTrue();
+        result.IncludeGraph.ShouldBe(true);
     }
 
     [Fact]
@@ -157,7 +157,7 @@ public class BulkConfigMapperTests
         var result = BulkConfigMapper.ToBulkConfig(config, dbContext);
 
         // Assert
-        result.CalculateStats.Should().BeTrue();
+        result.CalculateStats.ShouldBe(true);
     }
 
     [Fact]
@@ -174,11 +174,11 @@ public class BulkConfigMapperTests
         var result = BulkConfigMapper.ToBulkConfig(config, dbContext);
 
         // Assert
-        result.PropertiesToInclude.Should().NotBeNull();
-        result.PropertiesToInclude.Should().HaveCount(3);
-        result.PropertiesToInclude.Should().Contain("Name");
-        result.PropertiesToInclude.Should().Contain("Email");
-        result.PropertiesToInclude.Should().Contain("Status");
+        result.PropertiesToInclude.ShouldNotBeNull();
+        result.PropertiesToInclude.Count().ShouldBe(3);
+        result.PropertiesToInclude.ShouldContain("Name");
+        result.PropertiesToInclude.ShouldContain("Email");
+        result.PropertiesToInclude.ShouldContain("Status");
     }
 
     [Fact]
@@ -195,7 +195,7 @@ public class BulkConfigMapperTests
         var result = BulkConfigMapper.ToBulkConfig(config, dbContext);
 
         // Assert
-        result.PropertiesToInclude.Should().BeNull();
+        result.PropertiesToInclude.ShouldBeNull();
     }
 
     [Fact]
@@ -212,10 +212,10 @@ public class BulkConfigMapperTests
         var result = BulkConfigMapper.ToBulkConfig(config, dbContext);
 
         // Assert
-        result.PropertiesToExclude.Should().NotBeNull();
-        result.PropertiesToExclude.Should().HaveCount(2);
-        result.PropertiesToExclude.Should().Contain("CreatedAt");
-        result.PropertiesToExclude.Should().Contain("CreatedBy");
+        result.PropertiesToExclude.ShouldNotBeNull();
+        result.PropertiesToExclude.Count().ShouldBe(2);
+        result.PropertiesToExclude.ShouldContain("CreatedAt");
+        result.PropertiesToExclude.ShouldContain("CreatedBy");
     }
 
     [Fact]
@@ -232,7 +232,7 @@ public class BulkConfigMapperTests
         var result = BulkConfigMapper.ToBulkConfig(config, dbContext);
 
         // Assert
-        result.PropertiesToExclude.Should().BeNull();
+        result.PropertiesToExclude.ShouldBeNull();
     }
 
     [Fact]
@@ -249,10 +249,10 @@ public class BulkConfigMapperTests
         var result = BulkConfigMapper.ToBulkConfig(config, dbContext);
 
         // Assert
-        result.UpdateByProperties.Should().NotBeNull();
-        result.UpdateByProperties.Should().HaveCount(2);
-        result.UpdateByProperties.Should().Contain("Email");
-        result.UpdateByProperties.Should().Contain("TenantId");
+        result.UpdateByProperties.ShouldNotBeNull();
+        result.UpdateByProperties.Count().ShouldBe(2);
+        result.UpdateByProperties.ShouldContain("Email");
+        result.UpdateByProperties.ShouldContain("TenantId");
     }
 
     [Fact]
@@ -269,7 +269,7 @@ public class BulkConfigMapperTests
         var result = BulkConfigMapper.ToBulkConfig(config, dbContext);
 
         // Assert
-        result.UpdateByProperties.Should().BeNull();
+        result.UpdateByProperties.ShouldBeNull();
     }
 
     #endregion
@@ -283,12 +283,12 @@ public class BulkConfigMapperTests
         var config = BulkOperationConfig.Default;
 
         // Assert
-        config.BatchSize.Should().Be(2000);
-        config.SetOutputIdentity.Should().BeFalse();
-        config.PreserveInsertOrder.Should().BeTrue();
-        config.WithHoldlock.Should().BeTrue();
-        config.IncludeGraph.Should().BeFalse();
-        config.CalculateStats.Should().BeFalse();
+        config.BatchSize.ShouldBe(2000);
+        config.SetOutputIdentity.ShouldBe(false);
+        config.PreserveInsertOrder.ShouldBe(true);
+        config.WithHoldlock.ShouldBe(true);
+        config.IncludeGraph.ShouldBe(false);
+        config.CalculateStats.ShouldBe(false);
     }
 
     [Fact]
@@ -298,8 +298,8 @@ public class BulkConfigMapperTests
         var config = BulkOperationConfig.WithOutputIdentity;
 
         // Assert
-        config.SetOutputIdentity.Should().BeTrue();
-        config.PreserveInsertOrder.Should().BeTrue();
+        config.SetOutputIdentity.ShouldBe(true);
+        config.PreserveInsertOrder.ShouldBe(true);
     }
 
     [Fact]
@@ -309,8 +309,8 @@ public class BulkConfigMapperTests
         var config = BulkOperationConfig.LargeBatch;
 
         // Assert
-        config.BatchSize.Should().Be(5000);
-        config.BulkCopyTimeout.Should().Be(120);
+        config.BatchSize.ShouldBe(5000);
+        config.BulkCopyTimeout.ShouldBe(120);
     }
 
     #endregion
@@ -324,7 +324,7 @@ public class BulkConfigMapperTests
         var config = new BulkOperationConfig().WithBatchSize(3000);
 
         // Assert
-        config.BatchSize.Should().Be(3000);
+        config.BatchSize.ShouldBe(3000);
     }
 
     [Fact]
@@ -337,8 +337,8 @@ public class BulkConfigMapperTests
         var act1 = () => config.WithBatchSize(0);
         var act2 = () => config.WithBatchSize(-1);
 
-        act1.Should().Throw<ArgumentOutOfRangeException>();
-        act2.Should().Throw<ArgumentOutOfRangeException>();
+        Should.Throw<ArgumentOutOfRangeException>(act1);
+        Should.Throw<ArgumentOutOfRangeException>(act2);
     }
 
     [Fact]
@@ -348,8 +348,8 @@ public class BulkConfigMapperTests
         var config = new BulkOperationConfig().WithIdentityOutput();
 
         // Assert
-        config.SetOutputIdentity.Should().BeTrue();
-        config.PreserveInsertOrder.Should().BeTrue();
+        config.SetOutputIdentity.ShouldBe(true);
+        config.PreserveInsertOrder.ShouldBe(true);
     }
 
     [Fact]
@@ -359,9 +359,9 @@ public class BulkConfigMapperTests
         var config = new BulkOperationConfig().IncludeProperties("Name", "Email");
 
         // Assert
-        config.PropertiesToInclude.Should().HaveCount(2);
-        config.PropertiesToInclude.Should().Contain("Name");
-        config.PropertiesToInclude.Should().Contain("Email");
+        config.PropertiesToInclude.Count().ShouldBe(2);
+        config.PropertiesToInclude.ShouldContain("Name");
+        config.PropertiesToInclude.ShouldContain("Email");
     }
 
     [Fact]
@@ -371,9 +371,9 @@ public class BulkConfigMapperTests
         var config = new BulkOperationConfig().ExcludeProperties("CreatedAt", "CreatedBy");
 
         // Assert
-        config.PropertiesToExclude.Should().HaveCount(2);
-        config.PropertiesToExclude.Should().Contain("CreatedAt");
-        config.PropertiesToExclude.Should().Contain("CreatedBy");
+        config.PropertiesToExclude.Count().ShouldBe(2);
+        config.PropertiesToExclude.ShouldContain("CreatedAt");
+        config.PropertiesToExclude.ShouldContain("CreatedBy");
     }
 
     [Fact]
@@ -383,9 +383,9 @@ public class BulkConfigMapperTests
         var config = new BulkOperationConfig().UpdateBy("Email", "TenantId");
 
         // Assert
-        config.UpdateByProperties.Should().HaveCount(2);
-        config.UpdateByProperties.Should().Contain("Email");
-        config.UpdateByProperties.Should().Contain("TenantId");
+        config.UpdateByProperties.Count().ShouldBe(2);
+        config.UpdateByProperties.ShouldContain("Email");
+        config.UpdateByProperties.ShouldContain("TenantId");
     }
 
     [Fact]
@@ -395,7 +395,7 @@ public class BulkConfigMapperTests
         var config = new BulkOperationConfig().WithStats();
 
         // Assert
-        config.CalculateStats.Should().BeTrue();
+        config.CalculateStats.ShouldBe(true);
     }
 
     [Fact]
@@ -405,7 +405,7 @@ public class BulkConfigMapperTests
         var config = new BulkOperationConfig().WithTimeout(60);
 
         // Assert
-        config.BulkCopyTimeout.Should().Be(60);
+        config.BulkCopyTimeout.ShouldBe(60);
     }
 
     [Fact]
@@ -415,7 +415,7 @@ public class BulkConfigMapperTests
         var config = new BulkOperationConfig().WithoutHoldlock();
 
         // Assert
-        config.WithHoldlock.Should().BeFalse();
+        config.WithHoldlock.ShouldBe(false);
     }
 
     [Fact]
@@ -425,7 +425,7 @@ public class BulkConfigMapperTests
         var config = new BulkOperationConfig().ConfirmSyncDeletion();
 
         // Assert
-        config.ConfirmSyncWillDeleteMissingRecords.Should().BeTrue();
+        config.ConfirmSyncWillDeleteMissingRecords.ShouldBe(true);
     }
 
     [Fact]
@@ -441,13 +441,13 @@ public class BulkConfigMapperTests
             .ExcludeProperties("CreatedAt");
 
         // Assert
-        config.BatchSize.Should().Be(3000);
-        config.SetOutputIdentity.Should().BeTrue();
-        config.PreserveInsertOrder.Should().BeTrue();
-        config.CalculateStats.Should().BeTrue();
-        config.BulkCopyTimeout.Should().Be(120);
-        config.WithHoldlock.Should().BeFalse();
-        config.PropertiesToExclude.Should().Contain("CreatedAt");
+        config.BatchSize.ShouldBe(3000);
+        config.SetOutputIdentity.ShouldBe(true);
+        config.PreserveInsertOrder.ShouldBe(true);
+        config.CalculateStats.ShouldBe(true);
+        config.BulkCopyTimeout.ShouldBe(120);
+        config.WithHoldlock.ShouldBe(false);
+        config.PropertiesToExclude.ShouldContain("CreatedAt");
     }
 
     #endregion
@@ -465,7 +465,7 @@ public class BulkConfigMapperTests
         var act = () => BulkConfigMapper.UpdateStats(null, bulkConfig, stopwatch);
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -480,7 +480,7 @@ public class BulkConfigMapperTests
         BulkConfigMapper.UpdateStats(config, bulkConfig, stopwatch);
 
         // Assert
-        config.Stats.Should().BeNull();
+        config.Stats.ShouldBeNull();
     }
 
     [Fact]
@@ -498,11 +498,11 @@ public class BulkConfigMapperTests
         BulkConfigMapper.UpdateStats(config, bulkConfig, stopwatch, entityCount: 100);
 
         // Assert
-        config.Stats.Should().NotBeNull();
+        config.Stats.ShouldNotBeNull();
         // With null StatsInfo, all counts should be 0
-        config.Stats!.RowsInserted.Should().Be(0);
-        config.Stats.RowsUpdated.Should().Be(0);
-        config.Stats.RowsDeleted.Should().Be(0);
+        config.Stats!.RowsInserted.ShouldBe(0);
+        config.Stats.RowsUpdated.ShouldBe(0);
+        config.Stats.RowsDeleted.ShouldBe(0);
     }
 
     [Fact]
@@ -522,8 +522,8 @@ public class BulkConfigMapperTests
         BulkConfigMapper.UpdateStats(config, bulkConfig, stopwatch, entityCount: 250);
 
         // Assert
-        config.Stats.Should().NotBeNull();
-        config.Stats!.BatchesProcessed.Should().Be(3);  // 250 / 100 = 2.5, ceil = 3
+        config.Stats.ShouldNotBeNull();
+        config.Stats!.BatchesProcessed.ShouldBe(3);  // 250 / 100 = 2.5, ceil = 3
     }
 
     [Fact]
@@ -539,8 +539,8 @@ public class BulkConfigMapperTests
         BulkConfigMapper.UpdateStats(config, bulkConfig, stopwatch, entityCount: 0);
 
         // Assert
-        config.Stats.Should().NotBeNull();
-        config.Stats!.BatchesProcessed.Should().Be(0);
+        config.Stats.ShouldNotBeNull();
+        config.Stats!.BatchesProcessed.ShouldBe(0);
     }
 
     [Fact]
@@ -557,8 +557,8 @@ public class BulkConfigMapperTests
         BulkConfigMapper.UpdateStats(config, bulkConfig, stopwatch);
 
         // Assert
-        config.Stats.Should().NotBeNull();
-        config.Stats!.Duration.Should().BeGreaterThan(TimeSpan.Zero);
+        config.Stats.ShouldNotBeNull();
+        config.Stats!.Duration.ShouldBeGreaterThan(TimeSpan.Zero);
     }
 
     [Fact]
@@ -573,10 +573,10 @@ public class BulkConfigMapperTests
         BulkConfigMapper.UpdateStats(config, bulkConfig, stopwatch);
 
         // Assert
-        config.Stats.Should().NotBeNull();
-        config.Stats!.RowsInserted.Should().Be(0);
-        config.Stats.RowsUpdated.Should().Be(0);
-        config.Stats.RowsDeleted.Should().Be(0);
+        config.Stats.ShouldNotBeNull();
+        config.Stats!.RowsInserted.ShouldBe(0);
+        config.Stats.RowsUpdated.ShouldBe(0);
+        config.Stats.RowsDeleted.ShouldBe(0);
     }
 
     #endregion
@@ -595,7 +595,7 @@ public class BulkConfigMapperTests
         };
 
         // Assert
-        stats.TotalRowsAffected.Should().Be(18);
+        stats.TotalRowsAffected.ShouldBe(18);
     }
 
     [Fact]
@@ -615,12 +615,12 @@ public class BulkConfigMapperTests
         var result = stats.ToString();
 
         // Assert
-        result.Should().Contain("18 rows affected");
-        result.Should().Contain("Inserted: 10");
-        result.Should().Contain("Updated: 5");
-        result.Should().Contain("Deleted: 3");
-        result.Should().Contain("150ms");
-        result.Should().Contain("2 batches");
+        result.ShouldContain("18 rows affected");
+        result.ShouldContain("Inserted: 10");
+        result.ShouldContain("Updated: 5");
+        result.ShouldContain("Deleted: 3");
+        result.ShouldContain("150ms");
+        result.ShouldContain("2 batches");
     }
 
     #endregion

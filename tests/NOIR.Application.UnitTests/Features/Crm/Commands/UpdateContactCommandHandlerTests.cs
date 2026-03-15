@@ -52,9 +52,9 @@ public class UpdateContactCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.FirstName.Should().Be("Jane");
-        result.Value.LastName.Should().Be("Smith");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.FirstName.ShouldBe("Jane");
+        result.Value.LastName.ShouldBe("Smith");
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -74,7 +74,7 @@ public class UpdateContactCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }

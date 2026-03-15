@@ -20,16 +20,16 @@ public class EmailTemplateTests
         var template = EmailTemplate.CreatePlatformDefault(name, subject, htmlBody);
 
         // Assert
-        template.Should().NotBeNull();
-        template.Id.Should().NotBe(Guid.Empty);
-        template.Name.Should().Be(name);
-        template.Subject.Should().Be(subject);
-        template.HtmlBody.Should().Be(htmlBody);
-        template.TenantId.Should().BeNull();
-        template.IsPlatformDefault.Should().BeTrue();
-        template.IsTenantOverride.Should().BeFalse();
-        template.IsActive.Should().BeTrue();
-        template.Version.Should().Be(1);
+        template.ShouldNotBeNull();
+        template.Id.ShouldNotBe(Guid.Empty);
+        template.Name.ShouldBe(name);
+        template.Subject.ShouldBe(subject);
+        template.HtmlBody.ShouldBe(htmlBody);
+        template.TenantId.ShouldBeNull();
+        template.IsPlatformDefault.ShouldBeTrue();
+        template.IsTenantOverride.ShouldBeFalse();
+        template.IsActive.ShouldBeTrue();
+        template.Version.ShouldBe(1);
     }
 
     [Fact]
@@ -53,11 +53,11 @@ public class EmailTemplateTests
             availableVariables);
 
         // Assert
-        template.PlainTextBody.Should().Be(plainTextBody);
-        template.Description.Should().Be(description);
-        template.AvailableVariables.Should().Be(availableVariables);
-        template.TenantId.Should().BeNull();
-        template.IsPlatformDefault.Should().BeTrue();
+        template.PlainTextBody.ShouldBe(plainTextBody);
+        template.Description.ShouldBe(description);
+        template.AvailableVariables.ShouldBe(availableVariables);
+        template.TenantId.ShouldBeNull();
+        template.IsPlatformDefault.ShouldBeTrue();
     }
 
     [Fact]
@@ -67,11 +67,11 @@ public class EmailTemplateTests
         var template = EmailTemplate.CreatePlatformDefault("Test", "Subject", "<p>Body</p>");
 
         // Assert
-        template.PlainTextBody.Should().BeNull();
-        template.Description.Should().BeNull();
-        template.AvailableVariables.Should().BeNull();
-        template.TenantId.Should().BeNull();
-        template.IsPlatformDefault.Should().BeTrue();
+        template.PlainTextBody.ShouldBeNull();
+        template.Description.ShouldBeNull();
+        template.AvailableVariables.ShouldBeNull();
+        template.TenantId.ShouldBeNull();
+        template.IsPlatformDefault.ShouldBeTrue();
     }
 
     #endregion
@@ -91,16 +91,16 @@ public class EmailTemplateTests
         var template = EmailTemplate.CreateTenantOverride(tenantId, name, subject, htmlBody);
 
         // Assert
-        template.Should().NotBeNull();
-        template.Id.Should().NotBe(Guid.Empty);
-        template.TenantId.Should().Be(tenantId);
-        template.IsPlatformDefault.Should().BeFalse();
-        template.IsTenantOverride.Should().BeTrue();
-        template.Name.Should().Be(name);
-        template.Subject.Should().Be(subject);
-        template.HtmlBody.Should().Be(htmlBody);
-        template.IsActive.Should().BeTrue();
-        template.Version.Should().Be(1);
+        template.ShouldNotBeNull();
+        template.Id.ShouldNotBe(Guid.Empty);
+        template.TenantId.ShouldBe(tenantId);
+        template.IsPlatformDefault.ShouldBeFalse();
+        template.IsTenantOverride.ShouldBeTrue();
+        template.Name.ShouldBe(name);
+        template.Subject.ShouldBe(subject);
+        template.HtmlBody.ShouldBe(htmlBody);
+        template.IsActive.ShouldBeTrue();
+        template.Version.ShouldBe(1);
     }
 
     [Fact]
@@ -108,8 +108,8 @@ public class EmailTemplateTests
     {
         // Act & Assert
         var act = () => EmailTemplate.CreateTenantOverride(null!, "Test", "Subject", "<p>Body</p>");
-        act.Should().Throw<ArgumentException>()
-            .WithParameterName("tenantId");
+        Should.Throw<ArgumentException>(act)
+            .ParamName.ShouldBe("tenantId");
     }
 
     [Fact]
@@ -117,8 +117,8 @@ public class EmailTemplateTests
     {
         // Act & Assert
         var act = () => EmailTemplate.CreateTenantOverride("  ", "Test", "Subject", "<p>Body</p>");
-        act.Should().Throw<ArgumentException>()
-            .WithParameterName("tenantId");
+        Should.Throw<ArgumentException>(act)
+            .ParamName.ShouldBe("tenantId");
     }
 
     #endregion
@@ -137,8 +137,8 @@ public class EmailTemplateTests
         template.Update(newSubject, newHtmlBody);
 
         // Assert
-        template.Subject.Should().Be(newSubject);
-        template.HtmlBody.Should().Be(newHtmlBody);
+        template.Subject.ShouldBe(newSubject);
+        template.HtmlBody.ShouldBe(newHtmlBody);
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public class EmailTemplateTests
         template.Update("New Subject", "<p>New Body</p>");
 
         // Assert
-        template.Version.Should().Be(initialVersion + 1);
+        template.Version.ShouldBe(initialVersion + 1);
     }
 
     [Fact]
@@ -167,7 +167,7 @@ public class EmailTemplateTests
         template.Update("Update 3", "<p>3</p>");
 
         // Assert
-        template.Version.Should().Be(4); // Initial 1 + 3 updates
+        template.Version.ShouldBe(4); // Initial 1 + 3 updates
     }
 
     [Fact]
@@ -183,9 +183,9 @@ public class EmailTemplateTests
         template.Update("Subject", "<p>Body</p>", newPlainText, newDescription, newVariables);
 
         // Assert
-        template.PlainTextBody.Should().Be(newPlainText);
-        template.Description.Should().Be(newDescription);
-        template.AvailableVariables.Should().Be(newVariables);
+        template.PlainTextBody.ShouldBe(newPlainText);
+        template.Description.ShouldBe(newDescription);
+        template.AvailableVariables.ShouldBe(newVariables);
     }
 
     #endregion
@@ -203,7 +203,7 @@ public class EmailTemplateTests
         template.Activate();
 
         // Assert
-        template.IsActive.Should().BeTrue();
+        template.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -216,7 +216,7 @@ public class EmailTemplateTests
         template.Deactivate();
 
         // Assert
-        template.IsActive.Should().BeFalse();
+        template.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -229,7 +229,7 @@ public class EmailTemplateTests
         template.Activate();
 
         // Assert
-        template.IsActive.Should().BeTrue();
+        template.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -243,7 +243,7 @@ public class EmailTemplateTests
         template.Deactivate();
 
         // Assert
-        template.IsActive.Should().BeFalse();
+        template.IsActive.ShouldBeFalse();
     }
 
     #endregion
@@ -260,8 +260,8 @@ public class EmailTemplateTests
         var template = EmailTemplate.CreatePlatformDefault("OrderReady", subject, "<p>Body</p>");
 
         // Assert
-        template.Subject.Should().Contain("{{UserName}}");
-        template.Subject.Should().Contain("{{OrderId}}");
+        template.Subject.ShouldContain("{{UserName}}");
+        template.Subject.ShouldContain("{{OrderId}}");
     }
 
     [Fact]
@@ -274,8 +274,8 @@ public class EmailTemplateTests
         var template = EmailTemplate.CreatePlatformDefault("OtpEmail", "Your OTP", htmlBody);
 
         // Assert
-        template.HtmlBody.Should().Contain("{{UserName}}");
-        template.HtmlBody.Should().Contain("{{OtpCode}}");
+        template.HtmlBody.ShouldContain("{{UserName}}");
+        template.HtmlBody.ShouldContain("{{OtpCode}}");
     }
 
     #endregion
@@ -292,9 +292,9 @@ public class EmailTemplateTests
         var template = EmailTemplate.CreateTenantOverride(tenantId, "Test", "Subject", "<p>Body</p>");
 
         // Assert
-        template.TenantId.Should().Be(tenantId);
-        template.IsTenantOverride.Should().BeTrue();
-        template.IsPlatformDefault.Should().BeFalse();
+        template.TenantId.ShouldBe(tenantId);
+        template.IsTenantOverride.ShouldBeTrue();
+        template.IsPlatformDefault.ShouldBeFalse();
     }
 
     [Fact]
@@ -304,9 +304,9 @@ public class EmailTemplateTests
         var template = EmailTemplate.CreatePlatformDefault("Test", "Subject", "<p>Body</p>");
 
         // Assert
-        template.TenantId.Should().BeNull();
-        template.IsPlatformDefault.Should().BeTrue();
-        template.IsTenantOverride.Should().BeFalse();
+        template.TenantId.ShouldBeNull();
+        template.IsPlatformDefault.ShouldBeTrue();
+        template.IsTenantOverride.ShouldBeFalse();
     }
 
     [Fact]
@@ -316,7 +316,7 @@ public class EmailTemplateTests
         var template = EmailTemplate.CreatePlatformDefault("Test", "Subject", "<p>Body</p>");
 
         // Act & Assert
-        template.IsPlatformDefault.Should().BeTrue();
+        template.IsPlatformDefault.ShouldBeTrue();
     }
 
     [Fact]
@@ -326,7 +326,7 @@ public class EmailTemplateTests
         var template = EmailTemplate.CreateTenantOverride("tenant-123", "Test", "Subject", "<p>Body</p>");
 
         // Act & Assert
-        template.IsTenantOverride.Should().BeTrue();
+        template.IsTenantOverride.ShouldBeTrue();
     }
 
     #endregion

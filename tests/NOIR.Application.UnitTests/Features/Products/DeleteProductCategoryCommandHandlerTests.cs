@@ -92,8 +92,8 @@ public class DeleteProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
 
         _categoryRepositoryMock.Verify(
             x => x.Remove(existingCategory),
@@ -123,10 +123,10 @@ public class DeleteProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-003");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-003");
+        result.Error.Message.ShouldContain("not found");
 
         _categoryRepositoryMock.Verify(
             x => x.Remove(It.IsAny<ProductCategory>()),
@@ -164,10 +164,10 @@ public class DeleteProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Conflict);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-005");
-        result.Error.Message.Should().Contain("child categories");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Conflict);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-005");
+        result.Error.Message.ShouldContain("child categories");
 
         _categoryRepositoryMock.Verify(
             x => x.Remove(It.IsAny<ProductCategory>()),
@@ -207,10 +207,10 @@ public class DeleteProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Conflict);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-006");
-        result.Error.Message.Should().Contain("products");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Conflict);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-006");
+        result.Error.Message.ShouldContain("products");
 
         _categoryRepositoryMock.Verify(
             x => x.Remove(It.IsAny<ProductCategory>()),
@@ -298,9 +298,9 @@ public class DeleteProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Conflict);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-005"); // Children error first
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Conflict);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-005"); // Children error first
 
         // Should not check for products if children exist
         _productRepositoryMock.Verify(

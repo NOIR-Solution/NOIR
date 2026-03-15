@@ -72,15 +72,15 @@ public class GetMediaFileByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(mediaFileId);
-        result.Value.OriginalFileName.Should().Be("test-image.jpg");
-        result.Value.Folder.Should().Be("blog");
-        result.Value.Width.Should().Be(1920);
-        result.Value.Height.Should().Be(1080);
-        result.Value.Format.Should().Be("jpeg");
-        result.Value.MimeType.Should().Be("image/jpeg");
-        result.Value.SizeBytes.Should().Be(250_000);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(mediaFileId);
+        result.Value.OriginalFileName.ShouldBe("test-image.jpg");
+        result.Value.Folder.ShouldBe("blog");
+        result.Value.Width.ShouldBe(1920);
+        result.Value.Height.ShouldBe(1080);
+        result.Value.Format.ShouldBe("jpeg");
+        result.Value.MimeType.ShouldBe("image/jpeg");
+        result.Value.SizeBytes.ShouldBe(250_000);
     }
 
     [Fact]
@@ -101,16 +101,16 @@ public class GetMediaFileByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.ShortId.Should().Be("abc12345");
-        dto.Slug.Should().Be("test-image_abc12345");
-        dto.DefaultUrl.Should().Be("/uploads/blog/test-image.webp");
-        dto.ThumbHash.Should().Be("dGVzdA==");
-        dto.DominantColor.Should().Be("#FF5733");
-        dto.HasTransparency.Should().BeFalse();
-        dto.Variants.Should().BeEmpty();
-        dto.Srcsets.Should().BeEmpty();
+        dto.ShortId.ShouldBe("abc12345");
+        dto.Slug.ShouldBe("test-image_abc12345");
+        dto.DefaultUrl.ShouldBe("/uploads/blog/test-image.webp");
+        dto.ThumbHash.ShouldBe("dGVzdA==");
+        dto.DominantColor.ShouldBe("#FF5733");
+        dto.HasTransparency.ShouldBe(false);
+        dto.Variants.ShouldBeEmpty();
+        dto.Srcsets.ShouldBeEmpty();
     }
 
     #endregion
@@ -133,8 +133,8 @@ public class GetMediaFileByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be("NOIR-MEDIA-001");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe("NOIR-MEDIA-001");
     }
 
     #endregion

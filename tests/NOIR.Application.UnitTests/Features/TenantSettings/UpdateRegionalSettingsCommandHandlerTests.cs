@@ -60,10 +60,10 @@ public class UpdateRegionalSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Timezone.Should().Be("America/New_York");
-        result.Value.Language.Should().Be("en-US");
-        result.Value.DateFormat.Should().Be("MM/DD/YYYY");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Timezone.ShouldBe("America/New_York");
+        result.Value.Language.ShouldBe("en-US");
+        result.Value.DateFormat.ShouldBe("MM/DD/YYYY");
     }
 
     [Fact]
@@ -100,10 +100,10 @@ public class UpdateRegionalSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Timezone.Should().Be(timezone);
-        result.Value.Language.Should().Be(language);
-        result.Value.DateFormat.Should().Be(dateFormat);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Timezone.ShouldBe(timezone);
+        result.Value.Language.ShouldBe(language);
+        result.Value.DateFormat.ShouldBe(dateFormat);
     }
 
     #endregion

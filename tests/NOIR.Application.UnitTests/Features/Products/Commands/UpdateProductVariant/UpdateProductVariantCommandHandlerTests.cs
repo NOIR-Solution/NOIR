@@ -111,16 +111,16 @@ public class UpdateProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
 
         var updatedVariant = existingProduct.Variants.First(v => v.Id == variantId);
-        updatedVariant.Name.Should().Be("Medium");
-        updatedVariant.Price.Should().Be(22.99m);
-        updatedVariant.Sku.Should().Be("SKU-M");
-        updatedVariant.CompareAtPrice.Should().Be(29.99m);
-        updatedVariant.StockQuantity.Should().Be(50);
-        updatedVariant.SortOrder.Should().Be(1);
+        updatedVariant.Name.ShouldBe("Medium");
+        updatedVariant.Price.ShouldBe(22.99m);
+        updatedVariant.Sku.ShouldBe("SKU-M");
+        updatedVariant.CompareAtPrice.ShouldBe(29.99m);
+        updatedVariant.StockQuantity.ShouldBe(50);
+        updatedVariant.SortOrder.ShouldBe(1);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -155,7 +155,7 @@ public class UpdateProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _movementLoggerMock.Verify(
             x => x.LogMovementAsync(
                 It.IsAny<ProductVariant>(),
@@ -198,7 +198,7 @@ public class UpdateProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _movementLoggerMock.Verify(
             x => x.LogMovementAsync(
                 It.IsAny<ProductVariant>(),
@@ -246,11 +246,11 @@ public class UpdateProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var updatedVariant = existingProduct.Variants.First(v => v.Id == variantId);
         var variantOptions = updatedVariant.GetOptions();
-        variantOptions.Should().ContainKey("color");
-        variantOptions["color"].Should().Be("red");
+        variantOptions.ShouldContainKey("color");
+        variantOptions["color"].ShouldBe("red");
     }
 
     [Fact]
@@ -281,8 +281,8 @@ public class UpdateProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Variants.First(v => v.Id == variant.Id).CompareAtPrice.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Variants.First(v => v.Id == variant.Id).CompareAtPrice.ShouldBeNull();
     }
 
     [Fact]
@@ -309,10 +309,10 @@ public class UpdateProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Id.Should().Be(existingProduct.Id);
-        result.Value.Name.Should().Be(existingProduct.Name);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Id.ShouldBe(existingProduct.Id);
+        result.Value.Name.ShouldBe(existingProduct.Name);
     }
 
     #endregion
@@ -335,11 +335,11 @@ public class UpdateProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-022");
-        result.Error.Message.Should().Contain("Product");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-022");
+        result.Error.Message.ShouldContain("Product");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -366,11 +366,11 @@ public class UpdateProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-023");
-        result.Error.Message.Should().Contain("Variant");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-023");
+        result.Error.Message.ShouldContain("Variant");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -442,7 +442,7 @@ public class UpdateProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _movementLoggerMock.Verify(
             x => x.LogMovementAsync(
                 It.IsAny<ProductVariant>(),
@@ -485,8 +485,8 @@ public class UpdateProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Variants.First(v => v.Id == variant.Id).StockQuantity.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Variants.First(v => v.Id == variant.Id).StockQuantity.ShouldBe(0);
     }
 
     [Fact]
@@ -517,7 +517,7 @@ public class UpdateProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Options should not be cleared when null is passed
     }
 
@@ -550,10 +550,10 @@ public class UpdateProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var firstVariant = existingProduct.Variants.First(v => v.Id == firstVariantId);
-        firstVariant.Name.Should().Be("Small");
-        firstVariant.Price.Should().Be(19.99m);
+        firstVariant.Name.ShouldBe("Small");
+        firstVariant.Price.ShouldBe(19.99m);
     }
 
     [Fact]
@@ -583,8 +583,8 @@ public class UpdateProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Variants.First(v => v.Id == variantId).Sku.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Variants.First(v => v.Id == variantId).Sku.ShouldBeNull();
     }
 
     [Fact]
@@ -616,7 +616,7 @@ public class UpdateProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _movementLoggerMock.Verify(
             x => x.LogMovementAsync(
                 It.IsAny<ProductVariant>(),

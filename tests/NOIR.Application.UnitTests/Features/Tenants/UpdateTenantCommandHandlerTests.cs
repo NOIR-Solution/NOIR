@@ -74,9 +74,9 @@ public class UpdateTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Identifier.Should().Be(newIdentifier.ToLowerInvariant());
-        result.Value.Name.Should().Be(newName);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Identifier.ShouldBe(newIdentifier.ToLowerInvariant());
+        result.Value.Name.ShouldBe(newName);
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class UpdateTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     [Fact]
@@ -131,8 +131,8 @@ public class UpdateTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(false);
     }
 
     #endregion
@@ -155,8 +155,8 @@ public class UpdateTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.TenantNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.TenantNotFound);
         _tenantStoreMock.Verify(
             x => x.UpdateAsync(It.IsAny<Tenant>()),
             Times.Never);
@@ -189,8 +189,8 @@ public class UpdateTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Business.AlreadyExists);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Business.AlreadyExists);
         _tenantStoreMock.Verify(
             x => x.UpdateAsync(It.IsAny<Tenant>()),
             Times.Never);
@@ -221,8 +221,8 @@ public class UpdateTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.System.InternalError);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.System.InternalError);
     }
 
     #endregion

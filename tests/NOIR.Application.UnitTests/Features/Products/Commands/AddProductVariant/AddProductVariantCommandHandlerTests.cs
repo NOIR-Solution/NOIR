@@ -100,10 +100,10 @@ public class AddProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Large");
-        result.Value.Price.Should().Be(129.99m);
-        result.Value.Sku.Should().Be("SKU-LARGE");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Large");
+        result.Value.Price.ShouldBe(129.99m);
+        result.Value.Sku.ShouldBe("SKU-LARGE");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -135,9 +135,9 @@ public class AddProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CompareAtPrice.Should().Be(99.99m);
-        result.Value.OnSale.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CompareAtPrice.ShouldBe(99.99m);
+        result.Value.OnSale.ShouldBe(true);
     }
 
     [Fact]
@@ -169,10 +169,10 @@ public class AddProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Options.Should().NotBeNull();
-        result.Value.Options.Should().ContainKey("color");
-        result.Value.Options!["color"].Should().Be("Red");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Options.ShouldNotBeNull();
+        result.Value.Options.ShouldContainKey("color");
+        result.Value.Options!["color"].ShouldBe("Red");
     }
 
     [Fact]
@@ -199,9 +199,9 @@ public class AddProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.StockQuantity.Should().Be(50);
-        result.Value.InStock.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.StockQuantity.ShouldBe(50);
+        result.Value.InStock.ShouldBe(true);
 
         _movementLoggerMock.Verify(
             x => x.LogMovementAsync(
@@ -241,8 +241,8 @@ public class AddProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.StockQuantity.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.StockQuantity.ShouldBe(0);
 
         _movementLoggerMock.Verify(
             x => x.LogMovementAsync(
@@ -282,8 +282,8 @@ public class AddProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SortOrder.Should().Be(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SortOrder.ShouldBe(5);
     }
 
     #endregion
@@ -306,10 +306,10 @@ public class AddProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-021");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-021");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -376,8 +376,8 @@ public class AddProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Sku.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Sku.ShouldBeNull();
     }
 
     [Fact]
@@ -408,8 +408,8 @@ public class AddProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Variants.Should().HaveCount(3);
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Variants.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -437,9 +437,9 @@ public class AddProductVariantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CompareAtPrice.Should().BeNull();
-        result.Value.OnSale.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CompareAtPrice.ShouldBeNull();
+        result.Value.OnSale.ShouldBe(false);
     }
 
     #endregion

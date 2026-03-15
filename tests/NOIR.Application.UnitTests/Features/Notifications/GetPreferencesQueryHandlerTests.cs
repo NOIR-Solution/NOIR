@@ -75,8 +75,8 @@ public class GetPreferencesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.Unauthorized);
     }
 
     #endregion
@@ -99,8 +99,8 @@ public class GetPreferencesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(5);
     }
 
     [Fact]
@@ -126,7 +126,7 @@ public class GetPreferencesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Verify defaults were added
         _repositoryMock.Verify(
             x => x.AddAsync(It.IsAny<NotificationPreference>(), It.IsAny<CancellationToken>()),
@@ -156,13 +156,13 @@ public class GetPreferencesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value.First();
-        dto.Id.Should().Be(preference.Id);
-        dto.Category.Should().Be(NotificationCategory.Security);
-        dto.CategoryName.Should().Be("Security");
-        dto.InAppEnabled.Should().BeTrue();
-        dto.EmailFrequency.Should().Be(EmailFrequency.Immediate);
+        dto.Id.ShouldBe(preference.Id);
+        dto.Category.ShouldBe(NotificationCategory.Security);
+        dto.CategoryName.ShouldBe("Security");
+        dto.InAppEnabled.ShouldBe(true);
+        dto.EmailFrequency.ShouldBe(EmailFrequency.Immediate);
     }
 
     #endregion
@@ -196,9 +196,9 @@ public class GetPreferencesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value.First();
-        dto.CategoryName.Should().Be(expectedName);
+        dto.CategoryName.ShouldBe(expectedName);
     }
 
     #endregion

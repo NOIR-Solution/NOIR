@@ -50,11 +50,11 @@ public class ShippingWebhookLogTests
             TestBody);
 
         // Assert
-        log.Should().NotBeNull();
-        log.Id.Should().NotBe(Guid.Empty);
-        log.ProviderCode.Should().Be(TestProviderCode);
-        log.Endpoint.Should().Be(TestEndpoint);
-        log.Body.Should().Be(TestBody);
+        log.ShouldNotBeNull();
+        log.Id.ShouldNotBe(Guid.Empty);
+        log.ProviderCode.ShouldBe(TestProviderCode);
+        log.Endpoint.ShouldBe(TestEndpoint);
+        log.Body.ShouldBe(TestBody);
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class ShippingWebhookLogTests
         var log = CreateTestWebhookLog();
 
         // Assert
-        log.ProcessedSuccessfully.Should().BeFalse();
+        log.ProcessedSuccessfully.ShouldBeFalse();
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class ShippingWebhookLogTests
         var log = CreateTestWebhookLog();
 
         // Assert
-        log.ProcessingAttempts.Should().Be(0);
+        log.ProcessingAttempts.ShouldBe(0);
     }
 
     [Fact]
@@ -87,8 +87,8 @@ public class ShippingWebhookLogTests
         var log = CreateTestWebhookLog();
 
         // Assert
-        log.ReceivedAt.Should().BeOnOrAfter(beforeCreate);
-        log.ReceivedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
+        log.ReceivedAt.ShouldBeGreaterThanOrEqualTo(beforeCreate);
+        log.ReceivedAt.ShouldBe(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(2));
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class ShippingWebhookLogTests
         var log = CreateTestWebhookLog();
 
         // Assert
-        log.ProcessedAt.Should().BeNull();
+        log.ProcessedAt.ShouldBeNull();
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class ShippingWebhookLogTests
         var log = CreateTestWebhookLog();
 
         // Assert
-        log.ErrorMessage.Should().BeNull();
+        log.ErrorMessage.ShouldBeNull();
     }
 
     [Fact]
@@ -118,7 +118,7 @@ public class ShippingWebhookLogTests
         var log = ShippingWebhookLog.Create(TestProviderCode, TestEndpoint, TestBody);
 
         // Assert
-        log.HttpMethod.Should().Be("POST");
+        log.HttpMethod.ShouldBe("POST");
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public class ShippingWebhookLogTests
         var log = CreateTestWebhookLog(httpMethod: "PUT");
 
         // Assert
-        log.HttpMethod.Should().Be("PUT");
+        log.HttpMethod.ShouldBe("PUT");
     }
 
     [Fact]
@@ -138,7 +138,7 @@ public class ShippingWebhookLogTests
         var log = CreateTestWebhookLog(trackingNumber: TestTrackingNumber);
 
         // Assert
-        log.TrackingNumber.Should().Be(TestTrackingNumber);
+        log.TrackingNumber.ShouldBe(TestTrackingNumber);
     }
 
     [Fact]
@@ -148,7 +148,7 @@ public class ShippingWebhookLogTests
         var log = CreateTestWebhookLog(trackingNumber: null);
 
         // Assert
-        log.TrackingNumber.Should().BeNull();
+        log.TrackingNumber.ShouldBeNull();
     }
 
     [Fact]
@@ -158,7 +158,7 @@ public class ShippingWebhookLogTests
         var log = CreateTestWebhookLog(headersJson: TestHeadersJson);
 
         // Assert
-        log.HeadersJson.Should().Be(TestHeadersJson);
+        log.HeadersJson.ShouldBe(TestHeadersJson);
     }
 
     [Fact]
@@ -168,7 +168,7 @@ public class ShippingWebhookLogTests
         var log = CreateTestWebhookLog(headersJson: null);
 
         // Assert
-        log.HeadersJson.Should().BeNull();
+        log.HeadersJson.ShouldBeNull();
     }
 
     [Fact]
@@ -178,7 +178,7 @@ public class ShippingWebhookLogTests
         var log = CreateTestWebhookLog(signature: TestSignature);
 
         // Assert
-        log.Signature.Should().Be(TestSignature);
+        log.Signature.ShouldBe(TestSignature);
     }
 
     [Fact]
@@ -188,7 +188,7 @@ public class ShippingWebhookLogTests
         var log = CreateTestWebhookLog(signature: null);
 
         // Assert
-        log.Signature.Should().BeNull();
+        log.Signature.ShouldBeNull();
     }
 
     [Fact]
@@ -205,13 +205,13 @@ public class ShippingWebhookLogTests
             "POST");
 
         // Assert
-        log.ProviderCode.Should().Be(TestProviderCode);
-        log.Endpoint.Should().Be(TestEndpoint);
-        log.Body.Should().Be(TestBody);
-        log.TrackingNumber.Should().Be(TestTrackingNumber);
-        log.HeadersJson.Should().Be(TestHeadersJson);
-        log.Signature.Should().Be(TestSignature);
-        log.HttpMethod.Should().Be("POST");
+        log.ProviderCode.ShouldBe(TestProviderCode);
+        log.Endpoint.ShouldBe(TestEndpoint);
+        log.Body.ShouldBe(TestBody);
+        log.TrackingNumber.ShouldBe(TestTrackingNumber);
+        log.HeadersJson.ShouldBe(TestHeadersJson);
+        log.Signature.ShouldBe(TestSignature);
+        log.HttpMethod.ShouldBe("POST");
     }
 
     [Theory]
@@ -229,7 +229,7 @@ public class ShippingWebhookLogTests
         var log = CreateTestWebhookLog(providerCode: code);
 
         // Assert
-        log.ProviderCode.Should().Be(code);
+        log.ProviderCode.ShouldBe(code);
     }
 
     [Fact]
@@ -240,7 +240,7 @@ public class ShippingWebhookLogTests
         var log2 = CreateTestWebhookLog();
 
         // Assert
-        log1.Id.Should().NotBe(log2.Id);
+        log1.Id.ShouldNotBe(log2.Id);
     }
 
     #endregion
@@ -257,7 +257,7 @@ public class ShippingWebhookLogTests
         log.MarkAsProcessed();
 
         // Assert
-        log.ProcessedSuccessfully.Should().BeTrue();
+        log.ProcessedSuccessfully.ShouldBeTrue();
     }
 
     [Fact]
@@ -271,8 +271,8 @@ public class ShippingWebhookLogTests
         log.MarkAsProcessed();
 
         // Assert
-        log.ProcessedAt.Should().NotBeNull();
-        log.ProcessedAt.Should().BeOnOrAfter(beforeProcess);
+        log.ProcessedAt.ShouldNotBeNull();
+        log.ProcessedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeProcess);
     }
 
     [Fact]
@@ -280,13 +280,13 @@ public class ShippingWebhookLogTests
     {
         // Arrange
         var log = CreateTestWebhookLog();
-        log.ProcessingAttempts.Should().Be(0);
+        log.ProcessingAttempts.ShouldBe(0);
 
         // Act
         log.MarkAsProcessed();
 
         // Assert
-        log.ProcessingAttempts.Should().Be(1);
+        log.ProcessingAttempts.ShouldBe(1);
     }
 
     [Fact]
@@ -295,14 +295,14 @@ public class ShippingWebhookLogTests
         // Arrange
         var log = CreateTestWebhookLog();
         log.MarkAsFailed("First attempt failed");
-        log.ProcessedSuccessfully.Should().BeFalse();
+        log.ProcessedSuccessfully.ShouldBeFalse();
 
         // Act
         log.MarkAsProcessed();
 
         // Assert
-        log.ProcessedSuccessfully.Should().BeTrue();
-        log.ProcessingAttempts.Should().Be(2);
+        log.ProcessedSuccessfully.ShouldBeTrue();
+        log.ProcessingAttempts.ShouldBe(2);
     }
 
     #endregion
@@ -319,7 +319,7 @@ public class ShippingWebhookLogTests
         log.MarkAsFailed("Connection timeout");
 
         // Assert
-        log.ProcessedSuccessfully.Should().BeFalse();
+        log.ProcessedSuccessfully.ShouldBeFalse();
     }
 
     [Fact]
@@ -332,7 +332,7 @@ public class ShippingWebhookLogTests
         log.MarkAsFailed("Invalid signature: expected abc, got xyz");
 
         // Assert
-        log.ErrorMessage.Should().Be("Invalid signature: expected abc, got xyz");
+        log.ErrorMessage.ShouldBe("Invalid signature: expected abc, got xyz");
     }
 
     [Fact]
@@ -346,8 +346,8 @@ public class ShippingWebhookLogTests
         log.MarkAsFailed("Error occurred");
 
         // Assert
-        log.ProcessedAt.Should().NotBeNull();
-        log.ProcessedAt.Should().BeOnOrAfter(beforeFail);
+        log.ProcessedAt.ShouldNotBeNull();
+        log.ProcessedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeFail);
     }
 
     [Fact]
@@ -360,7 +360,7 @@ public class ShippingWebhookLogTests
         log.MarkAsFailed("Error");
 
         // Assert
-        log.ProcessingAttempts.Should().Be(1);
+        log.ProcessingAttempts.ShouldBe(1);
     }
 
     [Fact]
@@ -375,8 +375,8 @@ public class ShippingWebhookLogTests
         log.MarkAsFailed("Third failure");
 
         // Assert
-        log.ProcessingAttempts.Should().Be(3);
-        log.ErrorMessage.Should().Be("Third failure");
+        log.ProcessingAttempts.ShouldBe(3);
+        log.ErrorMessage.ShouldBe("Third failure");
     }
 
     [Fact]
@@ -390,7 +390,7 @@ public class ShippingWebhookLogTests
         log.MarkAsFailed("Different error on retry");
 
         // Assert
-        log.ErrorMessage.Should().Be("Different error on retry");
+        log.ErrorMessage.ShouldBe("Different error on retry");
     }
 
     #endregion
@@ -402,13 +402,13 @@ public class ShippingWebhookLogTests
     {
         // Arrange
         var log = CreateTestWebhookLog(trackingNumber: null);
-        log.TrackingNumber.Should().BeNull();
+        log.TrackingNumber.ShouldBeNull();
 
         // Act
         log.SetTrackingNumber("TRK-EXTRACTED-001");
 
         // Assert
-        log.TrackingNumber.Should().Be("TRK-EXTRACTED-001");
+        log.TrackingNumber.ShouldBe("TRK-EXTRACTED-001");
     }
 
     [Fact]
@@ -421,7 +421,7 @@ public class ShippingWebhookLogTests
         log.SetTrackingNumber("TRK-NEW");
 
         // Assert
-        log.TrackingNumber.Should().Be("TRK-NEW");
+        log.TrackingNumber.ShouldBe("TRK-NEW");
     }
 
     #endregion
@@ -438,28 +438,28 @@ public class ShippingWebhookLogTests
             signature: TestSignature);
 
         // Assert initial state
-        log.ProcessedSuccessfully.Should().BeFalse();
-        log.ProcessingAttempts.Should().Be(0);
-        log.ProcessedAt.Should().BeNull();
-        log.ErrorMessage.Should().BeNull();
+        log.ProcessedSuccessfully.ShouldBeFalse();
+        log.ProcessingAttempts.ShouldBe(0);
+        log.ProcessedAt.ShouldBeNull();
+        log.ErrorMessage.ShouldBeNull();
 
         // Act - first attempt fails
         log.MarkAsFailed("Signature verification failed");
-        log.ProcessedSuccessfully.Should().BeFalse();
-        log.ProcessingAttempts.Should().Be(1);
-        log.ProcessedAt.Should().NotBeNull();
-        log.ErrorMessage.Should().Be("Signature verification failed");
+        log.ProcessedSuccessfully.ShouldBeFalse();
+        log.ProcessingAttempts.ShouldBe(1);
+        log.ProcessedAt.ShouldNotBeNull();
+        log.ErrorMessage.ShouldBe("Signature verification failed");
 
         // Act - second attempt fails
         log.MarkAsFailed("Timeout connecting to database");
-        log.ProcessedSuccessfully.Should().BeFalse();
-        log.ProcessingAttempts.Should().Be(2);
-        log.ErrorMessage.Should().Be("Timeout connecting to database");
+        log.ProcessedSuccessfully.ShouldBeFalse();
+        log.ProcessingAttempts.ShouldBe(2);
+        log.ErrorMessage.ShouldBe("Timeout connecting to database");
 
         // Act - third attempt succeeds
         log.MarkAsProcessed();
-        log.ProcessedSuccessfully.Should().BeTrue();
-        log.ProcessingAttempts.Should().Be(3);
+        log.ProcessedSuccessfully.ShouldBeTrue();
+        log.ProcessingAttempts.ShouldBe(3);
     }
 
     [Fact]
@@ -472,10 +472,10 @@ public class ShippingWebhookLogTests
         log.MarkAsProcessed();
 
         // Assert
-        log.ProcessedSuccessfully.Should().BeTrue();
-        log.ProcessingAttempts.Should().Be(1);
-        log.ProcessedAt.Should().NotBeNull();
-        log.ErrorMessage.Should().BeNull();
+        log.ProcessedSuccessfully.ShouldBeTrue();
+        log.ProcessingAttempts.ShouldBe(1);
+        log.ProcessedAt.ShouldNotBeNull();
+        log.ErrorMessage.ShouldBeNull();
     }
 
     [Fact]
@@ -491,9 +491,9 @@ public class ShippingWebhookLogTests
         log.MarkAsProcessed();
 
         // Assert
-        log.TrackingNumber.Should().Be("TRK-PARSED-999");
-        log.ProcessedSuccessfully.Should().BeTrue();
-        log.ProcessingAttempts.Should().Be(1);
+        log.TrackingNumber.ShouldBe("TRK-PARSED-999");
+        log.ProcessedSuccessfully.ShouldBeTrue();
+        log.ProcessingAttempts.ShouldBe(1);
     }
 
     #endregion
@@ -507,7 +507,7 @@ public class ShippingWebhookLogTests
         var log = CreateTestWebhookLog(body: "");
 
         // Assert
-        log.Body.Should().BeEmpty();
+        log.Body.ShouldBeEmpty();
     }
 
     [Fact]
@@ -520,7 +520,7 @@ public class ShippingWebhookLogTests
         var log = CreateTestWebhookLog(body: largeBody);
 
         // Assert
-        log.Body.Should().HaveLength(50_000);
+        log.Body.Length.ShouldBe(50_000);
     }
 
     [Fact]
@@ -534,8 +534,8 @@ public class ShippingWebhookLogTests
         log.MarkAsFailed(longError);
 
         // Assert
-        log.ErrorMessage.Should().StartWith("Error: ");
-        log.ErrorMessage.Should().HaveLength(5_007);
+        log.ErrorMessage.ShouldStartWith("Error: ");
+        log.ErrorMessage.Length.ShouldBe(5_007);
     }
 
     #endregion

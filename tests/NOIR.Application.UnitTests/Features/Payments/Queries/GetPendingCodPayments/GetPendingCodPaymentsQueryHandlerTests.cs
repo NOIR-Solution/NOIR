@@ -74,10 +74,10 @@ public class GetPendingCodPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.TotalCount.Should().Be(5);
-        result.Value.PageNumber.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.TotalCount.ShouldBe(5);
+        result.Value.PageNumber.ShouldBe(1);
     }
 
     [Fact]
@@ -104,11 +104,11 @@ public class GetPendingCodPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(10);
-        result.Value.TotalCount.Should().Be(25);
-        result.Value.PageNumber.Should().Be(2);
-        result.Value.TotalPages.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(10);
+        result.Value.TotalCount.ShouldBe(25);
+        result.Value.PageNumber.ShouldBe(2);
+        result.Value.TotalPages.ShouldBe(3);
     }
 
     [Fact]
@@ -135,15 +135,15 @@ public class GetPendingCodPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value.Items[0];
-        dto.Id.Should().Be(payment.Id);
-        dto.TransactionNumber.Should().Be("TXN-COD-001");
-        dto.Provider.Should().Be("cod");
-        dto.Amount.Should().Be(250000m);
-        dto.Currency.Should().Be("VND");
-        dto.Status.Should().Be(PaymentStatus.CodPending);
-        dto.PaymentMethod.Should().Be(PaymentMethod.COD);
+        dto.Id.ShouldBe(payment.Id);
+        dto.TransactionNumber.ShouldBe("TXN-COD-001");
+        dto.Provider.ShouldBe("cod");
+        dto.Amount.ShouldBe(250000m);
+        dto.Currency.ShouldBe("VND");
+        dto.Status.ShouldBe(PaymentStatus.CodPending);
+        dto.PaymentMethod.ShouldBe(PaymentMethod.COD);
     }
 
     [Fact]
@@ -170,10 +170,10 @@ public class GetPendingCodPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.PageSize.Should().Be(5);
-        result.Value.TotalPages.Should().Be(10);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.PageSize.ShouldBe(5);
+        result.Value.TotalPages.ShouldBe(10);
     }
 
     #endregion
@@ -202,10 +202,10 @@ public class GetPendingCodPaymentsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
-        result.Value.TotalPages.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
+        result.Value.TotalPages.ShouldBe(0);
     }
 
     #endregion

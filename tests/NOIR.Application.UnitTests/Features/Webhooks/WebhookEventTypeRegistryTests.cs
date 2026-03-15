@@ -24,7 +24,7 @@ public class WebhookEventTypeRegistryTests
         var result = _registry.GetEventType(evt);
 
         // Assert
-        result.Should().Be("order.created");
+        result.ShouldBe("order.created");
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class WebhookEventTypeRegistryTests
         var result = _registry.GetEventType(evt);
 
         // Assert
-        result.Should().Be("product.created");
+        result.ShouldBe("product.created");
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class WebhookEventTypeRegistryTests
         var result = _registry.GetEventType(evt);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     #endregion
@@ -65,7 +65,7 @@ public class WebhookEventTypeRegistryTests
         var result = _registry.GetEventType(typeof(OrderCreatedEvent));
 
         // Assert
-        result.Should().Be("order.created");
+        result.ShouldBe("order.created");
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public class WebhookEventTypeRegistryTests
         var result = _registry.GetEventType(typeof(UnknownTestEvent));
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class WebhookEventTypeRegistryTests
         var result = _registry.GetEventType(typeof(ProductPublishedEvent));
 
         // Assert
-        result.Should().Be("product.published");
+        result.ShouldBe("product.published");
     }
 
     #endregion
@@ -99,7 +99,7 @@ public class WebhookEventTypeRegistryTests
         var result = _registry.GetAllEventTypes();
 
         // Assert
-        result.Should().HaveCountGreaterThanOrEqualTo(46);
+        result.Count().ShouldBeGreaterThanOrEqualTo(46);
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public class WebhookEventTypeRegistryTests
         var result2 = _registry.GetAllEventTypes().Select(e => e.EventType).ToList();
 
         // Assert — both calls return the same deterministic order
-        result1.Should().Equal(result2);
+        result1.ShouldBe(result2);
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class WebhookEventTypeRegistryTests
         var result = _registry.GetAllEventTypes();
 
         // Assert
-        result.Should().Contain(e => e.EventType == "order.created");
+        result.ShouldContain(e => e.EventType == "order.created");
     }
 
     [Fact]
@@ -131,11 +131,11 @@ public class WebhookEventTypeRegistryTests
         var categories = result.Select(e => e.Category).Distinct().ToList();
 
         // Assert — at minimum these categories must be present
-        categories.Should().Contain("order");
-        categories.Should().Contain("product");
-        categories.Should().Contain("payment");
-        categories.Should().Contain("customer");
-        categories.Should().Contain("inventory");
+        categories.ShouldContain("order");
+        categories.ShouldContain("product");
+        categories.ShouldContain("payment");
+        categories.ShouldContain("customer");
+        categories.ShouldContain("inventory");
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public class WebhookEventTypeRegistryTests
         var result = _registry.GetAllEventTypes();
 
         // Assert
-        result.Should().AllSatisfy(e => e.Description.Should().NotBeNullOrWhiteSpace());
+        result.ShouldAllBe(e => !string.IsNullOrWhiteSpace(e.Description));
     }
 
     [Fact]
@@ -155,7 +155,7 @@ public class WebhookEventTypeRegistryTests
         var result = _registry.GetAllEventTypes();
 
         // Assert
-        result.Should().AllSatisfy(e => e.Category.Should().NotBeNullOrWhiteSpace());
+        result.ShouldAllBe(e => !string.IsNullOrWhiteSpace(e.Category));
     }
 
     #endregion

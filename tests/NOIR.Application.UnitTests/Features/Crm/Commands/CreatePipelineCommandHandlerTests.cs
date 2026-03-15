@@ -48,10 +48,10 @@ public class CreatePipelineCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Sales Pipeline");
-        result.Value.IsDefault.Should().BeFalse();
-        result.Value.Stages.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Sales Pipeline");
+        result.Value.IsDefault.ShouldBe(false);
+        result.Value.Stages.Count().ShouldBe(2);
 
         _pipelineRepoMock.Verify(
             x => x.AddAsync(It.IsAny<Pipeline>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -78,9 +78,9 @@ public class CreatePipelineCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsDefault.Should().BeTrue();
-        existingDefault.IsDefault.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsDefault.ShouldBe(true);
+        existingDefault.IsDefault.ShouldBe(false);
     }
 
     [Fact]
@@ -99,10 +99,10 @@ public class CreatePipelineCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Stages.Should().HaveCount(3);
-        result.Value.Stages[0].Name.Should().Be("Qualification");
-        result.Value.Stages[1].Name.Should().Be("Proposal");
-        result.Value.Stages[2].Name.Should().Be("Negotiation");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Stages.Count().ShouldBe(3);
+        result.Value.Stages[0].Name.ShouldBe("Qualification");
+        result.Value.Stages[1].Name.ShouldBe("Proposal");
+        result.Value.Stages[2].Name.ShouldBe("Negotiation");
     }
 }

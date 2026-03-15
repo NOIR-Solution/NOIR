@@ -24,11 +24,11 @@ public class PasswordResetOtpTests
             DefaultExpiryMinutes);
 
         // Assert
-        otp.Should().NotBeNull();
-        otp.Id.Should().NotBe(Guid.Empty);
-        otp.Email.Should().Be(ValidEmail.ToLowerInvariant());
-        otp.OtpHash.Should().Be(ValidOtpHash);
-        otp.SessionToken.Should().Be(ValidSessionToken);
+        otp.ShouldNotBeNull();
+        otp.Id.ShouldNotBe(Guid.Empty);
+        otp.Email.ShouldBe(ValidEmail.ToLowerInvariant());
+        otp.OtpHash.ShouldBe(ValidOtpHash);
+        otp.SessionToken.ShouldBe(ValidSessionToken);
     }
 
     [Theory]
@@ -41,7 +41,7 @@ public class PasswordResetOtpTests
         var otp = PasswordResetOtp.Create(input, ValidOtpHash, ValidSessionToken, DefaultExpiryMinutes);
 
         // Assert
-        otp.Email.Should().Be(expected);
+        otp.Email.ShouldBe(expected);
     }
 
     [Fact]
@@ -58,7 +58,10 @@ public class PasswordResetOtpTests
         var expectedMin = beforeCreate.AddMinutes(DefaultExpiryMinutes);
         var expectedMax = afterCreate.AddMinutes(DefaultExpiryMinutes);
 
-        otp.ExpiresAt.Should().BeOnOrAfter(expectedMin).And.BeOnOrBefore(expectedMax);
+        otp.ExpiresAt.ShouldBeGreaterThanOrEqualTo(expectedMin);
+
+
+        otp.ExpiresAt.ShouldBeLessThanOrEqualTo(expectedMax);
     }
 
     [Fact]
@@ -76,7 +79,7 @@ public class PasswordResetOtpTests
             userId: userId);
 
         // Assert
-        otp.UserId.Should().Be(userId);
+        otp.UserId.ShouldBe(userId);
     }
 
     [Fact]
@@ -86,7 +89,7 @@ public class PasswordResetOtpTests
         var otp = PasswordResetOtp.Create(ValidEmail, ValidOtpHash, ValidSessionToken, DefaultExpiryMinutes);
 
         // Assert
-        otp.UserId.Should().BeNull();
+        otp.UserId.ShouldBeNull();
     }
 
     [Fact]
@@ -104,7 +107,7 @@ public class PasswordResetOtpTests
             tenantId: tenantId);
 
         // Assert
-        otp.TenantId.Should().Be(tenantId);
+        otp.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -122,7 +125,7 @@ public class PasswordResetOtpTests
             ipAddress: ipAddress);
 
         // Assert
-        otp.CreatedByIp.Should().Be(ipAddress);
+        otp.CreatedByIp.ShouldBe(ipAddress);
     }
 
     [Fact]
@@ -132,13 +135,13 @@ public class PasswordResetOtpTests
         var otp = PasswordResetOtp.Create(ValidEmail, ValidOtpHash, ValidSessionToken, DefaultExpiryMinutes);
 
         // Assert
-        otp.IsUsed.Should().BeFalse();
-        otp.UsedAt.Should().BeNull();
-        otp.AttemptCount.Should().Be(0);
-        otp.ResendCount.Should().Be(0);
-        otp.LastResendAt.Should().BeNull();
-        otp.ResetToken.Should().BeNull();
-        otp.ResetTokenExpiresAt.Should().BeNull();
+        otp.IsUsed.ShouldBeFalse();
+        otp.UsedAt.ShouldBeNull();
+        otp.AttemptCount.ShouldBe(0);
+        otp.ResendCount.ShouldBe(0);
+        otp.LastResendAt.ShouldBeNull();
+        otp.ResetToken.ShouldBeNull();
+        otp.ResetTokenExpiresAt.ShouldBeNull();
     }
 
     [Theory]
@@ -155,7 +158,7 @@ public class PasswordResetOtpTests
             DefaultExpiryMinutes);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -173,7 +176,7 @@ public class PasswordResetOtpTests
 
         // Assert
         var expectedMin = before.AddMinutes(minutes);
-        otp.ExpiresAt.Should().BeCloseTo(expectedMin, TimeSpan.FromSeconds(5));
+        otp.ExpiresAt.ShouldBe(expectedMin, TimeSpan.FromSeconds(5));
     }
 
     #endregion
@@ -187,7 +190,7 @@ public class PasswordResetOtpTests
         var otp = PasswordResetOtp.Create(ValidEmail, ValidOtpHash, ValidSessionToken, DefaultExpiryMinutes);
 
         // Act & Assert
-        otp.IsExpired.Should().BeFalse();
+        otp.IsExpired.ShouldBeFalse();
     }
 
     [Fact]
@@ -200,7 +203,7 @@ public class PasswordResetOtpTests
         Thread.Sleep(10);
 
         // Act & Assert
-        otp.IsExpired.Should().BeTrue();
+        otp.IsExpired.ShouldBeTrue();
     }
 
     #endregion
@@ -214,7 +217,7 @@ public class PasswordResetOtpTests
         var otp = PasswordResetOtp.Create(ValidEmail, ValidOtpHash, ValidSessionToken, DefaultExpiryMinutes);
 
         // Act & Assert
-        otp.IsValid.Should().BeTrue();
+        otp.IsValid.ShouldBeTrue();
     }
 
     [Fact]
@@ -225,7 +228,7 @@ public class PasswordResetOtpTests
         otp.MarkAsUsed("reset-token-123", 15);
 
         // Act & Assert
-        otp.IsValid.Should().BeFalse();
+        otp.IsValid.ShouldBeFalse();
     }
 
     [Fact]
@@ -238,7 +241,7 @@ public class PasswordResetOtpTests
         Thread.Sleep(10);
 
         // Act & Assert
-        otp.IsValid.Should().BeFalse();
+        otp.IsValid.ShouldBeFalse();
     }
 
     #endregion
@@ -250,13 +253,13 @@ public class PasswordResetOtpTests
     {
         // Arrange
         var otp = PasswordResetOtp.Create(ValidEmail, ValidOtpHash, ValidSessionToken, DefaultExpiryMinutes);
-        otp.AttemptCount.Should().Be(0);
+        otp.AttemptCount.ShouldBe(0);
 
         // Act
         otp.RecordFailedAttempt();
 
         // Assert
-        otp.AttemptCount.Should().Be(1);
+        otp.AttemptCount.ShouldBe(1);
     }
 
     [Fact]
@@ -271,7 +274,7 @@ public class PasswordResetOtpTests
         otp.RecordFailedAttempt();
 
         // Assert
-        otp.AttemptCount.Should().Be(3);
+        otp.AttemptCount.ShouldBe(3);
     }
 
     #endregion
@@ -288,7 +291,7 @@ public class PasswordResetOtpTests
         otp.MarkAsUsed("reset-token-123", 15);
 
         // Assert
-        otp.IsUsed.Should().BeTrue();
+        otp.IsUsed.ShouldBeTrue();
     }
 
     [Fact]
@@ -303,8 +306,10 @@ public class PasswordResetOtpTests
 
         // Assert
         var afterUse = DateTimeOffset.UtcNow;
-        otp.UsedAt.Should().NotBeNull();
-        otp.UsedAt.Should().BeOnOrAfter(beforeUse).And.BeOnOrBefore(afterUse);
+        otp.UsedAt.ShouldNotBeNull();
+        otp.UsedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeUse);
+
+        otp.UsedAt!.Value.ShouldBeLessThanOrEqualTo(afterUse);
     }
 
     [Fact]
@@ -318,7 +323,7 @@ public class PasswordResetOtpTests
         otp.MarkAsUsed(resetToken, 15);
 
         // Assert
-        otp.ResetToken.Should().Be(resetToken);
+        otp.ResetToken.ShouldBe(resetToken);
     }
 
     [Fact]
@@ -337,8 +342,10 @@ public class PasswordResetOtpTests
         var expectedMin = beforeUse.AddMinutes(resetTokenExpiryMinutes);
         var expectedMax = afterUse.AddMinutes(resetTokenExpiryMinutes);
 
-        otp.ResetTokenExpiresAt.Should().NotBeNull();
-        otp.ResetTokenExpiresAt.Should().BeOnOrAfter(expectedMin).And.BeOnOrBefore(expectedMax);
+        otp.ResetTokenExpiresAt.ShouldNotBeNull();
+        otp.ResetTokenExpiresAt!.Value.ShouldBeGreaterThanOrEqualTo(expectedMin);
+
+        otp.ResetTokenExpiresAt!.Value.ShouldBeLessThanOrEqualTo(expectedMax);
     }
 
     [Theory]
@@ -354,7 +361,7 @@ public class PasswordResetOtpTests
         var act = () => otp.MarkAsUsed(invalidResetToken!, 15);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     #endregion
@@ -368,7 +375,7 @@ public class PasswordResetOtpTests
         var otp = PasswordResetOtp.Create(ValidEmail, ValidOtpHash, ValidSessionToken, DefaultExpiryMinutes);
 
         // Act & Assert
-        otp.IsResetTokenValid.Should().BeFalse();
+        otp.IsResetTokenValid.ShouldBeFalse();
     }
 
     [Fact]
@@ -379,7 +386,7 @@ public class PasswordResetOtpTests
         otp.MarkAsUsed("reset-token-123", 15);
 
         // Act & Assert
-        otp.IsResetTokenValid.Should().BeTrue();
+        otp.IsResetTokenValid.ShouldBeTrue();
     }
 
     [Fact]
@@ -391,7 +398,7 @@ public class PasswordResetOtpTests
         otp.InvalidateResetToken();
 
         // Act & Assert
-        otp.IsResetTokenValid.Should().BeFalse();
+        otp.IsResetTokenValid.ShouldBeFalse();
     }
 
     [Fact]
@@ -405,7 +412,7 @@ public class PasswordResetOtpTests
         Thread.Sleep(10);
 
         // Act & Assert
-        otp.IsResetTokenValid.Should().BeFalse();
+        otp.IsResetTokenValid.ShouldBeFalse();
     }
 
     #endregion
@@ -423,7 +430,7 @@ public class PasswordResetOtpTests
         otp.InvalidateResetToken();
 
         // Assert
-        otp.ResetToken.Should().BeNull();
+        otp.ResetToken.ShouldBeNull();
     }
 
     [Fact]
@@ -437,7 +444,7 @@ public class PasswordResetOtpTests
         otp.InvalidateResetToken();
 
         // Assert
-        otp.ResetTokenExpiresAt.Should().BeNull();
+        otp.ResetTokenExpiresAt.ShouldBeNull();
     }
 
     [Fact]
@@ -450,7 +457,7 @@ public class PasswordResetOtpTests
         var act = () => otp.InvalidateResetToken();
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     #endregion
@@ -469,7 +476,7 @@ public class PasswordResetOtpTests
 
         // Assert
         // Cannot resend immediately after creation - must wait for cooldown
-        canResend.Should().BeFalse();
+        canResend.ShouldBeFalse();
     }
 
     [Fact]
@@ -483,7 +490,7 @@ public class PasswordResetOtpTests
         var canResend = otp.CanResend(cooldownSeconds: 0, maxResendCount: 3);
 
         // Assert
-        canResend.Should().BeTrue();
+        canResend.ShouldBeTrue();
     }
 
     [Fact]
@@ -501,7 +508,7 @@ public class PasswordResetOtpTests
         var canResend = otp.CanResend(cooldownSeconds: 0, maxResendCount: 3);
 
         // Assert
-        canResend.Should().BeFalse();
+        canResend.ShouldBeFalse();
     }
 
     [Fact]
@@ -515,7 +522,7 @@ public class PasswordResetOtpTests
         var canResend = otp.CanResend(cooldownSeconds: 60, maxResendCount: 3);
 
         // Assert
-        canResend.Should().BeFalse();
+        canResend.ShouldBeFalse();
     }
 
     [Fact]
@@ -529,7 +536,7 @@ public class PasswordResetOtpTests
         var canResend = otp.CanResend(cooldownSeconds: 0, maxResendCount: 3);
 
         // Assert
-        canResend.Should().BeTrue();
+        canResend.ShouldBeTrue();
     }
 
     #endregion
@@ -548,7 +555,7 @@ public class PasswordResetOtpTests
 
         // Assert
         // Should return approximately 60 seconds (allow 2 seconds tolerance for test execution time)
-        remaining.Should().BeCloseTo(60, 2);
+        Math.Abs(remaining - 60).ShouldBeLessThanOrEqualTo(2);
     }
 
     [Fact]
@@ -562,7 +569,7 @@ public class PasswordResetOtpTests
         var remaining = otp.GetRemainingCooldownSeconds(cooldownSeconds: 60);
 
         // Assert
-        remaining.Should().BeCloseTo(60, 2); // Allow 2 seconds tolerance
+        Math.Abs(remaining - 60).ShouldBeLessThanOrEqualTo(2); // Allow 2 seconds tolerance
     }
 
     [Fact]
@@ -576,7 +583,7 @@ public class PasswordResetOtpTests
         var remaining = otp.GetRemainingCooldownSeconds(cooldownSeconds: 0);
 
         // Assert
-        remaining.Should().Be(0);
+        remaining.ShouldBe(0);
     }
 
     #endregion
@@ -594,7 +601,7 @@ public class PasswordResetOtpTests
         otp.Resend(newHash, DefaultExpiryMinutes);
 
         // Assert
-        otp.OtpHash.Should().Be(newHash);
+        otp.OtpHash.ShouldBe(newHash);
     }
 
     [Fact]
@@ -602,13 +609,13 @@ public class PasswordResetOtpTests
     {
         // Arrange
         var otp = PasswordResetOtp.Create(ValidEmail, ValidOtpHash, ValidSessionToken, DefaultExpiryMinutes);
-        otp.ResendCount.Should().Be(0);
+        otp.ResendCount.ShouldBe(0);
 
         // Act
         otp.Resend("new-hash", DefaultExpiryMinutes);
 
         // Assert
-        otp.ResendCount.Should().Be(1);
+        otp.ResendCount.ShouldBe(1);
     }
 
     [Fact]
@@ -623,8 +630,10 @@ public class PasswordResetOtpTests
 
         // Assert
         var afterResend = DateTimeOffset.UtcNow;
-        otp.LastResendAt.Should().NotBeNull();
-        otp.LastResendAt.Should().BeOnOrAfter(beforeResend).And.BeOnOrBefore(afterResend);
+        otp.LastResendAt.ShouldNotBeNull();
+        otp.LastResendAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeResend);
+
+        otp.LastResendAt!.Value.ShouldBeLessThanOrEqualTo(afterResend);
     }
 
     [Fact]
@@ -643,8 +652,8 @@ public class PasswordResetOtpTests
 
         // Assert
         var expectedMin = beforeResend.AddMinutes(10);
-        otp.ExpiresAt.Should().BeOnOrAfter(expectedMin);
-        otp.ExpiresAt.Should().BeAfter(originalExpiry);
+        otp.ExpiresAt.ShouldBeGreaterThanOrEqualTo(expectedMin);
+        otp.ExpiresAt.ShouldBeGreaterThan(originalExpiry);
     }
 
     [Fact]
@@ -654,13 +663,13 @@ public class PasswordResetOtpTests
         var otp = PasswordResetOtp.Create(ValidEmail, ValidOtpHash, ValidSessionToken, DefaultExpiryMinutes);
         otp.RecordFailedAttempt();
         otp.RecordFailedAttempt();
-        otp.AttemptCount.Should().Be(2);
+        otp.AttemptCount.ShouldBe(2);
 
         // Act
         otp.Resend("new-hash", DefaultExpiryMinutes);
 
         // Assert
-        otp.AttemptCount.Should().Be(0);
+        otp.AttemptCount.ShouldBe(0);
     }
 
     [Fact]
@@ -675,7 +684,7 @@ public class PasswordResetOtpTests
         otp.Resend("hash3", DefaultExpiryMinutes);
 
         // Assert
-        otp.ResendCount.Should().Be(3);
+        otp.ResendCount.ShouldBe(3);
     }
 
     #endregion
@@ -689,8 +698,8 @@ public class PasswordResetOtpTests
         var otp = PasswordResetOtp.Create(ValidEmail, ValidOtpHash, ValidSessionToken, DefaultExpiryMinutes);
 
         // Assert
-        otp.SessionToken.Should().Be(ValidSessionToken);
-        otp.SessionToken.Should().NotBeNullOrWhiteSpace();
+        otp.SessionToken.ShouldBe(ValidSessionToken);
+        otp.SessionToken.ShouldNotBeNullOrWhiteSpace();
     }
 
     [Fact]
@@ -701,8 +710,8 @@ public class PasswordResetOtpTests
         var otp2 = PasswordResetOtp.Create(ValidEmail, ValidOtpHash, "session-2", DefaultExpiryMinutes);
 
         // Assert
-        otp1.SessionToken.Should().NotBe(otp2.SessionToken);
-        otp1.Id.Should().NotBe(otp2.Id);
+        otp1.SessionToken.ShouldNotBe(otp2.SessionToken);
+        otp1.Id.ShouldNotBe(otp2.Id);
     }
 
     #endregion

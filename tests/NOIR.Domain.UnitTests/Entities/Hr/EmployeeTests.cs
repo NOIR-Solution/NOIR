@@ -67,24 +67,24 @@ public class EmployeeTests
             notes: "Test notes");
 
         // Assert
-        employee.Should().NotBeNull();
-        employee.Id.Should().NotBe(Guid.Empty);
-        employee.EmployeeCode.Should().Be(TestEmployeeCode);
-        employee.FirstName.Should().Be(TestFirstName);
-        employee.LastName.Should().Be(TestLastName);
-        employee.Email.Should().Be(TestEmail);
-        employee.Phone.Should().Be(TestPhone);
-        employee.DepartmentId.Should().Be(TestDepartmentId);
-        employee.Position.Should().Be(TestPosition);
-        employee.ManagerId.Should().Be(managerId);
-        employee.UserId.Should().Be(userId);
-        employee.JoinDate.Should().Be(TestJoinDate);
-        employee.EmploymentType.Should().Be(EmploymentType.FullTime);
-        employee.Status.Should().Be(EmployeeStatus.Active);
-        employee.EndDate.Should().BeNull();
-        employee.TenantId.Should().Be(TestTenantId);
-        employee.Notes.Should().Be("Test notes");
-        employee.FullName.Should().Be("John Doe");
+        employee.ShouldNotBeNull();
+        employee.Id.ShouldNotBe(Guid.Empty);
+        employee.EmployeeCode.ShouldBe(TestEmployeeCode);
+        employee.FirstName.ShouldBe(TestFirstName);
+        employee.LastName.ShouldBe(TestLastName);
+        employee.Email.ShouldBe(TestEmail);
+        employee.Phone.ShouldBe(TestPhone);
+        employee.DepartmentId.ShouldBe(TestDepartmentId);
+        employee.Position.ShouldBe(TestPosition);
+        employee.ManagerId.ShouldBe(managerId);
+        employee.UserId.ShouldBe(userId);
+        employee.JoinDate.ShouldBe(TestJoinDate);
+        employee.EmploymentType.ShouldBe(EmploymentType.FullTime);
+        employee.Status.ShouldBe(EmployeeStatus.Active);
+        employee.EndDate.ShouldBeNull();
+        employee.TenantId.ShouldBe(TestTenantId);
+        employee.Notes.ShouldBe("Test notes");
+        employee.FullName.ShouldBe("John Doe");
     }
 
     [Fact]
@@ -94,10 +94,10 @@ public class EmployeeTests
         var employee = CreateTestEmployee();
 
         // Assert
-        employee.DomainEvents.Should().ContainSingle();
-        employee.DomainEvents.First().Should().BeOfType<EmployeeCreatedEvent>();
+        employee.DomainEvents.ShouldHaveSingleItem();
+        employee.DomainEvents.First().ShouldBeOfType<EmployeeCreatedEvent>();
         var createdEvent = (EmployeeCreatedEvent)employee.DomainEvents.First();
-        createdEvent.EmployeeId.Should().Be(employee.Id);
+        createdEvent.EmployeeId.ShouldBe(employee.Id);
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class EmployeeTests
         var act = () => CreateTestEmployee(firstName: null!);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public class EmployeeTests
         var act = () => CreateTestEmployee(firstName: "");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public class EmployeeTests
         var act = () => CreateTestEmployee(lastName: null!);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -137,7 +137,7 @@ public class EmployeeTests
         var act = () => CreateTestEmployee(email: null!);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -147,7 +147,7 @@ public class EmployeeTests
         var act = () => CreateTestEmployee(employeeCode: null!);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -157,7 +157,7 @@ public class EmployeeTests
         var employee = CreateTestEmployee(email: "  JOHN@EXAMPLE.COM  ");
 
         // Assert
-        employee.Email.Should().Be("john@example.com");
+        employee.Email.ShouldBe("john@example.com");
     }
 
     [Fact]
@@ -167,8 +167,8 @@ public class EmployeeTests
         var employee = CreateTestEmployee(firstName: "  John  ", lastName: "  Doe  ");
 
         // Assert
-        employee.FirstName.Should().Be("John");
-        employee.LastName.Should().Be("Doe");
+        employee.FirstName.ShouldBe("John");
+        employee.LastName.ShouldBe("Doe");
     }
 
     [Fact]
@@ -178,11 +178,11 @@ public class EmployeeTests
         var employee = CreateTestEmployee(phone: null, position: null, managerId: null, userId: null, notes: null);
 
         // Assert
-        employee.Phone.Should().BeNull();
-        employee.Position.Should().BeNull();
-        employee.ManagerId.Should().BeNull();
-        employee.UserId.Should().BeNull();
-        employee.Notes.Should().BeNull();
+        employee.Phone.ShouldBeNull();
+        employee.Position.ShouldBeNull();
+        employee.ManagerId.ShouldBeNull();
+        employee.UserId.ShouldBeNull();
+        employee.Notes.ShouldBeNull();
     }
 
     [Fact]
@@ -193,7 +193,7 @@ public class EmployeeTests
         var employee2 = CreateTestEmployee();
 
         // Assert
-        employee1.Id.Should().NotBe(employee2.Id);
+        employee1.Id.ShouldNotBe(employee2.Id);
     }
 
     #endregion
@@ -214,14 +214,14 @@ public class EmployeeTests
             "Senior Engineer", EmploymentType.PartTime, "Updated notes");
 
         // Assert
-        employee.FirstName.Should().Be("Jane");
-        employee.LastName.Should().Be("Smith");
-        employee.Email.Should().Be("jane@example.com");
-        employee.Phone.Should().Be("+84987654321");
-        employee.AvatarUrl.Should().Be("https://example.com/avatar.jpg");
-        employee.Position.Should().Be("Senior Engineer");
-        employee.EmploymentType.Should().Be(EmploymentType.PartTime);
-        employee.Notes.Should().Be("Updated notes");
+        employee.FirstName.ShouldBe("Jane");
+        employee.LastName.ShouldBe("Smith");
+        employee.Email.ShouldBe("jane@example.com");
+        employee.Phone.ShouldBe("+84987654321");
+        employee.AvatarUrl.ShouldBe("https://example.com/avatar.jpg");
+        employee.Position.ShouldBe("Senior Engineer");
+        employee.EmploymentType.ShouldBe(EmploymentType.PartTime);
+        employee.Notes.ShouldBe("Updated notes");
     }
 
     [Fact]
@@ -237,8 +237,8 @@ public class EmployeeTests
             null, null, null, EmploymentType.FullTime, null);
 
         // Assert
-        employee.DomainEvents.Should().ContainSingle();
-        employee.DomainEvents.First().Should().BeOfType<EmployeeUpdatedEvent>();
+        employee.DomainEvents.ShouldHaveSingleItem();
+        employee.DomainEvents.First().ShouldBeOfType<EmployeeUpdatedEvent>();
     }
 
     #endregion
@@ -257,7 +257,7 @@ public class EmployeeTests
         employee.UpdateDepartment(newDepartmentId);
 
         // Assert
-        employee.DepartmentId.Should().Be(newDepartmentId);
+        employee.DepartmentId.ShouldBe(newDepartmentId);
     }
 
     [Fact]
@@ -273,11 +273,11 @@ public class EmployeeTests
         employee.UpdateDepartment(newDepartmentId);
 
         // Assert
-        employee.DomainEvents.Should().ContainSingle();
-        var evt = employee.DomainEvents.First().Should().BeOfType<EmployeeDepartmentChangedEvent>().Subject;
-        evt.EmployeeId.Should().Be(employee.Id);
-        evt.OldDepartmentId.Should().Be(oldDepartmentId);
-        evt.NewDepartmentId.Should().Be(newDepartmentId);
+        employee.DomainEvents.ShouldHaveSingleItem();
+        var evt = employee.DomainEvents.First().ShouldBeOfType<EmployeeDepartmentChangedEvent>();
+        evt.EmployeeId.ShouldBe(employee.Id);
+        evt.OldDepartmentId.ShouldBe(oldDepartmentId);
+        evt.NewDepartmentId.ShouldBe(newDepartmentId);
     }
 
     [Fact]
@@ -292,7 +292,7 @@ public class EmployeeTests
         employee.UpdateDepartment(sameDepartmentId);
 
         // Assert
-        employee.DomainEvents.Should().BeEmpty();
+        employee.DomainEvents.ShouldBeEmpty();
     }
 
     #endregion
@@ -311,7 +311,7 @@ public class EmployeeTests
         employee.UpdateManager(managerId);
 
         // Assert
-        employee.ManagerId.Should().Be(managerId);
+        employee.ManagerId.ShouldBe(managerId);
     }
 
     [Fact]
@@ -325,7 +325,7 @@ public class EmployeeTests
         employee.UpdateManager(null);
 
         // Assert
-        employee.ManagerId.Should().BeNull();
+        employee.ManagerId.ShouldBeNull();
     }
 
     [Fact]
@@ -339,8 +339,8 @@ public class EmployeeTests
         employee.UpdateManager(Guid.NewGuid());
 
         // Assert
-        employee.DomainEvents.Should().ContainSingle();
-        employee.DomainEvents.First().Should().BeOfType<EmployeeUpdatedEvent>();
+        employee.DomainEvents.ShouldHaveSingleItem();
+        employee.DomainEvents.First().ShouldBeOfType<EmployeeUpdatedEvent>();
     }
 
     #endregion
@@ -358,9 +358,9 @@ public class EmployeeTests
         employee.Deactivate(EmployeeStatus.Resigned);
 
         // Assert
-        employee.Status.Should().Be(EmployeeStatus.Resigned);
-        employee.EndDate.Should().NotBeNull();
-        employee.EndDate.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
+        employee.Status.ShouldBe(EmployeeStatus.Resigned);
+        employee.EndDate.ShouldNotBeNull();
+        employee.EndDate!.Value.ShouldBe(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
     }
 
     [Fact]
@@ -374,8 +374,8 @@ public class EmployeeTests
         employee.Deactivate(EmployeeStatus.Terminated);
 
         // Assert
-        employee.Status.Should().Be(EmployeeStatus.Terminated);
-        employee.EndDate.Should().NotBeNull();
+        employee.Status.ShouldBe(EmployeeStatus.Terminated);
+        employee.EndDate.ShouldNotBeNull();
     }
 
     [Fact]
@@ -389,10 +389,10 @@ public class EmployeeTests
         employee.Deactivate(EmployeeStatus.Resigned);
 
         // Assert
-        employee.DomainEvents.Should().ContainSingle();
-        var evt = employee.DomainEvents.First().Should().BeOfType<EmployeeDeactivatedEvent>().Subject;
-        evt.EmployeeId.Should().Be(employee.Id);
-        evt.NewStatus.Should().Be(EmployeeStatus.Resigned);
+        employee.DomainEvents.ShouldHaveSingleItem();
+        var evt = employee.DomainEvents.First().ShouldBeOfType<EmployeeDeactivatedEvent>();
+        evt.EmployeeId.ShouldBe(employee.Id);
+        evt.NewStatus.ShouldBe(EmployeeStatus.Resigned);
     }
 
     [Fact]
@@ -405,8 +405,8 @@ public class EmployeeTests
         var act = () => employee.Deactivate(EmployeeStatus.Active);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Deactivation status must be Resigned or Terminated.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Deactivation status must be Resigned or Terminated.");
     }
 
     [Fact]
@@ -419,8 +419,8 @@ public class EmployeeTests
         var act = () => employee.Deactivate(EmployeeStatus.Suspended);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Deactivation status must be Resigned or Terminated.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Deactivation status must be Resigned or Terminated.");
     }
 
     [Fact]
@@ -436,10 +436,10 @@ public class EmployeeTests
         employee.Deactivate(EmployeeStatus.Terminated);
 
         // Assert - Status is updated, EndDate is refreshed
-        employee.Status.Should().Be(EmployeeStatus.Terminated);
-        employee.EndDate.Should().NotBeNull();
-        employee.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<EmployeeDeactivatedEvent>();
+        employee.Status.ShouldBe(EmployeeStatus.Terminated);
+        employee.EndDate.ShouldNotBeNull();
+        employee.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<EmployeeDeactivatedEvent>();
     }
 
     #endregion
@@ -458,8 +458,8 @@ public class EmployeeTests
         employee.Reactivate();
 
         // Assert
-        employee.Status.Should().Be(EmployeeStatus.Active);
-        employee.EndDate.Should().BeNull();
+        employee.Status.ShouldBe(EmployeeStatus.Active);
+        employee.EndDate.ShouldBeNull();
     }
 
     [Fact]
@@ -474,8 +474,8 @@ public class EmployeeTests
         employee.Reactivate();
 
         // Assert
-        employee.DomainEvents.Should().ContainSingle();
-        employee.DomainEvents.First().Should().BeOfType<EmployeeUpdatedEvent>();
+        employee.DomainEvents.ShouldHaveSingleItem();
+        employee.DomainEvents.First().ShouldBeOfType<EmployeeUpdatedEvent>();
     }
 
     [Fact]
@@ -489,10 +489,10 @@ public class EmployeeTests
         employee.Reactivate();
 
         // Assert - Remains active, EndDate stays null
-        employee.Status.Should().Be(EmployeeStatus.Active);
-        employee.EndDate.Should().BeNull();
-        employee.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<EmployeeUpdatedEvent>();
+        employee.Status.ShouldBe(EmployeeStatus.Active);
+        employee.EndDate.ShouldBeNull();
+        employee.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<EmployeeUpdatedEvent>();
     }
 
     #endregion
@@ -510,7 +510,7 @@ public class EmployeeTests
         employee.LinkToUser("user-456");
 
         // Assert
-        employee.UserId.Should().Be("user-456");
+        employee.UserId.ShouldBe("user-456");
     }
 
     [Fact]
@@ -524,8 +524,8 @@ public class EmployeeTests
         employee.LinkToUser("user-456");
 
         // Assert
-        employee.DomainEvents.Should().ContainSingle();
-        employee.DomainEvents.First().Should().BeOfType<EmployeeUpdatedEvent>();
+        employee.DomainEvents.ShouldHaveSingleItem();
+        employee.DomainEvents.First().ShouldBeOfType<EmployeeUpdatedEvent>();
     }
 
     [Fact]
@@ -538,7 +538,7 @@ public class EmployeeTests
         var act = () => employee.LinkToUser(null!);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -551,7 +551,7 @@ public class EmployeeTests
         var act = () => employee.LinkToUser("");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     #endregion
@@ -569,7 +569,7 @@ public class EmployeeTests
         employee.UnlinkUser();
 
         // Assert
-        employee.UserId.Should().BeNull();
+        employee.UserId.ShouldBeNull();
     }
 
     [Fact]
@@ -583,8 +583,8 @@ public class EmployeeTests
         employee.UnlinkUser();
 
         // Assert
-        employee.DomainEvents.Should().ContainSingle();
-        employee.DomainEvents.First().Should().BeOfType<EmployeeUpdatedEvent>();
+        employee.DomainEvents.ShouldHaveSingleItem();
+        employee.DomainEvents.First().ShouldBeOfType<EmployeeUpdatedEvent>();
     }
 
     #endregion

@@ -50,12 +50,12 @@ public class UpdateLeadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        lead.Title.Should().Be("Updated Deal");
-        lead.ContactId.Should().Be(newContactId);
-        lead.Value.Should().Be(25000);
-        lead.Currency.Should().Be("EUR");
-        lead.Notes.Should().Be("Updated notes");
+        result.IsSuccess.ShouldBe(true);
+        lead.Title.ShouldBe("Updated Deal");
+        lead.ContactId.ShouldBe(newContactId);
+        lead.Value.ShouldBe(25000);
+        lead.Currency.ShouldBe("EUR");
+        lead.Notes.ShouldBe("Updated notes");
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -74,7 +74,7 @@ public class UpdateLeadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

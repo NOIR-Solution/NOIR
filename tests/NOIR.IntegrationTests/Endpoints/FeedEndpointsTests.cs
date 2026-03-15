@@ -26,13 +26,13 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/blog/feed.xml");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        response.Content.Headers.ContentType!.MediaType.Should().Be("application/rss+xml");
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.Content.Headers.ContentType!.MediaType.ShouldBe("application/rss+xml");
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("<?xml");
-        content.Should().Contain("<rss");
-        content.Should().Contain("<channel>");
+        content.ShouldContain("<?xml");
+        content.ShouldContain("<rss");
+        content.ShouldContain("<channel>");
     }
 
     [Fact]
@@ -42,8 +42,8 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/blog/feed.xml");
 
         // Assert - Should succeed without authentication
-        response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
-        response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldNotBe(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldNotBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -53,9 +53,9 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/blog/feed.xml?maxItems=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("<rss");
+        content.ShouldContain("<rss");
     }
 
     [Fact]
@@ -65,9 +65,9 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync($"/blog/feed.xml?categoryId={Guid.NewGuid()}");
 
         // Assert - Should still succeed (empty or filtered results)
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("<rss");
+        content.ShouldContain("<rss");
     }
 
     [Fact]
@@ -77,11 +77,11 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/rss.xml");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        response.Content.Headers.ContentType!.MediaType.Should().Be("application/rss+xml");
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.Content.Headers.ContentType!.MediaType.ShouldBe("application/rss+xml");
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("<rss");
+        content.ShouldContain("<rss");
     }
 
     [Fact]
@@ -91,13 +91,13 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/blog/feed.xml");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
 
         // Standard RSS elements
-        content.Should().Contain("<title>");
-        content.Should().Contain("<link>");
-        content.Should().Contain("<description>");
+        content.ShouldContain("<title>");
+        content.ShouldContain("<link>");
+        content.ShouldContain("<description>");
     }
 
     #endregion
@@ -111,12 +111,12 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/sitemap.xml");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        response.Content.Headers.ContentType!.MediaType.Should().Be("application/xml");
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.Content.Headers.ContentType!.MediaType.ShouldBe("application/xml");
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("<?xml");
-        content.Should().Contain("<urlset");
+        content.ShouldContain("<?xml");
+        content.ShouldContain("<urlset");
     }
 
     [Fact]
@@ -126,8 +126,8 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/sitemap.xml");
 
         // Assert - Should succeed without authentication
-        response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
-        response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldNotBe(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldNotBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -137,9 +137,9 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/sitemap.xml?includeImages=true");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("<urlset");
+        content.ShouldContain("<urlset");
         // Image namespace might be present if there are posts with images
     }
 
@@ -150,9 +150,9 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/sitemap.xml?includeImages=false");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("<urlset");
+        content.ShouldContain("<urlset");
     }
 
     [Fact]
@@ -162,11 +162,11 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/sitemap.xml");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
 
         // Standard sitemap elements
-        content.Should().Contain("xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"");
+        content.ShouldContain("xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"");
     }
 
     #endregion
@@ -180,11 +180,11 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/robots.txt");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        response.Content.Headers.ContentType!.MediaType.Should().Be("text/plain");
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.Content.Headers.ContentType!.MediaType.ShouldBe("text/plain");
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("User-agent:");
+        content.ShouldContain("User-agent:");
     }
 
     [Fact]
@@ -194,8 +194,8 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/robots.txt");
 
         // Assert - Should succeed without authentication
-        response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
-        response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldNotBe(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldNotBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -205,9 +205,9 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/robots.txt");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("Sitemap: /sitemap.xml");
+        content.ShouldContain("Sitemap: /sitemap.xml");
     }
 
     [Fact]
@@ -217,10 +217,10 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/robots.txt");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("User-agent: *");
-        content.Should().Contain("Allow: /");
+        content.ShouldContain("User-agent: *");
+        content.ShouldContain("Allow: /");
     }
 
     #endregion
@@ -235,8 +235,8 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response2 = await _client.GetAsync("/blog/feed.xml");
 
         // Assert - Both should succeed
-        response1.StatusCode.Should().Be(HttpStatusCode.OK);
-        response2.StatusCode.Should().Be(HttpStatusCode.OK);
+        response1.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response2.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -247,8 +247,8 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response2 = await _client.GetAsync("/sitemap.xml");
 
         // Assert - Both should succeed
-        response1.StatusCode.Should().Be(HttpStatusCode.OK);
-        response2.StatusCode.Should().Be(HttpStatusCode.OK);
+        response1.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response2.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -259,8 +259,8 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response2 = await _client.GetAsync("/robots.txt");
 
         // Assert - Both should succeed
-        response1.StatusCode.Should().Be(HttpStatusCode.OK);
-        response2.StatusCode.Should().Be(HttpStatusCode.OK);
+        response1.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response2.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -276,9 +276,9 @@ public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var robotsResponse = await _client.GetAsync("/robots.txt");
 
         // Assert - All should have UTF-8 charset
-        rssResponse.Content.Headers.ContentType!.CharSet.Should().Be("utf-8");
-        sitemapResponse.Content.Headers.ContentType!.CharSet.Should().Be("utf-8");
-        robotsResponse.Content.Headers.ContentType!.CharSet.Should().Be("utf-8");
+        rssResponse.Content.Headers.ContentType!.CharSet.ShouldBe("utf-8");
+        sitemapResponse.Content.Headers.ContentType!.CharSet.ShouldBe("utf-8");
+        robotsResponse.Content.Headers.ContentType!.CharSet.ShouldBe("utf-8");
     }
 
     #endregion

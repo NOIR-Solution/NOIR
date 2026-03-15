@@ -65,11 +65,11 @@ public class GetRssFeedQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNullOrEmpty();
-        result.Value.Should().Contain("<rss");
-        result.Value.Should().Contain("version=\"2.0\"");
-        result.Value.Should().Contain("<channel>");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNullOrEmpty();
+        result.Value.ShouldContain("<rss");
+        result.Value.ShouldContain("version=\"2.0\"");
+        result.Value.ShouldContain("<channel>");
     }
 
     [Fact]
@@ -88,12 +88,12 @@ public class GetRssFeedQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Contain("<title>Blog</title>");
-        result.Value.Should().Contain("<description>Latest blog posts</description>");
-        result.Value.Should().Contain("<link>/blog</link>");
-        result.Value.Should().Contain("<language>en-us</language>");
-        result.Value.Should().Contain("<generator>NOIR CMS</generator>");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldContain("<title>Blog</title>");
+        result.Value.ShouldContain("<description>Latest blog posts</description>");
+        result.Value.ShouldContain("<link>/blog</link>");
+        result.Value.ShouldContain("<language>en-us</language>");
+        result.Value.ShouldContain("<generator>NOIR CMS</generator>");
     }
 
     [Fact]
@@ -115,11 +115,11 @@ public class GetRssFeedQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Contain("<item>");
-        result.Value.Should().Contain("<title>My Article | NOIR</title>");
-        result.Value.Should().Contain("<link>/blog/my-article</link>");
-        result.Value.Should().Contain("<guid>/blog/my-article</guid>");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldContain("<item>");
+        result.Value.ShouldContain("<title>My Article | NOIR</title>");
+        result.Value.ShouldContain("<link>/blog/my-article</link>");
+        result.Value.ShouldContain("<guid>/blog/my-article</guid>");
     }
 
     [Fact]
@@ -141,8 +141,8 @@ public class GetRssFeedQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Contain("<title>SEO-Optimized Title</title>");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldContain("<title>SEO-Optimized Title</title>");
     }
 
     [Fact]
@@ -164,8 +164,8 @@ public class GetRssFeedQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Contain("<description>Custom meta description for SEO</description>");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldContain("<description>Custom meta description for SEO</description>");
     }
 
     [Fact]
@@ -184,8 +184,8 @@ public class GetRssFeedQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Contain("<pubDate>");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldContain("<pubDate>");
     }
 
     [Fact]
@@ -209,9 +209,9 @@ public class GetRssFeedQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Contain("media:content");
-        result.Value.Should().Contain("https://example.com/image.jpg");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldContain("media:content");
+        result.Value.ShouldContain("https://example.com/image.jpg");
     }
 
     [Fact]
@@ -230,10 +230,10 @@ public class GetRssFeedQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Contain("xmlns:atom");
-        result.Value.Should().Contain("/blog/feed.xml");
-        result.Value.Should().Contain("rel=\"self\"");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldContain("xmlns:atom");
+        result.Value.ShouldContain("/blog/feed.xml");
+        result.Value.ShouldContain("rel=\"self\"");
     }
 
     #endregion
@@ -254,10 +254,10 @@ public class GetRssFeedQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Contain("<rss");
-        result.Value.Should().Contain("<channel>");
-        result.Value.Should().NotContain("<item>");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldContain("<rss");
+        result.Value.ShouldContain("<channel>");
+        result.Value.ShouldNotContain("<item>");
     }
 
     #endregion
@@ -294,7 +294,7 @@ public class GetRssFeedQueryHandlerTests
         var query = new GetRssFeedQuery();
 
         // Assert - default MaxItems is 20
-        query.MaxItems.Should().Be(20);
+        query.MaxItems.ShouldBe(20);
 
         // Act
         await _handler.Handle(query, CancellationToken.None);
@@ -344,12 +344,12 @@ public class GetRssFeedQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Should parse without throwing
         var doc = new System.Xml.XmlDocument();
         doc.LoadXml(result.Value);
-        doc.DocumentElement.Should().NotBeNull();
-        doc.DocumentElement!.Name.Should().Be("rss");
+        doc.DocumentElement.ShouldNotBeNull();
+        doc.DocumentElement!.Name.ShouldBe("rss");
     }
 
     #endregion

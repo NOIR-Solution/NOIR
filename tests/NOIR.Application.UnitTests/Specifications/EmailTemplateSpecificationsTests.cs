@@ -63,7 +63,7 @@ public class EmailTemplateSpecificationsTests
         var spec = new EmailTemplateByIdSpec(TestId1);
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class EmailTemplateSpecificationsTests
         var spec = new EmailTemplateByIdSpec(TestId1);
 
         // Assert
-        spec.QueryTags.Should().Contain("EmailTemplateById");
+        spec.QueryTags.ShouldContain("EmailTemplateById");
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class EmailTemplateSpecificationsTests
         var spec = new EmailTemplateByIdSpec(TestId1);
 
         // Assert
-        spec.AsNoTracking.Should().BeTrue();
+        spec.AsNoTracking.ShouldBe(true);
     }
 
     [Fact]
@@ -94,7 +94,7 @@ public class EmailTemplateSpecificationsTests
         var spec = new EmailTemplateByIdSpec(TestId1);
 
         // Act & Assert
-        spec.IsSatisfiedBy(template).Should().BeTrue();
+        spec.IsSatisfiedBy(template).ShouldBe(true);
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class EmailTemplateSpecificationsTests
         var spec = new EmailTemplateByIdSpec(TestId2);
 
         // Act & Assert
-        spec.IsSatisfiedBy(template).Should().BeFalse();
+        spec.IsSatisfiedBy(template).ShouldBe(false);
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class EmailTemplateSpecificationsTests
         var spec = new EmailTemplateByIdSpec(TestId1);
 
         // Act & Assert
-        spec.IsSatisfiedBy(template).Should().BeTrue();
+        spec.IsSatisfiedBy(template).ShouldBe(true);
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public class EmailTemplateSpecificationsTests
         var spec = new EmailTemplateByIdSpec(TestId1);
 
         // Act & Assert
-        spec.IsSatisfiedBy(template).Should().BeTrue();
+        spec.IsSatisfiedBy(template).ShouldBe(true);
     }
 
     #endregion
@@ -142,7 +142,7 @@ public class EmailTemplateSpecificationsTests
         var spec = new EmailTemplateByIdSpec(Guid.Empty);
 
         // Act & Assert
-        spec.IsSatisfiedBy(template).Should().BeFalse();
+        spec.IsSatisfiedBy(template).ShouldBe(false);
     }
 
     #endregion

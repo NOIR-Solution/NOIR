@@ -72,10 +72,10 @@ public class BulkApproveReviewsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(3);
 
-        reviews.Should().AllSatisfy(r => r.Status.Should().Be(ReviewStatus.Approved));
+        reviews.ShouldAllBe(r => r.Status == ReviewStatus.Approved);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -144,9 +144,9 @@ public class BulkApproveReviewsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(1);
-        review.Status.Should().Be(ReviewStatus.Approved);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(1);
+        review.Status.ShouldBe(ReviewStatus.Approved);
     }
 
     #endregion
@@ -169,8 +169,8 @@ public class BulkApproveReviewsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-REVIEW-003");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-REVIEW-003");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),

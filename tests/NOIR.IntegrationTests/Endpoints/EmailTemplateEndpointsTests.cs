@@ -63,9 +63,9 @@ public class EmailTemplateEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.GetAsync("/api/email-templates");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<List<EmailTemplateListDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public class EmailTemplateEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await _client.GetAsync("/api/email-templates");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public class EmailTemplateEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await userClient.GetAsync("/api/email-templates");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -102,9 +102,9 @@ public class EmailTemplateEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.GetAsync("/api/email-templates?search=welcome");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<List<EmailTemplateListDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     #endregion
@@ -133,10 +133,10 @@ public class EmailTemplateEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.GetAsync($"/api/email-templates/{templateId}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var template = await response.Content.ReadFromJsonAsync<EmailTemplateDto>();
-        template.Should().NotBeNull();
-        template!.Id.Should().Be(templateId);
+        template.ShouldNotBeNull();
+        template!.Id.ShouldBe(templateId);
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public class EmailTemplateEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.GetAsync($"/api/email-templates/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -159,7 +159,7 @@ public class EmailTemplateEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await _client.GetAsync($"/api/email-templates/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -193,10 +193,10 @@ public class EmailTemplateEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.PutAsJsonAsync($"/api/email-templates/{templateId}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updatedTemplate = await response.Content.ReadFromJsonAsync<EmailTemplateDto>();
-        updatedTemplate.Should().NotBeNull();
-        updatedTemplate!.Subject.Should().Be("Updated Subject {{UserName}}");
+        updatedTemplate.ShouldNotBeNull();
+        updatedTemplate!.Subject.ShouldBe("Updated Subject {{UserName}}");
     }
 
     [Fact]
@@ -214,7 +214,7 @@ public class EmailTemplateEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.PutAsJsonAsync($"/api/email-templates/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -233,7 +233,7 @@ public class EmailTemplateEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await userClient.PutAsJsonAsync($"/api/email-templates/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -263,7 +263,7 @@ public class EmailTemplateEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.PutAsJsonAsync($"/api/email-templates/{templateId}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -298,9 +298,9 @@ public class EmailTemplateEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.PostAsJsonAsync($"/api/email-templates/{templateId}/preview", previewRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var preview = await response.Content.ReadFromJsonAsync<EmailPreviewResponse>();
-        preview.Should().NotBeNull();
+        preview.ShouldNotBeNull();
     }
 
     [Fact]
@@ -315,7 +315,7 @@ public class EmailTemplateEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.PostAsJsonAsync($"/api/email-templates/{Guid.NewGuid()}/preview", previewRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -338,7 +338,7 @@ public class EmailTemplateEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.PostAsJsonAsync($"/api/email-templates/{Guid.NewGuid()}/test", testRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -355,7 +355,7 @@ public class EmailTemplateEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await userClient.PostAsJsonAsync($"/api/email-templates/{Guid.NewGuid()}/test", testRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -383,7 +383,7 @@ public class EmailTemplateEndpointsTests : IClassFixture<CustomWebApplicationFac
         var response = await adminClient.PostAsJsonAsync($"/api/email-templates/{templateId}/test", testRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     #endregion

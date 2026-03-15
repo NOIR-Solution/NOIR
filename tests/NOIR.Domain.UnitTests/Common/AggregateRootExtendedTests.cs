@@ -37,9 +37,9 @@ public class AggregateRootExtendedTests
         var aggregate = new TestAggregate();
 
         // Assert
-        aggregate.Should().NotBeNull();
-        aggregate.DomainEvents.Should().NotBeNull();
-        aggregate.DomainEvents.Should().BeEmpty();
+        aggregate.ShouldNotBeNull();
+        aggregate.DomainEvents.ShouldNotBeNull();
+        aggregate.DomainEvents.ShouldBeEmpty();
     }
 
     [Fact]
@@ -49,7 +49,7 @@ public class AggregateRootExtendedTests
         var aggregate = new TestAggregate();
 
         // Assert
-        aggregate.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
+        aggregate.CreatedAt.ShouldBe(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class AggregateRootExtendedTests
         var aggregate = new TestAggregate();
 
         // Assert
-        aggregate.Id.Should().Be(default(Guid));
+        aggregate.Id.ShouldBe(default(Guid));
     }
 
     [Fact]
@@ -69,12 +69,12 @@ public class AggregateRootExtendedTests
         var aggregate = new TestAggregate();
 
         // Assert
-        aggregate.CreatedBy.Should().BeNull();
-        aggregate.ModifiedBy.Should().BeNull();
-        aggregate.ModifiedAt.Should().BeNull();
-        aggregate.IsDeleted.Should().BeFalse();
-        aggregate.DeletedAt.Should().BeNull();
-        aggregate.DeletedBy.Should().BeNull();
+        aggregate.CreatedBy.ShouldBeNull();
+        aggregate.ModifiedBy.ShouldBeNull();
+        aggregate.ModifiedAt.ShouldBeNull();
+        aggregate.IsDeleted.ShouldBeFalse();
+        aggregate.DeletedAt.ShouldBeNull();
+        aggregate.DeletedBy.ShouldBeNull();
     }
 
     #endregion
@@ -92,8 +92,8 @@ public class AggregateRootExtendedTests
         var act = () => aggregate.RemoveEvent(nonExistentEvent);
 
         // Assert
-        act.Should().NotThrow();
-        aggregate.DomainEvents.Should().BeEmpty();
+        act.ShouldNotThrow();
+        aggregate.DomainEvents.ShouldBeEmpty();
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class AggregateRootExtendedTests
         aggregate.RaiseEvent(sameEvent);
 
         // Assert
-        aggregate.DomainEvents.Should().HaveCount(2);
+        aggregate.DomainEvents.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -121,8 +121,8 @@ public class AggregateRootExtendedTests
         var act = () => aggregate.ClearDomainEvents();
 
         // Assert
-        act.Should().NotThrow();
-        aggregate.DomainEvents.Should().BeEmpty();
+        act.ShouldNotThrow();
+        aggregate.DomainEvents.ShouldBeEmpty();
     }
 
     [Fact]
@@ -137,9 +137,9 @@ public class AggregateRootExtendedTests
         aggregate.RaiseEvent(new TestEvent("Second"));
 
         // Assert
-        aggregate.DomainEvents.Should().HaveCount(1);
-        aggregate.DomainEvents.First().Should().BeOfType<TestEvent>()
-            .Which.Message.Should().Be("Second");
+        aggregate.DomainEvents.Count().ShouldBe(1);
+        aggregate.DomainEvents.First().ShouldBeOfType<TestEvent>()
+            .Message.ShouldBe("Second");
     }
 
     #endregion
@@ -184,9 +184,9 @@ public class TenantEntityExtendedTests
         var entity = new TestTenantEntity();
 
         // Assert
-        entity.Should().NotBeNull();
-        entity.Id.Should().Be(default(Guid));
-        entity.TenantId.Should().BeNull();
+        entity.ShouldNotBeNull();
+        entity.Id.ShouldBe(default(Guid));
+        entity.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -196,7 +196,7 @@ public class TenantEntityExtendedTests
         var entity = new TestTenantEntity();
 
         // Assert
-        entity.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
+        entity.CreatedAt.ShouldBe(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
     }
 
     #endregion
@@ -210,10 +210,10 @@ public class TenantEntityExtendedTests
         var aggregate = new TestTenantAggregate();
 
         // Assert
-        aggregate.Should().NotBeNull();
-        aggregate.Id.Should().Be(default(Guid));
-        aggregate.TenantId.Should().BeNull();
-        aggregate.DomainEvents.Should().BeEmpty();
+        aggregate.ShouldNotBeNull();
+        aggregate.Id.ShouldBe(default(Guid));
+        aggregate.TenantId.ShouldBeNull();
+        aggregate.DomainEvents.ShouldBeEmpty();
     }
 
     [Fact]
@@ -223,7 +223,7 @@ public class TenantEntityExtendedTests
         var aggregate = new TestTenantAggregate();
 
         // Assert
-        aggregate.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
+        aggregate.CreatedAt.ShouldBe(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
@@ -233,11 +233,11 @@ public class TenantEntityExtendedTests
         var aggregate = new TestTenantAggregate();
 
         // Assert
-        aggregate.IsDeleted.Should().BeFalse();
-        aggregate.CreatedBy.Should().BeNull();
-        aggregate.ModifiedBy.Should().BeNull();
-        aggregate.DeletedAt.Should().BeNull();
-        aggregate.DeletedBy.Should().BeNull();
+        aggregate.IsDeleted.ShouldBeFalse();
+        aggregate.CreatedBy.ShouldBeNull();
+        aggregate.ModifiedBy.ShouldBeNull();
+        aggregate.DeletedAt.ShouldBeNull();
+        aggregate.DeletedBy.ShouldBeNull();
     }
 
     #endregion
@@ -254,9 +254,9 @@ public class TenantEntityExtendedTests
         var tenantIdProperty = typeof(TenantEntity<Guid>).GetProperty(nameof(ITenantEntity.TenantId));
 
         // Assert
-        tenantIdProperty.Should().NotBeNull();
-        tenantIdProperty!.SetMethod.Should().NotBeNull();
-        tenantIdProperty.SetMethod!.IsFamily.Should().BeTrue("TenantId setter should be protected");
+        tenantIdProperty.ShouldNotBeNull();
+        tenantIdProperty!.SetMethod.ShouldNotBeNull();
+        tenantIdProperty.SetMethod!.IsFamily.ShouldBeTrue("TenantId setter should be protected");
     }
 
     [Fact]
@@ -269,9 +269,9 @@ public class TenantEntityExtendedTests
         var tenantIdProperty = typeof(TenantAggregateRoot<Guid>).GetProperty(nameof(ITenantEntity.TenantId));
 
         // Assert
-        tenantIdProperty.Should().NotBeNull();
-        tenantIdProperty!.SetMethod.Should().NotBeNull();
-        tenantIdProperty.SetMethod!.IsFamily.Should().BeTrue("TenantId setter should be protected");
+        tenantIdProperty.ShouldNotBeNull();
+        tenantIdProperty!.SetMethod.ShouldNotBeNull();
+        tenantIdProperty.SetMethod!.IsFamily.ShouldBeTrue("TenantId setter should be protected");
     }
 
     [Fact]
@@ -284,7 +284,7 @@ public class TenantEntityExtendedTests
         var entity = new TestTenantEntity(Guid.NewGuid(), tenantId);
 
         // Assert
-        entity.TenantId.Should().Be(tenantId);
+        entity.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -297,7 +297,7 @@ public class TenantEntityExtendedTests
         var aggregate = new TestTenantAggregate(Guid.NewGuid(), tenantId);
 
         // Assert
-        aggregate.TenantId.Should().Be(tenantId);
+        aggregate.TenantId.ShouldBe(tenantId);
     }
 
     #endregion

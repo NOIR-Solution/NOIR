@@ -100,7 +100,7 @@ public class TenantIdSetterInterceptorTests
         var interceptor = new TenantIdSetterInterceptor(accessor.Object, Mock.Of<ILogger<TenantIdSetterInterceptor>>());
 
         // Assert
-        interceptor.Should().NotBeNull();
+        interceptor.ShouldNotBeNull();
     }
 
     #endregion
@@ -124,7 +124,7 @@ public class TenantIdSetterInterceptorTests
         interceptor.SavingChanges(eventData, default);
 
         // Assert
-        entity.TenantId.Should().Be("tenant-123");
+        entity.TenantId.ShouldBe("tenant-123");
     }
 
     [Fact]
@@ -144,7 +144,7 @@ public class TenantIdSetterInterceptorTests
         interceptor.SavingChanges(eventData, default);
 
         // Assert
-        entity.TenantId.Should().Be("preset-tenant");
+        entity.TenantId.ShouldBe("preset-tenant");
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class TenantIdSetterInterceptorTests
         interceptor.SavingChanges(eventData, default);
 
         // Assert
-        entity.TenantId.Should().BeNull();
+        entity.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -184,7 +184,7 @@ public class TenantIdSetterInterceptorTests
         interceptor.SavingChanges(eventData, default);
 
         // Assert
-        entity.TenantId.Should().BeNull();
+        entity.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -210,7 +210,7 @@ public class TenantIdSetterInterceptorTests
         interceptor.SavingChanges(eventData, default);
 
         // Assert - TenantId should remain unchanged
-        entity.TenantId.Should().Be("original-tenant");
+        entity.TenantId.ShouldBe("original-tenant");
     }
 
     [Fact]
@@ -230,7 +230,7 @@ public class TenantIdSetterInterceptorTests
         var act = () => interceptor.SavingChanges(eventData, default);
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     #endregion
@@ -254,7 +254,7 @@ public class TenantIdSetterInterceptorTests
         await interceptor.SavingChangesAsync(eventData, default, CancellationToken.None);
 
         // Assert
-        entity.TenantId.Should().Be("tenant-456");
+        entity.TenantId.ShouldBe("tenant-456");
     }
 
     [Fact]
@@ -282,7 +282,7 @@ public class TenantIdSetterInterceptorTests
         var act = async () => await interceptor.SavingChangesAsync(eventData, default, CancellationToken.None);
 
         // Assert
-        await act.Should().NotThrowAsync();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -303,7 +303,7 @@ public class TenantIdSetterInterceptorTests
         var result = await interceptor.SavingChangesAsync(eventData, expectedResult, CancellationToken.None);
 
         // Assert
-        result.Should().Be(expectedResult);
+        result.ShouldBe(expectedResult);
     }
 
     #endregion
@@ -330,9 +330,9 @@ public class TenantIdSetterInterceptorTests
         interceptor.SavingChanges(eventData, default);
 
         // Assert
-        entity1.TenantId.Should().Be("multi-tenant");
-        entity2.TenantId.Should().Be("multi-tenant");
-        entity3.TenantId.Should().Be("multi-tenant");
+        entity1.TenantId.ShouldBe("multi-tenant");
+        entity2.TenantId.ShouldBe("multi-tenant");
+        entity3.TenantId.ShouldBe("multi-tenant");
     }
 
     [Fact]
@@ -359,8 +359,8 @@ public class TenantIdSetterInterceptorTests
         interceptor.SavingChanges(eventData, default);
 
         // Assert
-        existingEntity.TenantId.Should().Be("old-tenant"); // Unchanged
-        newEntity.TenantId.Should().Be("new-tenant"); // Set
+        existingEntity.TenantId.ShouldBe("old-tenant"); // Unchanged
+        newEntity.TenantId.ShouldBe("new-tenant"); // Set
     }
 
     #endregion
@@ -375,7 +375,7 @@ public class TenantIdSetterInterceptorTests
         var interceptor = new TenantIdSetterInterceptor(accessor.Object, Mock.Of<ILogger<TenantIdSetterInterceptor>>());
 
         // Assert
-        interceptor.Should().BeAssignableTo<SaveChangesInterceptor>();
+        interceptor.ShouldBeAssignableTo<SaveChangesInterceptor>();
     }
 
     #endregion

@@ -58,8 +58,8 @@ public class CreateWishlistCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("My Wishlist");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("My Wishlist");
 
         _wishlistRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Wishlist>(), It.IsAny<CancellationToken>()),
@@ -92,9 +92,9 @@ public class CreateWishlistCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedWishlist.Should().NotBeNull();
-        capturedWishlist!.IsDefault.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        capturedWishlist.ShouldNotBeNull();
+        capturedWishlist!.IsDefault.ShouldBe(true);
     }
 
     [Fact]
@@ -119,9 +119,9 @@ public class CreateWishlistCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedWishlist.Should().NotBeNull();
-        capturedWishlist!.IsDefault.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        capturedWishlist.ShouldNotBeNull();
+        capturedWishlist!.IsDefault.ShouldBe(false);
     }
 
     [Fact]
@@ -146,9 +146,9 @@ public class CreateWishlistCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedWishlist.Should().NotBeNull();
-        capturedWishlist!.IsPublic.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        capturedWishlist.ShouldNotBeNull();
+        capturedWishlist!.IsPublic.ShouldBe(true);
     }
 
     #endregion
@@ -167,7 +167,7 @@ public class CreateWishlistCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
 
         _wishlistRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Wishlist>(), It.IsAny<CancellationToken>()),

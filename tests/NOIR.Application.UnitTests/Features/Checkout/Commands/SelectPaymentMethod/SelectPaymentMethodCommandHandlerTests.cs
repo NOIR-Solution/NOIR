@@ -128,9 +128,9 @@ public class SelectPaymentMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PaymentMethod.Should().Be(PaymentMethod.COD);
-        result.Value.Status.Should().Be(CheckoutSessionStatus.PaymentPending);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PaymentMethod.ShouldBe(PaymentMethod.COD);
+        result.Value.Status.ShouldBe(CheckoutSessionStatus.PaymentPending);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -161,9 +161,9 @@ public class SelectPaymentMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PaymentMethod.Should().Be(PaymentMethod.BankTransfer);
-        result.Value.PaymentGatewayId.Should().Be(gatewayId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PaymentMethod.ShouldBe(PaymentMethod.BankTransfer);
+        result.Value.PaymentGatewayId.ShouldBe(gatewayId);
     }
 
     [Theory]
@@ -193,8 +193,8 @@ public class SelectPaymentMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PaymentMethod.Should().Be(paymentMethod);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PaymentMethod.ShouldBe(paymentMethod);
     }
 
     [Fact]
@@ -220,8 +220,8 @@ public class SelectPaymentMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(CheckoutSessionStatus.PaymentPending);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(CheckoutSessionStatus.PaymentPending);
     }
 
     #endregion
@@ -246,9 +246,9 @@ public class SelectPaymentMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-011");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-011");
+        result.Error.Message.ShouldContain("not found");
     }
 
     [Fact]
@@ -274,9 +274,9 @@ public class SelectPaymentMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-012");
-        result.Error.Message.Should().Contain("expired");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-012");
+        result.Error.Message.ShouldContain("expired");
     }
 
     [Theory]
@@ -301,8 +301,8 @@ public class SelectPaymentMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-013");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-013");
     }
 
     #endregion
@@ -332,8 +332,8 @@ public class SelectPaymentMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PaymentGatewayId.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PaymentGatewayId.ShouldBeNull();
     }
 
     [Fact]
@@ -363,9 +363,9 @@ public class SelectPaymentMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PaymentMethod.Should().Be(PaymentMethod.BankTransfer);
-        result.Value.PaymentGatewayId.Should().Be(newGatewayId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PaymentMethod.ShouldBe(PaymentMethod.BankTransfer);
+        result.Value.PaymentGatewayId.ShouldBe(newGatewayId);
     }
 
     [Fact]
@@ -425,9 +425,9 @@ public class SelectPaymentMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Status should remain AddressComplete since it's not ShippingSelected
-        result.Value.Status.Should().Be(CheckoutSessionStatus.AddressComplete);
+        result.Value.Status.ShouldBe(CheckoutSessionStatus.AddressComplete);
     }
 
     #endregion

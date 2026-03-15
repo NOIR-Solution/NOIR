@@ -81,8 +81,8 @@ public class GetProductAttributeFormSchemaQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(ErrorCodes.Product.NotFound);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe(ErrorCodes.Product.NotFound);
     }
 
     #endregion
@@ -114,11 +114,11 @@ public class GetProductAttributeFormSchemaQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProductId.Should().Be(product.Id);
-        result.Value.ProductName.Should().Be(product.Name);
-        result.Value.CategoryId.Should().BeNull();
-        result.Value.CategoryName.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProductId.ShouldBe(product.Id);
+        result.Value.ProductName.ShouldBe(product.Name);
+        result.Value.CategoryId.ShouldBeNull();
+        result.Value.CategoryName.ShouldBeNull();
     }
 
     #endregion
@@ -168,9 +168,9 @@ public class GetProductAttributeFormSchemaQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategoryId.Should().Be(category.Id);
-        result.Value.CategoryName.Should().Be(category.Name);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategoryId.ShouldBe(category.Id);
+        result.Value.CategoryName.ShouldBe(category.Name);
     }
 
     [Fact]
@@ -215,8 +215,8 @@ public class GetProductAttributeFormSchemaQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Fields.Should().NotBeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Fields.ShouldNotBeEmpty();
     }
 
     #endregion
@@ -247,9 +247,9 @@ public class GetProductAttributeFormSchemaQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProductId.Should().Be(product.Id);
-        result.Value.ProductName.Should().Be("My Product");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProductId.ShouldBe(product.Id);
+        result.Value.ProductName.ShouldBe("My Product");
     }
 
     [Fact]
@@ -276,8 +276,8 @@ public class GetProductAttributeFormSchemaQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Fields.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Fields.ShouldBeEmpty();
     }
 
     #endregion

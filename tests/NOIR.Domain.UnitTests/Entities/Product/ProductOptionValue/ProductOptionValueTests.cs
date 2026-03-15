@@ -47,13 +47,13 @@ public class ProductOptionValueTests
         var value = option.AddValue("red", "Red");
 
         // Assert
-        value.Should().NotBeNull();
-        value.Id.Should().NotBe(Guid.Empty);
-        value.OptionId.Should().Be(option.Id);
-        value.Value.Should().Be("red");
-        value.DisplayValue.Should().Be("Red");
-        value.SortOrder.Should().Be(0);
-        value.TenantId.Should().Be(TestTenantId);
+        value.ShouldNotBeNull();
+        value.Id.ShouldNotBe(Guid.Empty);
+        value.OptionId.ShouldBe(option.Id);
+        value.Value.ShouldBe("red");
+        value.DisplayValue.ShouldBe("Red");
+        value.SortOrder.ShouldBe(0);
+        value.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -63,8 +63,8 @@ public class ProductOptionValueTests
         var value = CreateTestOptionValue();
 
         // Assert
-        value.ColorCode.Should().BeNull();
-        value.SwatchUrl.Should().BeNull();
+        value.ColorCode.ShouldBeNull();
+        value.SwatchUrl.ShouldBeNull();
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class ProductOptionValueTests
         var value = CreateTestOptionValue(value: "Sky Blue");
 
         // Assert
-        value.Value.Should().Be("sky_blue");
+        value.Value.ShouldBe("sky_blue");
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public class ProductOptionValueTests
         var value = CreateTestOptionValue(value: "RED");
 
         // Assert
-        value.Value.Should().Be("red");
+        value.Value.ShouldBe("red");
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class ProductOptionValueTests
         var value = option.AddValue("red");
 
         // Assert
-        value.DisplayValue.Should().Be("red");
+        value.DisplayValue.ShouldBe("red");
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class ProductOptionValueTests
         var second = option.AddValue("blue", "Blue");
 
         // Assert
-        second.SortOrder.Should().Be(1);
+        second.SortOrder.ShouldBe(1);
     }
 
     #endregion
@@ -128,9 +128,9 @@ public class ProductOptionValueTests
         value.Update("blue", "Blue", 5);
 
         // Assert
-        value.Value.Should().Be("blue");
-        value.DisplayValue.Should().Be("Blue");
-        value.SortOrder.Should().Be(5);
+        value.Value.ShouldBe("blue");
+        value.DisplayValue.ShouldBe("Blue");
+        value.SortOrder.ShouldBe(5);
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public class ProductOptionValueTests
         value.Update("Dark Green", "Dark Green", 0);
 
         // Assert
-        value.Value.Should().Be("dark_green");
+        value.Value.ShouldBe("dark_green");
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class ProductOptionValueTests
         value.Update("PURPLE", "Purple", 0);
 
         // Assert
-        value.Value.Should().Be("purple");
+        value.Value.ShouldBe("purple");
     }
 
     [Fact]
@@ -169,7 +169,7 @@ public class ProductOptionValueTests
         value.Update("teal", null, 0);
 
         // Assert
-        value.DisplayValue.Should().Be("teal");
+        value.DisplayValue.ShouldBe("teal");
     }
 
     #endregion
@@ -186,7 +186,7 @@ public class ProductOptionValueTests
         value.SetColorCode("#FF0000");
 
         // Assert
-        value.ColorCode.Should().Be("#FF0000");
+        value.ColorCode.ShouldBe("#FF0000");
     }
 
     [Fact]
@@ -200,7 +200,7 @@ public class ProductOptionValueTests
         value.SetColorCode(null);
 
         // Assert
-        value.ColorCode.Should().BeNull();
+        value.ColorCode.ShouldBeNull();
     }
 
     #endregion
@@ -217,7 +217,7 @@ public class ProductOptionValueTests
         value.SetSwatchUrl("https://example.com/swatch-red.jpg");
 
         // Assert
-        value.SwatchUrl.Should().Be("https://example.com/swatch-red.jpg");
+        value.SwatchUrl.ShouldBe("https://example.com/swatch-red.jpg");
     }
 
     [Fact]
@@ -231,7 +231,7 @@ public class ProductOptionValueTests
         value.SetSwatchUrl(null);
 
         // Assert
-        value.SwatchUrl.Should().BeNull();
+        value.SwatchUrl.ShouldBeNull();
     }
 
     #endregion

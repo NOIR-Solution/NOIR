@@ -87,13 +87,13 @@ public class ProvisionTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Identifier.Should().Be("new-tenant");
-        result.Value.Name.Should().Be("New Tenant");
-        result.Value.IsActive.Should().BeTrue();
-        result.Value.AdminUserCreated.Should().BeFalse();
-        result.Value.AdminUserId.Should().BeNull();
-        result.Value.AdminEmail.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Identifier.ShouldBe("new-tenant");
+        result.Value.Name.ShouldBe("New Tenant");
+        result.Value.IsActive.ShouldBe(true);
+        result.Value.AdminUserCreated.ShouldBe(false);
+        result.Value.AdminUserId.ShouldBeNull();
+        result.Value.AdminEmail.ShouldBeNull();
     }
 
     [Fact]
@@ -114,8 +114,8 @@ public class ProvisionTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Domain.Should().Be("acme.example.com");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Domain.ShouldBe("acme.example.com");
     }
 
     #endregion
@@ -142,11 +142,11 @@ public class ProvisionTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.AdminUserCreated.Should().BeTrue();
-        result.Value.AdminUserId.Should().Be("admin-user-id");
-        result.Value.AdminEmail.Should().Be("admin@newtenant.com");
-        result.Value.AdminCreationError.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.AdminUserCreated.ShouldBe(true);
+        result.Value.AdminUserId.ShouldBe("admin-user-id");
+        result.Value.AdminEmail.ShouldBe("admin@newtenant.com");
+        result.Value.AdminCreationError.ShouldBeNull();
     }
 
     [Fact]
@@ -226,8 +226,8 @@ public class ProvisionTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Business.AlreadyExists);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Business.AlreadyExists);
         _tenantStoreMock.Verify(x => x.AddAsync(It.IsAny<Tenant>()), Times.Never);
     }
 
@@ -254,8 +254,8 @@ public class ProvisionTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Business.AlreadyExists);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Business.AlreadyExists);
     }
 
     #endregion
@@ -285,8 +285,8 @@ public class ProvisionTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.System.InternalError);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.System.InternalError);
     }
 
     #endregion
@@ -330,8 +330,8 @@ public class ProvisionTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.DuplicateEmail);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.DuplicateEmail);
 
         // Verify rollback
         _tenantStoreMock.Verify(
@@ -364,8 +364,8 @@ public class ProvisionTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.UserCreationFailed);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.UserCreationFailed);
 
         // Verify rollback
         _tenantStoreMock.Verify(
@@ -402,8 +402,8 @@ public class ProvisionTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.RoleAssignmentFailed);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.RoleAssignmentFailed);
 
         // Verify user deletion
         _identityServiceMock.Verify(
@@ -437,7 +437,7 @@ public class ProvisionTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _identityServiceMock.Verify(
             x => x.CreateUserAsync(It.IsAny<CreateUserDto>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -460,8 +460,8 @@ public class ProvisionTenantCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.AdminUserCreated.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.AdminUserCreated.ShouldBe(false);
         _identityServiceMock.Verify(
             x => x.CreateUserAsync(It.IsAny<CreateUserDto>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never);

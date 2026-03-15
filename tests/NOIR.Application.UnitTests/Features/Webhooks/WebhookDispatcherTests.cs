@@ -124,7 +124,7 @@ public class WebhookDispatcherTests
         await _dispatcher.DispatchAsync(domainEvent, CancellationToken.None);
 
         // Assert
-        _capturedDeliveryLogs.Should().BeEmpty();
+        _capturedDeliveryLogs.ShouldBeEmpty();
 
         _dbContextMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -152,7 +152,7 @@ public class WebhookDispatcherTests
         await _dispatcher.DispatchAsync(domainEvent, CancellationToken.None);
 
         // Assert
-        _capturedDeliveryLogs.Should().BeEmpty();
+        _capturedDeliveryLogs.ShouldBeEmpty();
 
         _dbContextMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -183,19 +183,19 @@ public class WebhookDispatcherTests
         await _dispatcher.DispatchAsync(domainEvent, CancellationToken.None);
 
         // Assert — exactly one delivery log created
-        _capturedDeliveryLogs.Should().HaveCount(1);
+        _capturedDeliveryLogs.Count().ShouldBe(1);
         var log = _capturedDeliveryLogs[0];
 
-        log.WebhookSubscriptionId.Should().Be(subscription.Id);
-        log.EventType.Should().Be("product.created");
-        log.EventId.Should().Be(domainEvent.EventId);
-        log.RequestUrl.Should().Be("https://hooks.example.com/notify");
-        log.RequestBody.Should().NotBeNullOrWhiteSpace();
+        log.WebhookSubscriptionId.ShouldBe(subscription.Id);
+        log.EventType.ShouldBe("product.created");
+        log.EventId.ShouldBe(domainEvent.EventId);
+        log.RequestUrl.ShouldBe("https://hooks.example.com/notify");
+        log.RequestBody.ShouldNotBeNullOrWhiteSpace();
 
         // Verify the request body is valid JSON containing expected payload fields
         var payload = JsonSerializer.Deserialize<JsonElement>(log.RequestBody);
-        payload.GetProperty("eventType").GetString().Should().Be("product.created");
-        payload.GetProperty("eventId").GetGuid().Should().Be(domainEvent.EventId);
+        payload.GetProperty("eventType").GetString().ShouldBe("product.created");
+        payload.GetProperty("eventId").GetGuid().ShouldBe(domainEvent.EventId);
     }
 
     #endregion
@@ -223,17 +223,17 @@ public class WebhookDispatcherTests
         await _dispatcher.DispatchAsync(domainEvent, CancellationToken.None);
 
         // Assert
-        capturedCommand.Should().NotBeNull();
-        capturedCommand!.SubscriptionId.Should().Be(subscription.Id);
-        capturedCommand.EventType.Should().Be("product.created");
-        capturedCommand.EventId.Should().Be(domainEvent.EventId);
-        capturedCommand.Url.Should().Be("https://hooks.example.com/notify");
-        capturedCommand.Secret.Should().Be(subscription.Secret);
-        capturedCommand.TimeoutSeconds.Should().Be(subscription.TimeoutSeconds);
-        capturedCommand.MaxRetries.Should().Be(subscription.MaxRetries);
-        capturedCommand.AttemptNumber.Should().Be(1);
-        capturedCommand.CustomHeaders.Should().Be(subscription.CustomHeaders);
-        capturedCommand.Payload.Should().NotBeNullOrWhiteSpace();
+        capturedCommand.ShouldNotBeNull();
+        capturedCommand!.SubscriptionId.ShouldBe(subscription.Id);
+        capturedCommand.EventType.ShouldBe("product.created");
+        capturedCommand.EventId.ShouldBe(domainEvent.EventId);
+        capturedCommand.Url.ShouldBe("https://hooks.example.com/notify");
+        capturedCommand.Secret.ShouldBe(subscription.Secret);
+        capturedCommand.TimeoutSeconds.ShouldBe(subscription.TimeoutSeconds);
+        capturedCommand.MaxRetries.ShouldBe(subscription.MaxRetries);
+        capturedCommand.AttemptNumber.ShouldBe(1);
+        capturedCommand.CustomHeaders.ShouldBe(subscription.CustomHeaders);
+        capturedCommand.Payload.ShouldNotBeNullOrWhiteSpace();
     }
 
     #endregion
@@ -261,16 +261,16 @@ public class WebhookDispatcherTests
         await _dispatcher.DispatchAsync(domainEvent, CancellationToken.None);
 
         // Assert — 3 delivery logs, 3 published commands
-        _capturedDeliveryLogs.Should().HaveCount(3);
-        publishedCommands.Should().HaveCount(3);
+        _capturedDeliveryLogs.Count().ShouldBe(3);
+        publishedCommands.Count().ShouldBe(3);
 
         // Each delivery log has a unique subscription ID
         _capturedDeliveryLogs.Select(l => l.WebhookSubscriptionId)
-            .Should().BeEquivalentTo(new[] { sub1.Id, sub2.Id, sub3.Id });
+            .ShouldBe(new[] { sub1.Id, sub2.Id, sub3.Id });
 
         // Each command references the correct subscription
         publishedCommands.Select(c => c.SubscriptionId)
-            .Should().BeEquivalentTo(new[] { sub1.Id, sub2.Id, sub3.Id });
+            .ShouldBe(new[] { sub1.Id, sub2.Id, sub3.Id });
     }
 
     #endregion
@@ -290,23 +290,23 @@ public class WebhookDispatcherTests
         await _dispatcher.DispatchAsync(domainEvent, CancellationToken.None);
 
         // Assert
-        _capturedDeliveryLogs.Should().HaveCount(1);
+        _capturedDeliveryLogs.Count().ShouldBe(1);
         var payloadJson = _capturedDeliveryLogs[0].RequestBody;
-        payloadJson.Should().NotBeNullOrWhiteSpace();
+        payloadJson.ShouldNotBeNullOrWhiteSpace();
 
         var payload = JsonSerializer.Deserialize<JsonElement>(payloadJson);
 
         // Required fields from WebhookPayload
-        payload.GetProperty("eventType").GetString().Should().Be("product.created");
-        payload.GetProperty("eventId").GetGuid().Should().Be(domainEvent.EventId);
-        payload.GetProperty("timestamp").GetDateTimeOffset().Should().BeCloseTo(domainEvent.OccurredAt, TimeSpan.FromSeconds(5));
-        payload.GetProperty("apiVersion").GetString().Should().Be("2026-02-26");
+        payload.GetProperty("eventType").GetString().ShouldBe("product.created");
+        payload.GetProperty("eventId").GetGuid().ShouldBe(domainEvent.EventId);
+        payload.GetProperty("timestamp").GetDateTimeOffset().ShouldBe(domainEvent.OccurredAt, TimeSpan.FromSeconds(5));
+        payload.GetProperty("apiVersion").GetString().ShouldBe("2026-02-26");
 
         // data field should contain the domain event payload
         var data = payload.GetProperty("data");
-        data.GetProperty("productId").GetGuid().Should().Be(domainEvent.ProductId);
-        data.GetProperty("name").GetString().Should().Be("Cool Product");
-        data.GetProperty("slug").GetString().Should().Be("cool-product");
+        data.GetProperty("productId").GetGuid().ShouldBe(domainEvent.ProductId);
+        data.GetProperty("name").GetString().ShouldBe("Cool Product");
+        data.GetProperty("slug").GetString().ShouldBe("cool-product");
     }
 
     #endregion
@@ -338,8 +338,8 @@ public class WebhookDispatcherTests
         await _dispatcher.DispatchAsync(domainEvent, CancellationToken.None);
 
         // Assert — SaveChangesAsync must appear before any PublishAsync calls
-        callOrder.Should().ContainInOrder("SaveChangesAsync", "PublishAsync");
-        callOrder.IndexOf("SaveChangesAsync").Should().BeLessThan(callOrder.IndexOf("PublishAsync"),
+        callOrder.ShouldBe(new[] { "SaveChangesAsync", "PublishAsync" });
+        callOrder.IndexOf("SaveChangesAsync").ShouldBeLessThan(callOrder.IndexOf("PublishAsync"),
             "delivery logs must be persisted before publishing commands to avoid race condition");
     }
 
@@ -368,19 +368,19 @@ public class WebhookDispatcherTests
         await _dispatcher.DispatchAsync(domainEvent, CancellationToken.None);
 
         // Assert — only 2 delivery logs and 2 commands (not 3)
-        _capturedDeliveryLogs.Should().HaveCount(2);
-        publishedCommands.Should().HaveCount(2);
+        _capturedDeliveryLogs.Count().ShouldBe(2);
+        publishedCommands.Count().ShouldBe(2);
 
         // The non-matching subscription should NOT appear
         _capturedDeliveryLogs.Select(l => l.WebhookSubscriptionId)
-            .Should().BeEquivalentTo(new[] { matchingSub1.Id, matchingSub2.Id });
+            .ShouldBe(new[] { matchingSub1.Id, matchingSub2.Id });
 
         publishedCommands.Select(c => c.SubscriptionId)
-            .Should().BeEquivalentTo(new[] { matchingSub1.Id, matchingSub2.Id });
+            .ShouldBe(new[] { matchingSub1.Id, matchingSub2.Id });
 
         // The non-matching subscription should NOT have been dispatched to
         _capturedDeliveryLogs.Select(l => l.WebhookSubscriptionId)
-            .Should().NotContain(nonMatchingSub.Id);
+            .ShouldNotContain(nonMatchingSub.Id);
     }
 
     #endregion
@@ -406,10 +406,10 @@ public class WebhookDispatcherTests
         await _dispatcher.DispatchAsync(domainEvent, CancellationToken.None);
 
         // Assert — the delivery log ID in the command matches the created log's ID
-        _capturedDeliveryLogs.Should().HaveCount(1);
-        capturedCommand.Should().NotBeNull();
+        _capturedDeliveryLogs.Count().ShouldBe(1);
+        capturedCommand.ShouldNotBeNull();
 
-        capturedCommand!.DeliveryLogId.Should().Be(_capturedDeliveryLogs[0].Id);
+        capturedCommand!.DeliveryLogId.ShouldBe(_capturedDeliveryLogs[0].Id);
     }
 
     #endregion

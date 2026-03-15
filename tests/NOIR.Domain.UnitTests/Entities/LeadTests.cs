@@ -34,24 +34,24 @@ public class LeadTests
             DateTimeOffset.UtcNow.AddDays(30), "Big deal");
 
         // Assert
-        lead.Should().NotBeNull();
-        lead.Id.Should().NotBe(Guid.Empty);
-        lead.Title.Should().Be("Enterprise Deal");
-        lead.ContactId.Should().Be(contactId);
-        lead.PipelineId.Should().Be(pipelineId);
-        lead.StageId.Should().Be(stageId);
-        lead.CompanyId.Should().Be(companyId);
-        lead.Value.Should().Be(50000m);
-        lead.Currency.Should().Be("EUR");
-        lead.OwnerId.Should().Be(ownerId);
-        lead.Status.Should().Be(LeadStatus.Active);
-        lead.SortOrder.Should().Be(1.5);
-        lead.ExpectedCloseDate.Should().NotBeNull();
-        lead.Notes.Should().Be("Big deal");
-        lead.TenantId.Should().Be(TestTenantId);
-        lead.WonAt.Should().BeNull();
-        lead.LostAt.Should().BeNull();
-        lead.LostReason.Should().BeNull();
+        lead.ShouldNotBeNull();
+        lead.Id.ShouldNotBe(Guid.Empty);
+        lead.Title.ShouldBe("Enterprise Deal");
+        lead.ContactId.ShouldBe(contactId);
+        lead.PipelineId.ShouldBe(pipelineId);
+        lead.StageId.ShouldBe(stageId);
+        lead.CompanyId.ShouldBe(companyId);
+        lead.Value.ShouldBe(50000m);
+        lead.Currency.ShouldBe("EUR");
+        lead.OwnerId.ShouldBe(ownerId);
+        lead.Status.ShouldBe(LeadStatus.Active);
+        lead.SortOrder.ShouldBe(1.5);
+        lead.ExpectedCloseDate.ShouldNotBeNull();
+        lead.Notes.ShouldBe("Big deal");
+        lead.TenantId.ShouldBe(TestTenantId);
+        lead.WonAt.ShouldBeNull();
+        lead.LostAt.ShouldBeNull();
+        lead.LostReason.ShouldBeNull();
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class LeadTests
         var act = () => Lead.Create(
             "", Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), TestTenantId);
 
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -72,13 +72,13 @@ public class LeadTests
             "Simple Deal", Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), TestTenantId);
 
         // Assert
-        lead.Value.Should().Be(0m);
-        lead.Currency.Should().Be("USD");
-        lead.SortOrder.Should().Be(0);
-        lead.CompanyId.Should().BeNull();
-        lead.OwnerId.Should().BeNull();
-        lead.ExpectedCloseDate.Should().BeNull();
-        lead.Notes.Should().BeNull();
+        lead.Value.ShouldBe(0m);
+        lead.Currency.ShouldBe("USD");
+        lead.SortOrder.ShouldBe(0);
+        lead.CompanyId.ShouldBeNull();
+        lead.OwnerId.ShouldBeNull();
+        lead.ExpectedCloseDate.ShouldBeNull();
+        lead.Notes.ShouldBeNull();
     }
 
     #endregion
@@ -97,8 +97,8 @@ public class LeadTests
         lead.MoveToStage(newStageId, newSortOrder);
 
         // Assert
-        lead.StageId.Should().Be(newStageId);
-        lead.SortOrder.Should().Be(2.5);
+        lead.StageId.ShouldBe(newStageId);
+        lead.SortOrder.ShouldBe(2.5);
     }
 
     #endregion
@@ -116,9 +116,9 @@ public class LeadTests
         lead.Win();
 
         // Assert
-        lead.Status.Should().Be(LeadStatus.Won);
-        lead.WonAt.Should().NotBeNull();
-        lead.WonAt.Should().BeOnOrAfter(beforeWin);
+        lead.Status.ShouldBe(LeadStatus.Won);
+        lead.WonAt.ShouldNotBeNull();
+        lead.WonAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeWin);
     }
 
     [Fact]
@@ -130,8 +130,8 @@ public class LeadTests
 
         // Act & Assert
         var act = () => lead.Win();
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Only active leads can be won.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Only active leads can be won.");
     }
 
     [Fact]
@@ -143,8 +143,8 @@ public class LeadTests
 
         // Act & Assert
         var act = () => lead.Win();
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Only active leads can be won.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Only active leads can be won.");
     }
 
     #endregion
@@ -163,10 +163,10 @@ public class LeadTests
         lead.Lose(reason);
 
         // Assert
-        lead.Status.Should().Be(LeadStatus.Lost);
-        lead.LostAt.Should().NotBeNull();
-        lead.LostAt.Should().BeOnOrAfter(beforeLose);
-        lead.LostReason.Should().Be("Budget constraints");
+        lead.Status.ShouldBe(LeadStatus.Lost);
+        lead.LostAt.ShouldNotBeNull();
+        lead.LostAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeLose);
+        lead.LostReason.ShouldBe("Budget constraints");
     }
 
     [Fact]
@@ -179,8 +179,8 @@ public class LeadTests
         lead.Lose(null);
 
         // Assert
-        lead.Status.Should().Be(LeadStatus.Lost);
-        lead.LostReason.Should().BeNull();
+        lead.Status.ShouldBe(LeadStatus.Lost);
+        lead.LostReason.ShouldBeNull();
     }
 
     [Fact]
@@ -192,8 +192,8 @@ public class LeadTests
 
         // Act & Assert
         var act = () => lead.Lose("Again");
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Only active leads can be lost.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Only active leads can be lost.");
     }
 
     [Fact]
@@ -205,8 +205,8 @@ public class LeadTests
 
         // Act & Assert
         var act = () => lead.Lose("Changed mind");
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Only active leads can be lost.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Only active leads can be lost.");
     }
 
     #endregion
@@ -224,10 +224,10 @@ public class LeadTests
         lead.Reopen();
 
         // Assert
-        lead.Status.Should().Be(LeadStatus.Active);
-        lead.WonAt.Should().BeNull();
-        lead.LostAt.Should().BeNull();
-        lead.LostReason.Should().BeNull();
+        lead.Status.ShouldBe(LeadStatus.Active);
+        lead.WonAt.ShouldBeNull();
+        lead.LostAt.ShouldBeNull();
+        lead.LostReason.ShouldBeNull();
     }
 
     [Fact]
@@ -241,10 +241,10 @@ public class LeadTests
         lead.Reopen();
 
         // Assert
-        lead.Status.Should().Be(LeadStatus.Active);
-        lead.WonAt.Should().BeNull();
-        lead.LostAt.Should().BeNull();
-        lead.LostReason.Should().BeNull();
+        lead.Status.ShouldBe(LeadStatus.Active);
+        lead.WonAt.ShouldBeNull();
+        lead.LostAt.ShouldBeNull();
+        lead.LostReason.ShouldBeNull();
     }
 
     [Fact]
@@ -255,8 +255,8 @@ public class LeadTests
 
         // Act & Assert
         var act = () => lead.Reopen();
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Lead is already active.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Lead is already active.");
     }
 
     #endregion
@@ -273,7 +273,7 @@ public class LeadTests
         lead.Win();
 
         // Assert
-        lead.DomainEvents.Should().ContainSingle(e => e is Events.Crm.LeadWonEvent);
+        lead.DomainEvents.ShouldContain(e => e is Events.Crm.LeadWonEvent);
     }
 
     [Fact]
@@ -286,7 +286,7 @@ public class LeadTests
         lead.Lose("Lost reason");
 
         // Assert
-        lead.DomainEvents.Should().ContainSingle(e => e is Events.Crm.LeadLostEvent);
+        lead.DomainEvents.ShouldContain(e => e is Events.Crm.LeadLostEvent);
     }
 
     [Fact]
@@ -300,7 +300,7 @@ public class LeadTests
         lead.Reopen();
 
         // Assert
-        lead.DomainEvents.Should().Contain(e => e is Events.Crm.LeadReopenedEvent);
+        lead.DomainEvents.ShouldContain(e => e is Events.Crm.LeadReopenedEvent);
     }
 
     #endregion

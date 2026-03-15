@@ -38,9 +38,9 @@ public class SearchEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/search?q=test");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<GlobalSearchResponseDto>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class SearchEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/search?q=test");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -63,10 +63,10 @@ public class SearchEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/search?q=");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<GlobalSearchResponseDto>();
-        result.Should().NotBeNull();
-        result!.TotalCount.Should().Be(0);
+        result.ShouldNotBeNull();
+        result!.TotalCount.ShouldBe(0);
     }
 
     [Fact]
@@ -79,10 +79,10 @@ public class SearchEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/search?q=a");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<GlobalSearchResponseDto>();
-        result.Should().NotBeNull();
-        result!.TotalCount.Should().Be(0);
+        result.ShouldNotBeNull();
+        result!.TotalCount.ShouldBe(0);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class SearchEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/search?q=admin");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion

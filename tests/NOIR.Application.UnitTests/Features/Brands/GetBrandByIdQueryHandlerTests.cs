@@ -53,16 +53,16 @@ public class GetBrandByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Test Brand");
-        result.Value.Slug.Should().Be("test-brand");
-        result.Value.Description.Should().Be("A test brand");
-        result.Value.Website.Should().Be("https://test.com");
-        result.Value.LogoUrl.Should().Be("https://cdn.test.com/logo.png");
-        result.Value.BannerUrl.Should().Be("https://cdn.test.com/banner.png");
-        result.Value.MetaTitle.Should().Be("Test Brand | Shop");
-        result.Value.MetaDescription.Should().Be("Shop Test Brand products");
-        result.Value.IsFeatured.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Test Brand");
+        result.Value.Slug.ShouldBe("test-brand");
+        result.Value.Description.ShouldBe("A test brand");
+        result.Value.Website.ShouldBe("https://test.com");
+        result.Value.LogoUrl.ShouldBe("https://cdn.test.com/logo.png");
+        result.Value.BannerUrl.ShouldBe("https://cdn.test.com/banner.png");
+        result.Value.MetaTitle.ShouldBe("Test Brand | Shop");
+        result.Value.MetaDescription.ShouldBe("Shop Test Brand products");
+        result.Value.IsFeatured.ShouldBe(true);
     }
 
     [Fact]
@@ -84,14 +84,14 @@ public class GetBrandByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Minimal Brand");
-        result.Value.Slug.Should().Be("minimal-brand");
-        result.Value.Description.Should().BeNull();
-        result.Value.Website.Should().BeNull();
-        result.Value.LogoUrl.Should().BeNull();
-        result.Value.BannerUrl.Should().BeNull();
-        result.Value.IsFeatured.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Minimal Brand");
+        result.Value.Slug.ShouldBe("minimal-brand");
+        result.Value.Description.ShouldBeNull();
+        result.Value.Website.ShouldBeNull();
+        result.Value.LogoUrl.ShouldBeNull();
+        result.Value.BannerUrl.ShouldBeNull();
+        result.Value.IsFeatured.ShouldBe(false);
     }
 
     #endregion
@@ -116,8 +116,8 @@ public class GetBrandByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Brand.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Brand.NotFound);
     }
 
     #endregion

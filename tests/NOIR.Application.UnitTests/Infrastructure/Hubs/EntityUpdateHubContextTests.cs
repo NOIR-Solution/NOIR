@@ -78,10 +78,10 @@ public class EntityUpdateHubContextTests
         await _sut.PublishEntityUpdatedAsync(EntityType, entityId, EntityOperation.Created, TenantId);
 
         // Assert
-        capturedSignal.Should().NotBeNull();
-        capturedSignal!.EntityType.Should().Be(EntityType);
-        capturedSignal.EntityId.Should().Be(entityId.ToString());
-        capturedSignal.Operation.Should().Be(EntityOperation.Created);
+        capturedSignal.ShouldNotBeNull();
+        capturedSignal!.EntityType.ShouldBe(EntityType);
+        capturedSignal.EntityId.ShouldBe(entityId.ToString());
+        capturedSignal.Operation.ShouldBe(EntityOperation.Created);
     }
 
     [Theory]
@@ -102,7 +102,7 @@ public class EntityUpdateHubContextTests
         await _sut.PublishEntityUpdatedAsync(EntityType, entityId, operation, TenantId);
 
         // Assert
-        capturedSignal!.Operation.Should().Be(operation);
+        capturedSignal!.Operation.ShouldBe(operation);
     }
 
     [Fact]
@@ -118,7 +118,7 @@ public class EntityUpdateHubContextTests
         var act = async () => await _sut.PublishEntityUpdatedAsync(EntityType, entityId, EntityOperation.Updated, TenantId);
 
         // Assert
-        await act.Should().NotThrowAsync();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -137,7 +137,7 @@ public class EntityUpdateHubContextTests
         await _sut.PublishEntityUpdatedAsync(EntityType, entityId, EntityOperation.Updated, TenantId);
 
         // Assert
-        capturedSignal!.UpdatedAt.Should().BeAfter(before);
-        capturedSignal.UpdatedAt.Should().BeBefore(DateTimeOffset.UtcNow.AddSeconds(1));
+        capturedSignal!.UpdatedAt.ShouldBeGreaterThan(before);
+        capturedSignal.UpdatedAt.ShouldBeLessThan(DateTimeOffset.UtcNow.AddSeconds(1));
     }
 }

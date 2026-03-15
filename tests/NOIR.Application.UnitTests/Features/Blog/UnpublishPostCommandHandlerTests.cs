@@ -75,9 +75,9 @@ public class UnpublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(PostStatus.Draft);
-        post.Status.Should().Be(PostStatus.Draft);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(PostStatus.Draft);
+        post.Status.ShouldBe(PostStatus.Draft);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -98,9 +98,9 @@ public class UnpublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(PostStatus.Draft);
-        result.Value.ScheduledPublishAt.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(PostStatus.Draft);
+        result.Value.ScheduledPublishAt.ShouldBeNull();
     }
 
     [Fact]
@@ -127,9 +127,9 @@ public class UnpublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategoryName.Should().Be("Test Category");
-        result.Value.CategorySlug.Should().Be("test-category");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategoryName.ShouldBe("Test Category");
+        result.Value.CategorySlug.ShouldBe("test-category");
     }
 
     [Fact]
@@ -149,8 +149,8 @@ public class UnpublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(PostStatus.Draft);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(PostStatus.Draft);
     }
 
     #endregion
@@ -173,9 +173,9 @@ public class UnpublishPostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-BLOG-003");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-BLOG-003");
     }
 
     #endregion

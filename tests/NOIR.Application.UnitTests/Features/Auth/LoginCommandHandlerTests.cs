@@ -151,13 +151,13 @@ public class LoginCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Success.Should().BeTrue();
-        result.Value.Auth.Should().NotBeNull();
-        result.Value.Auth!.UserId.Should().Be(user.Id);
-        result.Value.Auth.Email.Should().Be(user.Email);
-        result.Value.Auth.AccessToken.Should().Be("test-access-token");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Success.ShouldBe(true);
+        result.Value.Auth.ShouldNotBeNull();
+        result.Value.Auth!.UserId.ShouldBe(user.Id);
+        result.Value.Auth.Email.ShouldBe(user.Email);
+        result.Value.Auth.AccessToken.ShouldBe("test-access-token");
     }
 
     [Fact]
@@ -172,11 +172,11 @@ public class LoginCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().BeTrue();
-        result.Value.Auth.Should().NotBeNull();
-        result.Value.Auth!.RefreshToken.Should().NotBeNullOrEmpty();
-        result.Value.Auth.ExpiresAt.Should().BeAfter(DateTimeOffset.UtcNow);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(true);
+        result.Value.Auth.ShouldNotBeNull();
+        result.Value.Auth!.RefreshToken.ShouldNotBeNullOrEmpty();
+        result.Value.Auth.ExpiresAt.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
     }
 
     [Fact]
@@ -219,7 +219,7 @@ public class LoginCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         // TenantId comes from ICurrentUser context, not from user entity
         _tokenServiceMock.Verify(
@@ -246,9 +246,9 @@ public class LoginCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Unauthorized);
-        result.Error.Message.Should().Contain("invalidCredentials");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Unauthorized);
+        result.Error.Message.ShouldContain("invalidCredentials");
     }
 
     [Fact]
@@ -291,9 +291,9 @@ public class LoginCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Forbidden);
-        result.Error.Message.Should().Contain("accountDisabled");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Forbidden);
+        result.Error.Message.ShouldContain("accountDisabled");
     }
 
     [Fact]
@@ -345,9 +345,9 @@ public class LoginCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Unauthorized);
-        result.Error.Message.Should().Contain("invalidCredentials");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Unauthorized);
+        result.Error.Message.ShouldContain("invalidCredentials");
     }
 
     #endregion
@@ -378,9 +378,9 @@ public class LoginCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Forbidden);
-        result.Error.Message.Should().Contain("accountLockedOut");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Forbidden);
+        result.Error.Message.ShouldContain("accountLockedOut");
     }
 
     #endregion
@@ -421,7 +421,7 @@ public class LoginCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _cookieAuthServiceMock.Verify(
             x => x.SetAuthCookies(
                 "test-access-token",
@@ -497,7 +497,7 @@ public class LoginCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
         _cookieAuthServiceMock.Verify(
             x => x.SetAuthCookies(
                 It.IsAny<string>(),
@@ -545,13 +545,13 @@ public class LoginCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().BeFalse();
-        result.Value.RequiresTenantSelection.Should().BeTrue();
-        result.Value.AvailableTenants.Should().HaveCount(2);
-        result.Value.AvailableTenants![0].Name.Should().Be("Company A");
-        result.Value.AvailableTenants![1].Name.Should().Be("Company B");
-        result.Value.Auth.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(false);
+        result.Value.RequiresTenantSelection.ShouldBe(true);
+        result.Value.AvailableTenants.Count().ShouldBe(2);
+        result.Value.AvailableTenants![0].Name.ShouldBe("Company A");
+        result.Value.AvailableTenants![1].Name.ShouldBe("Company B");
+        result.Value.Auth.ShouldBeNull();
     }
 
     [Fact]
@@ -588,11 +588,11 @@ public class LoginCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert - Direct login, no tenant selection
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().BeTrue();
-        result.Value.RequiresTenantSelection.Should().BeFalse();
-        result.Value.Auth.Should().NotBeNull();
-        result.Value.AvailableTenants.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(true);
+        result.Value.RequiresTenantSelection.ShouldBe(false);
+        result.Value.Auth.ShouldNotBeNull();
+        result.Value.AvailableTenants.ShouldBeNull();
 
         // Verify FindTenantsByEmailAsync was NOT called (bypassed when TenantId provided)
         _userIdentityServiceMock.Verify(
@@ -649,11 +649,11 @@ public class LoginCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert - Should complete login directly, not prompt for tenant selection
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().BeTrue();
-        result.Value.RequiresTenantSelection.Should().BeFalse();
-        result.Value.Auth.Should().NotBeNull();
-        result.Value.Auth!.UserId.Should().Be("user-1");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(true);
+        result.Value.RequiresTenantSelection.ShouldBe(false);
+        result.Value.Auth.ShouldNotBeNull();
+        result.Value.Auth!.UserId.ShouldBe("user-1");
     }
 
     #endregion

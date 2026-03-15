@@ -92,7 +92,7 @@ public class CreatePipelineCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         // Assert
-        result.Errors.Should().NotBeEmpty();
+        result.Errors.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class CreatePipelineCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         // Assert
-        result.Errors.Should().NotBeEmpty();
+        result.Errors.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -126,6 +126,6 @@ public class CreatePipelineCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         // Assert
-        result.Errors.Should().NotBeEmpty();
+        result.Errors.ShouldNotBeEmpty();
     }
 }

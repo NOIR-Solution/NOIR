@@ -87,15 +87,15 @@ public class GetPaymentTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
         // Should have creation event + paid event = 2 events
-        result.Value.Count.Should().BeGreaterThanOrEqualTo(2);
+        result.Value.Count.ShouldBeGreaterThanOrEqualTo(2);
 
         // Events should be sorted by timestamp descending
         for (int i = 0; i < result.Value.Count - 1; i++)
         {
-            result.Value[i].Timestamp.Should().BeOnOrAfter(result.Value[i + 1].Timestamp);
+            result.Value[i].Timestamp.ShouldBeGreaterThanOrEqualTo(result.Value[i + 1].Timestamp);
         }
     }
 
@@ -126,8 +126,8 @@ public class GetPaymentTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Contain(e => e.EventType == "StatusChange" && e.Summary.Contains("Payment created"));
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldContain(e => e.EventType == "StatusChange" && e.Summary.Contains("Payment created"));
     }
 
     [Fact]
@@ -144,8 +144,8 @@ public class GetPaymentTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.TransactionNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.TransactionNotFound);
     }
 }

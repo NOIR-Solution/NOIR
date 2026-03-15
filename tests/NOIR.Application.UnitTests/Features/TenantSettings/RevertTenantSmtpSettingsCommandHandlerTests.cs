@@ -74,7 +74,7 @@ public class RevertTenantSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _settingsServiceMock.Verify(x => x.DeleteSettingAsync(TestTenantId, "smtp:host", It.IsAny<CancellationToken>()), Times.Once);
         _settingsServiceMock.Verify(x => x.DeleteSettingAsync(TestTenantId, "smtp:port", It.IsAny<CancellationToken>()), Times.Once);
         _settingsServiceMock.Verify(x => x.DeleteSettingAsync(TestTenantId, "smtp:username", It.IsAny<CancellationToken>()), Times.Once);
@@ -95,17 +95,17 @@ public class RevertTenantSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Host.Should().Be("platform-smtp.example.com");
-        dto.Port.Should().Be(25);
-        dto.Username.Should().Be("platform@example.com");
-        dto.HasPassword.Should().BeTrue();
-        dto.FromEmail.Should().Be("noreply@platform.com");
-        dto.FromName.Should().Be("Platform");
-        dto.UseSsl.Should().BeTrue();
-        dto.IsInherited.Should().BeTrue();
-        dto.IsConfigured.Should().BeTrue();
+        dto.Host.ShouldBe("platform-smtp.example.com");
+        dto.Port.ShouldBe(25);
+        dto.Username.ShouldBe("platform@example.com");
+        dto.HasPassword.ShouldBe(true);
+        dto.FromEmail.ShouldBe("noreply@platform.com");
+        dto.FromName.ShouldBe("Platform");
+        dto.UseSsl.ShouldBe(true);
+        dto.IsInherited.ShouldBe(true);
+        dto.IsConfigured.ShouldBe(true);
     }
 
     [Fact]
@@ -122,17 +122,17 @@ public class RevertTenantSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Host.Should().Be(string.Empty);
-        dto.Port.Should().Be(25); // Default port
-        dto.Username.Should().BeNull();
-        dto.HasPassword.Should().BeFalse();
-        dto.FromEmail.Should().Be(string.Empty);
-        dto.FromName.Should().Be(string.Empty);
-        dto.UseSsl.Should().BeFalse();
-        dto.IsConfigured.Should().BeFalse();
-        dto.IsInherited.Should().BeTrue();
+        dto.Host.ShouldBe(string.Empty);
+        dto.Port.ShouldBe(25); // Default port
+        dto.Username.ShouldBeNull();
+        dto.HasPassword.ShouldBe(false);
+        dto.FromEmail.ShouldBe(string.Empty);
+        dto.FromName.ShouldBe(string.Empty);
+        dto.UseSsl.ShouldBe(false);
+        dto.IsConfigured.ShouldBe(false);
+        dto.IsInherited.ShouldBe(true);
     }
 
     [Fact]
@@ -152,12 +152,12 @@ public class RevertTenantSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Host.Should().Be("partial-host.com");
-        result.Value.Port.Should().Be(465);
-        result.Value.Username.Should().BeNull();
-        result.Value.HasPassword.Should().BeFalse();
-        result.Value.FromEmail.Should().Be(string.Empty);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Host.ShouldBe("partial-host.com");
+        result.Value.Port.ShouldBe(465);
+        result.Value.Username.ShouldBeNull();
+        result.Value.HasPassword.ShouldBe(false);
+        result.Value.FromEmail.ShouldBe(string.Empty);
     }
 
     #endregion
@@ -181,8 +181,8 @@ public class RevertTenantSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Port.Should().Be(25);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Port.ShouldBe(25);
     }
 
     #endregion
@@ -206,8 +206,8 @@ public class RevertTenantSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.UseSsl.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.UseSsl.ShouldBe(false);
     }
 
     #endregion
@@ -225,8 +225,8 @@ public class RevertTenantSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
     }
 
     [Fact]
@@ -240,8 +240,8 @@ public class RevertTenantSmtpSettingsCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
     }
 
     #endregion

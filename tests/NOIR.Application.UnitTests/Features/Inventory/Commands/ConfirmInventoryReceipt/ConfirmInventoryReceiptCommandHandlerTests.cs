@@ -115,13 +115,13 @@ public class ConfirmInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(InventoryReceiptStatus.Confirmed);
-        result.Value.ConfirmedBy.Should().Be("admin-user");
-        result.Value.ConfirmedAt.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(InventoryReceiptStatus.Confirmed);
+        result.Value.ConfirmedBy.ShouldBe("admin-user");
+        result.Value.ConfirmedAt.ShouldNotBeNull();
 
         // Stock should increase by 20 (100 + 20 = 120)
-        variant.StockQuantity.Should().Be(120);
+        variant.StockQuantity.ShouldBe(120);
 
         _movementLoggerMock.Verify(
             x => x.LogMovementAsync(
@@ -190,11 +190,11 @@ public class ConfirmInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(InventoryReceiptStatus.Confirmed);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(InventoryReceiptStatus.Confirmed);
 
         // Stock should decrease by 30 (100 - 30 = 70)
-        variant.StockQuantity.Should().Be(70);
+        variant.StockQuantity.ShouldBe(70);
 
         _movementLoggerMock.Verify(
             x => x.LogMovementAsync(
@@ -237,8 +237,8 @@ public class ConfirmInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(InventoryReceiptStatus.Confirmed);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(InventoryReceiptStatus.Confirmed);
 
         // Movement logger should NOT be called since product not found
         _movementLoggerMock.Verify(
@@ -275,9 +275,9 @@ public class ConfirmInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-INVENTORY-003");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-INVENTORY-003");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -306,9 +306,9 @@ public class ConfirmInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-INVENTORY-004");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-INVENTORY-004");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -333,9 +333,9 @@ public class ConfirmInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-INVENTORY-004");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-INVENTORY-004");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -374,10 +374,10 @@ public class ConfirmInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-INVENTORY-002");
-        result.Error.Message.Should().Contain("Insufficient stock");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-INVENTORY-002");
+        result.Error.Message.ShouldContain("Insufficient stock");
     }
 
     #endregion

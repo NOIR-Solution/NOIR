@@ -71,9 +71,9 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await adminClient.GetAsync("/api/tenant-settings/branding");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var settings = await response.Content.ReadFromJsonAsync<BrandingSettingsDto>();
-        settings.Should().NotBeNull();
+        settings.ShouldNotBeNull();
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await _client.GetAsync("/api/tenant-settings/branding");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await userClient.GetAsync("/api/tenant-settings/branding");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -116,12 +116,12 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await adminClient.PutAsJsonAsync("/api/tenant-settings/branding", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var settings = await response.Content.ReadFromJsonAsync<BrandingSettingsDto>();
-        settings.Should().NotBeNull();
-        settings!.LogoUrl.Should().Be("https://example.com/logo.png");
-        settings.PrimaryColor.Should().Be("#3498db");
-        settings.DarkModeDefault.Should().BeTrue();
+        settings.ShouldNotBeNull();
+        settings!.LogoUrl.ShouldBe("https://example.com/logo.png");
+        settings.PrimaryColor.ShouldBe("#3498db");
+        settings.DarkModeDefault.ShouldBeTrue();
     }
 
     [Fact]
@@ -140,10 +140,10 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await adminClient.PutAsJsonAsync("/api/tenant-settings/branding", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var settings = await response.Content.ReadFromJsonAsync<BrandingSettingsDto>();
-        settings.Should().NotBeNull();
-        settings!.DarkModeDefault.Should().BeFalse();
+        settings.ShouldNotBeNull();
+        settings!.DarkModeDefault.ShouldBeFalse();
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await _client.PutAsJsonAsync("/api/tenant-settings/branding", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -171,7 +171,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await userClient.PutAsJsonAsync("/api/tenant-settings/branding", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -188,9 +188,9 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await adminClient.GetAsync("/api/tenant-settings/contact");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var settings = await response.Content.ReadFromJsonAsync<ContactSettingsDto>();
-        settings.Should().NotBeNull();
+        settings.ShouldNotBeNull();
     }
 
     [Fact]
@@ -200,7 +200,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await _client.GetAsync("/api/tenant-settings/contact");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -214,7 +214,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await userClient.GetAsync("/api/tenant-settings/contact");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -231,12 +231,12 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await adminClient.PutAsJsonAsync("/api/tenant-settings/contact", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var settings = await response.Content.ReadFromJsonAsync<ContactSettingsDto>();
-        settings.Should().NotBeNull();
-        settings!.Email.Should().Be("contact@example.com");
-        settings.Phone.Should().Be("+1-555-0100");
-        settings.Address.Should().Be("123 Main St, City, ST 12345");
+        settings.ShouldNotBeNull();
+        settings!.Email.ShouldBe("contact@example.com");
+        settings.Phone.ShouldBe("+1-555-0100");
+        settings.Address.ShouldBe("123 Main St, City, ST 12345");
     }
 
     [Fact]
@@ -253,9 +253,9 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await adminClient.PutAsJsonAsync("/api/tenant-settings/contact", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var settings = await response.Content.ReadFromJsonAsync<ContactSettingsDto>();
-        settings.Should().NotBeNull();
+        settings.ShouldNotBeNull();
     }
 
     [Fact]
@@ -268,7 +268,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await _client.PutAsJsonAsync("/api/tenant-settings/contact", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -283,7 +283,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await userClient.PutAsJsonAsync("/api/tenant-settings/contact", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -300,12 +300,12 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await adminClient.GetAsync("/api/tenant-settings/regional");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var settings = await response.Content.ReadFromJsonAsync<RegionalSettingsDto>();
-        settings.Should().NotBeNull();
-        settings!.Timezone.Should().NotBeNullOrEmpty();
-        settings.Language.Should().NotBeNullOrEmpty();
-        settings.DateFormat.Should().NotBeNullOrEmpty();
+        settings.ShouldNotBeNull();
+        settings!.Timezone.ShouldNotBeNullOrEmpty();
+        settings.Language.ShouldNotBeNullOrEmpty();
+        settings.DateFormat.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -315,7 +315,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await _client.GetAsync("/api/tenant-settings/regional");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -329,7 +329,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await userClient.GetAsync("/api/tenant-settings/regional");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -349,12 +349,12 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await adminClient.PutAsJsonAsync("/api/tenant-settings/regional", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var settings = await response.Content.ReadFromJsonAsync<RegionalSettingsDto>();
-        settings.Should().NotBeNull();
-        settings!.Timezone.Should().Be("America/New_York");
-        settings.Language.Should().Be("en");
-        settings.DateFormat.Should().Be("MM/DD/YYYY");
+        settings.ShouldNotBeNull();
+        settings!.Timezone.ShouldBe("America/New_York");
+        settings.Language.ShouldBe("en");
+        settings.DateFormat.ShouldBe("MM/DD/YYYY");
     }
 
     [Fact]
@@ -367,7 +367,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await _client.PutAsJsonAsync("/api/tenant-settings/regional", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -382,7 +382,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await userClient.PutAsJsonAsync("/api/tenant-settings/regional", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -399,9 +399,9 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await adminClient.GetAsync("/api/tenant-settings/smtp");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var settings = await response.Content.ReadFromJsonAsync<TenantSmtpSettingsDto>();
-        settings.Should().NotBeNull();
+        settings.ShouldNotBeNull();
     }
 
     [Fact]
@@ -411,7 +411,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await _client.GetAsync("/api/tenant-settings/smtp");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -425,7 +425,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await userClient.GetAsync("/api/tenant-settings/smtp");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -446,15 +446,15 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await adminClient.PutAsJsonAsync("/api/tenant-settings/smtp", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var settings = await response.Content.ReadFromJsonAsync<TenantSmtpSettingsDto>();
-        settings.Should().NotBeNull();
-        settings!.Host.Should().Be("smtp.example.com");
-        settings.Port.Should().Be(587);
-        settings.FromEmail.Should().Be("noreply@example.com");
-        settings.FromName.Should().Be("Test App");
-        settings.UseSsl.Should().BeTrue();
-        settings.IsInherited.Should().BeFalse(); // Tenant-specific now
+        settings.ShouldNotBeNull();
+        settings!.Host.ShouldBe("smtp.example.com");
+        settings.Port.ShouldBe(587);
+        settings.FromEmail.ShouldBe("noreply@example.com");
+        settings.FromName.ShouldBe("Test App");
+        settings.UseSsl.ShouldBeTrue();
+        settings.IsInherited.ShouldBeFalse(); // Tenant-specific now
     }
 
     [Fact]
@@ -468,7 +468,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await _client.PutAsJsonAsync("/api/tenant-settings/smtp", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -484,7 +484,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await userClient.PutAsJsonAsync("/api/tenant-settings/smtp", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -497,10 +497,10 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await adminClient.PostAsync("/api/tenant-settings/smtp/revert", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var settings = await response.Content.ReadFromJsonAsync<TenantSmtpSettingsDto>();
-        settings.Should().NotBeNull();
-        settings!.IsInherited.Should().BeTrue(); // Should be using platform defaults now
+        settings.ShouldNotBeNull();
+        settings!.IsInherited.ShouldBeTrue(); // Should be using platform defaults now
     }
 
     [Fact]
@@ -510,7 +510,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await _client.PostAsync("/api/tenant-settings/smtp/revert", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -524,7 +524,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await userClient.PostAsync("/api/tenant-settings/smtp/revert", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -537,7 +537,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await _client.PostAsJsonAsync("/api/tenant-settings/smtp/test", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -552,7 +552,7 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         var response = await userClient.PostAsJsonAsync("/api/tenant-settings/smtp/test", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -568,16 +568,16 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
 
         // Act & Assert - All read endpoints should be forbidden
         var brandingResponse = await userClient.GetAsync("/api/tenant-settings/branding");
-        brandingResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        brandingResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
 
         var contactResponse = await userClient.GetAsync("/api/tenant-settings/contact");
-        contactResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        contactResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
 
         var regionalResponse = await userClient.GetAsync("/api/tenant-settings/regional");
-        regionalResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        regionalResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
 
         var smtpResponse = await userClient.GetAsync("/api/tenant-settings/smtp");
-        smtpResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        smtpResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -590,20 +590,20 @@ public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFa
         // Act & Assert - All update endpoints should be forbidden
         var brandingRequest = new UpdateBrandingSettingsRequest(null, null, null, null, false);
         var brandingResponse = await userClient.PutAsJsonAsync("/api/tenant-settings/branding", brandingRequest);
-        brandingResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        brandingResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
 
         var contactRequest = new UpdateContactSettingsRequest(null, null, null);
         var contactResponse = await userClient.PutAsJsonAsync("/api/tenant-settings/contact", contactRequest);
-        contactResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        contactResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
 
         var regionalRequest = new UpdateRegionalSettingsRequest("UTC", "en", "yyyy-MM-dd");
         var regionalResponse = await userClient.PutAsJsonAsync("/api/tenant-settings/regional", regionalRequest);
-        regionalResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        regionalResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
 
         var smtpRequest = new UpdateTenantSmtpSettingsRequest(
             "smtp.test.com", 587, null, null, "test@test.com", "Test", true);
         var smtpResponse = await userClient.PutAsJsonAsync("/api/tenant-settings/smtp", smtpRequest);
-        smtpResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        smtpResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion

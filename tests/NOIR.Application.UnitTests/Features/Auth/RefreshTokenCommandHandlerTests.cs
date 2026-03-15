@@ -143,11 +143,11 @@ public class RefreshTokenCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.UserId.Should().Be(user.Id);
-        result.Value.Email.Should().Be(user.Email);
-        result.Value.AccessToken.Should().Be("new-access-token");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.UserId.ShouldBe(user.Id);
+        result.Value.Email.ShouldBe(user.Email);
+        result.Value.AccessToken.ShouldBe("new-access-token");
     }
 
     [Fact]
@@ -162,9 +162,9 @@ public class RefreshTokenCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.RefreshToken.Should().NotBeNullOrEmpty();
-        result.Value.ExpiresAt.Should().BeAfter(DateTimeOffset.UtcNow);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.RefreshToken.ShouldNotBeNullOrEmpty();
+        result.Value.ExpiresAt.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
     }
 
     [Fact]
@@ -223,9 +223,9 @@ public class RefreshTokenCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Unauthorized);
-        result.Error.Message.Should().Contain("accessTokenInvalid");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Unauthorized);
+        result.Error.Message.ShouldContain("accessTokenInvalid");
     }
 
     [Fact]
@@ -246,9 +246,9 @@ public class RefreshTokenCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Unauthorized);
-        result.Error.Message.Should().Contain("accessTokenInvalid");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Unauthorized);
+        result.Error.Message.ShouldContain("accessTokenInvalid");
     }
 
     [Fact]
@@ -293,9 +293,9 @@ public class RefreshTokenCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain("user.notFound");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Message.ShouldContain("user.notFound");
     }
 
     #endregion
@@ -322,9 +322,9 @@ public class RefreshTokenCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Forbidden);
-        result.Error.Message.Should().Contain("accountDisabled");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Forbidden);
+        result.Error.Message.ShouldContain("accountDisabled");
     }
 
     [Fact]
@@ -396,9 +396,9 @@ public class RefreshTokenCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Unauthorized);
-        result.Error.Message.Should().Contain("refreshTokenInvalid");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Unauthorized);
+        result.Error.Message.ShouldContain("refreshTokenInvalid");
     }
 
     [Fact]
@@ -524,7 +524,7 @@ public class RefreshTokenCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _cookieAuthServiceMock.Verify(
             x => x.SetAuthCookies(
                 "new-access-token",
@@ -600,7 +600,7 @@ public class RefreshTokenCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _cookieAuthServiceMock.Verify(x => x.GetRefreshTokenFromCookie(), Times.Once);
     }
 
@@ -628,9 +628,9 @@ public class RefreshTokenCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Unauthorized);
-        result.Error.Message.Should().Contain("refreshTokenRequired");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Unauthorized);
+        result.Error.Message.ShouldContain("refreshTokenRequired");
     }
 
     #endregion

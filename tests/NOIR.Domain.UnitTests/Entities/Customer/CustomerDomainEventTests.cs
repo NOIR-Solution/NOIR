@@ -36,8 +36,8 @@ public class CustomerDomainEventTests
         var customer = CreateTestCustomer();
 
         // Assert
-        customer.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<CustomerCreatedEvent>();
+        customer.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<CustomerCreatedEvent>();
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class CustomerDomainEventTests
 
         // Assert
         var domainEvent = customer.DomainEvents.OfType<CustomerCreatedEvent>().Single();
-        domainEvent.CustomerId.Should().Be(customer.Id);
+        domainEvent.CustomerId.ShouldBe(customer.Id);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class CustomerDomainEventTests
 
         // Assert
         var domainEvent = customer.DomainEvents.OfType<CustomerCreatedEvent>().Single();
-        domainEvent.Email.Should().Be("jane@example.com");
+        domainEvent.Email.ShouldBe("jane@example.com");
     }
 
     [Fact]
@@ -70,8 +70,8 @@ public class CustomerDomainEventTests
 
         // Assert
         var domainEvent = customer.DomainEvents.OfType<CustomerCreatedEvent>().Single();
-        domainEvent.FirstName.Should().Be("Jane");
-        domainEvent.LastName.Should().Be("Smith");
+        domainEvent.FirstName.ShouldBe("Jane");
+        domainEvent.LastName.ShouldBe("Smith");
     }
 
     #endregion
@@ -89,8 +89,8 @@ public class CustomerDomainEventTests
         customer.UpdateProfile("Jane", "Smith", "jane@example.com", "+84987654321");
 
         // Assert
-        customer.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<CustomerUpdatedEvent>();
+        customer.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<CustomerUpdatedEvent>();
     }
 
     [Fact]
@@ -105,8 +105,8 @@ public class CustomerDomainEventTests
 
         // Assert
         var domainEvent = customer.DomainEvents.OfType<CustomerUpdatedEvent>().Single();
-        domainEvent.CustomerId.Should().Be(customer.Id);
-        domainEvent.Email.Should().Be("jane@example.com");
+        domainEvent.CustomerId.ShouldBe(customer.Id);
+        domainEvent.Email.ShouldBe("jane@example.com");
     }
 
     #endregion
@@ -124,8 +124,8 @@ public class CustomerDomainEventTests
         customer.Deactivate();
 
         // Assert
-        customer.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<CustomerDeactivatedEvent>();
+        customer.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<CustomerDeactivatedEvent>();
     }
 
     [Fact]
@@ -140,8 +140,8 @@ public class CustomerDomainEventTests
 
         // Assert
         var domainEvent = customer.DomainEvents.OfType<CustomerDeactivatedEvent>().Single();
-        domainEvent.CustomerId.Should().Be(customer.Id);
-        domainEvent.Email.Should().Be(TestEmail);
+        domainEvent.CustomerId.ShouldBe(customer.Id);
+        domainEvent.Email.ShouldBe(TestEmail);
     }
 
     #endregion
@@ -160,8 +160,8 @@ public class CustomerDomainEventTests
         customer.RecalculateSegment();
 
         // Assert
-        customer.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<CustomerSegmentChangedEvent>();
+        customer.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<CustomerSegmentChangedEvent>();
     }
 
     [Fact]
@@ -177,9 +177,9 @@ public class CustomerDomainEventTests
 
         // Assert
         var domainEvent = customer.DomainEvents.OfType<CustomerSegmentChangedEvent>().Single();
-        domainEvent.CustomerId.Should().Be(customer.Id);
-        domainEvent.OldSegment.Should().Be(CustomerSegment.New);
-        domainEvent.NewSegment.Should().Be(CustomerSegment.Active);
+        domainEvent.CustomerId.ShouldBe(customer.Id);
+        domainEvent.OldSegment.ShouldBe(CustomerSegment.New);
+        domainEvent.NewSegment.ShouldBe(CustomerSegment.Active);
     }
 
     [Fact]
@@ -193,7 +193,7 @@ public class CustomerDomainEventTests
         customer.RecalculateSegment();
 
         // Assert
-        customer.DomainEvents.Should().BeEmpty();
+        customer.DomainEvents.ShouldBeEmpty();
     }
 
     [Fact]
@@ -203,7 +203,7 @@ public class CustomerDomainEventTests
         var customer = CreateTestCustomer();
         customer.UpdateRfmMetrics(DateTimeOffset.UtcNow.AddDays(-10), 5, 1_000_000m);
         customer.RecalculateSegment();
-        customer.Segment.Should().Be(CustomerSegment.Active);
+        customer.Segment.ShouldBe(CustomerSegment.Active);
 
         // Update to older order date (31-90 days = AtRisk)
         customer.UpdateRfmMetrics(DateTimeOffset.UtcNow.AddDays(-60), 5, 1_000_000m);
@@ -214,8 +214,8 @@ public class CustomerDomainEventTests
 
         // Assert
         var domainEvent = customer.DomainEvents.OfType<CustomerSegmentChangedEvent>().Single();
-        domainEvent.OldSegment.Should().Be(CustomerSegment.Active);
-        domainEvent.NewSegment.Should().Be(CustomerSegment.AtRisk);
+        domainEvent.OldSegment.ShouldBe(CustomerSegment.Active);
+        domainEvent.NewSegment.ShouldBe(CustomerSegment.AtRisk);
     }
 
     #endregion
@@ -233,7 +233,7 @@ public class CustomerDomainEventTests
         customer.AddLoyaltyPoints(5000);
 
         // Assert - Should have both TierChanged and LoyaltyPointsAdded events
-        customer.DomainEvents.Should().Contain(e => e is CustomerTierChangedEvent);
+        customer.DomainEvents.ShouldContain(e => e is CustomerTierChangedEvent);
     }
 
     [Fact]
@@ -248,9 +248,9 @@ public class CustomerDomainEventTests
 
         // Assert
         var domainEvent = customer.DomainEvents.OfType<CustomerTierChangedEvent>().Single();
-        domainEvent.CustomerId.Should().Be(customer.Id);
-        domainEvent.OldTier.Should().Be(CustomerTier.Standard);
-        domainEvent.NewTier.Should().Be(CustomerTier.Silver);
+        domainEvent.CustomerId.ShouldBe(customer.Id);
+        domainEvent.OldTier.ShouldBe(CustomerTier.Standard);
+        domainEvent.NewTier.ShouldBe(CustomerTier.Silver);
     }
 
     [Fact]
@@ -264,7 +264,7 @@ public class CustomerDomainEventTests
         customer.AddLoyaltyPoints(100);
 
         // Assert - Should have LoyaltyPointsAdded but NOT TierChanged
-        customer.DomainEvents.Should().NotContain(e => e is CustomerTierChangedEvent);
+        customer.DomainEvents.ShouldNotContain(e => e is CustomerTierChangedEvent);
     }
 
     [Fact]
@@ -280,8 +280,8 @@ public class CustomerDomainEventTests
 
         // Assert
         var domainEvent = customer.DomainEvents.OfType<CustomerTierChangedEvent>().Single();
-        domainEvent.OldTier.Should().Be(CustomerTier.Silver);
-        domainEvent.NewTier.Should().Be(CustomerTier.Gold);
+        domainEvent.OldTier.ShouldBe(CustomerTier.Silver);
+        domainEvent.NewTier.ShouldBe(CustomerTier.Gold);
     }
 
     #endregion
@@ -299,7 +299,7 @@ public class CustomerDomainEventTests
         customer.AddLoyaltyPoints(500);
 
         // Assert
-        customer.DomainEvents.Should().Contain(e => e is CustomerLoyaltyPointsAddedEvent);
+        customer.DomainEvents.ShouldContain(e => e is CustomerLoyaltyPointsAddedEvent);
     }
 
     [Fact]
@@ -314,9 +314,9 @@ public class CustomerDomainEventTests
 
         // Assert
         var domainEvent = customer.DomainEvents.OfType<CustomerLoyaltyPointsAddedEvent>().Single();
-        domainEvent.CustomerId.Should().Be(customer.Id);
-        domainEvent.Points.Should().Be(500);
-        domainEvent.NewBalance.Should().Be(500);
+        domainEvent.CustomerId.ShouldBe(customer.Id);
+        domainEvent.Points.ShouldBe(500);
+        domainEvent.NewBalance.ShouldBe(500);
     }
 
     [Fact]
@@ -332,8 +332,8 @@ public class CustomerDomainEventTests
 
         // Assert
         var domainEvent = customer.DomainEvents.OfType<CustomerLoyaltyPointsAddedEvent>().Single();
-        domainEvent.Points.Should().Be(200);
-        domainEvent.NewBalance.Should().Be(500);
+        domainEvent.Points.ShouldBe(200);
+        domainEvent.NewBalance.ShouldBe(500);
     }
 
     #endregion
@@ -352,8 +352,8 @@ public class CustomerDomainEventTests
         customer.RedeemLoyaltyPoints(200);
 
         // Assert
-        customer.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<CustomerLoyaltyPointsRedeemedEvent>();
+        customer.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<CustomerLoyaltyPointsRedeemedEvent>();
     }
 
     [Fact]
@@ -369,9 +369,9 @@ public class CustomerDomainEventTests
 
         // Assert
         var domainEvent = customer.DomainEvents.OfType<CustomerLoyaltyPointsRedeemedEvent>().Single();
-        domainEvent.CustomerId.Should().Be(customer.Id);
-        domainEvent.Points.Should().Be(200);
-        domainEvent.NewBalance.Should().Be(300);
+        domainEvent.CustomerId.ShouldBe(customer.Id);
+        domainEvent.Points.ShouldBe(200);
+        domainEvent.NewBalance.ShouldBe(300);
     }
 
     [Fact]
@@ -387,8 +387,8 @@ public class CustomerDomainEventTests
 
         // Assert
         var domainEvent = customer.DomainEvents.OfType<CustomerLoyaltyPointsRedeemedEvent>().Single();
-        domainEvent.Points.Should().Be(300);
-        domainEvent.NewBalance.Should().Be(0);
+        domainEvent.Points.ShouldBe(300);
+        domainEvent.NewBalance.ShouldBe(0);
     }
 
     #endregion

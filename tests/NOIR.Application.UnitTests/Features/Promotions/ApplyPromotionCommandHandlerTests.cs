@@ -89,9 +89,9 @@ public class ApplyPromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.DiscountAmount.Should().Be(100000m); // 20% of 500000
-        result.Value.UserId.Should().Be("user-123");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.DiscountAmount.ShouldBe(100000m); // 20% of 500000
+        result.Value.UserId.ShouldBe("user-123");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -122,8 +122,8 @@ public class ApplyPromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.DiscountAmount.Should().Be(50000m);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.DiscountAmount.ShouldBe(50000m);
     }
 
     [Fact]
@@ -151,9 +151,9 @@ public class ApplyPromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // 50% of 1000000 = 500000, but capped at 100000
-        result.Value.DiscountAmount.Should().Be(100000m);
+        result.Value.DiscountAmount.ShouldBe(100000m);
     }
 
     [Fact]
@@ -179,7 +179,7 @@ public class ApplyPromotionCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        promotion.CurrentUsageCount.Should().Be(initialCount + 1);
+        promotion.CurrentUsageCount.ShouldBe(initialCount + 1);
     }
 
     #endregion
@@ -196,8 +196,8 @@ public class ApplyPromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-PROMO-005");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-PROMO-005");
     }
 
     [Fact]
@@ -210,8 +210,8 @@ public class ApplyPromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-PROMO-005");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-PROMO-005");
     }
 
     #endregion
@@ -234,8 +234,8 @@ public class ApplyPromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-PROMO-006");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-PROMO-006");
     }
 
     #endregion
@@ -268,8 +268,8 @@ public class ApplyPromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-PROMO-007");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-PROMO-007");
     }
 
     [Fact]
@@ -290,8 +290,8 @@ public class ApplyPromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-PROMO-009");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-PROMO-009");
     }
 
     #endregion
@@ -322,8 +322,8 @@ public class ApplyPromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.DiscountAmount.Should().Be(200000m); // Capped at order total
+        result.IsSuccess.ShouldBe(true);
+        result.Value.DiscountAmount.ShouldBe(200000m); // Capped at order total
     }
 
     [Fact]
@@ -383,8 +383,8 @@ public class ApplyPromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.DiscountAmount.Should().Be(0m); // Free shipping handled separately
+        result.IsSuccess.ShouldBe(true);
+        result.Value.DiscountAmount.ShouldBe(0m); // Free shipping handled separately
     }
 
     #endregion

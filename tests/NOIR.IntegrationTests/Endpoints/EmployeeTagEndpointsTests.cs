@@ -40,9 +40,9 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.GetAsync("/api/hr/tags");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<List<EmployeeTagDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await _client.GetAsync("/api/hr/tags");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -65,9 +65,9 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.GetAsync("/api/hr/tags?category=Skill");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<List<EmployeeTagDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     #endregion
@@ -85,10 +85,10 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.GetAsync($"/api/hr/tags/{tag.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<EmployeeTagDto>();
-        result.Should().NotBeNull();
-        result!.Id.Should().Be(tag.Id);
+        result.ShouldNotBeNull();
+        result!.Id.ShouldBe(tag.Id);
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.GetAsync($"/api/hr/tags/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -119,11 +119,11 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/hr/tags", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var tag = await response.Content.ReadFromJsonWithEnumsAsync<EmployeeTagDto>();
-        tag.Should().NotBeNull();
-        tag!.Name.Should().Be(request.Name);
-        tag.Category.Should().Be(request.Category);
+        tag.ShouldNotBeNull();
+        tag!.Name.ShouldBe(request.Name);
+        tag.Category.ShouldBe(request.Category);
     }
 
     [Fact]
@@ -141,7 +141,7 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/hr/tags", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 
     [Fact]
@@ -154,7 +154,7 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await _client.PostAsJsonWithEnumsAsync("/api/hr/tags", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -178,11 +178,11 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/hr/tags/{tag.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await response.Content.ReadFromJsonWithEnumsAsync<EmployeeTagDto>();
-        updated.Should().NotBeNull();
-        updated!.Name.Should().Be("Updated Tag Name");
-        updated.Category.Should().Be(EmployeeTagCategory.Skill);
+        updated.ShouldNotBeNull();
+        updated!.Name.ShouldBe("Updated Tag Name");
+        updated.Category.ShouldBe(EmployeeTagCategory.Skill);
     }
 
     [Fact]
@@ -196,7 +196,7 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/hr/tags/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -214,7 +214,7 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.DeleteAsync($"/api/hr/tags/{tag.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -227,7 +227,7 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.DeleteAsync($"/api/hr/tags/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -250,10 +250,10 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
             $"/api/hr/tags/employees/{employee.Id}/assign", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<List<TagBriefDto>>();
-        result.Should().NotBeNull();
-        result!.Should().Contain(t => t.Id == tag.Id);
+        result.ShouldNotBeNull();
+        result!.ShouldContain(t => t.Id == tag.Id);
     }
 
     [Fact]
@@ -269,7 +269,7 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
             $"/api/hr/tags/employees/{Guid.NewGuid()}/assign", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -296,10 +296,10 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
             $"/api/hr/tags/employees/{employee.Id}/remove", removeRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<List<TagBriefDto>>();
-        result.Should().NotBeNull();
-        result!.Should().NotContain(t => t.Id == tag.Id);
+        result.ShouldNotBeNull();
+        result!.ShouldNotContain(t => t.Id == tag.Id);
     }
 
     #endregion
@@ -324,10 +324,10 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.GetAsync($"/api/hr/tags/{tag.Id}/employees");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<EmployeeListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().Contain(e => e.Id == employee.Id);
+        result.ShouldNotBeNull();
+        result!.Items.ShouldContain(e => e.Id == employee.Id);
     }
 
     [Fact]
@@ -337,7 +337,7 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await _client.GetAsync($"/api/hr/tags/{Guid.NewGuid()}/employees");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -353,26 +353,26 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
         // Create
         var createRequest = CreateTestTagRequest();
         var createResponse = await adminClient.PostAsJsonWithEnumsAsync("/api/hr/tags", createRequest);
-        createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        createResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var created = await createResponse.Content.ReadFromJsonWithEnumsAsync<EmployeeTagDto>();
-        created.Should().NotBeNull();
+        created.ShouldNotBeNull();
 
         // Read
         var getResponse = await adminClient.GetAsync($"/api/hr/tags/{created!.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Update
         var updateRequest = new UpdateEmployeeTagRequest(
             "Lifecycle Updated Tag", EmployeeTagCategory.Custom,
             Color: "#00FF00");
         var updateResponse = await adminClient.PutAsJsonWithEnumsAsync($"/api/hr/tags/{created.Id}", updateRequest);
-        updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        updateResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await updateResponse.Content.ReadFromJsonWithEnumsAsync<EmployeeTagDto>();
-        updated!.Name.Should().Be("Lifecycle Updated Tag");
+        updated!.Name.ShouldBe("Lifecycle Updated Tag");
 
         // Delete
         var deleteResponse = await adminClient.DeleteAsync($"/api/hr/tags/{created.Id}");
-        deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        deleteResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion
@@ -385,7 +385,7 @@ public class EmployeeTagEndpointsTests : IClassFixture<CustomWebApplicationFacto
         await _factory.ExecuteWithTenantAsync(sp =>
         {
             var repository = sp.GetRequiredService<IRepository<EmployeeTag, Guid>>();
-            repository.Should().NotBeNull();
+            repository.ShouldNotBeNull();
             return Task.CompletedTask;
         });
     }

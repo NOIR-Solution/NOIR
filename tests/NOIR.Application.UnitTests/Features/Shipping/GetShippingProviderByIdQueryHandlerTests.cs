@@ -86,9 +86,9 @@ public class GetShippingProviderByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Id.Should().Be(providerId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Id.ShouldBe(providerId);
     }
 
     [Fact]
@@ -116,27 +116,27 @@ public class GetShippingProviderByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
 
-        dto.Id.Should().Be(providerId);
-        dto.ProviderCode.Should().Be(ShippingProviderCode.GHTK);
-        dto.DisplayName.Should().Be("Giao Hang Tiet Kiem");
-        dto.ProviderName.Should().Be("GHTK");
-        dto.IsActive.Should().BeTrue();
-        dto.SortOrder.Should().Be(1);
-        dto.Environment.Should().Be(GatewayEnvironment.Production);
-        dto.HasCredentials.Should().BeTrue();
-        dto.ApiBaseUrl.Should().Be("https://api.example.com");
-        dto.TrackingUrlTemplate.Should().Be("https://tracking.example.com/{trackingNumber}");
-        dto.SupportedServices.Should().Contain("Standard");
-        dto.SupportedServices.Should().Contain("Express");
-        dto.SupportsCod.Should().BeTrue();
-        dto.SupportsInsurance.Should().BeTrue();
-        dto.MinWeightGrams.Should().Be(100);
-        dto.MaxWeightGrams.Should().Be(50000);
-        dto.MinCodAmount.Should().Be(10000m);
-        dto.MaxCodAmount.Should().Be(10000000m);
+        dto.Id.ShouldBe(providerId);
+        dto.ProviderCode.ShouldBe(ShippingProviderCode.GHTK);
+        dto.DisplayName.ShouldBe("Giao Hang Tiet Kiem");
+        dto.ProviderName.ShouldBe("GHTK");
+        dto.IsActive.ShouldBe(true);
+        dto.SortOrder.ShouldBe(1);
+        dto.Environment.ShouldBe(GatewayEnvironment.Production);
+        dto.HasCredentials.ShouldBe(true);
+        dto.ApiBaseUrl.ShouldBe("https://api.example.com");
+        dto.TrackingUrlTemplate.ShouldBe("https://tracking.example.com/{trackingNumber}");
+        dto.SupportedServices.ShouldContain("Standard");
+        dto.SupportedServices.ShouldContain("Express");
+        dto.SupportsCod.ShouldBe(true);
+        dto.SupportsInsurance.ShouldBe(true);
+        dto.MinWeightGrams.ShouldBe(100);
+        dto.MaxWeightGrams.ShouldBe(50000);
+        dto.MinCodAmount.ShouldBe(10000m);
+        dto.MaxCodAmount.ShouldBe(10000000m);
     }
 
     [Fact]
@@ -156,8 +156,8 @@ public class GetShippingProviderByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(false);
     }
 
     [Fact]
@@ -177,9 +177,9 @@ public class GetShippingProviderByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProviderCode.Should().Be(ShippingProviderCode.GHN);
-        result.Value.DisplayName.Should().Be("Giao Hang Nhanh");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProviderCode.ShouldBe(ShippingProviderCode.GHN);
+        result.Value.DisplayName.ShouldBe("Giao Hang Nhanh");
     }
 
     [Fact]
@@ -199,8 +199,8 @@ public class GetShippingProviderByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Environment.Should().Be(GatewayEnvironment.Sandbox);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Environment.ShouldBe(GatewayEnvironment.Sandbox);
     }
 
     [Fact]
@@ -220,8 +220,8 @@ public class GetShippingProviderByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SupportsCod.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SupportsCod.ShouldBe(false);
     }
 
     #endregion
@@ -244,9 +244,9 @@ public class GetShippingProviderByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain("not found");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Message.ShouldContain("not found");
     }
 
     #endregion
@@ -302,8 +302,8 @@ public class GetShippingProviderByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.HasCredentials.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.HasCredentials.ShouldBe(false);
     }
 
     [Fact]
@@ -331,11 +331,11 @@ public class GetShippingProviderByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.MinWeightGrams.Should().BeNull();
-        result.Value.MaxWeightGrams.Should().BeNull();
-        result.Value.MinCodAmount.Should().BeNull();
-        result.Value.MaxCodAmount.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.MinWeightGrams.ShouldBeNull();
+        result.Value.MaxWeightGrams.ShouldBeNull();
+        result.Value.MinCodAmount.ShouldBeNull();
+        result.Value.MaxCodAmount.ShouldBeNull();
     }
 
     [Fact]
@@ -355,8 +355,8 @@ public class GetShippingProviderByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CreatedAt.Should().NotBe(default);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CreatedAt.ShouldNotBe(default);
     }
 
     #endregion

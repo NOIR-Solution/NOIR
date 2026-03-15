@@ -15,7 +15,7 @@ public class CookieSettingsTests
         var settings = new CookieSettings();
 
         // Assert
-        settings.AccessTokenCookieName.Should().Be("noir.access");
+        settings.AccessTokenCookieName.ShouldBe("noir.access");
     }
 
     [Fact]
@@ -25,7 +25,7 @@ public class CookieSettingsTests
         var settings = new CookieSettings();
 
         // Assert
-        settings.RefreshTokenCookieName.Should().Be("noir.refresh");
+        settings.RefreshTokenCookieName.ShouldBe("noir.refresh");
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class CookieSettingsTests
         var settings = new CookieSettings();
 
         // Assert
-        settings.SameSiteMode.Should().Be("Strict");
+        settings.SameSiteMode.ShouldBe("Strict");
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class CookieSettingsTests
         var settings = new CookieSettings();
 
         // Assert
-        settings.Path.Should().Be("/");
+        settings.Path.ShouldBe("/");
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class CookieSettingsTests
         var settings = new CookieSettings();
 
         // Assert
-        settings.SecureInProduction.Should().BeTrue();
+        settings.SecureInProduction.ShouldBe(true);
     }
 
     [Fact]
@@ -65,14 +65,14 @@ public class CookieSettingsTests
         var settings = new CookieSettings();
 
         // Assert
-        settings.Domain.Should().BeNull();
+        settings.Domain.ShouldBeNull();
     }
 
     [Fact]
     public void CookieSettings_SectionName_ShouldBeCookieSettings()
     {
         // Assert
-        CookieSettings.SectionName.Should().Be("CookieSettings");
+        CookieSettings.SectionName.ShouldBe("CookieSettings");
     }
 
     #endregion
@@ -89,7 +89,7 @@ public class CookieSettingsTests
         var result = settings.GetSameSiteMode();
 
         // Assert
-        result.Should().Be(Microsoft.AspNetCore.Http.SameSiteMode.Strict);
+        result.ShouldBe(Microsoft.AspNetCore.Http.SameSiteMode.Strict);
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public class CookieSettingsTests
         var result = settings.GetSameSiteMode();
 
         // Assert
-        result.Should().Be(Microsoft.AspNetCore.Http.SameSiteMode.Lax);
+        result.ShouldBe(Microsoft.AspNetCore.Http.SameSiteMode.Lax);
     }
 
     [Fact]
@@ -115,7 +115,7 @@ public class CookieSettingsTests
         var result = settings.GetSameSiteMode();
 
         // Assert
-        result.Should().Be(Microsoft.AspNetCore.Http.SameSiteMode.None);
+        result.ShouldBe(Microsoft.AspNetCore.Http.SameSiteMode.None);
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public class CookieSettingsTests
         var result = settings.GetSameSiteMode();
 
         // Assert
-        result.Should().Be(Microsoft.AspNetCore.Http.SameSiteMode.Strict);
+        result.ShouldBe(Microsoft.AspNetCore.Http.SameSiteMode.Strict);
     }
 
     [Fact]
@@ -141,7 +141,7 @@ public class CookieSettingsTests
         var result = settings.GetSameSiteMode();
 
         // Assert
-        result.Should().Be(Microsoft.AspNetCore.Http.SameSiteMode.Strict);
+        result.ShouldBe(Microsoft.AspNetCore.Http.SameSiteMode.Strict);
     }
 
     #endregion
@@ -159,8 +159,8 @@ public class CookieSettingsTests
         };
 
         // Assert
-        settings.AccessTokenCookieName.Should().Be("custom.access");
-        settings.RefreshTokenCookieName.Should().Be("custom.refresh");
+        settings.AccessTokenCookieName.ShouldBe("custom.access");
+        settings.RefreshTokenCookieName.ShouldBe("custom.refresh");
     }
 
     [Fact]
@@ -170,7 +170,7 @@ public class CookieSettingsTests
         var settings = new CookieSettings { Domain = ".example.com" };
 
         // Assert
-        settings.Domain.Should().Be(".example.com");
+        settings.Domain.ShouldBe(".example.com");
     }
 
     [Fact]
@@ -180,7 +180,7 @@ public class CookieSettingsTests
         var settings = new CookieSettings { Path = "/api" };
 
         // Assert
-        settings.Path.Should().Be("/api");
+        settings.Path.ShouldBe("/api");
     }
 
     [Fact]
@@ -190,7 +190,7 @@ public class CookieSettingsTests
         var settings = new CookieSettings { SecureInProduction = false };
 
         // Assert
-        settings.SecureInProduction.Should().BeFalse();
+        settings.SecureInProduction.ShouldBe(false);
     }
 
     #endregion

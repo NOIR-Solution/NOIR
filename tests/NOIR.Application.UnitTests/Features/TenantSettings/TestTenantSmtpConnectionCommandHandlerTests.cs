@@ -38,8 +38,8 @@ public class TestTenantSmtpConnectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
     }
 
     [Fact]
@@ -82,8 +82,8 @@ public class TestTenantSmtpConnectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Message.Should().Contain("SMTP connection failed");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Message.ShouldContain("SMTP connection failed");
     }
 
     [Fact]
@@ -102,8 +102,8 @@ public class TestTenantSmtpConnectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Message.Should().Contain("timed out");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Message.ShouldContain("timed out");
     }
 
     [Fact]
@@ -122,8 +122,8 @@ public class TestTenantSmtpConnectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Message.Should().Contain("Authentication failed");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Message.ShouldContain("Authentication failed");
     }
 
     #endregion
@@ -193,7 +193,7 @@ public class TestTenantSmtpConnectionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _smtpTestServiceMock.Verify(
             x => x.SendTestEmailAsync(email, It.IsAny<CancellationToken>()),
             Times.Once);

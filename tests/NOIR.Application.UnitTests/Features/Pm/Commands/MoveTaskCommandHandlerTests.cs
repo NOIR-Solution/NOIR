@@ -50,9 +50,9 @@ public class MoveTaskCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        task.ColumnId.Should().Be(newColumnId);
-        task.SortOrder.Should().Be(3.5);
+        result.IsSuccess.ShouldBe(true);
+        task.ColumnId.ShouldBe(newColumnId);
+        task.SortOrder.ShouldBe(3.5);
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -71,7 +71,7 @@ public class MoveTaskCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }

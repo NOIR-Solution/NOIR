@@ -22,7 +22,7 @@ public class SharePermissionTests
         var result = permission.Allows(action);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Theory]
@@ -38,7 +38,7 @@ public class SharePermissionTests
         var result = permission.Allows(action);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Theory]
@@ -61,7 +61,7 @@ public class SharePermissionTests
         var result = permission.Allows(action);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Theory]
@@ -85,7 +85,7 @@ public class SharePermissionTests
         var result = permission.Allows(action);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class SharePermissionTests
         var result = SharePermission.Admin.Allows("unknown_action");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBeFalse();
     }
 
     [Theory]
@@ -107,35 +107,35 @@ public class SharePermissionTests
     public void Allows_WithInvalidAction_ReturnsFalse(string action)
     {
         // Act & Assert
-        SharePermission.Admin.Allows(action).Should().BeFalse();
+        SharePermission.Admin.Allows(action).ShouldBeFalse();
     }
 
     [Fact]
     public void Allows_PermissionHierarchy_HigherLevelsIncludeLower()
     {
         // Assert View level
-        SharePermission.View.Allows("read").Should().BeTrue();
-        SharePermission.View.Allows("comment").Should().BeFalse();
-        SharePermission.View.Allows("edit").Should().BeFalse();
-        SharePermission.View.Allows("delete").Should().BeFalse();
+        SharePermission.View.Allows("read").ShouldBeTrue();
+        SharePermission.View.Allows("comment").ShouldBeFalse();
+        SharePermission.View.Allows("edit").ShouldBeFalse();
+        SharePermission.View.Allows("delete").ShouldBeFalse();
 
         // Assert Comment level includes View
-        SharePermission.Comment.Allows("read").Should().BeTrue();
-        SharePermission.Comment.Allows("comment").Should().BeTrue();
-        SharePermission.Comment.Allows("edit").Should().BeFalse();
-        SharePermission.Comment.Allows("delete").Should().BeFalse();
+        SharePermission.Comment.Allows("read").ShouldBeTrue();
+        SharePermission.Comment.Allows("comment").ShouldBeTrue();
+        SharePermission.Comment.Allows("edit").ShouldBeFalse();
+        SharePermission.Comment.Allows("delete").ShouldBeFalse();
 
         // Assert Edit level includes Comment and View
-        SharePermission.Edit.Allows("read").Should().BeTrue();
-        SharePermission.Edit.Allows("comment").Should().BeTrue();
-        SharePermission.Edit.Allows("edit").Should().BeTrue();
-        SharePermission.Edit.Allows("delete").Should().BeFalse();
+        SharePermission.Edit.Allows("read").ShouldBeTrue();
+        SharePermission.Edit.Allows("comment").ShouldBeTrue();
+        SharePermission.Edit.Allows("edit").ShouldBeTrue();
+        SharePermission.Edit.Allows("delete").ShouldBeFalse();
 
         // Assert Admin level includes all
-        SharePermission.Admin.Allows("read").Should().BeTrue();
-        SharePermission.Admin.Allows("comment").Should().BeTrue();
-        SharePermission.Admin.Allows("edit").Should().BeTrue();
-        SharePermission.Admin.Allows("delete").Should().BeTrue();
+        SharePermission.Admin.Allows("read").ShouldBeTrue();
+        SharePermission.Admin.Allows("comment").ShouldBeTrue();
+        SharePermission.Admin.Allows("edit").ShouldBeTrue();
+        SharePermission.Admin.Allows("delete").ShouldBeTrue();
     }
 
     #endregion
@@ -153,7 +153,7 @@ public class SharePermissionTests
         var result = SharePermissionExtensions.FromAction(action);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Theory]
@@ -165,7 +165,7 @@ public class SharePermissionTests
         var result = SharePermissionExtensions.FromAction(action);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Theory]
@@ -181,7 +181,7 @@ public class SharePermissionTests
         var result = SharePermissionExtensions.FromAction(action);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Theory]
@@ -199,7 +199,7 @@ public class SharePermissionTests
         var result = SharePermissionExtensions.FromAction(action);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Fact]
@@ -209,7 +209,7 @@ public class SharePermissionTests
         var result = SharePermissionExtensions.FromAction("unknown");
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Theory]
@@ -226,7 +226,7 @@ public class SharePermissionTests
         var result = SharePermissionExtensions.FromAction(action);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     #endregion
@@ -237,37 +237,37 @@ public class SharePermissionTests
     public void SharePermission_View_ShouldBeZero()
     {
         // Assert
-        ((int)SharePermission.View).Should().Be(0);
+        ((int)SharePermission.View).ShouldBe(0);
     }
 
     [Fact]
     public void SharePermission_Comment_ShouldBeOne()
     {
         // Assert
-        ((int)SharePermission.Comment).Should().Be(1);
+        ((int)SharePermission.Comment).ShouldBe(1);
     }
 
     [Fact]
     public void SharePermission_Edit_ShouldBeTwo()
     {
         // Assert
-        ((int)SharePermission.Edit).Should().Be(2);
+        ((int)SharePermission.Edit).ShouldBe(2);
     }
 
     [Fact]
     public void SharePermission_Admin_ShouldBeThree()
     {
         // Assert
-        ((int)SharePermission.Admin).Should().Be(3);
+        ((int)SharePermission.Admin).ShouldBe(3);
     }
 
     [Fact]
     public void SharePermission_ValuesAreOrdered()
     {
         // Assert - Values should be in ascending order for comparison
-        ((int)SharePermission.View).Should().BeLessThan((int)SharePermission.Comment);
-        ((int)SharePermission.Comment).Should().BeLessThan((int)SharePermission.Edit);
-        ((int)SharePermission.Edit).Should().BeLessThan((int)SharePermission.Admin);
+        ((int)SharePermission.View).ShouldBeLessThan((int)SharePermission.Comment);
+        ((int)SharePermission.Comment).ShouldBeLessThan((int)SharePermission.Edit);
+        ((int)SharePermission.Edit).ShouldBeLessThan((int)SharePermission.Admin);
     }
 
     #endregion
@@ -291,10 +291,10 @@ public class SharePermissionTests
         var permission = SharePermissionExtensions.FromAction(action);
 
         // Assert that FromAction returned a valid permission
-        permission.Should().NotBeNull();
+        permission.ShouldNotBeNull();
 
         // Assert that the returned permission allows the action
-        permission!.Value.Allows(action).Should().BeTrue();
+        permission!.Value.Allows(action).ShouldBeTrue();
     }
 
     [Fact]
@@ -310,7 +310,7 @@ public class SharePermissionTests
         // Act & Assert
         foreach (var action in knownActions)
         {
-            SharePermissionExtensions.FromAction(action).Should().NotBeNull(
+            SharePermissionExtensions.FromAction(action).ShouldNotBeNull(
                 $"Action '{action}' should map to a permission");
         }
     }

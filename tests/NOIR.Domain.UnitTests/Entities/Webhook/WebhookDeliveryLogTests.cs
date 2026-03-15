@@ -49,13 +49,13 @@ public class WebhookDeliveryLogTests
             TestTenantId);
 
         // Assert
-        log.WebhookSubscriptionId.Should().Be(subscriptionId);
-        log.EventType.Should().Be("order.created");
-        log.EventId.Should().Be(eventId);
-        log.RequestUrl.Should().Be("https://example.com/webhook");
-        log.RequestBody.Should().Be("{\"orderId\":\"abc\"}");
-        log.RequestHeaders.Should().Be("{\"X-API-Key\":\"test\"}");
-        log.Id.Should().NotBe(Guid.Empty);
+        log.WebhookSubscriptionId.ShouldBe(subscriptionId);
+        log.EventType.ShouldBe("order.created");
+        log.EventId.ShouldBe(eventId);
+        log.RequestUrl.ShouldBe("https://example.com/webhook");
+        log.RequestBody.ShouldBe("{\"orderId\":\"abc\"}");
+        log.RequestHeaders.ShouldBe("{\"X-API-Key\":\"test\"}");
+        log.Id.ShouldNotBe(Guid.Empty);
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class WebhookDeliveryLogTests
         var log = CreateTestDeliveryLog();
 
         // Assert
-        log.Status.Should().Be(WebhookDeliveryStatus.Pending);
+        log.Status.ShouldBe(WebhookDeliveryStatus.Pending);
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public class WebhookDeliveryLogTests
         var log = CreateTestDeliveryLog();
 
         // Assert
-        log.AttemptNumber.Should().Be(1);
+        log.AttemptNumber.ShouldBe(1);
     }
 
     [Fact]
@@ -85,12 +85,12 @@ public class WebhookDeliveryLogTests
         var log = CreateTestDeliveryLog();
 
         // Assert
-        log.ResponseStatusCode.Should().BeNull();
-        log.ResponseBody.Should().BeNull();
-        log.ResponseHeaders.Should().BeNull();
-        log.ErrorMessage.Should().BeNull();
-        log.DurationMs.Should().BeNull();
-        log.NextRetryAt.Should().BeNull();
+        log.ResponseStatusCode.ShouldBeNull();
+        log.ResponseBody.ShouldBeNull();
+        log.ResponseHeaders.ShouldBeNull();
+        log.ErrorMessage.ShouldBeNull();
+        log.DurationMs.ShouldBeNull();
+        log.NextRetryAt.ShouldBeNull();
     }
 
     #endregion
@@ -107,7 +107,7 @@ public class WebhookDeliveryLogTests
         log.RecordSuccess(200, "{\"ok\":true}", "{\"Content-Type\":\"application/json\"}", 150);
 
         // Assert
-        log.ResponseStatusCode.Should().Be(200);
+        log.ResponseStatusCode.ShouldBe(200);
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class WebhookDeliveryLogTests
         log.RecordSuccess(200, "{\"ok\":true}", null, 100);
 
         // Assert
-        log.ResponseBody.Should().Be("{\"ok\":true}");
+        log.ResponseBody.ShouldBe("{\"ok\":true}");
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class WebhookDeliveryLogTests
         log.RecordSuccess(200, null, null, 250);
 
         // Assert
-        log.DurationMs.Should().Be(250);
+        log.DurationMs.ShouldBe(250);
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class WebhookDeliveryLogTests
         log.RecordSuccess(200, null, null, 100);
 
         // Assert
-        log.Status.Should().Be(WebhookDeliveryStatus.Succeeded);
+        log.Status.ShouldBe(WebhookDeliveryStatus.Succeeded);
     }
 
     [Fact]
@@ -159,7 +159,7 @@ public class WebhookDeliveryLogTests
         log.RecordSuccess(200, null, null, 100);
 
         // Assert
-        log.NextRetryAt.Should().BeNull();
+        log.NextRetryAt.ShouldBeNull();
     }
 
     [Fact]
@@ -172,7 +172,7 @@ public class WebhookDeliveryLogTests
         log.RecordSuccess(201, null, "{\"X-Request-Id\":\"abc123\"}", 75);
 
         // Assert
-        log.ResponseHeaders.Should().Be("{\"X-Request-Id\":\"abc123\"}");
+        log.ResponseHeaders.ShouldBe("{\"X-Request-Id\":\"abc123\"}");
     }
 
     #endregion
@@ -190,7 +190,7 @@ public class WebhookDeliveryLogTests
         log.RecordFailure(500, null, null, "Internal Server Error", 1000, nextRetryAt);
 
         // Assert
-        log.AttemptNumber.Should().Be(2);
+        log.AttemptNumber.ShouldBe(2);
     }
 
     [Fact]
@@ -204,7 +204,7 @@ public class WebhookDeliveryLogTests
         log.RecordFailure(500, null, null, "Internal Server Error", 1000, nextRetryAt);
 
         // Assert
-        log.Status.Should().Be(WebhookDeliveryStatus.Retrying);
+        log.Status.ShouldBe(WebhookDeliveryStatus.Retrying);
     }
 
     [Fact]
@@ -218,7 +218,7 @@ public class WebhookDeliveryLogTests
         log.RecordFailure(503, null, null, "Service Unavailable", 5000, nextRetryAt);
 
         // Assert
-        log.NextRetryAt.Should().Be(nextRetryAt);
+        log.NextRetryAt.ShouldBe(nextRetryAt);
     }
 
     [Fact]
@@ -232,8 +232,8 @@ public class WebhookDeliveryLogTests
         log.RecordFailure(500, "{\"error\":\"oops\"}", null, "Server error", 1200, nextRetryAt);
 
         // Assert
-        log.ErrorMessage.Should().Be("Server error");
-        log.ResponseBody.Should().Be("{\"error\":\"oops\"}");
+        log.ErrorMessage.ShouldBe("Server error");
+        log.ResponseBody.ShouldBe("{\"error\":\"oops\"}");
     }
 
     [Fact]
@@ -249,7 +249,7 @@ public class WebhookDeliveryLogTests
         log.RecordFailure(500, null, null, "Error 3", 100, nextRetryAt);
 
         // Assert
-        log.AttemptNumber.Should().Be(4);
+        log.AttemptNumber.ShouldBe(4);
     }
 
     #endregion
@@ -266,7 +266,7 @@ public class WebhookDeliveryLogTests
         log.RecordFailure(500, null, null, "Final failure", 2000, null);
 
         // Assert
-        log.Status.Should().Be(WebhookDeliveryStatus.Exhausted);
+        log.Status.ShouldBe(WebhookDeliveryStatus.Exhausted);
     }
 
     [Fact]
@@ -279,7 +279,7 @@ public class WebhookDeliveryLogTests
         log.RecordFailure(404, "{\"error\":\"not found\"}", null, "Not found", 300, null);
 
         // Assert
-        log.AttemptNumber.Should().Be(2);
+        log.AttemptNumber.ShouldBe(2);
     }
 
     [Fact]
@@ -292,7 +292,7 @@ public class WebhookDeliveryLogTests
         log.RecordFailure(500, null, null, "Final failure", 1000, null);
 
         // Assert
-        log.NextRetryAt.Should().BeNull();
+        log.NextRetryAt.ShouldBeNull();
     }
 
     [Fact]
@@ -306,7 +306,7 @@ public class WebhookDeliveryLogTests
         log.RecordFailure(null, null, null, "Connection timeout", 30000, nextRetryAt);
 
         // Assert
-        log.ResponseStatusCode.Should().BeNull();
+        log.ResponseStatusCode.ShouldBeNull();
     }
 
     #endregion

@@ -17,9 +17,9 @@ public class TokenPairTests
         var tokenPair = new TokenPair(accessToken, refreshToken, expiresAt);
 
         // Assert
-        tokenPair.AccessToken.Should().Be(accessToken);
-        tokenPair.RefreshToken.Should().Be(refreshToken);
-        tokenPair.ExpiresAt.Should().Be(expiresAt);
+        tokenPair.AccessToken.ShouldBe(accessToken);
+        tokenPair.RefreshToken.ShouldBe(refreshToken);
+        tokenPair.ExpiresAt.ShouldBe(expiresAt);
     }
 
     [Fact]
@@ -31,8 +31,8 @@ public class TokenPairTests
         var tokenPair2 = new TokenPair("access", "refresh", expiresAt);
 
         // Act & Assert
-        tokenPair1.Should().Be(tokenPair2);
-        (tokenPair1 == tokenPair2).Should().BeTrue();
+        tokenPair1.ShouldBe(tokenPair2);
+        (tokenPair1 == tokenPair2).ShouldBe(true);
     }
 
     [Fact]
@@ -44,8 +44,8 @@ public class TokenPairTests
         var tokenPair2 = new TokenPair("access2", "refresh", expiresAt);
 
         // Act & Assert
-        tokenPair1.Should().NotBe(tokenPair2);
-        (tokenPair1 != tokenPair2).Should().BeTrue();
+        tokenPair1.ShouldNotBe(tokenPair2);
+        (tokenPair1 != tokenPair2).ShouldBe(true);
     }
 
     [Fact]
@@ -59,8 +59,8 @@ public class TokenPairTests
         var (accessToken, refreshToken, expires) = tokenPair;
 
         // Assert
-        accessToken.Should().Be("access");
-        refreshToken.Should().Be("refresh");
-        expires.Should().Be(expiresAt);
+        accessToken.ShouldBe("access");
+        refreshToken.ShouldBe("refresh");
+        expires.ShouldBe(expiresAt);
     }
 }

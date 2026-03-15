@@ -39,9 +39,9 @@ public class GetContactsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(2);
-        result.Value.TotalCount.Should().Be(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(2);
+        result.Value.TotalCount.ShouldBe(2);
     }
 
     [Fact]
@@ -61,9 +61,9 @@ public class GetContactsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
     }
 
     [Fact]
@@ -88,7 +88,7 @@ public class GetContactsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _contactRepoMock.Verify(
             x => x.ListAsync(It.IsAny<ContactsFilterSpec>(), It.IsAny<CancellationToken>()), Times.Once);
     }

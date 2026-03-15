@@ -56,14 +56,14 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
-        loginResponse.Should().NotBeNull();
-        loginResponse!.Auth.Should().NotBeNull();
-        loginResponse.Auth!.Email.Should().Be(email);
-        loginResponse.Auth.AccessToken.Should().NotBeNullOrEmpty();
-        loginResponse.Auth.RefreshToken.Should().NotBeNullOrEmpty();
+        loginResponse.ShouldNotBeNull();
+        loginResponse!.Auth.ShouldNotBeNull();
+        loginResponse.Auth!.Email.ShouldBe(email);
+        loginResponse.Auth.AccessToken.ShouldNotBeNullOrEmpty();
+        loginResponse.Auth.RefreshToken.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/auth/login", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/auth/login", loginCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -103,7 +103,7 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/auth/login", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -123,14 +123,14 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/auth/refresh", refreshCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var newAuth = await response.Content.ReadFromJsonAsync<AuthResponse>();
-        newAuth.Should().NotBeNull();
-        newAuth!.AccessToken.Should().NotBeNullOrEmpty();
-        newAuth.RefreshToken.Should().NotBeNullOrEmpty();
+        newAuth.ShouldNotBeNull();
+        newAuth!.AccessToken.ShouldNotBeNullOrEmpty();
+        newAuth.RefreshToken.ShouldNotBeNullOrEmpty();
         // New tokens should be different
-        newAuth.RefreshToken.Should().NotBe(initialAuth.RefreshToken);
+        newAuth.RefreshToken.ShouldNotBe(initialAuth.RefreshToken);
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/auth/refresh", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/auth/refresh", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -184,13 +184,13 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await authenticatedClient.GetAsync("/api/auth/me");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var userDto = await response.Content.ReadFromJsonAsync<CurrentUserDto>();
-        userDto.Should().NotBeNull();
-        userDto!.Email.Should().Be(email);
-        userDto.FirstName.Should().Be("John");
-        userDto.LastName.Should().Be("Doe");
+        userDto.ShouldNotBeNull();
+        userDto!.Email.ShouldBe(email);
+        userDto.FirstName.ShouldBe("John");
+        userDto.LastName.ShouldBe("Doe");
     }
 
     [Fact]
@@ -200,7 +200,7 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/auth/me");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -213,7 +213,7 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await invalidClient.GetAsync("/api/auth/me");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -230,7 +230,7 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/auth/login", command);
 
         // Assert
-        response.Content.Headers.ContentType?.MediaType.Should().Be("application/json");
+        response.Content.Headers.ContentType?.MediaType.ShouldBe("application/json");
     }
 
     [Fact]
@@ -244,9 +244,9 @@ public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var content = await response.Content.ReadAsStringAsync();
 
         // Assert - Error message should be generic
-        content.Should().Contain("Invalid email or password");
-        content.Should().NotContain("does not exist");
-        content.Should().NotContain("incorrect password");
+        content.ShouldContain("Invalid email or password");
+        content.ShouldNotContain("does not exist");
+        content.ShouldNotContain("incorrect password");
     }
 
     #endregion

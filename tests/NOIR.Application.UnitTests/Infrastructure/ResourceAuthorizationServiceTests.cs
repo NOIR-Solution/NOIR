@@ -37,7 +37,7 @@ public class ResourceAuthorizationServiceTests
         var result = await _sut.AuthorizeAsync(userId, resource, "read");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class ResourceAuthorizationServiceTests
         var result = await _sut.AuthorizeAsync(userId, resource, "read");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class ResourceAuthorizationServiceTests
         var result = await _sut.AuthorizeAsync(userId, resource, "edit");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class ResourceAuthorizationServiceTests
         var result = await _sut.AuthorizeAsync(userId, resource, "delete");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -93,7 +93,7 @@ public class ResourceAuthorizationServiceTests
         var result = await _sut.AuthorizeAsync(userId, resource, "admin");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class ResourceAuthorizationServiceTests
         var result = await _sut.AuthorizeAsync(userId, resource, "share");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -121,7 +121,7 @@ public class ResourceAuthorizationServiceTests
         var result = await _sut.AuthorizeAsync(userId, resource, "comment");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     #endregion
@@ -139,7 +139,7 @@ public class ResourceAuthorizationServiceTests
         var result = await _sut.GetEffectivePermissionAsync(userId, resource);
 
         // Assert
-        result.Should().Be(SharePermission.Admin);
+        result.ShouldBe(SharePermission.Admin);
     }
 
     #endregion
@@ -153,7 +153,7 @@ public class ResourceAuthorizationServiceTests
         var act = () => _sut.AuthorizeAsync("user", default(IResource)!, "read");
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentNullException>();
+        await Should.ThrowAsync<ArgumentNullException>(act);
     }
 
     [Theory]
@@ -169,7 +169,7 @@ public class ResourceAuthorizationServiceTests
         var act = () => _sut.AuthorizeAsync(userId!, resource, "read");
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentException>();
+        await Should.ThrowAsync<ArgumentException>(act);
     }
 
     [Theory]
@@ -185,7 +185,7 @@ public class ResourceAuthorizationServiceTests
         var act = () => _sut.AuthorizeAsync("user", resource, action!);
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentException>();
+        await Should.ThrowAsync<ArgumentException>(act);
     }
 
     #endregion
@@ -202,7 +202,7 @@ public class ResourceAuthorizationServiceTests
         var act = () => _sut.AuthorizeAsync(userId!, "document", Guid.NewGuid(), "read");
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentException>();
+        await Should.ThrowAsync<ArgumentException>(act);
     }
 
     [Theory]
@@ -215,7 +215,7 @@ public class ResourceAuthorizationServiceTests
         var act = () => _sut.AuthorizeAsync("user", resourceType!, Guid.NewGuid(), "read");
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentException>();
+        await Should.ThrowAsync<ArgumentException>(act);
     }
 
     [Theory]
@@ -228,7 +228,7 @@ public class ResourceAuthorizationServiceTests
         var act = () => _sut.AuthorizeAsync("user", "document", Guid.NewGuid(), action!);
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentException>();
+        await Should.ThrowAsync<ArgumentException>(act);
     }
 
     [Fact]
@@ -241,7 +241,7 @@ public class ResourceAuthorizationServiceTests
         var result = await _sut.AuthorizeAsync("user", "document", Guid.NewGuid(), "unknown-action-xyz");
 
         // Assert - Unknown action returns false immediately (FromAction returns null)
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     #endregion
@@ -255,7 +255,7 @@ public class ResourceAuthorizationServiceTests
         var act = () => _sut.GetEffectivePermissionAsync("user", null!);
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentNullException>();
+        await Should.ThrowAsync<ArgumentNullException>(act);
     }
 
     [Theory]
@@ -271,7 +271,7 @@ public class ResourceAuthorizationServiceTests
         var act = () => _sut.GetEffectivePermissionAsync(userId!, resource);
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentException>();
+        await Should.ThrowAsync<ArgumentException>(act);
     }
 
     #endregion
@@ -288,7 +288,7 @@ public class ResourceAuthorizationServiceTests
         var act = () => _sut.GetAccessibleResourcesAsync(userId!, "document");
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentException>();
+        await Should.ThrowAsync<ArgumentException>(act);
     }
 
     [Theory]
@@ -301,7 +301,7 @@ public class ResourceAuthorizationServiceTests
         var act = () => _sut.GetAccessibleResourcesAsync("user", resourceType!);
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentException>();
+        await Should.ThrowAsync<ArgumentException>(act);
     }
 
     #endregion
@@ -324,7 +324,7 @@ public class ResourceAuthorizationServiceTests
         var result = await _sut.AuthorizeAsync(userId, resourceType, resourceId, "edit");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -343,7 +343,7 @@ public class ResourceAuthorizationServiceTests
         var result = await _sut.AuthorizeAsync(userId, resourceType, resourceId, "edit");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -362,7 +362,7 @@ public class ResourceAuthorizationServiceTests
         var result = await _sut.AuthorizeAsync(userId, resourceType, resourceId, "read");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -381,7 +381,7 @@ public class ResourceAuthorizationServiceTests
         var result = await _sut.GetEffectivePermissionAsync(userId, resource);
 
         // Assert
-        result.Should().Be(SharePermission.Comment);
+        result.ShouldBe(SharePermission.Comment);
     }
 
     [Fact]
@@ -400,7 +400,7 @@ public class ResourceAuthorizationServiceTests
         var result = await _sut.GetEffectivePermissionAsync(userId, resource);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     #endregion
@@ -439,7 +439,7 @@ public class ResourceAuthorizationServiceTests
         var result = await _sut.AuthorizeAsync(userId, resourceType, resourceId, action);
 
         // Assert
-        result.Should().Be(expectedResult);
+        result.ShouldBe(expectedResult);
     }
 
     [Fact]
@@ -455,11 +455,11 @@ public class ResourceAuthorizationServiceTests
         _cache.Set(cacheKey, (SharePermission?)SharePermission.Admin);
 
         // Act & Assert - Admin should allow all actions
-        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "read")).Should().BeTrue();
-        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "comment")).Should().BeTrue();
-        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "edit")).Should().BeTrue();
-        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "delete")).Should().BeTrue();
-        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "admin")).Should().BeTrue();
+        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "read")).ShouldBe(true);
+        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "comment")).ShouldBe(true);
+        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "edit")).ShouldBe(true);
+        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "delete")).ShouldBe(true);
+        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "admin")).ShouldBe(true);
     }
 
     [Fact]
@@ -475,11 +475,11 @@ public class ResourceAuthorizationServiceTests
         _cache.Set(cacheKey, (SharePermission?)SharePermission.Edit);
 
         // Act & Assert
-        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "read")).Should().BeTrue();
-        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "comment")).Should().BeTrue();
-        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "edit")).Should().BeTrue();
-        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "delete")).Should().BeFalse();
-        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "admin")).Should().BeFalse();
+        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "read")).ShouldBe(true);
+        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "comment")).ShouldBe(true);
+        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "edit")).ShouldBe(true);
+        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "delete")).ShouldBe(false);
+        (await _sut.AuthorizeAsync(userId, resourceType, resourceId, "admin")).ShouldBe(false);
     }
 
     #endregion
@@ -521,7 +521,7 @@ public class ResourceAuthorizationServiceTests
             _loggerMock.Object);
 
         // Assert
-        service.Should().NotBeNull();
+        service.ShouldNotBeNull();
     }
 
     #endregion
@@ -544,7 +544,7 @@ public class ResourceAuthorizationServiceTests
         var result = await _sut.AuthorizeAsync(userId, resource, "read");
 
         // Assert - null != "user-123" so not owner, and cache has null permission
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -562,7 +562,7 @@ public class ResourceAuthorizationServiceTests
         var result = await _sut.AuthorizeAsync(userId, "document", resourceId, "read");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Theory]
@@ -583,7 +583,7 @@ public class ResourceAuthorizationServiceTests
         var result = await _sut.AuthorizeAsync(userId, resourceType, resourceId, "edit");
 
         // Assert - Should find cached permission regardless of case
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     #endregion

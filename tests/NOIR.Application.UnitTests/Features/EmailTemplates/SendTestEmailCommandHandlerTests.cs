@@ -82,10 +82,10 @@ public class SendTestEmailCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Subject.Should().Be("Welcome John");
-        result.Value.HtmlBody.Should().Be("<p>Welcome, John!</p>");
-        result.Value.PlainTextBody.Should().Be("Welcome, John!");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Subject.ShouldBe("Welcome John");
+        result.Value.HtmlBody.ShouldBe("<p>Welcome, John!</p>");
+        result.Value.PlainTextBody.ShouldBe("Welcome, John!");
     }
 
     [Fact]
@@ -125,9 +125,9 @@ public class SendTestEmailCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Subject.Should().Be("Hello John and 123456");
-        result.Value.HtmlBody.Should().Be("<p>John, your code is 123456</p>");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Subject.ShouldBe("Hello John and 123456");
+        result.Value.HtmlBody.ShouldBe("<p>John, your code is 123456</p>");
     }
 
     [Fact]
@@ -161,8 +161,8 @@ public class SendTestEmailCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PlainTextBody.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PlainTextBody.ShouldBeNull();
     }
 
     [Fact]
@@ -233,8 +233,8 @@ public class SendTestEmailCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-EMAIL-001");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-EMAIL-001");
         _emailServiceMock.Verify(
             x => x.SendAsync(
                 It.IsAny<string>(),
@@ -280,8 +280,8 @@ public class SendTestEmailCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-EMAIL-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-EMAIL-002");
     }
 
     [Fact]
@@ -315,8 +315,8 @@ public class SendTestEmailCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-EMAIL-003");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-EMAIL-003");
     }
 
     #endregion
@@ -356,9 +356,9 @@ public class SendTestEmailCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Subject.Should().Be("Hello {{UserName}}"); // Variables not replaced
-        result.Value.HtmlBody.Should().Be("<p>Hello {{UserName}}</p>");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Subject.ShouldBe("Hello {{UserName}}"); // Variables not replaced
+        result.Value.HtmlBody.ShouldBe("<p>Hello {{UserName}}</p>");
     }
 
     [Fact]

@@ -31,7 +31,7 @@ public class EntityAuditLogInterceptorTests
         var interceptor = new EntityAuditLogInterceptor(_diffServiceMock.Object, _tenantContextMock.Object);
 
         // Assert
-        interceptor.Should().NotBeNull();
+        interceptor.ShouldNotBeNull();
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public class EntityAuditLogInterceptorTests
         var act = () => new EntityAuditLogInterceptor(null!, _tenantContextMock.Object);
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class EntityAuditLogInterceptorTests
         var act = () => new EntityAuditLogInterceptor(_diffServiceMock.Object, null!);
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     #endregion
@@ -62,7 +62,7 @@ public class EntityAuditLogInterceptorTests
     public void Interceptor_ShouldInheritFromSaveChangesInterceptor()
     {
         // Assert
-        _sut.Should().BeAssignableTo<SaveChangesInterceptor>();
+        _sut.ShouldBeAssignableTo<SaveChangesInterceptor>();
     }
 
     #endregion
@@ -74,7 +74,7 @@ public class EntityAuditLogInterceptorTests
     {
         // Assert
         var method = typeof(EntityAuditLogInterceptor).GetMethod("SavingChangesAsync");
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
     }
 
     [Fact]
@@ -84,8 +84,8 @@ public class EntityAuditLogInterceptorTests
         var method = typeof(EntityAuditLogInterceptor).GetMethod("SavingChangesAsync");
 
         // Assert
-        method.Should().NotBeNull();
-        method!.DeclaringType.Should().Be(typeof(EntityAuditLogInterceptor));
+        method.ShouldNotBeNull();
+        method!.DeclaringType.ShouldBe(typeof(EntityAuditLogInterceptor));
     }
 
     #endregion
@@ -113,7 +113,7 @@ public class EntityAuditLogInterceptorTests
         // The interceptor should exclude these from audit logging
 
         // Assert - Property name is recognized as sensitive by naming convention
-        propertyName.Should().NotBeNullOrEmpty();
+        propertyName.ShouldNotBeNullOrEmpty();
     }
 
     #endregion
@@ -134,7 +134,7 @@ public class EntityAuditLogInterceptorTests
         // The interceptor should not audit these types to prevent recursion and noise
 
         // Assert - Entity type name is recognized for exclusion
-        entityTypeName.Should().NotBeNullOrEmpty();
+        entityTypeName.ShouldNotBeNullOrEmpty();
     }
 
     #endregion
@@ -145,7 +145,7 @@ public class EntityAuditLogInterceptorTests
     public void AuditContext_Current_ShouldBeNullByDefault()
     {
         // Assert
-        AuditContext.Current.Should().BeNull();
+        AuditContext.Current.ShouldBeNull();
     }
 
     [Fact]
@@ -159,9 +159,9 @@ public class EntityAuditLogInterceptorTests
         using (AuditContext.BeginRequestScope(httpRequestId, correlationId))
         {
             // Assert
-            AuditContext.Current.Should().NotBeNull();
-            AuditContext.Current!.HttpRequestAuditLogId.Should().Be(httpRequestId);
-            AuditContext.Current!.CorrelationId.Should().Be(correlationId);
+            AuditContext.Current.ShouldNotBeNull();
+            AuditContext.Current!.HttpRequestAuditLogId.ShouldBe(httpRequestId);
+            AuditContext.Current!.CorrelationId.ShouldBe(correlationId);
         }
     }
 
@@ -175,11 +175,11 @@ public class EntityAuditLogInterceptorTests
         // Act
         using (AuditContext.BeginRequestScope(httpRequestId, correlationId))
         {
-            AuditContext.Current.Should().NotBeNull();
+            AuditContext.Current.ShouldNotBeNull();
         }
 
         // Assert - After disposal
-        AuditContext.Current.Should().BeNull();
+        AuditContext.Current.ShouldBeNull();
     }
 
     [Fact]
@@ -196,7 +196,7 @@ public class EntityAuditLogInterceptorTests
             AuditContext.SetCurrentHandler(handlerId);
 
             // Assert
-            AuditContext.Current!.CurrentHandlerAuditLogId.Should().Be(handlerId);
+            AuditContext.Current!.CurrentHandlerAuditLogId.ShouldBe(handlerId);
         }
     }
 
@@ -215,7 +215,7 @@ public class EntityAuditLogInterceptorTests
             AuditContext.ClearCurrentHandler();
 
             // Assert
-            AuditContext.Current!.CurrentHandlerAuditLogId.Should().BeNull();
+            AuditContext.Current!.CurrentHandlerAuditLogId.ShouldBeNull();
         }
     }
 
@@ -229,7 +229,7 @@ public class EntityAuditLogInterceptorTests
         var act = () => AuditContext.SetCurrentHandler(Guid.NewGuid());
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -242,7 +242,7 @@ public class EntityAuditLogInterceptorTests
         var act = () => AuditContext.ClearCurrentHandler();
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -257,7 +257,7 @@ public class EntityAuditLogInterceptorTests
         using (AuditContext.BeginRequestScope(httpRequestId, correlationId, pageContext))
         {
             // Assert
-            AuditContext.Current!.PageContext.Should().Be("Users");
+            AuditContext.Current!.PageContext.ShouldBe("Users");
         }
     }
 
@@ -274,7 +274,7 @@ public class EntityAuditLogInterceptorTests
             AuditContext.Clear();
 
             // Assert
-            AuditContext.Current.Should().BeNull();
+            AuditContext.Current.ShouldBeNull();
         }
     }
 
@@ -298,9 +298,9 @@ public class EntityAuditLogInterceptorTests
         var result = _diffServiceMock.Object.CreateDiffFromDictionaries(beforeValues, afterValues);
 
         // Assert
-        result.Should().Contain("Name");
-        result.Should().Contain("Old");
-        result.Should().Contain("New");
+        result.ShouldContain("Name");
+        result.ShouldContain("Old");
+        result.ShouldContain("New");
     }
 
     [Fact]
@@ -318,8 +318,8 @@ public class EntityAuditLogInterceptorTests
         var result = _diffServiceMock.Object.CreateDiffFromDictionaries(null, afterValues);
 
         // Assert
-        result.Should().Contain("Name");
-        result.Should().Contain("New");
+        result.ShouldContain("Name");
+        result.ShouldContain("New");
     }
 
     [Fact]
@@ -337,8 +337,8 @@ public class EntityAuditLogInterceptorTests
         var result = _diffServiceMock.Object.CreateDiffFromDictionaries(beforeValues, null);
 
         // Assert
-        result.Should().Contain("Name");
-        result.Should().Contain("Old");
+        result.ShouldContain("Name");
+        result.ShouldContain("Old");
     }
 
     #endregion
@@ -349,21 +349,21 @@ public class EntityAuditLogInterceptorTests
     public void EntityAuditOperation_Added_ShouldBeDefined()
     {
         // Assert
-        EntityAuditOperation.Added.Should().BeDefined();
+        Enum.IsDefined(EntityAuditOperation.Added).ShouldBe(true);
     }
 
     [Fact]
     public void EntityAuditOperation_Modified_ShouldBeDefined()
     {
         // Assert
-        EntityAuditOperation.Modified.Should().BeDefined();
+        Enum.IsDefined(EntityAuditOperation.Modified).ShouldBe(true);
     }
 
     [Fact]
     public void EntityAuditOperation_Deleted_ShouldBeDefined()
     {
         // Assert
-        EntityAuditOperation.Deleted.Should().BeDefined();
+        Enum.IsDefined(EntityAuditOperation.Deleted).ShouldBe(true);
     }
 
     [Fact]
@@ -371,7 +371,7 @@ public class EntityAuditLogInterceptorTests
     {
         // Assert
         var values = Enum.GetValues<EntityAuditOperation>();
-        values.Should().HaveCount(3);
+        values.Count().ShouldBe(3);
     }
 
     #endregion
@@ -385,9 +385,9 @@ public class EntityAuditLogInterceptorTests
         var attr = typeof(DisableAuditingAttribute).GetCustomAttribute<AttributeUsageAttribute>();
 
         // Assert
-        attr.Should().NotBeNull();
-        attr!.ValidOn.Should().HaveFlag(AttributeTargets.Class);
-        attr.ValidOn.Should().HaveFlag(AttributeTargets.Property);
+        attr.ShouldNotBeNull();
+        attr!.ValidOn.HasFlag(AttributeTargets.Class).ShouldBe(true);
+        attr.ValidOn.HasFlag(AttributeTargets.Property).ShouldBe(true);
     }
 
     [Fact]
@@ -397,8 +397,8 @@ public class EntityAuditLogInterceptorTests
         var attr = typeof(AuditSensitiveAttribute).GetCustomAttribute<AttributeUsageAttribute>();
 
         // Assert
-        attr.Should().NotBeNull();
-        attr!.ValidOn.Should().HaveFlag(AttributeTargets.Property);
+        attr.ShouldNotBeNull();
+        attr!.ValidOn.ShouldBe(AttributeTargets.Property);
     }
 
     [Fact]
@@ -408,8 +408,8 @@ public class EntityAuditLogInterceptorTests
         var attr = typeof(AuditCollectionAttribute).GetCustomAttribute<AttributeUsageAttribute>();
 
         // Assert
-        attr.Should().NotBeNull();
-        attr!.ValidOn.Should().HaveFlag(AttributeTargets.Property);
+        attr.ShouldNotBeNull();
+        attr!.ValidOn.ShouldBe(AttributeTargets.Property);
     }
 
     [Fact]
@@ -419,7 +419,7 @@ public class EntityAuditLogInterceptorTests
         var attr = new AuditSensitiveAttribute();
 
         // Assert
-        attr.Mask.Should().Be("[REDACTED]");
+        attr.Mask.ShouldBe("[REDACTED]");
     }
 
     [Fact]
@@ -429,7 +429,7 @@ public class EntityAuditLogInterceptorTests
         var attr = new AuditSensitiveAttribute { Mask = "***" };
 
         // Assert
-        attr.Mask.Should().Be("***");
+        attr.Mask.ShouldBe("***");
     }
 
     [Fact]
@@ -439,7 +439,7 @@ public class EntityAuditLogInterceptorTests
         var attr = new DisableAuditingAttribute();
 
         // Assert
-        attr.Reason.Should().BeNull();
+        attr.Reason.ShouldBeNull();
     }
 
     [Fact]
@@ -449,7 +449,7 @@ public class EntityAuditLogInterceptorTests
         var attr = new DisableAuditingAttribute { Reason = "High frequency operation" };
 
         // Assert
-        attr.Reason.Should().Be("High frequency operation");
+        attr.Reason.ShouldBe("High frequency operation");
     }
 
     [Fact]
@@ -459,7 +459,7 @@ public class EntityAuditLogInterceptorTests
         var attr = new AuditCollectionAttribute();
 
         // Assert
-        attr.IncludeChildDetails.Should().BeFalse();
+        attr.IncludeChildDetails.ShouldBe(false);
     }
 
     [Fact]
@@ -469,7 +469,7 @@ public class EntityAuditLogInterceptorTests
         var attr = new AuditCollectionAttribute();
 
         // Assert
-        attr.ChildDisplayProperty.Should().BeNull();
+        attr.ChildDisplayProperty.ShouldBeNull();
     }
 
     #endregion
@@ -486,7 +486,7 @@ public class EntityAuditLogInterceptorTests
         var context = _tenantContextMock.Object.MultiTenantContext;
 
         // Assert
-        context.Should().BeNull();
+        context.ShouldBeNull();
     }
 
     [Fact]
@@ -502,7 +502,7 @@ public class EntityAuditLogInterceptorTests
         var tenantId = _tenantContextMock.Object.MultiTenantContext?.TenantInfo?.Id;
 
         // Assert
-        tenantId.Should().Be("tenant-123");
+        tenantId.ShouldBe("tenant-123");
     }
 
     #endregion

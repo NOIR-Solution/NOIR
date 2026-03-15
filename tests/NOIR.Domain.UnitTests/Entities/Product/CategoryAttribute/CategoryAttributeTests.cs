@@ -40,11 +40,11 @@ public class CategoryAttributeTests
         var catAttr = CreateTestCategoryAttribute();
 
         // Assert
-        catAttr.Should().NotBeNull();
-        catAttr.Id.Should().NotBe(Guid.Empty);
-        catAttr.CategoryId.Should().Be(TestCategoryId);
-        catAttr.AttributeId.Should().Be(TestAttributeId);
-        catAttr.TenantId.Should().Be(TestTenantId);
+        catAttr.ShouldNotBeNull();
+        catAttr.Id.ShouldNotBe(Guid.Empty);
+        catAttr.CategoryId.ShouldBe(TestCategoryId);
+        catAttr.AttributeId.ShouldBe(TestAttributeId);
+        catAttr.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -54,8 +54,8 @@ public class CategoryAttributeTests
         var catAttr = CreateTestCategoryAttribute();
 
         // Assert
-        catAttr.IsRequired.Should().BeFalse();
-        catAttr.SortOrder.Should().Be(0);
+        catAttr.IsRequired.ShouldBeFalse();
+        catAttr.SortOrder.ShouldBe(0);
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class CategoryAttributeTests
         var catAttr = CreateTestCategoryAttribute(isRequired: true);
 
         // Assert
-        catAttr.IsRequired.Should().BeTrue();
+        catAttr.IsRequired.ShouldBeTrue();
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public class CategoryAttributeTests
         var catAttr = CreateTestCategoryAttribute(sortOrder: 5);
 
         // Assert
-        catAttr.SortOrder.Should().Be(5);
+        catAttr.SortOrder.ShouldBe(5);
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class CategoryAttributeTests
         var catAttr = CreateTestCategoryAttribute(tenantId: null);
 
         // Assert
-        catAttr.TenantId.Should().BeNull();
+        catAttr.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class CategoryAttributeTests
         var catAttr2 = CreateTestCategoryAttribute();
 
         // Assert
-        catAttr1.Id.Should().NotBe(catAttr2.Id);
+        catAttr1.Id.ShouldNotBe(catAttr2.Id);
     }
 
     #endregion
@@ -113,7 +113,7 @@ public class CategoryAttributeTests
         catAttr.SetRequired(true);
 
         // Assert
-        catAttr.IsRequired.Should().BeTrue();
+        catAttr.IsRequired.ShouldBeTrue();
     }
 
     [Fact]
@@ -126,7 +126,7 @@ public class CategoryAttributeTests
         catAttr.SetRequired(false);
 
         // Assert
-        catAttr.IsRequired.Should().BeFalse();
+        catAttr.IsRequired.ShouldBeFalse();
     }
 
     #endregion
@@ -143,7 +143,7 @@ public class CategoryAttributeTests
         catAttr.SetSortOrder(10);
 
         // Assert
-        catAttr.SortOrder.Should().Be(10);
+        catAttr.SortOrder.ShouldBe(10);
     }
 
     [Theory]
@@ -159,7 +159,7 @@ public class CategoryAttributeTests
         catAttr.SetSortOrder(sortOrder);
 
         // Assert
-        catAttr.SortOrder.Should().Be(sortOrder);
+        catAttr.SortOrder.ShouldBe(sortOrder);
     }
 
     #endregion

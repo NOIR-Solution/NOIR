@@ -137,8 +137,8 @@ public class UploadAvatarCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.AvatarUrl.Should().Contain("medium.webp");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.AvatarUrl.ShouldContain("medium.webp");
     }
 
     [Theory]
@@ -176,7 +176,7 @@ public class UploadAvatarCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     #endregion
@@ -274,8 +274,8 @@ public class UploadAvatarCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.Unauthorized);
     }
 
     [Fact]
@@ -292,8 +292,8 @@ public class UploadAvatarCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.Unauthorized);
     }
 
     [Fact]
@@ -312,8 +312,8 @@ public class UploadAvatarCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.UserNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.UserNotFound);
     }
 
     #endregion
@@ -345,8 +345,8 @@ public class UploadAvatarCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Validation.InvalidInput);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Validation.InvalidInput);
     }
 
     #endregion
@@ -383,8 +383,8 @@ public class UploadAvatarCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.UpdateFailed);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.UpdateFailed);
 
         // Verify rollback - all variant files should be deleted
         _fileStorageMock.Verify(
@@ -429,12 +429,12 @@ public class UploadAvatarCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        capturedOptions.Should().NotBeNull();
-        capturedOptions!.Variants.Should().Contain(ImageVariant.Thumb);
-        capturedOptions.Variants.Should().Contain(ImageVariant.Medium);
-        capturedOptions.GenerateThumbHash.Should().BeFalse(); // Avatars don't need ThumbHash
-        capturedOptions.ExtractDominantColor.Should().BeFalse();
-        capturedOptions.StorageFolder.Should().Contain($"avatars/{userId}");
+        capturedOptions.ShouldNotBeNull();
+        capturedOptions!.Variants.ShouldContain(ImageVariant.Thumb);
+        capturedOptions.Variants.ShouldContain(ImageVariant.Medium);
+        capturedOptions.GenerateThumbHash.ShouldBe(false); // Avatars don't need ThumbHash
+        capturedOptions.ExtractDominantColor.ShouldBe(false);
+        capturedOptions.StorageFolder.ShouldContain($"avatars/{userId}");
     }
 
     [Fact]
@@ -462,8 +462,8 @@ public class UploadAvatarCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.UpdateFailed);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.UpdateFailed);
     }
 
     #endregion

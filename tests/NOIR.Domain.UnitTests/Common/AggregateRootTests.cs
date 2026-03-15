@@ -50,7 +50,7 @@ public class AggregateRootTests
         var aggregate = TestAggregate.Create("Test Entity");
 
         // Assert
-        aggregate.DomainEvents.Should().NotBeNull();
+        aggregate.DomainEvents.ShouldNotBeNull();
     }
 
     [Fact]
@@ -60,8 +60,8 @@ public class AggregateRootTests
         var aggregate = TestAggregate.Create("Test");
 
         // Assert - Create already adds one event
-        aggregate.DomainEvents.Should().HaveCount(1);
-        aggregate.DomainEvents.Should().ContainSingle(e => e is TestCreatedEvent);
+        aggregate.DomainEvents.Count().ShouldBe(1);
+        aggregate.DomainEvents.ShouldContain(e => e is TestCreatedEvent);
     }
 
     [Fact]
@@ -74,9 +74,9 @@ public class AggregateRootTests
         aggregate.UpdateName("Updated");
 
         // Assert
-        aggregate.DomainEvents.Should().HaveCount(2);
-        aggregate.DomainEvents.Should().Contain(e => e is TestCreatedEvent);
-        aggregate.DomainEvents.Should().Contain(e => e is TestUpdatedEvent);
+        aggregate.DomainEvents.Count().ShouldBe(2);
+        aggregate.DomainEvents.ShouldContain(e => e is TestCreatedEvent);
+        aggregate.DomainEvents.ShouldContain(e => e is TestUpdatedEvent);
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class AggregateRootTests
         aggregate.RemoveEvent(eventToRemove);
 
         // Assert
-        aggregate.DomainEvents.Should().BeEmpty();
+        aggregate.DomainEvents.ShouldBeEmpty();
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public class AggregateRootTests
         aggregate.ClearDomainEvents();
 
         // Assert
-        aggregate.DomainEvents.Should().BeEmpty();
+        aggregate.DomainEvents.ShouldBeEmpty();
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class AggregateRootTests
         var aggregate = TestAggregate.Create("Test");
 
         // Assert
-        aggregate.DomainEvents.Should().BeOfType<System.Collections.ObjectModel.ReadOnlyCollection<IDomainEvent>>();
+        aggregate.DomainEvents.ShouldBeOfType<System.Collections.ObjectModel.ReadOnlyCollection<IDomainEvent>>();
     }
 
     [Fact]
@@ -125,8 +125,8 @@ public class AggregateRootTests
         var aggregate = new TestAggregate(id);
 
         // Assert
-        aggregate.Id.Should().Be(id);
-        aggregate.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
+        aggregate.Id.ShouldBe(id);
+        aggregate.CreatedAt.ShouldBe(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
@@ -136,11 +136,11 @@ public class AggregateRootTests
         var aggregate = TestAggregate.Create("Test");
 
         // Assert - IAuditableEntity properties should be accessible
-        aggregate.CreatedBy.Should().BeNull(); // Not set by domain
-        aggregate.ModifiedBy.Should().BeNull();
-        aggregate.IsDeleted.Should().BeFalse();
-        aggregate.DeletedAt.Should().BeNull();
-        aggregate.DeletedBy.Should().BeNull();
+        aggregate.CreatedBy.ShouldBeNull(); // Not set by domain
+        aggregate.ModifiedBy.ShouldBeNull();
+        aggregate.IsDeleted.ShouldBeFalse();
+        aggregate.DeletedAt.ShouldBeNull();
+        aggregate.DeletedBy.ShouldBeNull();
     }
 }
 
@@ -159,9 +159,9 @@ public class DomainEventTests
         var event2 = new TestEvent();
 
         // Assert
-        event1.EventId.Should().NotBe(Guid.Empty);
-        event2.EventId.Should().NotBe(Guid.Empty);
-        event1.EventId.Should().NotBe(event2.EventId);
+        event1.EventId.ShouldNotBe(Guid.Empty);
+        event2.EventId.ShouldNotBe(Guid.Empty);
+        event1.EventId.ShouldNotBe(event2.EventId);
     }
 
     [Fact]
@@ -175,7 +175,7 @@ public class DomainEventTests
 
         // Assert
         var after = DateTimeOffset.UtcNow;
-        domainEvent.OccurredAt.Should().BeOnOrAfter(before);
-        domainEvent.OccurredAt.Should().BeOnOrBefore(after);
+        domainEvent.OccurredAt.ShouldBeGreaterThanOrEqualTo(before);
+        domainEvent.OccurredAt.ShouldBeLessThanOrEqualTo(after);
     }
 }

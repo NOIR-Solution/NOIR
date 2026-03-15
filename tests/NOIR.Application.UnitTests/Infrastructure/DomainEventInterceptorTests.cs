@@ -28,7 +28,7 @@ public class DomainEventInterceptorTests
         var interceptor = new DomainEventInterceptor(_messageBusMock.Object, _loggerMock.Object);
 
         // Assert
-        interceptor.Should().NotBeNull();
+        interceptor.ShouldNotBeNull();
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class DomainEventInterceptorTests
         var act = () => new DomainEventInterceptor(null!, _loggerMock.Object);
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     #endregion
@@ -52,10 +52,10 @@ public class DomainEventInterceptorTests
         var eventData = CreateSaveChangesCompletedEventData();
 
         // Act
-        var act = () => _sut.SavedChanges(eventData, 1);
+        Action act = () => { _sut.SavedChanges(eventData, 1); };
 
         // Assert
-        act.Should().Throw<InvalidOperationException>();
+        Should.Throw<InvalidOperationException>(act);
     }
 
     [Fact]
@@ -65,11 +65,11 @@ public class DomainEventInterceptorTests
         var eventData = CreateSaveChangesCompletedEventData();
 
         // Act
-        var act = () => _sut.SavedChanges(eventData, 1);
+        Action act = () => { _sut.SavedChanges(eventData, 1); };
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*SaveChangesAsync*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("SaveChangesAsync");
     }
 
     [Fact]
@@ -79,11 +79,11 @@ public class DomainEventInterceptorTests
         var eventData = CreateSaveChangesCompletedEventData();
 
         // Act
-        var act = () => _sut.SavedChanges(eventData, 1);
+        Action act = () => { _sut.SavedChanges(eventData, 1); };
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*thread pool starvation*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("thread pool starvation");
     }
 
     [Fact]
@@ -93,11 +93,11 @@ public class DomainEventInterceptorTests
         var eventData = CreateSaveChangesCompletedEventData();
 
         // Act
-        var act = () => _sut.SavedChanges(eventData, 1);
+        Action act = () => { _sut.SavedChanges(eventData, 1); };
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Synchronous*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Synchronous");
     }
 
     #endregion
@@ -115,7 +115,7 @@ public class DomainEventInterceptorTests
         var result = await _sut.SavedChangesAsync(eventData, expectedResult, CancellationToken.None);
 
         // Assert
-        result.Should().Be(expectedResult);
+        result.ShouldBe(expectedResult);
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public class DomainEventInterceptorTests
         }
 
         // Assert
-        caughtException.Should().BeNull();
+        caughtException.ShouldBeNull();
     }
 
     [Fact]
@@ -150,7 +150,7 @@ public class DomainEventInterceptorTests
         var result = await _sut.SavedChangesAsync(eventData, expectedResult, CancellationToken.None);
 
         // Assert
-        result.Should().Be(expectedResult);
+        result.ShouldBe(expectedResult);
     }
 
     [Fact]
@@ -174,7 +174,7 @@ public class DomainEventInterceptorTests
     public void DomainEventInterceptor_ShouldInheritFromSaveChangesInterceptor()
     {
         // Assert
-        _sut.Should().BeAssignableTo<SaveChangesInterceptor>();
+        _sut.ShouldBeAssignableTo<SaveChangesInterceptor>();
     }
 
     #endregion

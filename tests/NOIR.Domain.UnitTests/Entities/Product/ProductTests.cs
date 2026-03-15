@@ -30,15 +30,15 @@ public class ProductTests
         var product = CreateTestProduct();
 
         // Assert
-        product.Should().NotBeNull();
-        product.Id.Should().NotBe(Guid.Empty);
-        product.Name.Should().Be("Test Product");
-        product.Slug.Should().Be("test-product");
-        product.BasePrice.Should().Be(100_000m);
-        product.Currency.Should().Be("VND");
-        product.Status.Should().Be(ProductStatus.Draft);
-        product.TrackInventory.Should().BeTrue();
-        product.TenantId.Should().Be(TestTenantId);
+        product.ShouldNotBeNull();
+        product.Id.ShouldNotBe(Guid.Empty);
+        product.Name.ShouldBe("Test Product");
+        product.Slug.ShouldBe("test-product");
+        product.BasePrice.ShouldBe(100_000m);
+        product.Currency.ShouldBe("VND");
+        product.Status.ShouldBe(ProductStatus.Draft);
+        product.TrackInventory.ShouldBeTrue();
+        product.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class ProductTests
         var product = Domain.Entities.Product.Product.Create("Test", "My-PRODUCT-Slug", 100m);
 
         // Assert
-        product.Slug.Should().Be("my-product-slug");
+        product.Slug.ShouldBe("my-product-slug");
     }
 
     [Fact]
@@ -58,9 +58,9 @@ public class ProductTests
         var product = CreateTestProduct();
 
         // Assert
-        product.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ProductCreatedEvent>()
-            .Which.ProductId.Should().Be(product.Id);
+        product.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ProductCreatedEvent>()
+            .ProductId.ShouldBe(product.Id);
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class ProductTests
         var product = Domain.Entities.Product.Product.Create("Test", "test", 100m);
 
         // Assert
-        product.Currency.Should().Be("VND");
+        product.Currency.ShouldBe("VND");
     }
 
     [Theory]
@@ -81,7 +81,7 @@ public class ProductTests
     {
         // Act & Assert
         var act = () => Domain.Entities.Product.Product.Create(name!, "slug", 100m);
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -92,7 +92,7 @@ public class ProductTests
     {
         // Act & Assert
         var act = () => Domain.Entities.Product.Product.Create("Name", slug!, 100m);
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class ProductTests
     {
         // Act & Assert
         var act = () => Domain.Entities.Product.Product.Create("Name", "slug", -1m);
-        act.Should().Throw<ArgumentOutOfRangeException>();
+        Should.Throw<ArgumentOutOfRangeException>(act);
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public class ProductTests
         var product = Domain.Entities.Product.Product.Create("Free Product", "free", 0m);
 
         // Assert
-        product.BasePrice.Should().Be(0m);
+        product.BasePrice.ShouldBe(0m);
     }
 
     #endregion
@@ -127,11 +127,11 @@ public class ProductTests
         product.UpdateBasicInfo("New Name", "new-slug", "Short desc", "Full desc", "<p>HTML</p>");
 
         // Assert
-        product.Name.Should().Be("New Name");
-        product.Slug.Should().Be("new-slug");
-        product.ShortDescription.Should().Be("Short desc");
-        product.Description.Should().Be("Full desc");
-        product.DescriptionHtml.Should().Be("<p>HTML</p>");
+        product.Name.ShouldBe("New Name");
+        product.Slug.ShouldBe("new-slug");
+        product.ShortDescription.ShouldBe("Short desc");
+        product.Description.ShouldBe("Full desc");
+        product.DescriptionHtml.ShouldBe("<p>HTML</p>");
     }
 
     [Fact]
@@ -144,7 +144,7 @@ public class ProductTests
         product.UpdateBasicInfo("Name", "NEW-Slug", null, null, null);
 
         // Assert
-        product.Slug.Should().Be("new-slug");
+        product.Slug.ShouldBe("new-slug");
     }
 
     [Fact]
@@ -158,8 +158,8 @@ public class ProductTests
         product.UpdateBasicInfo("Updated", "updated", null, null, null);
 
         // Assert
-        product.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ProductUpdatedEvent>();
+        product.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ProductUpdatedEvent>();
     }
 
     [Fact]
@@ -172,7 +172,7 @@ public class ProductTests
         product.UpdateBasicInfo("Name", "slug", "  trimmed  ", null, null);
 
         // Assert
-        product.ShortDescription.Should().Be("trimmed");
+        product.ShortDescription.ShouldBe("trimmed");
     }
 
     [Fact]
@@ -185,8 +185,8 @@ public class ProductTests
         product.UpdatePricing(200_000m, "USD");
 
         // Assert
-        product.BasePrice.Should().Be(200_000m);
-        product.Currency.Should().Be("USD");
+        product.BasePrice.ShouldBe(200_000m);
+        product.Currency.ShouldBe("USD");
     }
 
     [Fact]
@@ -200,8 +200,8 @@ public class ProductTests
         product.UpdatePricing(500m);
 
         // Assert
-        product.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ProductUpdatedEvent>();
+        product.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ProductUpdatedEvent>();
     }
 
     [Fact]
@@ -215,7 +215,7 @@ public class ProductTests
         product.SetCategory(categoryId);
 
         // Assert
-        product.CategoryId.Should().Be(categoryId);
+        product.CategoryId.ShouldBe(categoryId);
     }
 
     [Fact]
@@ -229,7 +229,7 @@ public class ProductTests
         product.SetCategory(null);
 
         // Assert
-        product.CategoryId.Should().BeNull();
+        product.CategoryId.ShouldBeNull();
     }
 
     [Fact]
@@ -242,7 +242,7 @@ public class ProductTests
         product.SetBrand("Nike");
 
         // Assert
-        product.Brand.Should().Be("Nike");
+        product.Brand.ShouldBe("Nike");
     }
 
     [Fact]
@@ -257,9 +257,9 @@ public class ProductTests
         product.SetBrandId(brandId);
 
         // Assert
-        product.BrandId.Should().Be(brandId);
-        product.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ProductUpdatedEvent>();
+        product.BrandId.ShouldBe(brandId);
+        product.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ProductUpdatedEvent>();
     }
 
     [Fact]
@@ -272,8 +272,8 @@ public class ProductTests
         product.UpdateIdentification("SKU-001", "BARCODE-001");
 
         // Assert
-        product.Sku.Should().Be("SKU-001");
-        product.Barcode.Should().Be("BARCODE-001");
+        product.Sku.ShouldBe("SKU-001");
+        product.Barcode.ShouldBe("BARCODE-001");
     }
 
     [Fact]
@@ -286,8 +286,8 @@ public class ProductTests
         product.UpdateIdentification("  SKU  ", "   ");
 
         // Assert
-        product.Sku.Should().Be("SKU");
-        product.Barcode.Should().BeNull();
+        product.Sku.ShouldBe("SKU");
+        product.Barcode.ShouldBeNull();
     }
 
     [Fact]
@@ -300,8 +300,8 @@ public class ProductTests
         product.UpdateSeo("SEO Title", "SEO Description");
 
         // Assert
-        product.MetaTitle.Should().Be("SEO Title");
-        product.MetaDescription.Should().Be("SEO Description");
+        product.MetaTitle.ShouldBe("SEO Title");
+        product.MetaDescription.ShouldBe("SEO Description");
     }
 
     [Fact]
@@ -315,14 +315,14 @@ public class ProductTests
         product.UpdatePhysicalProperties(1.5m, "kg", 30m, 20m, 10m, "cm");
 
         // Assert
-        product.Weight.Should().Be(1.5m);
-        product.WeightUnit.Should().Be("kg");
-        product.Length.Should().Be(30m);
-        product.Width.Should().Be(20m);
-        product.Height.Should().Be(10m);
-        product.DimensionUnit.Should().Be("cm");
-        product.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ProductUpdatedEvent>();
+        product.Weight.ShouldBe(1.5m);
+        product.WeightUnit.ShouldBe("kg");
+        product.Length.ShouldBe(30m);
+        product.Width.ShouldBe(20m);
+        product.Height.ShouldBe(10m);
+        product.DimensionUnit.ShouldBe("cm");
+        product.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ProductUpdatedEvent>();
     }
 
     [Fact]
@@ -330,13 +330,13 @@ public class ProductTests
     {
         // Arrange
         var product = CreateTestProduct();
-        product.TrackInventory.Should().BeTrue();
+        product.TrackInventory.ShouldBeTrue();
 
         // Act
         product.SetInventoryTracking(false);
 
         // Assert
-        product.TrackInventory.Should().BeFalse();
+        product.TrackInventory.ShouldBeFalse();
     }
 
     #endregion
@@ -348,16 +348,16 @@ public class ProductTests
     {
         // Arrange
         var product = CreateTestProduct();
-        product.Status.Should().Be(ProductStatus.Draft);
+        product.Status.ShouldBe(ProductStatus.Draft);
         product.ClearDomainEvents();
 
         // Act
         product.Publish();
 
         // Assert
-        product.Status.Should().Be(ProductStatus.Active);
-        product.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ProductPublishedEvent>();
+        product.Status.ShouldBe(ProductStatus.Active);
+        product.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ProductPublishedEvent>();
     }
 
     [Fact]
@@ -372,8 +372,8 @@ public class ProductTests
         product.Publish();
 
         // Assert
-        product.Status.Should().Be(ProductStatus.Active);
-        product.DomainEvents.Should().BeEmpty();
+        product.Status.ShouldBe(ProductStatus.Active);
+        product.DomainEvents.ShouldBeEmpty();
     }
 
     [Fact]
@@ -387,9 +387,9 @@ public class ProductTests
         product.Archive();
 
         // Assert
-        product.Status.Should().Be(ProductStatus.Archived);
-        product.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ProductArchivedEvent>();
+        product.Status.ShouldBe(ProductStatus.Archived);
+        product.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ProductArchivedEvent>();
     }
 
     [Fact]
@@ -402,7 +402,7 @@ public class ProductTests
         product.SetOutOfStock();
 
         // Assert — TotalStock is 0 (no variants), so it should set OutOfStock
-        product.Status.Should().Be(ProductStatus.OutOfStock);
+        product.Status.ShouldBe(ProductStatus.OutOfStock);
     }
 
     [Fact]
@@ -418,7 +418,7 @@ public class ProductTests
         product.SetOutOfStock();
 
         // Assert — TotalStock > 0, should not change
-        product.Status.Should().Be(ProductStatus.Active);
+        product.Status.ShouldBe(ProductStatus.Active);
     }
 
     [Fact]
@@ -427,7 +427,7 @@ public class ProductTests
         // Arrange
         var product = CreateTestProduct();
         product.SetOutOfStock();
-        product.Status.Should().Be(ProductStatus.OutOfStock);
+        product.Status.ShouldBe(ProductStatus.OutOfStock);
 
         var variant = product.AddVariant("Default", 100m, "SKU-1");
         variant.SetStock(5);
@@ -436,7 +436,7 @@ public class ProductTests
         product.RestoreFromOutOfStock();
 
         // Assert
-        product.Status.Should().Be(ProductStatus.Active);
+        product.Status.ShouldBe(ProductStatus.Active);
     }
 
     [Fact]
@@ -444,13 +444,13 @@ public class ProductTests
     {
         // Arrange
         var product = CreateTestProduct();
-        product.Status.Should().Be(ProductStatus.Draft);
+        product.Status.ShouldBe(ProductStatus.Draft);
 
         // Act
         product.RestoreFromOutOfStock();
 
         // Assert
-        product.Status.Should().Be(ProductStatus.Draft);
+        product.Status.ShouldBe(ProductStatus.Draft);
     }
 
     #endregion
@@ -467,12 +467,12 @@ public class ProductTests
         var variant = product.AddVariant("Size M", 120_000m, "SKU-M");
 
         // Assert
-        product.Variants.Should().ContainSingle();
-        variant.Name.Should().Be("Size M");
-        variant.Price.Should().Be(120_000m);
-        variant.Sku.Should().Be("SKU-M");
-        variant.ProductId.Should().Be(product.Id);
-        variant.TenantId.Should().Be(TestTenantId);
+        product.Variants.ShouldHaveSingleItem();
+        variant.Name.ShouldBe("Size M");
+        variant.Price.ShouldBe(120_000m);
+        variant.Sku.ShouldBe("SKU-M");
+        variant.ProductId.ShouldBe(product.Id);
+        variant.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -487,8 +487,8 @@ public class ProductTests
 
         // Assert
         var parsed = variant.GetOptions();
-        parsed.Should().ContainKey("color").WhoseValue.Should().Be("Red");
-        parsed.Should().ContainKey("size").WhoseValue.Should().Be("M");
+        parsed.ShouldContainKeyAndValue("color", "Red");
+        parsed.ShouldContainKeyAndValue("size", "M");
     }
 
     [Fact]
@@ -502,7 +502,7 @@ public class ProductTests
         product.RemoveVariant(variant.Id);
 
         // Assert
-        product.Variants.Should().BeEmpty();
+        product.Variants.ShouldBeEmpty();
     }
 
     [Fact]
@@ -516,7 +516,7 @@ public class ProductTests
         product.RemoveVariant(Guid.NewGuid());
 
         // Assert
-        product.Variants.Should().HaveCount(1);
+        product.Variants.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -524,13 +524,13 @@ public class ProductTests
     {
         // Arrange
         var product = CreateTestProduct();
-        product.HasVariants.Should().BeFalse();
+        product.HasVariants.ShouldBeFalse();
 
         // Act
         product.AddVariant("V1", 100m);
 
         // Assert
-        product.HasVariants.Should().BeTrue();
+        product.HasVariants.ShouldBeTrue();
     }
 
     [Fact]
@@ -544,8 +544,8 @@ public class ProductTests
         v2.SetStock(5);
 
         // Assert
-        product.TotalStock.Should().Be(15);
-        product.InStock.Should().BeTrue();
+        product.TotalStock.ShouldBe(15);
+        product.InStock.ShouldBeTrue();
     }
 
     #endregion
@@ -562,11 +562,11 @@ public class ProductTests
         var image = product.AddImage("https://example.com/img.jpg", "Alt text");
 
         // Assert
-        product.Images.Should().ContainSingle();
-        image.Url.Should().Be("https://example.com/img.jpg");
-        image.AltText.Should().Be("Alt text");
-        image.SortOrder.Should().Be(0);
-        image.IsPrimary.Should().BeFalse();
+        product.Images.ShouldHaveSingleItem();
+        image.Url.ShouldBe("https://example.com/img.jpg");
+        image.AltText.ShouldBe("Alt text");
+        image.SortOrder.ShouldBe(0);
+        image.IsPrimary.ShouldBeFalse();
     }
 
     [Fact]
@@ -580,8 +580,8 @@ public class ProductTests
         var second = product.AddImage("https://example.com/2.jpg", isPrimary: true);
 
         // Assert
-        first.IsPrimary.Should().BeFalse();
-        second.IsPrimary.Should().BeTrue();
+        first.IsPrimary.ShouldBeFalse();
+        second.IsPrimary.ShouldBeTrue();
     }
 
     [Fact]
@@ -595,8 +595,8 @@ public class ProductTests
         var second = product.AddImage("https://example.com/2.jpg");
 
         // Assert
-        first.SortOrder.Should().Be(0);
-        second.SortOrder.Should().Be(1);
+        first.SortOrder.ShouldBe(0);
+        second.SortOrder.ShouldBe(1);
     }
 
     [Fact]
@@ -610,7 +610,7 @@ public class ProductTests
         product.RemoveImage(image.Id);
 
         // Assert
-        product.Images.Should().BeEmpty();
+        product.Images.ShouldBeEmpty();
     }
 
     [Fact]
@@ -625,8 +625,8 @@ public class ProductTests
         product.SetPrimaryImage(img2.Id);
 
         // Assert
-        img1.IsPrimary.Should().BeFalse();
-        img2.IsPrimary.Should().BeTrue();
+        img1.IsPrimary.ShouldBeFalse();
+        img2.IsPrimary.ShouldBeTrue();
     }
 
     [Fact]
@@ -638,7 +638,7 @@ public class ProductTests
         product.AddImage("https://example.com/2.jpg", isPrimary: true);
 
         // Assert
-        product.PrimaryImage!.IsPrimary.Should().BeTrue();
+        product.PrimaryImage!.IsPrimary.ShouldBeTrue();
     }
 
     [Fact]
@@ -650,7 +650,7 @@ public class ProductTests
         product.AddImage("https://example.com/2.jpg");
 
         // Assert
-        product.PrimaryImage.Should().Be(first);
+        product.PrimaryImage.ShouldBe(first);
     }
 
     #endregion
@@ -667,10 +667,10 @@ public class ProductTests
         var option = product.AddOption("Color", "Color");
 
         // Assert
-        product.Options.Should().ContainSingle();
-        option.Name.Should().Be("color");
-        option.DisplayName.Should().Be("Color");
-        option.SortOrder.Should().Be(0);
+        product.Options.ShouldHaveSingleItem();
+        option.Name.ShouldBe("color");
+        option.DisplayName.ShouldBe("Color");
+        option.SortOrder.ShouldBe(0);
     }
 
     [Fact]
@@ -684,7 +684,7 @@ public class ProductTests
         var second = product.AddOption("Size");
 
         // Assert
-        second.SortOrder.Should().Be(1);
+        second.SortOrder.ShouldBe(1);
     }
 
     [Fact]
@@ -698,7 +698,7 @@ public class ProductTests
         product.RemoveOption(option.Id);
 
         // Assert
-        product.Options.Should().BeEmpty();
+        product.Options.ShouldBeEmpty();
     }
 
     [Fact]
@@ -706,13 +706,13 @@ public class ProductTests
     {
         // Arrange
         var product = CreateTestProduct();
-        product.HasOptions.Should().BeFalse();
+        product.HasOptions.ShouldBeFalse();
 
         // Act
         product.AddOption("Size");
 
         // Assert
-        product.HasOptions.Should().BeTrue();
+        product.HasOptions.ShouldBeTrue();
     }
 
     #endregion
@@ -730,9 +730,9 @@ public class ProductTests
         variant.UpdateDetails("Updated", 200m, "NEW-SKU");
 
         // Assert
-        variant.Name.Should().Be("Updated");
-        variant.Price.Should().Be(200m);
-        variant.Sku.Should().Be("NEW-SKU");
+        variant.Name.ShouldBe("Updated");
+        variant.Price.ShouldBe(200m);
+        variant.Sku.ShouldBe("NEW-SKU");
     }
 
     [Fact]
@@ -746,8 +746,8 @@ public class ProductTests
         variant.SetCompareAtPrice(150m);
 
         // Assert
-        variant.CompareAtPrice.Should().Be(150m);
-        variant.OnSale.Should().BeTrue();
+        variant.CompareAtPrice.ShouldBe(150m);
+        variant.OnSale.ShouldBeTrue();
     }
 
     [Fact]
@@ -761,7 +761,7 @@ public class ProductTests
         variant.SetCompareAtPrice(50m);
 
         // Assert
-        variant.OnSale.Should().BeFalse();
+        variant.OnSale.ShouldBeFalse();
     }
 
     [Fact]
@@ -775,7 +775,7 @@ public class ProductTests
         variant.SetCostPrice(50m);
 
         // Assert
-        variant.CostPrice.Should().Be(50m);
+        variant.CostPrice.ShouldBe(50m);
     }
 
     [Fact]
@@ -790,7 +790,7 @@ public class ProductTests
         variant.ReserveStock(3);
 
         // Assert
-        variant.StockQuantity.Should().Be(7);
+        variant.StockQuantity.ShouldBe(7);
     }
 
     [Fact]
@@ -803,8 +803,8 @@ public class ProductTests
 
         // Act & Assert
         var act = () => variant.ReserveStock(5);
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Insufficient stock*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Insufficient stock");
     }
 
     [Fact]
@@ -819,7 +819,7 @@ public class ProductTests
         variant.ReleaseStock(3);
 
         // Assert
-        variant.StockQuantity.Should().Be(8);
+        variant.StockQuantity.ShouldBe(8);
     }
 
     [Fact]
@@ -834,7 +834,7 @@ public class ProductTests
         variant.AdjustStock(10);
 
         // Assert
-        variant.StockQuantity.Should().Be(15);
+        variant.StockQuantity.ShouldBe(15);
     }
 
     [Fact]
@@ -847,8 +847,8 @@ public class ProductTests
 
         // Act & Assert
         var act = () => variant.AdjustStock(-5);
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Stock cannot be negative*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Stock cannot be negative");
     }
 
     [Fact]
@@ -860,8 +860,8 @@ public class ProductTests
 
         // Act & Assert
         var act = () => variant.SetStock(-1);
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Stock cannot be negative*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Stock cannot be negative");
     }
 
     [Fact]
@@ -872,13 +872,13 @@ public class ProductTests
         var variant = product.AddVariant("V1", 100m);
 
         // Assert
-        variant.InStock.Should().BeFalse();
+        variant.InStock.ShouldBeFalse();
 
         // Act
         variant.SetStock(1);
 
         // Assert
-        variant.InStock.Should().BeTrue();
+        variant.InStock.ShouldBeTrue();
     }
 
     [Fact]
@@ -889,13 +889,13 @@ public class ProductTests
         var variant = product.AddVariant("V1", 100m);
 
         variant.SetStock(5);
-        variant.LowStock.Should().BeTrue();
+        variant.LowStock.ShouldBeTrue();
 
         variant.SetStock(6);
-        variant.LowStock.Should().BeFalse();
+        variant.LowStock.ShouldBeFalse();
 
         variant.SetStock(0);
-        variant.LowStock.Should().BeFalse(); // 0 is not low stock, it's out of stock
+        variant.LowStock.ShouldBeFalse(); // 0 is not low stock, it's out of stock
     }
 
     [Fact]
@@ -906,7 +906,7 @@ public class ProductTests
         var variant = product.AddVariant("V1", 100m);
 
         // Assert
-        variant.GetOptions().Should().BeEmpty();
+        variant.GetOptions().ShouldBeEmpty();
     }
 
     [Fact]
@@ -921,7 +921,7 @@ public class ProductTests
         variant.UpdateOptions(options);
 
         // Assert
-        variant.GetOptions().Should().ContainKey("color").WhoseValue.Should().Be("Blue");
+        variant.GetOptions().ShouldContainKeyAndValue("color", "Blue");
     }
 
     [Fact]
@@ -935,7 +935,7 @@ public class ProductTests
         variant.SetSortOrder(5);
 
         // Assert
-        variant.SortOrder.Should().Be(5);
+        variant.SortOrder.ShouldBe(5);
     }
 
     [Fact]
@@ -950,7 +950,7 @@ public class ProductTests
         variant.SetImage(imageId);
 
         // Assert
-        variant.ImageId.Should().Be(imageId);
+        variant.ImageId.ShouldBe(imageId);
     }
 
     #endregion
@@ -968,10 +968,10 @@ public class ProductTests
         var value = option.AddValue("red", "Red");
 
         // Assert
-        option.Values.Should().ContainSingle();
-        value.Value.Should().Be("red");
-        value.DisplayValue.Should().Be("Red");
-        value.SortOrder.Should().Be(0);
+        option.Values.ShouldHaveSingleItem();
+        value.Value.ShouldBe("red");
+        value.DisplayValue.ShouldBe("Red");
+        value.SortOrder.ShouldBe(0);
     }
 
     [Fact]
@@ -986,7 +986,7 @@ public class ProductTests
         var second = option.AddValue("blue", "Blue");
 
         // Assert
-        second.SortOrder.Should().Be(1);
+        second.SortOrder.ShouldBe(1);
     }
 
     [Fact]
@@ -1001,7 +1001,7 @@ public class ProductTests
         option.RemoveValue(value.Id);
 
         // Assert
-        option.Values.Should().BeEmpty();
+        option.Values.ShouldBeEmpty();
     }
 
     [Fact]
@@ -1015,9 +1015,9 @@ public class ProductTests
         option.Update("Shoe Size", "Shoe Size", 2);
 
         // Assert
-        option.Name.Should().Be("shoe_size");
-        option.DisplayName.Should().Be("Shoe Size");
-        option.SortOrder.Should().Be(2);
+        option.Name.ShouldBe("shoe_size");
+        option.DisplayName.ShouldBe("Shoe Size");
+        option.SortOrder.ShouldBe(2);
     }
 
     [Fact]
@@ -1030,7 +1030,7 @@ public class ProductTests
         var option = product.AddOption("Color");
 
         // Assert
-        option.DisplayName.Should().Be("Color");
+        option.DisplayName.ShouldBe("Color");
     }
 
     #endregion
@@ -1048,8 +1048,8 @@ public class ProductTests
         image.Update("https://new.com/img.jpg", "New alt");
 
         // Assert
-        image.Url.Should().Be("https://new.com/img.jpg");
-        image.AltText.Should().Be("New alt");
+        image.Url.ShouldBe("https://new.com/img.jpg");
+        image.AltText.ShouldBe("New alt");
     }
 
     [Fact]
@@ -1063,7 +1063,7 @@ public class ProductTests
         image.SetSortOrder(3);
 
         // Assert
-        image.SortOrder.Should().Be(3);
+        image.SortOrder.ShouldBe(3);
     }
 
     [Fact]
@@ -1072,13 +1072,13 @@ public class ProductTests
         // Arrange
         var product = CreateTestProduct();
         var image = product.AddImage("https://example.com/img.jpg");
-        image.IsPrimary.Should().BeFalse();
+        image.IsPrimary.ShouldBeFalse();
 
         // Act
         image.SetAsPrimary();
 
         // Assert
-        image.IsPrimary.Should().BeTrue();
+        image.IsPrimary.ShouldBeTrue();
     }
 
     [Fact]
@@ -1092,7 +1092,7 @@ public class ProductTests
         image.ClearPrimary();
 
         // Assert
-        image.IsPrimary.Should().BeFalse();
+        image.IsPrimary.ShouldBeFalse();
     }
 
     #endregion

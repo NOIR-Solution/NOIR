@@ -95,12 +95,12 @@ public class UpdateProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         var updatedImage = existingProduct.Images.First(i => i.Id == imageId);
-        updatedImage.Url.Should().Be("https://example.com/new-url.jpg");
-        updatedImage.AltText.Should().Be("New Alt Text");
-        updatedImage.SortOrder.Should().Be(5);
+        updatedImage.Url.ShouldBe("https://example.com/new-url.jpg");
+        updatedImage.AltText.ShouldBe("New Alt Text");
+        updatedImage.SortOrder.ShouldBe(5);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -136,8 +136,8 @@ public class UpdateProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Images.First(i => i.Id == imageId).AltText.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Images.First(i => i.Id == imageId).AltText.ShouldBeNull();
     }
 
     [Fact]
@@ -168,8 +168,8 @@ public class UpdateProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Images.First(i => i.Id == imageId).Url.Should().Be(newUrl);
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Images.First(i => i.Id == imageId).Url.ShouldBe(newUrl);
     }
 
     [Fact]
@@ -199,8 +199,8 @@ public class UpdateProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Images.First(i => i.Id == imageId).SortOrder.Should().Be(10);
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Images.First(i => i.Id == imageId).SortOrder.ShouldBe(10);
     }
 
     [Fact]
@@ -227,10 +227,10 @@ public class UpdateProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Id.Should().Be(existingProduct.Id);
-        result.Value.Name.Should().Be(existingProduct.Name);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Id.ShouldBe(existingProduct.Id);
+        result.Value.Name.ShouldBe(existingProduct.Name);
     }
 
     [Fact]
@@ -261,9 +261,9 @@ public class UpdateProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Images.First(i => i.Id == primaryImageId).IsPrimary.Should().BeTrue();
-        existingProduct.Images.First(i => i.Id == secondImageId).IsPrimary.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Images.First(i => i.Id == primaryImageId).IsPrimary.ShouldBe(true);
+        existingProduct.Images.First(i => i.Id == secondImageId).IsPrimary.ShouldBe(false);
     }
 
     #endregion
@@ -286,11 +286,11 @@ public class UpdateProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-027");
-        result.Error.Message.Should().Contain("Product");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-027");
+        result.Error.Message.ShouldContain("Product");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -317,11 +317,11 @@ public class UpdateProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-028");
-        result.Error.Message.Should().Contain("Image");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-028");
+        result.Error.Message.ShouldContain("Image");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -392,8 +392,8 @@ public class UpdateProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Images.First(i => i.Id == imageId).SortOrder.Should().Be(-5);
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Images.First(i => i.Id == imageId).SortOrder.ShouldBe(-5);
     }
 
     [Fact]
@@ -423,8 +423,8 @@ public class UpdateProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Images.First(i => i.Id == imageId).AltText.Should().Be("");
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Images.First(i => i.Id == imageId).AltText.ShouldBe("");
     }
 
     [Fact]
@@ -455,8 +455,8 @@ public class UpdateProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Images.First(i => i.Id == imageId).Url.Should().Be(longUrl);
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Images.First(i => i.Id == imageId).Url.ShouldBe(longUrl);
     }
 
     #endregion

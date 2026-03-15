@@ -21,12 +21,12 @@ public class ColorAnalyzerTests
         var result = await ColorAnalyzer.ExtractDominantColorAsync(stream);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
-        result.Should().StartWith("#");
-        result.Should().HaveLength(7); // #RRGGBB format
+        result.ShouldNotBeNullOrEmpty();
+        result.ShouldStartWith("#");
+        result.Length.ShouldBe(7); // #RRGGBB format
         // Red color gets quantized, so check it's in the red range
         var r = Convert.ToInt32(result.Substring(1, 2), 16);
-        r.Should().BeGreaterThan(200); // Should be mostly red
+        r.ShouldBeGreaterThan(200); // Should be mostly red
     }
 
     [Fact]
@@ -39,10 +39,10 @@ public class ColorAnalyzerTests
         var result = await ColorAnalyzer.ExtractDominantColorAsync(stream);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
-        result.Should().StartWith("#");
+        result.ShouldNotBeNullOrEmpty();
+        result.ShouldStartWith("#");
         var b = Convert.ToInt32(result.Substring(5, 2), 16);
-        b.Should().BeGreaterThan(200); // Should be mostly blue
+        b.ShouldBeGreaterThan(200); // Should be mostly blue
     }
 
     [Fact]
@@ -55,11 +55,11 @@ public class ColorAnalyzerTests
         var result = await ColorAnalyzer.ExtractDominantColorAsync(stream);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
-        result.Should().StartWith("#");
+        result.ShouldNotBeNullOrEmpty();
+        result.ShouldStartWith("#");
         // Green (0, 128, 0) gets quantized
         var g = Convert.ToInt32(result.Substring(3, 2), 16);
-        g.Should().BeGreaterThan(100); // Should have significant green component
+        g.ShouldBeGreaterThan(100); // Should have significant green component
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class ColorAnalyzerTests
         var result = await ColorAnalyzer.ExtractDominantColorAsync(stream);
 
         // Assert
-        result.Should().Be("#808080"); // Gray fallback for fully transparent images
+        result.ShouldBe("#808080"); // Gray fallback for fully transparent images
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class ColorAnalyzerTests
         var result = await ColorAnalyzer.ExtractDominantColorAsync(stream);
 
         // Assert
-        result.Should().Be("#808080"); // Gray fallback for very dark images
+        result.ShouldBe("#808080"); // Gray fallback for very dark images
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class ColorAnalyzerTests
         var result = await ColorAnalyzer.ExtractDominantColorAsync(stream);
 
         // Assert
-        result.Should().Be("#808080"); // Gray fallback for very light images
+        result.ShouldBe("#808080"); // Gray fallback for very light images
     }
 
     [Fact]
@@ -127,9 +127,9 @@ public class ColorAnalyzerTests
         var result = await ColorAnalyzer.ExtractDominantColorAsync(stream);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
+        result.ShouldNotBeNullOrEmpty();
         var r = Convert.ToInt32(result.Substring(1, 2), 16);
-        r.Should().BeGreaterThan(200); // Should be mostly red since red is dominant
+        r.ShouldBeGreaterThan(200); // Should be mostly red since red is dominant
     }
 
     [Fact]
@@ -143,8 +143,8 @@ public class ColorAnalyzerTests
         var result = await ColorAnalyzer.ExtractDominantColorAsync(stream);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
-        result.Should().StartWith("#");
+        result.ShouldNotBeNullOrEmpty();
+        result.ShouldStartWith("#");
     }
 
     [Fact]
@@ -157,8 +157,8 @@ public class ColorAnalyzerTests
         var result = await ColorAnalyzer.ExtractDominantColorAsync(stream);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
-        result.Should().StartWith("#");
+        result.ShouldNotBeNullOrEmpty();
+        result.ShouldStartWith("#");
     }
 
     [Fact]
@@ -171,8 +171,8 @@ public class ColorAnalyzerTests
         var result = await ColorAnalyzer.ExtractDominantColorAsync(stream);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
-        result.Should().StartWith("#");
+        result.ShouldNotBeNullOrEmpty();
+        result.ShouldStartWith("#");
     }
 
     [Fact]
@@ -222,9 +222,9 @@ public class ColorAnalyzerTests
         var result = await ColorAnalyzer.ExtractPaletteAsync(stream, paletteSize: 5);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCountLessThanOrEqualTo(5);
-        result.Should().OnlyContain(c => c.StartsWith("#") && c.Length == 7);
+        result.ShouldNotBeNull();
+        result.Count().ShouldBeLessThanOrEqualTo(5);
+        result.ShouldAllBe(c => c.StartsWith("#") && c.Length == 7);
     }
 
     [Fact]
@@ -258,8 +258,8 @@ public class ColorAnalyzerTests
         var result = await ColorAnalyzer.ExtractPaletteAsync(stream);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCountLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result.Count().ShouldBeLessThanOrEqualTo(5);
     }
 
     [Fact]
@@ -272,8 +272,8 @@ public class ColorAnalyzerTests
         var result = await ColorAnalyzer.ExtractPaletteAsync(stream, paletteSize: 3);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCountLessThanOrEqualTo(3);
+        result.ShouldNotBeNull();
+        result.Count().ShouldBeLessThanOrEqualTo(3);
     }
 
     [Fact]
@@ -286,9 +286,9 @@ public class ColorAnalyzerTests
         var result = await ColorAnalyzer.ExtractPaletteAsync(stream, paletteSize: 5);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCount(1);
-        result[0].Should().StartWith("#");
+        result.ShouldNotBeNull();
+        result.Count().ShouldBe(1);
+        result[0].ShouldStartWith("#");
     }
 
     [Fact]
@@ -317,8 +317,8 @@ public class ColorAnalyzerTests
         var result = await ColorAnalyzer.ExtractPaletteAsync(stream);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCountGreaterThan(0);
+        result.ShouldNotBeNull();
+        result.Count().ShouldBeGreaterThan(0);
     }
 
     [Fact]

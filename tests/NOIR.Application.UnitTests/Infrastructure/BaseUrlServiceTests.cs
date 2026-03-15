@@ -37,7 +37,7 @@ public class BaseUrlServiceTests
         var result = _sut.GetBaseUrl();
 
         // Assert
-        result.Should().Be("https://myapp.example.com:443");
+        result.ShouldBe("https://myapp.example.com:443");
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class BaseUrlServiceTests
         var result = _sut.GetBaseUrl();
 
         // Assert
-        result.Should().Be("https://myapp.example.com");
+        result.ShouldBe("https://myapp.example.com");
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class BaseUrlServiceTests
         var result = _sut.GetBaseUrl();
 
         // Assert
-        result.Should().Be("http://localhost:5000");
+        result.ShouldBe("http://localhost:5000");
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class BaseUrlServiceTests
         var result = _sut.GetBaseUrl();
 
         // Assert
-        result.Should().Be("https://configured.example.com");
+        result.ShouldBe("https://configured.example.com");
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class BaseUrlServiceTests
         var result = service.GetBaseUrl();
 
         // Assert
-        result.Should().Be("https://configured.example.com");
+        result.ShouldBe("https://configured.example.com");
     }
 
     [Fact]
@@ -118,7 +118,7 @@ public class BaseUrlServiceTests
         var result = service.GetBaseUrl();
 
         // Assert
-        result.Should().Be("https://localhost");
+        result.ShouldBe("https://localhost");
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public class BaseUrlServiceTests
         var result = service.GetBaseUrl();
 
         // Assert
-        result.Should().Be("https://localhost");
+        result.ShouldBe("https://localhost");
     }
 
     #endregion
@@ -153,7 +153,7 @@ public class BaseUrlServiceTests
         var result = _sut.BuildUrl("/login");
 
         // Assert
-        result.Should().Be("https://configured.example.com/login");
+        result.ShouldBe("https://configured.example.com/login");
     }
 
     [Fact]
@@ -166,7 +166,7 @@ public class BaseUrlServiceTests
         var result = _sut.BuildUrl("dashboard/settings");
 
         // Assert
-        result.Should().Be("https://configured.example.com/dashboard/settings");
+        result.ShouldBe("https://configured.example.com/dashboard/settings");
     }
 
     [Fact]
@@ -179,7 +179,7 @@ public class BaseUrlServiceTests
         var result = _sut.BuildUrl("");
 
         // Assert
-        result.Should().Be("https://configured.example.com");
+        result.ShouldBe("https://configured.example.com");
     }
 
     [Fact]
@@ -192,7 +192,7 @@ public class BaseUrlServiceTests
         var result = _sut.BuildUrl(null!);
 
         // Assert
-        result.Should().Be("https://configured.example.com");
+        result.ShouldBe("https://configured.example.com");
     }
 
     [Fact]
@@ -205,7 +205,7 @@ public class BaseUrlServiceTests
         var result = _sut.BuildUrl("/search?q=test&page=1");
 
         // Assert
-        result.Should().Be("https://configured.example.com/search?q=test&page=1");
+        result.ShouldBe("https://configured.example.com/search?q=test&page=1");
     }
 
     [Fact]
@@ -221,7 +221,7 @@ public class BaseUrlServiceTests
         var result = _sut.BuildUrl("/api/users");
 
         // Assert
-        result.Should().Be("https://dynamic.example.com/api/users");
+        result.ShouldBe("https://dynamic.example.com/api/users");
     }
 
     #endregion
@@ -232,14 +232,14 @@ public class BaseUrlServiceTests
     public void Service_ShouldImplementIBaseUrlService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IBaseUrlService>();
+        _sut.ShouldBeAssignableTo<IBaseUrlService>();
     }
 
     [Fact]
     public void Service_ShouldImplementIScopedService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IScopedService>();
+        _sut.ShouldBeAssignableTo<IScopedService>();
     }
 
     [Fact]
@@ -249,7 +249,7 @@ public class BaseUrlServiceTests
         var service = new BaseUrlService(_httpContextAccessorMock.Object, _settingsMock.Object);
 
         // Assert
-        service.Should().NotBeNull();
+        service.ShouldNotBeNull();
     }
 
     #endregion

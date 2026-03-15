@@ -40,10 +40,10 @@ public class ReviewEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/reviews");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<ReviewDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeNull();
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class ReviewEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/reviews");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -66,11 +66,11 @@ public class ReviewEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/reviews?page=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<ReviewDto>>();
-        result.Should().NotBeNull();
-        result!.PageNumber.Should().Be(1);
-        result.Items.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.PageNumber.ShouldBe(1);
+        result.Items.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     #endregion
@@ -87,7 +87,7 @@ public class ReviewEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/reviews/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -104,7 +104,7 @@ public class ReviewEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsync($"/api/reviews/{Guid.NewGuid()}/approve", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -122,7 +122,7 @@ public class ReviewEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync($"/api/reviews/{Guid.NewGuid()}/reject", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -140,7 +140,7 @@ public class ReviewEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync($"/api/reviews/{Guid.NewGuid()}/respond", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -158,7 +158,7 @@ public class ReviewEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync($"/api/reviews/{Guid.NewGuid()}/vote", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -176,11 +176,11 @@ public class ReviewEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/products/{productId}/reviews");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<ReviewDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeNull();
-        result.Items.Should().BeEmpty();
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeNull();
+        result.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -190,7 +190,7 @@ public class ReviewEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync($"/api/products/{Guid.NewGuid()}/reviews");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -208,10 +208,10 @@ public class ReviewEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/products/{productId}/reviews/stats");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var stats = await response.Content.ReadFromJsonAsync<ReviewStatsDto>();
-        stats.Should().NotBeNull();
-        stats!.TotalReviews.Should().Be(0);
+        stats.ShouldNotBeNull();
+        stats!.TotalReviews.ShouldBe(0);
     }
 
     [Fact]
@@ -221,7 +221,7 @@ public class ReviewEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync($"/api/products/{Guid.NewGuid()}/reviews/stats");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -255,7 +255,7 @@ public class ReviewEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await userClient.GetAsync("/api/reviews");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -274,7 +274,7 @@ public class ReviewEndpointsTests : IClassFixture<CustomWebApplicationFactory>
 
         // Assert
         // Empty list should either return 200 with 0 count or 400
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.OK, HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -288,7 +288,7 @@ public class ReviewEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/reviews/bulk-reject", request);
 
         // Assert
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.OK, HttpStatusCode.BadRequest);
     }
 
     #endregion

@@ -46,14 +46,14 @@ public class ReviewTests
         var review = CreateTestReview();
 
         // Assert
-        review.Should().NotBeNull();
-        review.Id.Should().NotBe(Guid.Empty);
-        review.ProductId.Should().Be(TestProductId);
-        review.UserId.Should().Be(TestUserId);
-        review.Rating.Should().Be(4);
-        review.Title.Should().Be("Great Product");
-        review.Content.Should().Be("I really enjoyed using this product. Highly recommended!");
-        review.TenantId.Should().Be(TestTenantId);
+        review.ShouldNotBeNull();
+        review.Id.ShouldNotBe(Guid.Empty);
+        review.ProductId.ShouldBe(TestProductId);
+        review.UserId.ShouldBe(TestUserId);
+        review.Rating.ShouldBe(4);
+        review.Title.ShouldBe("Great Product");
+        review.Content.ShouldBe("I really enjoyed using this product. Highly recommended!");
+        review.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -63,12 +63,12 @@ public class ReviewTests
         var review = CreateTestReview();
 
         // Assert
-        review.Status.Should().Be(ReviewStatus.Pending);
-        review.HelpfulVotes.Should().Be(0);
-        review.NotHelpfulVotes.Should().Be(0);
-        review.AdminResponse.Should().BeNull();
-        review.AdminRespondedAt.Should().BeNull();
-        review.Media.Should().BeEmpty();
+        review.Status.ShouldBe(ReviewStatus.Pending);
+        review.HelpfulVotes.ShouldBe(0);
+        review.NotHelpfulVotes.ShouldBe(0);
+        review.AdminResponse.ShouldBeNull();
+        review.AdminRespondedAt.ShouldBeNull();
+        review.Media.ShouldBeEmpty();
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class ReviewTests
         var review = CreateTestReview(isVerifiedPurchase: true);
 
         // Assert
-        review.IsVerifiedPurchase.Should().BeTrue();
+        review.IsVerifiedPurchase.ShouldBeTrue();
     }
 
     [Fact]
@@ -88,7 +88,7 @@ public class ReviewTests
         var review = CreateTestReview(isVerifiedPurchase: false);
 
         // Assert
-        review.IsVerifiedPurchase.Should().BeFalse();
+        review.IsVerifiedPurchase.ShouldBeFalse();
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class ReviewTests
         var review = CreateTestReview(orderId: orderId);
 
         // Assert
-        review.OrderId.Should().Be(orderId);
+        review.OrderId.ShouldBe(orderId);
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class ReviewTests
         var review = CreateTestReview(orderId: null);
 
         // Assert
-        review.OrderId.Should().BeNull();
+        review.OrderId.ShouldBeNull();
     }
 
     [Fact]
@@ -121,7 +121,7 @@ public class ReviewTests
         var review = CreateTestReview(title: null);
 
         // Assert
-        review.Title.Should().BeNull();
+        review.Title.ShouldBeNull();
     }
 
     [Fact]
@@ -131,7 +131,7 @@ public class ReviewTests
         var review = CreateTestReview(title: "  Trimmed Title  ");
 
         // Assert
-        review.Title.Should().Be("Trimmed Title");
+        review.Title.ShouldBe("Trimmed Title");
     }
 
     [Fact]
@@ -141,7 +141,7 @@ public class ReviewTests
         var review = CreateTestReview(content: "  Trimmed content  ");
 
         // Assert
-        review.Content.Should().Be("Trimmed content");
+        review.Content.ShouldBe("Trimmed content");
     }
 
     [Theory]
@@ -156,7 +156,7 @@ public class ReviewTests
         var review = CreateTestReview(rating: rating);
 
         // Assert
-        review.Rating.Should().Be(rating);
+        review.Rating.ShouldBe(rating);
     }
 
     [Theory]
@@ -169,8 +169,8 @@ public class ReviewTests
         var act = () => CreateTestReview(rating: rating);
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>()
-            .WithMessage("*Rating must be between 1 and 5*");
+        Should.Throw<ArgumentOutOfRangeException>(act)
+            .Message.ShouldContain("Rating must be between 1 and 5");
     }
 
     [Theory]
@@ -183,8 +183,8 @@ public class ReviewTests
         var act = () => CreateTestReview(rating: rating);
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>()
-            .WithMessage("*Rating must be between 1 and 5*");
+        Should.Throw<ArgumentOutOfRangeException>(act)
+            .Message.ShouldContain("Rating must be between 1 and 5");
     }
 
     [Theory]
@@ -197,7 +197,7 @@ public class ReviewTests
         var act = () => CreateTestReview(userId: userId!);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -210,7 +210,7 @@ public class ReviewTests
         var act = () => CreateTestReview(content: content!);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     #endregion
@@ -222,13 +222,13 @@ public class ReviewTests
     {
         // Arrange
         var review = CreateTestReview();
-        review.Status.Should().Be(ReviewStatus.Pending);
+        review.Status.ShouldBe(ReviewStatus.Pending);
 
         // Act
         review.Approve();
 
         // Assert
-        review.Status.Should().Be(ReviewStatus.Approved);
+        review.Status.ShouldBe(ReviewStatus.Approved);
     }
 
     [Fact]
@@ -236,13 +236,13 @@ public class ReviewTests
     {
         // Arrange
         var review = CreateTestReview();
-        review.Status.Should().Be(ReviewStatus.Pending);
+        review.Status.ShouldBe(ReviewStatus.Pending);
 
         // Act
         review.Reject();
 
         // Assert
-        review.Status.Should().Be(ReviewStatus.Rejected);
+        review.Status.ShouldBe(ReviewStatus.Rejected);
     }
 
     [Fact]
@@ -256,7 +256,7 @@ public class ReviewTests
         review.Approve();
 
         // Assert
-        review.Status.Should().Be(ReviewStatus.Approved);
+        review.Status.ShouldBe(ReviewStatus.Approved);
     }
 
     [Fact]
@@ -270,7 +270,7 @@ public class ReviewTests
         review.Reject();
 
         // Assert
-        review.Status.Should().Be(ReviewStatus.Rejected);
+        review.Status.ShouldBe(ReviewStatus.Rejected);
     }
 
     [Fact]
@@ -284,7 +284,7 @@ public class ReviewTests
         review.Approve();
 
         // Assert
-        review.Status.Should().Be(ReviewStatus.Approved);
+        review.Status.ShouldBe(ReviewStatus.Approved);
     }
 
     [Fact]
@@ -298,7 +298,7 @@ public class ReviewTests
         review.Reject();
 
         // Assert
-        review.Status.Should().Be(ReviewStatus.Rejected);
+        review.Status.ShouldBe(ReviewStatus.Rejected);
     }
 
     #endregion
@@ -316,9 +316,9 @@ public class ReviewTests
         review.AddAdminResponse("Thank you for your review!");
 
         // Assert
-        review.AdminResponse.Should().Be("Thank you for your review!");
-        review.AdminRespondedAt.Should().NotBeNull();
-        review.AdminRespondedAt.Should().BeOnOrAfter(beforeResponse);
+        review.AdminResponse.ShouldBe("Thank you for your review!");
+        review.AdminRespondedAt.ShouldNotBeNull();
+        review.AdminRespondedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeResponse);
     }
 
     [Fact]
@@ -331,7 +331,7 @@ public class ReviewTests
         review.AddAdminResponse("  Thank you!  ");
 
         // Assert
-        review.AdminResponse.Should().Be("Thank you!");
+        review.AdminResponse.ShouldBe("Thank you!");
     }
 
     [Fact]
@@ -345,8 +345,8 @@ public class ReviewTests
         review.AddAdminResponse("Updated response");
 
         // Assert — content is overwritten, timestamp is refreshed
-        review.AdminResponse.Should().Be("Updated response");
-        review.AdminRespondedAt.Should().NotBeNull();
+        review.AdminResponse.ShouldBe("Updated response");
+        review.AdminRespondedAt.ShouldNotBeNull();
     }
 
     [Theory]
@@ -362,7 +362,7 @@ public class ReviewTests
         var act = () => review.AddAdminResponse(response!);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     #endregion
@@ -379,7 +379,7 @@ public class ReviewTests
         review.VoteHelpful();
 
         // Assert
-        review.HelpfulVotes.Should().Be(1);
+        review.HelpfulVotes.ShouldBe(1);
     }
 
     [Fact]
@@ -394,7 +394,7 @@ public class ReviewTests
         review.VoteHelpful();
 
         // Assert
-        review.HelpfulVotes.Should().Be(3);
+        review.HelpfulVotes.ShouldBe(3);
     }
 
     [Fact]
@@ -407,7 +407,7 @@ public class ReviewTests
         review.VoteNotHelpful();
 
         // Assert
-        review.NotHelpfulVotes.Should().Be(1);
+        review.NotHelpfulVotes.ShouldBe(1);
     }
 
     [Fact]
@@ -423,7 +423,7 @@ public class ReviewTests
         review.VoteNotHelpful();
 
         // Assert
-        review.NotHelpfulVotes.Should().Be(4);
+        review.NotHelpfulVotes.ShouldBe(4);
     }
 
     [Fact]
@@ -440,8 +440,8 @@ public class ReviewTests
         review.VoteNotHelpful();
 
         // Assert
-        review.HelpfulVotes.Should().Be(3);
-        review.NotHelpfulVotes.Should().Be(2);
+        review.HelpfulVotes.ShouldBe(3);
+        review.NotHelpfulVotes.ShouldBe(2);
     }
 
     #endregion
@@ -458,12 +458,12 @@ public class ReviewTests
         var media = review.AddMedia("https://example.com/image.jpg", ReviewMediaType.Image, 0);
 
         // Assert
-        review.Media.Should().HaveCount(1);
-        media.Should().NotBeNull();
-        media.ReviewId.Should().Be(review.Id);
-        media.MediaUrl.Should().Be("https://example.com/image.jpg");
-        media.MediaType.Should().Be(ReviewMediaType.Image);
-        media.DisplayOrder.Should().Be(0);
+        review.Media.Count().ShouldBe(1);
+        media.ShouldNotBeNull();
+        media.ReviewId.ShouldBe(review.Id);
+        media.MediaUrl.ShouldBe("https://example.com/image.jpg");
+        media.MediaType.ShouldBe(ReviewMediaType.Image);
+        media.DisplayOrder.ShouldBe(0);
     }
 
     [Fact]
@@ -478,7 +478,7 @@ public class ReviewTests
         review.AddMedia("https://example.com/image2.jpg", ReviewMediaType.Image, 2);
 
         // Assert
-        review.Media.Should().HaveCount(3);
+        review.Media.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -491,7 +491,7 @@ public class ReviewTests
         var media = review.AddMedia("https://example.com/image.jpg", ReviewMediaType.Image, 0);
 
         // Assert
-        media.TenantId.Should().Be(TestTenantId);
+        media.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -504,7 +504,7 @@ public class ReviewTests
         var media = review.AddMedia("https://example.com/video.mp4", ReviewMediaType.Video, 0);
 
         // Assert
-        media.MediaType.Should().Be(ReviewMediaType.Video);
+        media.MediaType.ShouldBe(ReviewMediaType.Video);
     }
 
     [Fact]
@@ -519,9 +519,9 @@ public class ReviewTests
         var media3 = review.AddMedia("https://example.com/second.jpg", ReviewMediaType.Image, 1);
 
         // Assert
-        media1.DisplayOrder.Should().Be(2);
-        media2.DisplayOrder.Should().Be(0);
-        media3.DisplayOrder.Should().Be(1);
+        media1.DisplayOrder.ShouldBe(2);
+        media2.DisplayOrder.ShouldBe(0);
+        media3.DisplayOrder.ShouldBe(1);
     }
 
     [Fact]
@@ -534,8 +534,8 @@ public class ReviewTests
         var media = review.AddMedia("https://example.com/image.jpg", ReviewMediaType.Image, 0);
 
         // Assert
-        media.Id.Should().NotBe(Guid.Empty);
-        review.Media.Should().Contain(media);
+        media.Id.ShouldNotBe(Guid.Empty);
+        review.Media.ShouldContain(media);
     }
 
     #endregion
@@ -555,29 +555,29 @@ public class ReviewTests
             isVerifiedPurchase: true);
 
         // Assert initial state
-        review.Status.Should().Be(ReviewStatus.Pending);
-        review.IsVerifiedPurchase.Should().BeTrue();
-        review.OrderId.Should().Be(orderId);
+        review.Status.ShouldBe(ReviewStatus.Pending);
+        review.IsVerifiedPurchase.ShouldBeTrue();
+        review.OrderId.ShouldBe(orderId);
 
         // Act - Add media
         var media = review.AddMedia("https://example.com/photo.jpg", ReviewMediaType.Image, 0);
-        review.Media.Should().HaveCount(1);
+        review.Media.Count().ShouldBe(1);
 
         // Act - Approve
         review.Approve();
-        review.Status.Should().Be(ReviewStatus.Approved);
+        review.Status.ShouldBe(ReviewStatus.Approved);
 
         // Act - Vote
         review.VoteHelpful();
         review.VoteHelpful();
         review.VoteNotHelpful();
-        review.HelpfulVotes.Should().Be(2);
-        review.NotHelpfulVotes.Should().Be(1);
+        review.HelpfulVotes.ShouldBe(2);
+        review.NotHelpfulVotes.ShouldBe(1);
 
         // Act - Admin response
         review.AddAdminResponse("Thank you for your kind words!");
-        review.AdminResponse.Should().Be("Thank you for your kind words!");
-        review.AdminRespondedAt.Should().NotBeNull();
+        review.AdminResponse.ShouldBe("Thank you for your kind words!");
+        review.AdminRespondedAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -593,7 +593,7 @@ public class ReviewTests
         review.Reject();
 
         // Assert
-        review.Status.Should().Be(ReviewStatus.Rejected);
+        review.Status.ShouldBe(ReviewStatus.Rejected);
     }
 
     #endregion

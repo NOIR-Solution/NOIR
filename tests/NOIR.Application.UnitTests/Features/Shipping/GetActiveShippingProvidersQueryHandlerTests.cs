@@ -84,8 +84,8 @@ public class GetActiveShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -102,8 +102,8 @@ public class GetActiveShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     [Fact]
@@ -129,10 +129,10 @@ public class GetActiveShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
-        result.Value[0].DisplayName.Should().Be("GHN"); // SortOrder 1
-        result.Value[1].DisplayName.Should().Be("GHTK"); // SortOrder 2
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
+        result.Value[0].DisplayName.ShouldBe("GHN"); // SortOrder 1
+        result.Value[1].DisplayName.ShouldBe("GHTK"); // SortOrder 2
     }
 
     [Fact]
@@ -158,16 +158,16 @@ public class GetActiveShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
 
         var dto = result.Value[0];
-        dto.Id.Should().Be(providerId);
-        dto.ProviderCode.Should().Be(ShippingProviderCode.GHTK);
-        dto.DisplayName.Should().Be("Giao Hang Tiet Kiem");
-        dto.SortOrder.Should().Be(1);
-        dto.SupportsCod.Should().BeTrue();
-        dto.SupportsInsurance.Should().BeTrue();
+        dto.Id.ShouldBe(providerId);
+        dto.ProviderCode.ShouldBe(ShippingProviderCode.GHTK);
+        dto.DisplayName.ShouldBe("Giao Hang Tiet Kiem");
+        dto.SortOrder.ShouldBe(1);
+        dto.SupportsCod.ShouldBe(true);
+        dto.SupportsInsurance.ShouldBe(true);
     }
 
     [Fact]
@@ -187,10 +187,10 @@ public class GetActiveShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value[0].SupportedServices.Should().Contain("Standard");
-        result.Value[0].SupportedServices.Should().Contain("Express");
-        result.Value[0].SupportedServices.Should().Contain("SameDay");
+        result.IsSuccess.ShouldBe(true);
+        result.Value[0].SupportedServices.ShouldContain("Standard");
+        result.Value[0].SupportedServices.ShouldContain("Express");
+        result.Value[0].SupportedServices.ShouldContain("SameDay");
     }
 
     [Fact]
@@ -209,8 +209,8 @@ public class GetActiveShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
     }
 
     #endregion
@@ -259,9 +259,9 @@ public class GetActiveShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.First(p => p.ProviderCode == ShippingProviderCode.GHTK).SupportsCod.Should().BeTrue();
-        result.Value.First(p => p.ProviderCode == ShippingProviderCode.GHN).SupportsCod.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.First(p => p.ProviderCode == ShippingProviderCode.GHTK).SupportsCod.ShouldBe(true);
+        result.Value.First(p => p.ProviderCode == ShippingProviderCode.GHN).SupportsCod.ShouldBe(false);
     }
 
     [Fact]
@@ -278,8 +278,8 @@ public class GetActiveShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
     }
 
     #endregion

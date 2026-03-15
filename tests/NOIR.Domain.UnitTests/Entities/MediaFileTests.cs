@@ -33,19 +33,19 @@ public class MediaFileTests
             uploadedBy);
 
         // Assert
-        mediaFile.Should().NotBeNull();
-        mediaFile.Id.Should().NotBe(Guid.Empty);
-        mediaFile.ShortId.Should().Be(shortId);
-        mediaFile.Slug.Should().Be(slug);
-        mediaFile.OriginalFileName.Should().Be(originalFileName);
-        mediaFile.Folder.Should().Be(folder);
-        mediaFile.DefaultUrl.Should().Be(defaultUrl);
-        mediaFile.Width.Should().Be(width);
-        mediaFile.Height.Should().Be(height);
-        mediaFile.Format.Should().Be(format);
-        mediaFile.MimeType.Should().Be(mimeType);
-        mediaFile.SizeBytes.Should().Be(sizeBytes);
-        mediaFile.UploadedBy.Should().Be(uploadedBy);
+        mediaFile.ShouldNotBeNull();
+        mediaFile.Id.ShouldNotBe(Guid.Empty);
+        mediaFile.ShortId.ShouldBe(shortId);
+        mediaFile.Slug.ShouldBe(slug);
+        mediaFile.OriginalFileName.ShouldBe(originalFileName);
+        mediaFile.Folder.ShouldBe(folder);
+        mediaFile.DefaultUrl.ShouldBe(defaultUrl);
+        mediaFile.Width.ShouldBe(width);
+        mediaFile.Height.ShouldBe(height);
+        mediaFile.Format.ShouldBe(format);
+        mediaFile.MimeType.ShouldBe(mimeType);
+        mediaFile.SizeBytes.ShouldBe(sizeBytes);
+        mediaFile.UploadedBy.ShouldBe(uploadedBy);
     }
 
     [Fact]
@@ -65,10 +65,10 @@ public class MediaFileTests
             "user-456", tenantId);
 
         // Assert
-        mediaFile.ThumbHash.Should().Be(thumbHash);
-        mediaFile.DominantColor.Should().Be(dominantColor);
-        mediaFile.HasTransparency.Should().BeTrue();
-        mediaFile.TenantId.Should().Be(tenantId);
+        mediaFile.ThumbHash.ShouldBe(thumbHash);
+        mediaFile.DominantColor.ShouldBe(dominantColor);
+        mediaFile.HasTransparency.ShouldBeTrue();
+        mediaFile.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -85,8 +85,8 @@ public class MediaFileTests
             false, variantsJson, srcsetsJson, "user-123");
 
         // Assert
-        mediaFile.VariantsJson.Should().Be(variantsJson);
-        mediaFile.SrcsetsJson.Should().Be(srcsetsJson);
+        mediaFile.VariantsJson.ShouldBe(variantsJson);
+        mediaFile.SrcsetsJson.ShouldBe(srcsetsJson);
     }
 
     #endregion
@@ -106,7 +106,7 @@ public class MediaFileTests
         var aspectRatio = mediaFile.AspectRatio;
 
         // Assert
-        aspectRatio.Should().BeApproximately(1.777, 0.001); // 16:9
+        aspectRatio.ShouldBe(1.777, 0.001); // 16:9
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public class MediaFileTests
         var aspectRatio = mediaFile.AspectRatio;
 
         // Assert
-        aspectRatio.Should().BeApproximately(0.5625, 0.001);
+        aspectRatio.ShouldBe(0.5625, 0.001);
     }
 
     [Fact]
@@ -138,7 +138,7 @@ public class MediaFileTests
         var aspectRatio = mediaFile.AspectRatio;
 
         // Assert
-        aspectRatio.Should().Be(1.0);
+        aspectRatio.ShouldBe(1.0);
     }
 
     [Fact]
@@ -152,8 +152,8 @@ public class MediaFileTests
             false, "[]", "{}", "user-123");
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>()
-            .WithMessage("*Height must be positive*");
+        Should.Throw<ArgumentOutOfRangeException>(act)
+            .Message.ShouldContain("Height must be positive");
     }
 
     #endregion
@@ -174,7 +174,7 @@ public class MediaFileTests
         mediaFile.UpdateAltText(altText);
 
         // Assert
-        mediaFile.AltText.Should().Be(altText);
+        mediaFile.AltText.ShouldBe(altText);
     }
 
     [Fact]
@@ -191,7 +191,7 @@ public class MediaFileTests
         mediaFile.UpdateAltText(null);
 
         // Assert
-        mediaFile.AltText.Should().BeNull();
+        mediaFile.AltText.ShouldBeNull();
     }
 
     [Fact]
@@ -209,7 +209,7 @@ public class MediaFileTests
         mediaFile.UpdateAltText("Third");
 
         // Assert
-        mediaFile.AltText.Should().Be("Third");
+        mediaFile.AltText.ShouldBe("Third");
     }
 
     #endregion
@@ -227,8 +227,8 @@ public class MediaFileTests
             "user-123");
 
         // Assert
-        mediaFile.HasTransparency.Should().BeTrue();
-        mediaFile.Format.Should().Be("png");
+        mediaFile.HasTransparency.ShouldBeTrue();
+        mediaFile.Format.ShouldBe("png");
     }
 
     [Fact]
@@ -242,7 +242,7 @@ public class MediaFileTests
             "user-123");
 
         // Assert
-        mediaFile.HasTransparency.Should().BeFalse();
+        mediaFile.HasTransparency.ShouldBeFalse();
     }
 
     #endregion
@@ -263,7 +263,7 @@ public class MediaFileTests
             false, "[]", "{}", "user-123");
 
         // Assert
-        mediaFile.Folder.Should().Be(folder);
+        mediaFile.Folder.ShouldBe(folder);
     }
 
     #endregion
@@ -283,7 +283,7 @@ public class MediaFileTests
             false, "[]", "{}", "user-123", tenantId);
 
         // Assert
-        mediaFile.TenantId.Should().Be(tenantId);
+        mediaFile.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -296,7 +296,7 @@ public class MediaFileTests
             false, "[]", "{}", "user-123");
 
         // Assert
-        mediaFile.TenantId.Should().BeNull();
+        mediaFile.TenantId.ShouldBeNull();
     }
 
     #endregion

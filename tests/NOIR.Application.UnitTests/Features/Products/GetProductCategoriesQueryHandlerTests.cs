@@ -69,8 +69,8 @@ public class GetProductCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(5);
     }
 
     [Fact]
@@ -90,8 +90,8 @@ public class GetProductCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(3);
 
         _categoryRepositoryMock.Verify(
             x => x.ListAsync(It.IsAny<TopLevelProductCategoriesSpec>(), It.IsAny<CancellationToken>()),
@@ -115,8 +115,8 @@ public class GetProductCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
 
         _categoryRepositoryMock.Verify(
             x => x.ListAsync(It.IsAny<ProductCategoriesSpec>(), It.IsAny<CancellationToken>()),
@@ -146,8 +146,8 @@ public class GetProductCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -170,12 +170,12 @@ public class GetProductCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value.First();
-        dto.Name.Should().Be("Full Category");
-        dto.Slug.Should().Be("full-category");
-        dto.Description.Should().Be("Description");
-        dto.SortOrder.Should().Be(5);
+        dto.Name.ShouldBe("Full Category");
+        dto.Slug.ShouldBe("full-category");
+        dto.Description.ShouldBe("Description");
+        dto.SortOrder.ShouldBe(5);
     }
 
     #endregion
@@ -198,8 +198,8 @@ public class GetProductCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     #endregion
@@ -246,7 +246,7 @@ public class GetProductCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         _categoryRepositoryMock.Verify(
             x => x.ListAsync(It.IsAny<ProductCategoriesSpec>(), It.IsAny<CancellationToken>()),
@@ -271,9 +271,9 @@ public class GetProductCategoriesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // ChildCount should be 0 for a category with no children
-        result.Value.First().ChildCount.Should().Be(0);
+        result.Value.First().ChildCount.ShouldBe(0);
     }
 
     #endregion

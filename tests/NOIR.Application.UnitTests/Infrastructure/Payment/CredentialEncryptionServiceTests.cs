@@ -41,11 +41,10 @@ public class CredentialEncryptionServiceTests
         // Act
         var act = () => new CredentialEncryptionService(
             _paymentSettingsMock.Object,
-            _configurationMock.Object,
-            _loggerMock.Object);
+            _configurationMock.Object);
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -60,11 +59,10 @@ public class CredentialEncryptionServiceTests
             // Act
             var act = () => new CredentialEncryptionService(
                 _paymentSettingsMock.Object,
-                _configurationMock.Object,
-                _loggerMock.Object);
+                _configurationMock.Object);
 
             // Assert
-            act.Should().NotThrow();
+            act.ShouldNotThrow();
         }
         finally
         {
@@ -89,9 +87,9 @@ public class CredentialEncryptionServiceTests
         var encrypted = service.Encrypt(plainText);
 
         // Assert
-        encrypted.Should().NotBeNullOrEmpty();
-        encrypted.Should().NotBe(plainText); // Encrypted should be different from plaintext
-        Convert.FromBase64String(encrypted).Length.Should().BeGreaterThan(0); // Valid base64
+        encrypted.ShouldNotBeNullOrEmpty();
+        encrypted.ShouldNotBe(plainText); // Encrypted should be different from plaintext
+        Convert.FromBase64String(encrypted).Length.ShouldBeGreaterThan(0); // Valid base64
     }
 
     [Fact]
@@ -107,7 +105,7 @@ public class CredentialEncryptionServiceTests
         var decrypted = service.Decrypt(encrypted);
 
         // Assert
-        decrypted.Should().Be(originalText);
+        decrypted.ShouldBe(originalText);
     }
 
     [Fact]
@@ -126,7 +124,7 @@ public class CredentialEncryptionServiceTests
 
         // Act & Assert - Should throw cryptographic exception due to bad padding
         var act = () => decryptService.Decrypt(encrypted);
-        act.Should().Throw<CryptographicException>();
+        Should.Throw<CryptographicException>(act);
     }
 
     #endregion
@@ -144,8 +142,8 @@ public class CredentialEncryptionServiceTests
         var act = () => service.Encrypt("test");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Encryption key must be 256 bits (32 bytes). Current key is 34 bytes.*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Encryption key must be 256 bits (32 bytes). Current key is 34 bytes.");
     }
 
     [Fact]
@@ -160,8 +158,8 @@ public class CredentialEncryptionServiceTests
         var act = () => service.Encrypt("test");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Encryption key 'payment-credentials-key' not found*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Encryption key 'payment-credentials-key' not found");
     }
 
     [Fact]
@@ -175,8 +173,8 @@ public class CredentialEncryptionServiceTests
         var act = () => service.Encrypt("test");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Encryption key 'payment-credentials-key' is still set to placeholder value*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Encryption key 'payment-credentials-key' is still set to placeholder value");
     }
 
     [Fact]
@@ -190,8 +188,8 @@ public class CredentialEncryptionServiceTests
         var act = () => service.Encrypt("test");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Encryption key 'payment-credentials-key' is not valid base64*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Encryption key 'payment-credentials-key' is not valid base64");
     }
 
     #endregion
@@ -214,7 +212,7 @@ public class CredentialEncryptionServiceTests
             var encrypted = service.Encrypt("test");
 
             // Assert - Should work because env var takes precedence
-            encrypted.Should().NotBeNullOrEmpty();
+            encrypted.ShouldNotBeNullOrEmpty();
         }
         finally
         {
@@ -231,8 +229,7 @@ public class CredentialEncryptionServiceTests
     {
         return new CredentialEncryptionService(
             _paymentSettingsMock.Object,
-            _configurationMock.Object,
-            _loggerMock.Object);
+            _configurationMock.Object);
     }
 
     private void SetupConfigurationKey(string? keyValue)

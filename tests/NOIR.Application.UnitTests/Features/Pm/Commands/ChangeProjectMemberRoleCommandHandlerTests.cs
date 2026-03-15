@@ -37,8 +37,8 @@ public class ChangeProjectMemberRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Role.Should().Be(ProjectMemberRole.Manager);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Role.ShouldBe(ProjectMemberRole.Manager);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -55,7 +55,7 @@ public class ChangeProjectMemberRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 

@@ -35,7 +35,7 @@ public class TenantEntityTests
         var entity = TestTenantEntity.Create("Test", tenantId);
 
         // Assert
-        entity.TenantId.Should().Be(tenantId);
+        entity.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class TenantEntityTests
         var entity = TestTenantEntity.Create("Test");
 
         // Assert
-        entity.TenantId.Should().BeNull();
+        entity.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -58,8 +58,8 @@ public class TenantEntityTests
         var entity = new TestTenantEntity(id, "tenant");
 
         // Assert
-        entity.Id.Should().Be(id);
-        entity.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
+        entity.Id.ShouldBe(id);
+        entity.CreatedAt.ShouldBe(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class TenantEntityTests
         ITenantEntity tenantEntity = entity;
 
         // Assert
-        tenantEntity.TenantId.Should().Be("my-tenant");
+        tenantEntity.TenantId.ShouldBe("my-tenant");
     }
 
     [Fact]
@@ -85,9 +85,9 @@ public class TenantEntityTests
         var tenantIdProperty = typeof(TenantEntity<Guid>).GetProperty(nameof(ITenantEntity.TenantId));
 
         // Assert
-        tenantIdProperty.Should().NotBeNull();
-        tenantIdProperty!.SetMethod.Should().NotBeNull();
-        tenantIdProperty.SetMethod!.IsFamily.Should().BeTrue("TenantId setter should be protected");
+        tenantIdProperty.ShouldNotBeNull();
+        tenantIdProperty!.SetMethod.ShouldNotBeNull();
+        tenantIdProperty.SetMethod!.IsFamily.ShouldBeTrue("TenantId setter should be protected");
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class TenantEntityTests
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
             null, Type.EmptyTypes, null);
 
-        constructor.Should().NotBeNull("EF Core requires a parameterless constructor");
+        constructor.ShouldNotBeNull("EF Core requires a parameterless constructor");
     }
 
     [Fact]
@@ -111,8 +111,8 @@ public class TenantEntityTests
         var entity = new TestTenantEntity(id);
 
         // Assert
-        entity.Id.Should().Be(id);
-        entity.TenantId.Should().BeNull();
+        entity.Id.ShouldBe(id);
+        entity.TenantId.ShouldBeNull();
     }
 }
 
@@ -155,7 +155,7 @@ public class TenantAggregateRootTests
         var aggregate = TestTenantAggregate.Create("Test", tenantId);
 
         // Assert
-        aggregate.TenantId.Should().Be(tenantId);
+        aggregate.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -165,7 +165,7 @@ public class TenantAggregateRootTests
         var aggregate = TestTenantAggregate.Create("Test");
 
         // Assert
-        aggregate.TenantId.Should().BeNull();
+        aggregate.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -178,7 +178,7 @@ public class TenantAggregateRootTests
         aggregate.RaiseDomainEvent(new TestEvent());
 
         // Assert
-        aggregate.DomainEvents.Should().HaveCount(1);
+        aggregate.DomainEvents.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -191,7 +191,7 @@ public class TenantAggregateRootTests
         ITenantEntity tenantEntity = aggregate;
 
         // Assert
-        tenantEntity.TenantId.Should().Be("tenant-xyz");
+        tenantEntity.TenantId.ShouldBe("tenant-xyz");
     }
 
     [Fact]
@@ -201,9 +201,9 @@ public class TenantAggregateRootTests
         var aggregate = TestTenantAggregate.Create("Test", "tenant");
 
         // Assert
-        aggregate.IsDeleted.Should().BeFalse();
-        aggregate.CreatedBy.Should().BeNull();
-        aggregate.ModifiedBy.Should().BeNull();
+        aggregate.IsDeleted.ShouldBeFalse();
+        aggregate.CreatedBy.ShouldBeNull();
+        aggregate.ModifiedBy.ShouldBeNull();
     }
 
     [Fact]
@@ -218,7 +218,7 @@ public class TenantAggregateRootTests
         aggregate.ClearDomainEvents();
 
         // Assert
-        aggregate.DomainEvents.Should().BeEmpty();
+        aggregate.DomainEvents.ShouldBeEmpty();
     }
 
     [Fact]
@@ -231,9 +231,9 @@ public class TenantAggregateRootTests
         var tenantIdProperty = typeof(TenantAggregateRoot<Guid>).GetProperty(nameof(ITenantEntity.TenantId));
 
         // Assert
-        tenantIdProperty.Should().NotBeNull();
-        tenantIdProperty!.SetMethod.Should().NotBeNull();
-        tenantIdProperty.SetMethod!.IsFamily.Should().BeTrue("TenantId setter should be protected");
+        tenantIdProperty.ShouldNotBeNull();
+        tenantIdProperty!.SetMethod.ShouldNotBeNull();
+        tenantIdProperty.SetMethod!.IsFamily.ShouldBeTrue("TenantId setter should be protected");
     }
 
     [Fact]
@@ -244,7 +244,7 @@ public class TenantAggregateRootTests
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
             null, Type.EmptyTypes, null);
 
-        constructor.Should().NotBeNull("EF Core requires a parameterless constructor");
+        constructor.ShouldNotBeNull("EF Core requires a parameterless constructor");
     }
 
     [Fact]
@@ -257,8 +257,8 @@ public class TenantAggregateRootTests
         var aggregate = new TestTenantAggregate(id);
 
         // Assert
-        aggregate.Id.Should().Be(id);
-        aggregate.TenantId.Should().BeNull();
+        aggregate.Id.ShouldBe(id);
+        aggregate.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -268,8 +268,8 @@ public class TenantAggregateRootTests
         var aggregate = TestTenantAggregate.Create("Test");
 
         // Assert
-        aggregate.DeletedAt.Should().BeNull();
-        aggregate.DeletedBy.Should().BeNull();
+        aggregate.DeletedAt.ShouldBeNull();
+        aggregate.DeletedBy.ShouldBeNull();
     }
 
     [Fact]
@@ -279,6 +279,6 @@ public class TenantAggregateRootTests
         var aggregate = TestTenantAggregate.Create("Test");
 
         // Assert
-        aggregate.ModifiedAt.Should().BeNull();
+        aggregate.ModifiedAt.ShouldBeNull();
     }
 }

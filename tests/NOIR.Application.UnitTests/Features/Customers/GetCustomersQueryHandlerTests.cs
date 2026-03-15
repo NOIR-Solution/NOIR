@@ -61,12 +61,12 @@ public class GetCustomersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.TotalCount.Should().Be(5);
-        result.Value.PageIndex.Should().Be(0);
-        result.Value.PageNumber.Should().Be(1);
-        result.Value.PageSize.Should().Be(20);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.TotalCount.ShouldBe(5);
+        result.Value.PageIndex.ShouldBe(0);
+        result.Value.PageNumber.ShouldBe(1);
+        result.Value.PageSize.ShouldBe(20);
     }
 
     [Fact]
@@ -93,13 +93,13 @@ public class GetCustomersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(10);
-        result.Value.TotalCount.Should().Be(25);
-        result.Value.PageIndex.Should().Be(1);
-        result.Value.PageNumber.Should().Be(2);
-        result.Value.PageSize.Should().Be(10);
-        result.Value.TotalPages.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(10);
+        result.Value.TotalCount.ShouldBe(25);
+        result.Value.PageIndex.ShouldBe(1);
+        result.Value.PageNumber.ShouldBe(2);
+        result.Value.PageSize.ShouldBe(10);
+        result.Value.TotalPages.ShouldBe(3);
     }
 
     [Fact]
@@ -124,10 +124,10 @@ public class GetCustomersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
-        result.Value.TotalPages.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
+        result.Value.TotalPages.ShouldBe(0);
     }
 
     [Fact]
@@ -154,14 +154,14 @@ public class GetCustomersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var item = result.Value.Items.First();
-        item.Email.Should().Be("vip@example.com");
-        item.FirstName.Should().Be("VIP");
-        item.LastName.Should().Be("Customer");
-        item.Segment.Should().Be(CustomerSegment.New);
-        item.Tier.Should().Be(CustomerTier.Standard);
-        item.IsActive.Should().BeTrue();
+        item.Email.ShouldBe("vip@example.com");
+        item.FirstName.ShouldBe("VIP");
+        item.LastName.ShouldBe("Customer");
+        item.Segment.ShouldBe(CustomerSegment.New);
+        item.Tier.ShouldBe(CustomerTier.Standard);
+        item.IsActive.ShouldBe(true);
     }
 
     #endregion

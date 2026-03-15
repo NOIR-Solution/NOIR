@@ -74,9 +74,9 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(3);
-        result.Value.TotalCount.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(3);
+        result.Value.TotalCount.ShouldBe(3);
     }
 
     [Fact]
@@ -110,17 +110,17 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var timelineEntry = result.Value.Items[0];
-        timelineEntry.DisplayContext.Should().Be("Users");
-        timelineEntry.OperationType.Should().Be("Update");
-        timelineEntry.UserId.Should().Be(userId);
-        timelineEntry.TargetDtoId.Should().Be(targetId);
-        timelineEntry.CorrelationId.Should().Be(correlationId);
-        timelineEntry.IsSuccess.Should().BeTrue();
-        timelineEntry.UserEmail.Should().Be("admin@noir.local");
-        timelineEntry.DurationMs.Should().Be(150);
-        timelineEntry.EntityChangeCount.Should().Be(2);
+        timelineEntry.DisplayContext.ShouldBe("Users");
+        timelineEntry.OperationType.ShouldBe("Update");
+        timelineEntry.UserId.ShouldBe(userId);
+        timelineEntry.TargetDtoId.ShouldBe(targetId);
+        timelineEntry.CorrelationId.ShouldBe(correlationId);
+        timelineEntry.IsSuccess.ShouldBe(true);
+        timelineEntry.UserEmail.ShouldBe("admin@noir.local");
+        timelineEntry.DurationMs.ShouldBe(150);
+        timelineEntry.EntityChangeCount.ShouldBe(2);
     }
 
     #endregion
@@ -148,9 +148,9 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
     }
 
     #endregion
@@ -180,8 +180,8 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(2);
         _auditLogQueryServiceMock.Verify(
             x => x.SearchActivityTimelineAsync(
                 "Users", null, null, null, null, null, null, null, null,
@@ -216,7 +216,7 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _auditLogQueryServiceMock.Verify(
             x => x.SearchActivityTimelineAsync(
                 null, "Create", null, null, null, null, null, null, null,
@@ -251,7 +251,7 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _auditLogQueryServiceMock.Verify(
             x => x.SearchActivityTimelineAsync(
                 null, null, userId, null, null, null, null, null, null,
@@ -286,7 +286,7 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _auditLogQueryServiceMock.Verify(
             x => x.SearchActivityTimelineAsync(
                 null, null, null, targetId, null, null, null, null, null,
@@ -321,7 +321,7 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _auditLogQueryServiceMock.Verify(
             x => x.SearchActivityTimelineAsync(
                 null, null, null, null, correlationId, null, null, null, null,
@@ -355,7 +355,7 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _auditLogQueryServiceMock.Verify(
             x => x.SearchActivityTimelineAsync(
                 null, null, null, null, null, "John", null, null, null,
@@ -390,7 +390,7 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _auditLogQueryServiceMock.Verify(
             x => x.SearchActivityTimelineAsync(
                 null, null, null, null, null, null, fromDate, null, null,
@@ -421,7 +421,7 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _auditLogQueryServiceMock.Verify(
             x => x.SearchActivityTimelineAsync(
                 null, null, null, null, null, null, null, toDate, null,
@@ -453,7 +453,7 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _auditLogQueryServiceMock.Verify(
             x => x.SearchActivityTimelineAsync(
                 null, null, null, null, null, null, fromDate, toDate, null,
@@ -487,7 +487,7 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _auditLogQueryServiceMock.Verify(
             x => x.SearchActivityTimelineAsync(
                 null, null, null, null, null, null, null, null, true,
@@ -517,7 +517,7 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _auditLogQueryServiceMock.Verify(
             x => x.SearchActivityTimelineAsync(
                 null, null, null, null, null, null, null, null, false,
@@ -552,13 +552,13 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PageNumber.Should().Be(2);
-        result.Value.PageSize.Should().Be(10);
-        result.Value.TotalCount.Should().Be(25);
-        result.Value.TotalPages.Should().Be(3);
-        result.Value.HasPreviousPage.Should().BeTrue();
-        result.Value.HasNextPage.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PageNumber.ShouldBe(2);
+        result.Value.PageSize.ShouldBe(10);
+        result.Value.TotalCount.ShouldBe(25);
+        result.Value.TotalPages.ShouldBe(3);
+        result.Value.HasPreviousPage.ShouldBe(true);
+        result.Value.HasNextPage.ShouldBe(true);
     }
 
     [Fact]
@@ -585,9 +585,9 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.HasPreviousPage.Should().BeFalse();
-        result.Value.HasNextPage.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.HasPreviousPage.ShouldBe(false);
+        result.Value.HasNextPage.ShouldBe(true);
     }
 
     [Fact]
@@ -614,9 +614,9 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.HasPreviousPage.Should().BeTrue();
-        result.Value.HasNextPage.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.HasPreviousPage.ShouldBe(true);
+        result.Value.HasNextPage.ShouldBe(false);
     }
 
     [Fact]
@@ -642,10 +642,10 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.PageSize.Should().Be(5);
-        result.Value.TotalPages.Should().Be(10);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.PageSize.ShouldBe(5);
+        result.Value.TotalPages.ShouldBe(10);
     }
 
     #endregion
@@ -750,7 +750,7 @@ public class SearchActivityTimelineQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _auditLogQueryServiceMock.Verify(
             x => x.SearchActivityTimelineAsync(
                 "Users", "Update", userId, targetId, correlationId, "John",

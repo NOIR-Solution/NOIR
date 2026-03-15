@@ -38,7 +38,7 @@ public class StockHistoryEndpointsTests : IClassFixture<CustomWebApplicationFact
             $"/api/products/{Guid.NewGuid()}/variants/{Guid.NewGuid()}/stock-history");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class StockHistoryEndpointsTests : IClassFixture<CustomWebApplicationFact
             $"/api/products/{Guid.NewGuid()}/variants/{Guid.NewGuid()}/stock-history");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -91,14 +91,14 @@ public class StockHistoryEndpointsTests : IClassFixture<CustomWebApplicationFact
 
         // Assert - endpoint should return 200 OK with empty results
         // (The specification filters by productId + variantId, so non-existent IDs just return empty)
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.OK, HttpStatusCode.NotFound);
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
             var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<InventoryMovementDto>>();
-            result.Should().NotBeNull();
-            result!.Items.Should().BeEmpty();
-            result.TotalCount.Should().Be(0);
+            result.ShouldNotBeNull();
+            result!.Items.ShouldBeEmpty();
+            result.TotalCount.ShouldBe(0);
         }
     }
 
@@ -113,14 +113,14 @@ public class StockHistoryEndpointsTests : IClassFixture<CustomWebApplicationFact
             $"/api/products/{Guid.NewGuid()}/variants/{Guid.NewGuid()}/stock-history?page=2&pageSize=10");
 
         // Assert - endpoint should return 200 OK with pagination info
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.OK, HttpStatusCode.NotFound);
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
             var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<InventoryMovementDto>>();
-            result.Should().NotBeNull();
-            result!.PageNumber.Should().Be(2);
-            result.PageSize.Should().Be(10);
+            result.ShouldNotBeNull();
+            result!.PageNumber.ShouldBe(2);
+            result.PageSize.ShouldBe(10);
         }
     }
 

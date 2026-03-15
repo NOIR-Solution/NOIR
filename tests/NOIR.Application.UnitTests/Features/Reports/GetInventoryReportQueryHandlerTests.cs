@@ -58,9 +58,9 @@ public class GetInventoryReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.LowStockProducts.Should().HaveCount(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.LowStockProducts.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public class GetInventoryReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _reportServiceMock.Verify(
             x => x.GetInventoryReportAsync(threshold, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -137,7 +137,7 @@ public class GetInventoryReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _reportServiceMock.Verify(
             x => x.GetInventoryReportAsync(20, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -174,15 +174,15 @@ public class GetInventoryReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeSameAs(expectedReport);
-        result.Value.TotalProducts.Should().Be(1000);
-        result.Value.TotalVariants.Should().Be(3000);
-        result.Value.TotalStockValue.Should().Be(500000m);
-        result.Value.TurnoverRate.Should().Be(4.2m);
-        result.Value.LowStockProducts.Should().HaveCount(2);
-        result.Value.LowStockProducts[0].Name.Should().Be("Widget A");
-        result.Value.LowStockProducts[1].VariantSku.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeSameAs(expectedReport);
+        result.Value.TotalProducts.ShouldBe(1000);
+        result.Value.TotalVariants.ShouldBe(3000);
+        result.Value.TotalStockValue.ShouldBe(500000m);
+        result.Value.TurnoverRate.ShouldBe(4.2m);
+        result.Value.LowStockProducts.Count().ShouldBe(2);
+        result.Value.LowStockProducts[0].Name.ShouldBe("Widget A");
+        result.Value.LowStockProducts[1].VariantSku.ShouldBeNull();
     }
 
     #endregion
@@ -241,9 +241,9 @@ public class GetInventoryReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.LowStockProducts.Should().BeEmpty();
-        result.Value.TotalProducts.Should().Be(500);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.LowStockProducts.ShouldBeEmpty();
+        result.Value.TotalProducts.ShouldBe(500);
     }
 
     #endregion
@@ -266,8 +266,8 @@ public class GetInventoryReportQueryHandlerTests
         var act = () => _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("Database connection failed");
+        (await Should.ThrowAsync<InvalidOperationException>(act))
+            .Message.ShouldBe("Database connection failed");
     }
 
     #endregion

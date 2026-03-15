@@ -55,8 +55,8 @@ public class InterceptorTests : IAsyncLifetime
 
             // Assert
             var saved = await context.RefreshTokens.FindAsync(token.Id);
-            saved!.CreatedAt.Should().BeOnOrAfter(beforeCreate);
-            saved.CreatedAt.Should().BeOnOrBefore(DateTimeOffset.UtcNow);
+            saved!.CreatedAt.ShouldBeGreaterThanOrEqualTo(beforeCreate);
+            saved.CreatedAt.ShouldBeLessThanOrEqualTo(DateTimeOffset.UtcNow);
         });
     }
 
@@ -82,10 +82,10 @@ public class InterceptorTests : IAsyncLifetime
 
             // Assert
             var updated = await context.RefreshTokens.FindAsync(token.Id);
-            updated!.ModifiedAt.Should().NotBeNull();
+            updated!.ModifiedAt.ShouldNotBeNull();
             if (initialModified.HasValue)
             {
-                updated.ModifiedAt.Should().BeAfter(initialModified.Value);
+                updated.ModifiedAt!.Value.ShouldBeGreaterThan(initialModified.Value);
             }
         });
     }
@@ -110,7 +110,7 @@ public class InterceptorTests : IAsyncLifetime
 
         // Act
         var response = await adminClient.PostAsJsonAsync("/api/users", command);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Assert - Check for entity audit logs
         await _factory.ExecuteWithTenantAsync(async sp =>
@@ -121,7 +121,7 @@ public class InterceptorTests : IAsyncLifetime
                 .ToListAsync();
 
             // There should be some audit logs created
-            auditLogs.Should().NotBeEmpty();
+            auditLogs.ShouldNotBeEmpty();
         });
     }
 
@@ -148,9 +148,9 @@ public class InterceptorTests : IAsyncLifetime
 
             // Assert
             var saved = await context.EntityAuditLogs.FindAsync(auditLog.Id);
-            saved.Should().NotBeNull();
-            saved!.EntityDiff.Should().Contain("old");
-            saved.EntityDiff.Should().Contain("new");
+            saved.ShouldNotBeNull();
+            saved!.EntityDiff.ShouldContain("old");
+            saved.EntityDiff.ShouldContain("new");
         });
     }
 
@@ -172,7 +172,7 @@ public class InterceptorTests : IAsyncLifetime
 
             // Assert
             var saved = await context.EntityAuditLogs.FindAsync(auditLog.Id);
-            saved!.Timestamp.Should().BeOnOrAfter(beforeCreate);
+            saved!.Timestamp.ShouldBeGreaterThanOrEqualTo(beforeCreate);
         });
     }
 
@@ -194,7 +194,7 @@ public class InterceptorTests : IAsyncLifetime
 
             // Assert
             var saved = await context.EntityAuditLogs.FindAsync(auditLog.Id);
-            saved!.EntityDiff.Should().HaveLength(50000);
+            saved!.EntityDiff.Length.ShouldBe(50000);
         });
     }
 
@@ -222,7 +222,7 @@ public class InterceptorTests : IAsyncLifetime
 
             // Assert - Token should be revoked
             var saved = await context.RefreshTokens.FindAsync(token.Id);
-            saved!.IsRevoked.Should().BeTrue();
+            saved!.IsRevoked.ShouldBeTrue();
         });
     }
 

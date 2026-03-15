@@ -24,12 +24,12 @@ public class LegalPageTests
             "<h1>Terms</h1><p>Content...</p>");
 
         // Assert
-        page.Should().NotBeNull();
-        page.Id.Should().NotBe(Guid.Empty);
-        page.Slug.Should().Be("terms-of-service");
-        page.Title.Should().Be("Terms of Service");
-        page.HtmlContent.Should().Be("<h1>Terms</h1><p>Content...</p>");
-        page.TenantId.Should().BeNull();
+        page.ShouldNotBeNull();
+        page.Id.ShouldNotBe(Guid.Empty);
+        page.Slug.ShouldBe("terms-of-service");
+        page.Title.ShouldBe("Terms of Service");
+        page.HtmlContent.ShouldBe("<h1>Terms</h1><p>Content...</p>");
+        page.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -39,12 +39,12 @@ public class LegalPageTests
         var page = LegalPage.CreatePlatformDefault("privacy", "Privacy", "<p>Privacy</p>");
 
         // Assert
-        page.IsActive.Should().BeTrue();
-        page.Version.Should().Be(1);
-        page.AllowIndexing.Should().BeTrue();
-        page.MetaTitle.Should().BeNull();
-        page.MetaDescription.Should().BeNull();
-        page.CanonicalUrl.Should().BeNull();
+        page.IsActive.ShouldBeTrue();
+        page.Version.ShouldBe(1);
+        page.AllowIndexing.ShouldBeTrue();
+        page.MetaTitle.ShouldBeNull();
+        page.MetaDescription.ShouldBeNull();
+        page.CanonicalUrl.ShouldBeNull();
     }
 
     [Fact]
@@ -61,10 +61,10 @@ public class LegalPageTests
             allowIndexing: false);
 
         // Assert
-        page.MetaTitle.Should().Be("Our Terms");
-        page.MetaDescription.Should().Be("Read our terms of service");
-        page.CanonicalUrl.Should().Be("https://example.com/terms");
-        page.AllowIndexing.Should().BeFalse();
+        page.MetaTitle.ShouldBe("Our Terms");
+        page.MetaDescription.ShouldBe("Read our terms of service");
+        page.CanonicalUrl.ShouldBe("https://example.com/terms");
+        page.AllowIndexing.ShouldBeFalse();
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class LegalPageTests
         var page = LegalPage.CreatePlatformDefault("slug", "Title", "<p>Content</p>");
 
         // Assert
-        page.LastModified.Should().BeOnOrAfter(before);
+        page.LastModified.ShouldBeGreaterThanOrEqualTo(before);
     }
 
     [Fact]
@@ -87,14 +87,15 @@ public class LegalPageTests
         var page = LegalPage.CreatePlatformDefault("terms", "Terms", "<p>Terms</p>");
 
         // Assert
-        page.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<LegalPageCreatedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                PageId = page.Id,
-                PageType = "terms",
-                TenantId = (string?)null
-            });
+        var __evt = page.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<LegalPageCreatedEvent>();
+
+        __evt.PageId.ShouldBe(page.Id);
+
+        __evt.PageType.ShouldBe("terms");
+
+        __evt.TenantId.ShouldBe((string?)null);
     }
 
     [Fact]
@@ -104,7 +105,7 @@ public class LegalPageTests
         var page = LegalPage.CreatePlatformDefault("privacy", "Privacy", "<p>Privacy</p>");
 
         // Assert
-        page.TenantId.Should().BeNull();
+        page.TenantId.ShouldBeNull();
     }
 
     #endregion
@@ -119,12 +120,12 @@ public class LegalPageTests
             TestTenantId, "terms-of-service", "Custom Terms", "<p>Custom Terms</p>");
 
         // Assert
-        page.Should().NotBeNull();
-        page.Id.Should().NotBe(Guid.Empty);
-        page.Slug.Should().Be("terms-of-service");
-        page.Title.Should().Be("Custom Terms");
-        page.HtmlContent.Should().Be("<p>Custom Terms</p>");
-        page.TenantId.Should().Be(TestTenantId);
+        page.ShouldNotBeNull();
+        page.Id.ShouldNotBe(Guid.Empty);
+        page.Slug.ShouldBe("terms-of-service");
+        page.Title.ShouldBe("Custom Terms");
+        page.HtmlContent.ShouldBe("<p>Custom Terms</p>");
+        page.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -134,9 +135,9 @@ public class LegalPageTests
         var page = LegalPage.CreateTenantOverride(TestTenantId, "privacy", "Privacy", "<p>Privacy</p>");
 
         // Assert
-        page.IsActive.Should().BeTrue();
-        page.Version.Should().Be(1);
-        page.AllowIndexing.Should().BeTrue();
+        page.IsActive.ShouldBeTrue();
+        page.Version.ShouldBe(1);
+        page.AllowIndexing.ShouldBeTrue();
     }
 
     [Fact]
@@ -151,10 +152,10 @@ public class LegalPageTests
             allowIndexing: false);
 
         // Assert
-        page.MetaTitle.Should().Be("Tenant Terms");
-        page.MetaDescription.Should().Be("Tenant-specific terms");
-        page.CanonicalUrl.Should().Be("https://tenant.example.com/terms");
-        page.AllowIndexing.Should().BeFalse();
+        page.MetaTitle.ShouldBe("Tenant Terms");
+        page.MetaDescription.ShouldBe("Tenant-specific terms");
+        page.CanonicalUrl.ShouldBe("https://tenant.example.com/terms");
+        page.AllowIndexing.ShouldBeFalse();
     }
 
     [Fact]
@@ -164,14 +165,15 @@ public class LegalPageTests
         var page = LegalPage.CreateTenantOverride(TestTenantId, "terms", "Terms", "<p>Terms</p>");
 
         // Assert
-        page.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<LegalPageCreatedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                PageId = page.Id,
-                PageType = "terms",
-                TenantId = TestTenantId
-            });
+        var __evt = page.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<LegalPageCreatedEvent>();
+
+        __evt.PageId.ShouldBe(page.Id);
+
+        __evt.PageType.ShouldBe("terms");
+
+        __evt.TenantId.ShouldBe(TestTenantId);
     }
 
     [Theory]
@@ -184,7 +186,7 @@ public class LegalPageTests
         var act = () => LegalPage.CreateTenantOverride(tenantId!, "terms", "Terms", "<p>Terms</p>");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     #endregion
@@ -204,12 +206,12 @@ public class LegalPageTests
             canonicalUrl: "https://new.url", allowIndexing: false);
 
         // Assert
-        page.Title.Should().Be("Updated Terms");
-        page.HtmlContent.Should().Be("<p>New content</p>");
-        page.MetaTitle.Should().Be("New Meta");
-        page.MetaDescription.Should().Be("New Desc");
-        page.CanonicalUrl.Should().Be("https://new.url");
-        page.AllowIndexing.Should().BeFalse();
+        page.Title.ShouldBe("Updated Terms");
+        page.HtmlContent.ShouldBe("<p>New content</p>");
+        page.MetaTitle.ShouldBe("New Meta");
+        page.MetaDescription.ShouldBe("New Desc");
+        page.CanonicalUrl.ShouldBe("https://new.url");
+        page.AllowIndexing.ShouldBeFalse();
     }
 
     [Fact]
@@ -217,13 +219,13 @@ public class LegalPageTests
     {
         // Arrange
         var page = LegalPage.CreatePlatformDefault("terms", "Terms", "<p>Content</p>");
-        page.Version.Should().Be(1);
+        page.Version.ShouldBe(1);
 
         // Act
         page.Update("Terms v2", "<p>Version 2</p>");
 
         // Assert
-        page.Version.Should().Be(2);
+        page.Version.ShouldBe(2);
     }
 
     [Fact]
@@ -238,7 +240,7 @@ public class LegalPageTests
         page.Update("V4", "<p>V4</p>");
 
         // Assert
-        page.Version.Should().Be(4);
+        page.Version.ShouldBe(4);
     }
 
     [Fact]
@@ -252,7 +254,7 @@ public class LegalPageTests
         page.Update("V2", "<p>V2</p>");
 
         // Assert
-        page.LastModified.Should().BeOnOrAfter(beforeUpdate);
+        page.LastModified.ShouldBeGreaterThanOrEqualTo(beforeUpdate);
     }
 
     [Fact]
@@ -266,14 +268,15 @@ public class LegalPageTests
         page.Update("V2", "<p>V2</p>");
 
         // Assert
-        page.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<LegalPageUpdatedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                PageId = page.Id,
-                PageType = "terms",
-                NewVersion = 2
-            });
+        var __evt = page.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<LegalPageUpdatedEvent>();
+
+        __evt.PageId.ShouldBe(page.Id);
+
+        __evt.PageType.ShouldBe("terms");
+
+        __evt.NewVersion.ShouldBe(2);
     }
 
     [Fact]
@@ -287,10 +290,10 @@ public class LegalPageTests
         page.Update("Terms", "<p>Updated</p>");
 
         // Assert
-        page.MetaTitle.Should().BeNull();
-        page.MetaDescription.Should().BeNull();
-        page.CanonicalUrl.Should().BeNull();
-        page.AllowIndexing.Should().BeTrue(); // default
+        page.MetaTitle.ShouldBeNull();
+        page.MetaDescription.ShouldBeNull();
+        page.CanonicalUrl.ShouldBeNull();
+        page.AllowIndexing.ShouldBeTrue(); // default
     }
 
     #endregion
@@ -302,14 +305,14 @@ public class LegalPageTests
     {
         // Arrange
         var page = LegalPage.CreatePlatformDefault("terms", "Terms", "<p>Content</p>");
-        page.IsActive.Should().BeTrue();
+        page.IsActive.ShouldBeTrue();
         page.ClearDomainEvents();
 
         // Act
         page.Deactivate();
 
         // Assert
-        page.IsActive.Should().BeFalse();
+        page.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -323,13 +326,13 @@ public class LegalPageTests
         page.Deactivate();
 
         // Assert
-        page.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<LegalPageDeactivatedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                PageId = page.Id,
-                PageType = "terms"
-            });
+        var __evt = page.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<LegalPageDeactivatedEvent>();
+
+        __evt.PageId.ShouldBe(page.Id);
+
+        __evt.PageType.ShouldBe("terms");
     }
 
     [Fact]
@@ -344,8 +347,8 @@ public class LegalPageTests
         page.Deactivate();
 
         // Assert - idempotent
-        page.IsActive.Should().BeFalse();
-        page.DomainEvents.Should().BeEmpty();
+        page.IsActive.ShouldBeFalse();
+        page.DomainEvents.ShouldBeEmpty();
     }
 
     [Fact]
@@ -360,7 +363,7 @@ public class LegalPageTests
         page.Activate();
 
         // Assert
-        page.IsActive.Should().BeTrue();
+        page.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -375,13 +378,13 @@ public class LegalPageTests
         page.Activate();
 
         // Assert
-        page.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<LegalPageActivatedEvent>()
-            .Which.Should().BeEquivalentTo(new
-            {
-                PageId = page.Id,
-                PageType = "terms"
-            });
+        var __evt = page.DomainEvents.ShouldHaveSingleItem()
+
+            .ShouldBeOfType<LegalPageActivatedEvent>();
+
+        __evt.PageId.ShouldBe(page.Id);
+
+        __evt.PageType.ShouldBe("terms");
     }
 
     [Fact]
@@ -395,8 +398,8 @@ public class LegalPageTests
         page.Activate();
 
         // Assert - idempotent
-        page.IsActive.Should().BeTrue();
-        page.DomainEvents.Should().BeEmpty();
+        page.IsActive.ShouldBeTrue();
+        page.DomainEvents.ShouldBeEmpty();
     }
 
     #endregion
@@ -410,13 +413,13 @@ public class LegalPageTests
         var page = LegalPage.CreatePlatformDefault("terms", "Terms", "<p>V1</p>");
         page.Update("V2", "<p>V2</p>");
         page.Update("V3", "<p>V3</p>");
-        page.Version.Should().Be(3);
+        page.Version.ShouldBe(3);
 
         // Act
         page.ResetVersionForSeeding();
 
         // Assert
-        page.Version.Should().Be(1);
+        page.Version.ShouldBe(1);
     }
 
     #endregion
@@ -428,25 +431,25 @@ public class LegalPageTests
     {
         // Create
         var page = LegalPage.CreatePlatformDefault("privacy", "Privacy", "<p>V1</p>");
-        page.IsActive.Should().BeTrue();
-        page.Version.Should().Be(1);
+        page.IsActive.ShouldBeTrue();
+        page.Version.ShouldBe(1);
 
         // Update
         page.Update("Privacy v2", "<p>V2</p>", metaTitle: "Privacy Policy");
-        page.Version.Should().Be(2);
-        page.Title.Should().Be("Privacy v2");
+        page.Version.ShouldBe(2);
+        page.Title.ShouldBe("Privacy v2");
 
         // Deactivate
         page.Deactivate();
-        page.IsActive.Should().BeFalse();
+        page.IsActive.ShouldBeFalse();
 
         // Reactivate
         page.Activate();
-        page.IsActive.Should().BeTrue();
+        page.IsActive.ShouldBeTrue();
 
         // Update again
         page.Update("Privacy v3", "<p>V3</p>");
-        page.Version.Should().Be(3);
+        page.Version.ShouldBe(3);
     }
 
     [Fact]
@@ -457,9 +460,9 @@ public class LegalPageTests
         var tenantPage = LegalPage.CreateTenantOverride(TestTenantId, "terms", "Custom Terms", "<p>Tenant</p>");
 
         // Assert
-        platformPage.TenantId.Should().BeNull();
-        tenantPage.TenantId.Should().Be(TestTenantId);
-        platformPage.Slug.Should().Be(tenantPage.Slug);
+        platformPage.TenantId.ShouldBeNull();
+        tenantPage.TenantId.ShouldBe(TestTenantId);
+        platformPage.Slug.ShouldBe(tenantPage.Slug);
     }
 
     #endregion

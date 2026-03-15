@@ -53,12 +53,12 @@ public class GetInventoryReceiptByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ReceiptNumber.Should().Be("RCV-20260218-0001");
-        result.Value.Type.Should().Be(InventoryReceiptType.StockIn);
-        result.Value.Status.Should().Be(InventoryReceiptStatus.Draft);
-        result.Value.Notes.Should().Be("Test notes");
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ReceiptNumber.ShouldBe("RCV-20260218-0001");
+        result.Value.Type.ShouldBe(InventoryReceiptType.StockIn);
+        result.Value.Status.ShouldBe(InventoryReceiptStatus.Draft);
+        result.Value.Notes.ShouldBe("Test notes");
+        result.Value.Items.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -79,10 +79,10 @@ public class GetInventoryReceiptByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(InventoryReceiptStatus.Confirmed);
-        result.Value.ConfirmedBy.Should().Be("admin-user");
-        result.Value.ConfirmedAt.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(InventoryReceiptStatus.Confirmed);
+        result.Value.ConfirmedBy.ShouldBe("admin-user");
+        result.Value.ConfirmedAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -104,10 +104,10 @@ public class GetInventoryReceiptByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TotalQuantity.Should().Be(15);
-        result.Value.TotalCost.Should().Be(500.00m);
-        result.Value.Items.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TotalQuantity.ShouldBe(15);
+        result.Value.TotalCost.ShouldBe(500.00m);
+        result.Value.Items.Count().ShouldBe(2);
     }
 
     #endregion
@@ -130,9 +130,9 @@ public class GetInventoryReceiptByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-INVENTORY-003");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-INVENTORY-003");
     }
 
     #endregion

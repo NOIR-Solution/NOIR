@@ -148,10 +148,10 @@ public class UpdatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Id.Should().Be(postId);
-        result.Value.Title.Should().Be(command.Title);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Id.ShouldBe(postId);
+        result.Value.Title.ShouldBe(command.Title);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -184,11 +184,11 @@ public class UpdatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        post.Title.Should().Be("New Title");
-        post.Excerpt.Should().Be("New excerpt");
-        post.ContentJson.Should().Be("{\"new\":\"content\"}");
-        post.ContentHtml.Should().Be("<p>New HTML</p>");
+        result.IsSuccess.ShouldBe(true);
+        post.Title.ShouldBe("New Title");
+        post.Excerpt.ShouldBe("New excerpt");
+        post.ContentJson.ShouldBe("{\"new\":\"content\"}");
+        post.ContentHtml.ShouldBe("<p>New HTML</p>");
     }
 
     [Fact]
@@ -215,8 +215,8 @@ public class UpdatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        post.Slug.Should().Be("new-unique-slug");
+        result.IsSuccess.ShouldBe(true);
+        post.Slug.ShouldBe("new-unique-slug");
 
         _postRepositoryMock.Verify(
             x => x.FirstOrDefaultAsync(It.IsAny<PostSlugExistsSpec>(), It.IsAny<CancellationToken>()),
@@ -243,7 +243,7 @@ public class UpdatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         // Should not check for slug uniqueness when slug hasn't changed
         _postRepositoryMock.Verify(
@@ -276,9 +276,9 @@ public class UpdatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        post.FeaturedImageId.Should().Be(imageId);
-        post.FeaturedImageAlt.Should().Be("New alt text");
+        result.IsSuccess.ShouldBe(true);
+        post.FeaturedImageId.ShouldBe(imageId);
+        post.FeaturedImageAlt.ShouldBe("New alt text");
     }
 
     [Fact]
@@ -305,9 +305,9 @@ public class UpdatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        post.FeaturedImageUrl.Should().Be("https://example.com/new-image.jpg");
-        post.FeaturedImageAlt.Should().Be("New alt text");
+        result.IsSuccess.ShouldBe(true);
+        post.FeaturedImageUrl.ShouldBe("https://example.com/new-image.jpg");
+        post.FeaturedImageAlt.ShouldBe("New alt text");
     }
 
     [Fact]
@@ -336,11 +336,11 @@ public class UpdatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        post.MetaTitle.Should().Be("New SEO Title");
-        post.MetaDescription.Should().Be("New SEO Description");
-        post.CanonicalUrl.Should().Be("https://example.com/new-canonical");
-        post.AllowIndexing.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        post.MetaTitle.ShouldBe("New SEO Title");
+        post.MetaDescription.ShouldBe("New SEO Description");
+        post.CanonicalUrl.ShouldBe("https://example.com/new-canonical");
+        post.AllowIndexing.ShouldBe(false);
     }
 
     [Fact]
@@ -369,9 +369,9 @@ public class UpdatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        post.CategoryId.Should().Be(categoryId);
-        result.Value.CategoryName.Should().Be(category.Name);
+        result.IsSuccess.ShouldBe(true);
+        post.CategoryId.ShouldBe(categoryId);
+        result.Value.CategoryName.ShouldBe(category.Name);
     }
 
     #endregion
@@ -409,10 +409,10 @@ public class UpdatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        post.TagAssignments.Should().HaveCount(2);
-        tag1.PostCount.Should().Be(1);
-        tag2.PostCount.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        post.TagAssignments.Count().ShouldBe(2);
+        tag1.PostCount.ShouldBe(1);
+        tag2.PostCount.ShouldBe(1);
     }
 
     [Fact]
@@ -457,10 +457,10 @@ public class UpdatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        post.TagAssignments.Should().HaveCount(1);
-        post.TagAssignments.First().TagId.Should().Be(tag1Id);
-        tag2.PostCount.Should().Be(0); // Decremented
+        result.IsSuccess.ShouldBe(true);
+        post.TagAssignments.Count().ShouldBe(1);
+        post.TagAssignments.First().TagId.ShouldBe(tag1Id);
+        tag2.PostCount.ShouldBe(0); // Decremented
     }
 
     [Fact]
@@ -498,9 +498,9 @@ public class UpdatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        post.TagAssignments.Should().BeEmpty();
-        tag1.PostCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        post.TagAssignments.ShouldBeEmpty();
+        tag1.PostCount.ShouldBe(0);
     }
 
     #endregion
@@ -522,10 +522,10 @@ public class UpdatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-BLOG-003");
-        result.Error.Message.Should().Contain(postId.ToString());
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-BLOG-003");
+        result.Error.Message.ShouldContain(postId.ToString());
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -558,10 +558,10 @@ public class UpdatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Conflict);
-        result.Error.Code.Should().Be("NOIR-BLOG-001");
-        result.Error.Message.Should().Contain("conflicting-slug");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Conflict);
+        result.Error.Code.ShouldBe("NOIR-BLOG-001");
+        result.Error.Message.ShouldContain("conflicting-slug");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -626,8 +626,8 @@ public class UpdatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        post.Slug.Should().Be("new-uppercase-slug");
+        result.IsSuccess.ShouldBe(true);
+        post.Slug.ShouldBe("new-uppercase-slug");
     }
 
     [Fact]
@@ -655,10 +655,10 @@ public class UpdatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        post.FeaturedImageId.Should().Be(imageId);
+        result.IsSuccess.ShouldBe(true);
+        post.FeaturedImageId.ShouldBe(imageId);
         // URL should be null when using ImageId
-        post.FeaturedImageUrl.Should().BeNull();
+        post.FeaturedImageUrl.ShouldBeNull();
     }
 
     #endregion

@@ -98,10 +98,10 @@ public class BulkConfirmOrdersCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(3);
-        result.Value.Failed.Should().Be(0);
-        result.Value.Errors.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(3);
+        result.Value.Failed.ShouldBe(0);
+        result.Value.Errors.ShouldBeEmpty();
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -139,12 +139,12 @@ public class BulkConfirmOrdersCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(1);
-        result.Value.Failed.Should().Be(1);
-        result.Value.Errors.Should().HaveCount(1);
-        result.Value.Errors[0].EntityId.Should().Be(confirmedId);
-        result.Value.Errors[0].Message.Should().Contain("not in Pending status");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(1);
+        result.Value.Failed.ShouldBe(1);
+        result.Value.Errors.Count().ShouldBe(1);
+        result.Value.Errors[0].EntityId.ShouldBe(confirmedId);
+        result.Value.Errors[0].Message.ShouldContain("not in Pending status");
     }
 
     [Fact]
@@ -172,12 +172,12 @@ public class BulkConfirmOrdersCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(1);
-        result.Value.Failed.Should().Be(1);
-        result.Value.Errors.Should().HaveCount(1);
-        result.Value.Errors[0].EntityId.Should().Be(nonExistentId);
-        result.Value.Errors[0].Message.Should().Contain("not found");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(1);
+        result.Value.Failed.ShouldBe(1);
+        result.Value.Errors.Count().ShouldBe(1);
+        result.Value.Errors[0].EntityId.ShouldBe(nonExistentId);
+        result.Value.Errors[0].Message.ShouldContain("not found");
     }
 
     #endregion

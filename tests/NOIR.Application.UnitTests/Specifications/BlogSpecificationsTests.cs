@@ -137,7 +137,7 @@ public class BlogSpecificationsTests
         var spec = new CategoriesSpec();
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -147,8 +147,8 @@ public class BlogSpecificationsTests
         var spec = new CategoriesSpec();
 
         // Assert - Ordered by SortOrder then Name
-        spec.OrderBy.Should().NotBeNull();
-        spec.ThenByExpressions.Should().HaveCount(1);
+        spec.OrderBy.ShouldNotBeNull();
+        spec.ThenByExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -158,7 +158,7 @@ public class BlogSpecificationsTests
         var spec = new CategoriesSpec();
 
         // Assert
-        spec.QueryTags.Should().Contain("GetCategories");
+        spec.QueryTags.ShouldContain("GetCategories");
     }
 
     [Fact]
@@ -168,7 +168,7 @@ public class BlogSpecificationsTests
         var spec = new CategoriesSpec(includeChildren: false);
 
         // Assert
-        spec.Includes.Should().BeEmpty();
+        spec.Includes.ShouldBeEmpty();
     }
 
     [Fact]
@@ -178,7 +178,7 @@ public class BlogSpecificationsTests
         var spec = new CategoriesSpec(includeChildren: true);
 
         // Assert
-        spec.Includes.Should().HaveCount(1);
+        spec.Includes.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -188,7 +188,7 @@ public class BlogSpecificationsTests
         var spec = new CategoriesSpec();
 
         // Assert
-        spec.AsNoTracking.Should().BeTrue();
+        spec.AsNoTracking.ShouldBe(true);
     }
 
     [Fact]
@@ -199,7 +199,7 @@ public class BlogSpecificationsTests
         var spec = new CategoriesSpec(search: "Tech");
 
         // Act & Assert
-        spec.IsSatisfiedBy(category).Should().BeTrue();
+        spec.IsSatisfiedBy(category).ShouldBe(true);
     }
 
     [Fact]
@@ -210,7 +210,7 @@ public class BlogSpecificationsTests
         var spec = new CategoriesSpec(search: "Tech");
 
         // Act & Assert
-        spec.IsSatisfiedBy(category).Should().BeTrue();
+        spec.IsSatisfiedBy(category).ShouldBe(true);
     }
 
     [Fact]
@@ -221,7 +221,7 @@ public class BlogSpecificationsTests
         var spec = new CategoriesSpec(search: "Tech");
 
         // Act & Assert
-        spec.IsSatisfiedBy(category).Should().BeFalse();
+        spec.IsSatisfiedBy(category).ShouldBe(false);
     }
 
     [Fact]
@@ -232,7 +232,7 @@ public class BlogSpecificationsTests
         var spec = new CategoriesSpec(search: null);
 
         // Act & Assert
-        spec.IsSatisfiedBy(category).Should().BeTrue();
+        spec.IsSatisfiedBy(category).ShouldBe(true);
     }
 
     #endregion
@@ -246,7 +246,7 @@ public class BlogSpecificationsTests
         var spec = new TopLevelCategoriesSpec();
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -256,7 +256,7 @@ public class BlogSpecificationsTests
         var spec = new TopLevelCategoriesSpec();
 
         // Assert
-        spec.Includes.Should().HaveCount(1);
+        spec.Includes.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -266,8 +266,8 @@ public class BlogSpecificationsTests
         var spec = new TopLevelCategoriesSpec();
 
         // Assert
-        spec.OrderBy.Should().NotBeNull();
-        spec.ThenByExpressions.Should().HaveCount(1);
+        spec.OrderBy.ShouldNotBeNull();
+        spec.ThenByExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -277,7 +277,7 @@ public class BlogSpecificationsTests
         var spec = new TopLevelCategoriesSpec();
 
         // Assert
-        spec.QueryTags.Should().Contain("GetTopLevelCategories");
+        spec.QueryTags.ShouldContain("GetTopLevelCategories");
     }
 
     [Fact]
@@ -288,7 +288,7 @@ public class BlogSpecificationsTests
         var spec = new TopLevelCategoriesSpec();
 
         // Act & Assert
-        spec.IsSatisfiedBy(category).Should().BeTrue();
+        spec.IsSatisfiedBy(category).ShouldBe(true);
     }
 
     [Fact]
@@ -299,7 +299,7 @@ public class BlogSpecificationsTests
         var spec = new TopLevelCategoriesSpec();
 
         // Act & Assert
-        spec.IsSatisfiedBy(category).Should().BeFalse();
+        spec.IsSatisfiedBy(category).ShouldBe(false);
     }
 
     #endregion
@@ -313,7 +313,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryByIdSpec(TestId1);
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -323,7 +323,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryByIdSpec(TestId1);
 
         // Assert
-        spec.Includes.Should().HaveCount(2);
+        spec.Includes.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -333,7 +333,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryByIdSpec(TestId1);
 
         // Assert
-        spec.QueryTags.Should().Contain("GetCategoryById");
+        spec.QueryTags.ShouldContain("GetCategoryById");
     }
 
     [Fact]
@@ -343,7 +343,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryByIdSpec(TestId1);
 
         // Assert
-        spec.AsNoTracking.Should().BeTrue();
+        spec.AsNoTracking.ShouldBe(true);
     }
 
     [Fact]
@@ -354,7 +354,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryByIdSpec(TestId1);
 
         // Act & Assert
-        spec.IsSatisfiedBy(category).Should().BeTrue();
+        spec.IsSatisfiedBy(category).ShouldBe(true);
     }
 
     [Fact]
@@ -365,7 +365,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryByIdSpec(TestId2);
 
         // Act & Assert
-        spec.IsSatisfiedBy(category).Should().BeFalse();
+        spec.IsSatisfiedBy(category).ShouldBe(false);
     }
 
     #endregion
@@ -379,7 +379,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryByIdForUpdateSpec(TestId1);
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -389,7 +389,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryByIdForUpdateSpec(TestId1);
 
         // Assert
-        spec.AsNoTracking.Should().BeFalse();
+        spec.AsNoTracking.ShouldBe(false);
     }
 
     [Fact]
@@ -399,7 +399,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryByIdForUpdateSpec(TestId1);
 
         // Assert
-        spec.QueryTags.Should().Contain("GetCategoryByIdForUpdate");
+        spec.QueryTags.ShouldContain("GetCategoryByIdForUpdate");
     }
 
     [Fact]
@@ -410,7 +410,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryByIdForUpdateSpec(TestId1);
 
         // Act & Assert
-        spec.IsSatisfiedBy(category).Should().BeTrue();
+        spec.IsSatisfiedBy(category).ShouldBe(true);
     }
 
     #endregion
@@ -424,7 +424,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryBySlugSpec("test-slug");
 
         // Assert
-        spec.WhereExpressions.Should().HaveCountGreaterThanOrEqualTo(1);
+        spec.WhereExpressions.Count().ShouldBeGreaterThanOrEqualTo(1);
     }
 
     [Fact]
@@ -434,7 +434,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryBySlugSpec("test-slug");
 
         // Assert
-        spec.Includes.Should().HaveCount(2);
+        spec.Includes.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -444,7 +444,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryBySlugSpec("test-slug");
 
         // Assert
-        spec.QueryTags.Should().Contain("GetCategoryBySlug");
+        spec.QueryTags.ShouldContain("GetCategoryBySlug");
     }
 
     [Fact]
@@ -455,7 +455,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryBySlugSpec("TEST-SLUG");
 
         // Act & Assert
-        spec.IsSatisfiedBy(category).Should().BeTrue();
+        spec.IsSatisfiedBy(category).ShouldBe(true);
     }
 
     [Fact]
@@ -466,7 +466,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryBySlugSpec("my-category");
 
         // Act & Assert
-        spec.IsSatisfiedBy(category).Should().BeTrue();
+        spec.IsSatisfiedBy(category).ShouldBe(true);
     }
 
     [Fact]
@@ -477,7 +477,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryBySlugSpec("other-category");
 
         // Act & Assert
-        spec.IsSatisfiedBy(category).Should().BeFalse();
+        spec.IsSatisfiedBy(category).ShouldBe(false);
     }
 
     #endregion
@@ -491,7 +491,7 @@ public class BlogSpecificationsTests
         var spec = new CategorySlugExistsSpec("test-slug");
 
         // Assert
-        spec.WhereExpressions.Should().HaveCountGreaterThanOrEqualTo(1);
+        spec.WhereExpressions.Count().ShouldBeGreaterThanOrEqualTo(1);
     }
 
     [Fact]
@@ -501,7 +501,7 @@ public class BlogSpecificationsTests
         var spec = new CategorySlugExistsSpec("test-slug");
 
         // Assert
-        spec.QueryTags.Should().Contain("CheckCategorySlugExists");
+        spec.QueryTags.ShouldContain("CheckCategorySlugExists");
     }
 
     [Fact]
@@ -512,7 +512,7 @@ public class BlogSpecificationsTests
         var spec = new CategorySlugExistsSpec("unique-slug");
 
         // Act & Assert
-        spec.IsSatisfiedBy(category).Should().BeTrue();
+        spec.IsSatisfiedBy(category).ShouldBe(true);
     }
 
     [Fact]
@@ -523,7 +523,7 @@ public class BlogSpecificationsTests
         var spec = new CategorySlugExistsSpec("unique-slug", excludeId: TestId1);
 
         // Act & Assert
-        spec.IsSatisfiedBy(category).Should().BeFalse();
+        spec.IsSatisfiedBy(category).ShouldBe(false);
     }
 
     #endregion
@@ -537,7 +537,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryHasPostsSpec(TestId1);
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -547,7 +547,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryHasPostsSpec(TestId1);
 
         // Assert
-        spec.QueryTags.Should().Contain("CheckCategoryHasPosts");
+        spec.QueryTags.ShouldContain("CheckCategoryHasPosts");
     }
 
     [Fact]
@@ -558,7 +558,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryHasPostsSpec(TestId1);
 
         // Act & Assert
-        spec.IsSatisfiedBy(post).Should().BeTrue();
+        spec.IsSatisfiedBy(post).ShouldBe(true);
     }
 
     [Fact]
@@ -569,7 +569,7 @@ public class BlogSpecificationsTests
         var spec = new CategoryHasPostsSpec(TestId1);
 
         // Act & Assert
-        spec.IsSatisfiedBy(post).Should().BeFalse();
+        spec.IsSatisfiedBy(post).ShouldBe(false);
     }
 
     #endregion
@@ -583,7 +583,7 @@ public class BlogSpecificationsTests
         var spec = new TagsSpec();
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -593,7 +593,7 @@ public class BlogSpecificationsTests
         var spec = new TagsSpec();
 
         // Assert
-        spec.OrderBy.Should().NotBeNull();
+        spec.OrderBy.ShouldNotBeNull();
     }
 
     [Fact]
@@ -603,7 +603,7 @@ public class BlogSpecificationsTests
         var spec = new TagsSpec();
 
         // Assert
-        spec.QueryTags.Should().Contain("GetTags");
+        spec.QueryTags.ShouldContain("GetTags");
     }
 
     [Fact]
@@ -613,7 +613,7 @@ public class BlogSpecificationsTests
         var spec = new TagsSpec();
 
         // Assert
-        spec.AsNoTracking.Should().BeTrue();
+        spec.AsNoTracking.ShouldBe(true);
     }
 
     [Fact]
@@ -624,7 +624,7 @@ public class BlogSpecificationsTests
         var spec = new TagsSpec(search: "Java");
 
         // Act & Assert
-        spec.IsSatisfiedBy(tag).Should().BeTrue();
+        spec.IsSatisfiedBy(tag).ShouldBe(true);
     }
 
     [Fact]
@@ -635,7 +635,7 @@ public class BlogSpecificationsTests
         var spec = new TagsSpec(search: "Java");
 
         // Act & Assert
-        spec.IsSatisfiedBy(tag).Should().BeTrue();
+        spec.IsSatisfiedBy(tag).ShouldBe(true);
     }
 
     [Fact]
@@ -646,7 +646,7 @@ public class BlogSpecificationsTests
         var spec = new TagsSpec(search: "Java");
 
         // Act & Assert
-        spec.IsSatisfiedBy(tag).Should().BeFalse();
+        spec.IsSatisfiedBy(tag).ShouldBe(false);
     }
 
     [Fact]
@@ -657,7 +657,7 @@ public class BlogSpecificationsTests
         var spec = new TagsSpec(search: null);
 
         // Act & Assert
-        spec.IsSatisfiedBy(tag).Should().BeTrue();
+        spec.IsSatisfiedBy(tag).ShouldBe(true);
     }
 
     #endregion
@@ -671,7 +671,7 @@ public class BlogSpecificationsTests
         var spec = new TagByIdSpec(TestId1);
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -681,7 +681,7 @@ public class BlogSpecificationsTests
         var spec = new TagByIdSpec(TestId1);
 
         // Assert
-        spec.QueryTags.Should().Contain("GetTagById");
+        spec.QueryTags.ShouldContain("GetTagById");
     }
 
     [Fact]
@@ -691,7 +691,7 @@ public class BlogSpecificationsTests
         var spec = new TagByIdSpec(TestId1);
 
         // Assert
-        spec.AsNoTracking.Should().BeTrue();
+        spec.AsNoTracking.ShouldBe(true);
     }
 
     [Fact]
@@ -702,7 +702,7 @@ public class BlogSpecificationsTests
         var spec = new TagByIdSpec(TestId1);
 
         // Act & Assert
-        spec.IsSatisfiedBy(tag).Should().BeTrue();
+        spec.IsSatisfiedBy(tag).ShouldBe(true);
     }
 
     [Fact]
@@ -713,7 +713,7 @@ public class BlogSpecificationsTests
         var spec = new TagByIdSpec(TestId2);
 
         // Act & Assert
-        spec.IsSatisfiedBy(tag).Should().BeFalse();
+        spec.IsSatisfiedBy(tag).ShouldBe(false);
     }
 
     #endregion
@@ -727,7 +727,7 @@ public class BlogSpecificationsTests
         var spec = new TagByIdForUpdateSpec(TestId1);
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -737,7 +737,7 @@ public class BlogSpecificationsTests
         var spec = new TagByIdForUpdateSpec(TestId1);
 
         // Assert
-        spec.AsNoTracking.Should().BeFalse();
+        spec.AsNoTracking.ShouldBe(false);
     }
 
     [Fact]
@@ -747,7 +747,7 @@ public class BlogSpecificationsTests
         var spec = new TagByIdForUpdateSpec(TestId1);
 
         // Assert
-        spec.QueryTags.Should().Contain("GetTagByIdForUpdate");
+        spec.QueryTags.ShouldContain("GetTagByIdForUpdate");
     }
 
     [Fact]
@@ -758,7 +758,7 @@ public class BlogSpecificationsTests
         var spec = new TagByIdForUpdateSpec(TestId1);
 
         // Act & Assert
-        spec.IsSatisfiedBy(tag).Should().BeTrue();
+        spec.IsSatisfiedBy(tag).ShouldBe(true);
     }
 
     #endregion
@@ -772,7 +772,7 @@ public class BlogSpecificationsTests
         var spec = new TagBySlugSpec("test-slug");
 
         // Assert
-        spec.WhereExpressions.Should().HaveCountGreaterThanOrEqualTo(1);
+        spec.WhereExpressions.Count().ShouldBeGreaterThanOrEqualTo(1);
     }
 
     [Fact]
@@ -782,7 +782,7 @@ public class BlogSpecificationsTests
         var spec = new TagBySlugSpec("test-slug");
 
         // Assert
-        spec.QueryTags.Should().Contain("GetTagBySlug");
+        spec.QueryTags.ShouldContain("GetTagBySlug");
     }
 
     [Fact]
@@ -793,7 +793,7 @@ public class BlogSpecificationsTests
         var spec = new TagBySlugSpec("TEST-SLUG");
 
         // Act & Assert
-        spec.IsSatisfiedBy(tag).Should().BeTrue();
+        spec.IsSatisfiedBy(tag).ShouldBe(true);
     }
 
     [Fact]
@@ -804,7 +804,7 @@ public class BlogSpecificationsTests
         var spec = new TagBySlugSpec("my-tag");
 
         // Act & Assert
-        spec.IsSatisfiedBy(tag).Should().BeTrue();
+        spec.IsSatisfiedBy(tag).ShouldBe(true);
     }
 
     #endregion
@@ -818,7 +818,7 @@ public class BlogSpecificationsTests
         var spec = new TagSlugExistsSpec("test-slug");
 
         // Assert
-        spec.WhereExpressions.Should().HaveCountGreaterThanOrEqualTo(1);
+        spec.WhereExpressions.Count().ShouldBeGreaterThanOrEqualTo(1);
     }
 
     [Fact]
@@ -828,7 +828,7 @@ public class BlogSpecificationsTests
         var spec = new TagSlugExistsSpec("test-slug");
 
         // Assert
-        spec.QueryTags.Should().Contain("CheckTagSlugExists");
+        spec.QueryTags.ShouldContain("CheckTagSlugExists");
     }
 
     [Fact]
@@ -839,7 +839,7 @@ public class BlogSpecificationsTests
         var spec = new TagSlugExistsSpec("unique-slug");
 
         // Act & Assert
-        spec.IsSatisfiedBy(tag).Should().BeTrue();
+        spec.IsSatisfiedBy(tag).ShouldBe(true);
     }
 
     [Fact]
@@ -850,7 +850,7 @@ public class BlogSpecificationsTests
         var spec = new TagSlugExistsSpec("unique-slug", excludeId: TestId1);
 
         // Act & Assert
-        spec.IsSatisfiedBy(tag).Should().BeFalse();
+        spec.IsSatisfiedBy(tag).ShouldBe(false);
     }
 
     #endregion
@@ -865,7 +865,7 @@ public class BlogSpecificationsTests
         var spec = new TagsByIdsSpec(ids);
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -876,7 +876,7 @@ public class BlogSpecificationsTests
         var spec = new TagsByIdsSpec(ids);
 
         // Assert
-        spec.AsNoTracking.Should().BeFalse();
+        spec.AsNoTracking.ShouldBe(false);
     }
 
     [Fact]
@@ -887,7 +887,7 @@ public class BlogSpecificationsTests
         var spec = new TagsByIdsSpec(ids);
 
         // Assert
-        spec.QueryTags.Should().Contain("GetTagsByIds");
+        spec.QueryTags.ShouldContain("GetTagsByIds");
     }
 
     [Fact]
@@ -898,7 +898,7 @@ public class BlogSpecificationsTests
         var spec = new TagsByIdsSpec(new List<Guid> { TestId1, TestId2 });
 
         // Act & Assert
-        spec.IsSatisfiedBy(tag).Should().BeTrue();
+        spec.IsSatisfiedBy(tag).ShouldBe(true);
     }
 
     [Fact]
@@ -909,7 +909,7 @@ public class BlogSpecificationsTests
         var spec = new TagsByIdsSpec(new List<Guid> { TestId1, TestId2 });
 
         // Act & Assert
-        spec.IsSatisfiedBy(tag).Should().BeFalse();
+        spec.IsSatisfiedBy(tag).ShouldBe(false);
     }
 
     #endregion
@@ -923,7 +923,7 @@ public class BlogSpecificationsTests
         var spec = new TagAssignmentsByPostIdSpec(TestId1);
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -933,7 +933,7 @@ public class BlogSpecificationsTests
         var spec = new TagAssignmentsByPostIdSpec(TestId1);
 
         // Assert
-        spec.AsNoTracking.Should().BeFalse();
+        spec.AsNoTracking.ShouldBe(false);
     }
 
     [Fact]
@@ -943,7 +943,7 @@ public class BlogSpecificationsTests
         var spec = new TagAssignmentsByPostIdSpec(TestId1);
 
         // Assert
-        spec.QueryTags.Should().Contain("GetTagAssignmentsByPostId");
+        spec.QueryTags.ShouldContain("GetTagAssignmentsByPostId");
     }
 
     [Fact]
@@ -954,7 +954,7 @@ public class BlogSpecificationsTests
         var spec = new TagAssignmentsByPostIdSpec(TestId1);
 
         // Act & Assert
-        spec.IsSatisfiedBy(assignment).Should().BeTrue();
+        spec.IsSatisfiedBy(assignment).ShouldBe(true);
     }
 
     [Fact]
@@ -965,7 +965,7 @@ public class BlogSpecificationsTests
         var spec = new TagAssignmentsByPostIdSpec(TestId1);
 
         // Act & Assert
-        spec.IsSatisfiedBy(assignment).Should().BeFalse();
+        spec.IsSatisfiedBy(assignment).ShouldBe(false);
     }
 
     #endregion
@@ -979,7 +979,7 @@ public class BlogSpecificationsTests
         var spec = new TagAssignmentsByTagIdSpec(TestId1);
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -989,7 +989,7 @@ public class BlogSpecificationsTests
         var spec = new TagAssignmentsByTagIdSpec(TestId1);
 
         // Assert
-        spec.AsNoTracking.Should().BeFalse();
+        spec.AsNoTracking.ShouldBe(false);
     }
 
     [Fact]
@@ -999,7 +999,7 @@ public class BlogSpecificationsTests
         var spec = new TagAssignmentsByTagIdSpec(TestId1);
 
         // Assert
-        spec.QueryTags.Should().Contain("GetTagAssignmentsByTagId");
+        spec.QueryTags.ShouldContain("GetTagAssignmentsByTagId");
     }
 
     [Fact]
@@ -1010,7 +1010,7 @@ public class BlogSpecificationsTests
         var spec = new TagAssignmentsByTagIdSpec(TestId1);
 
         // Act & Assert
-        spec.IsSatisfiedBy(assignment).Should().BeTrue();
+        spec.IsSatisfiedBy(assignment).ShouldBe(true);
     }
 
     #endregion
@@ -1024,7 +1024,7 @@ public class BlogSpecificationsTests
         var spec = new PostsSpec();
 
         // Assert
-        spec.WhereExpressions.Should().HaveCountGreaterThanOrEqualTo(1);
+        spec.WhereExpressions.Count().ShouldBeGreaterThanOrEqualTo(1);
     }
 
     [Fact]
@@ -1034,8 +1034,8 @@ public class BlogSpecificationsTests
         var spec = new PostsSpec();
 
         // Assert - Includes Category and FeaturedImage
-        spec.Includes.Should().HaveCount(2);
-        spec.IncludeStrings.Should().Contain("TagAssignments.Tag");
+        spec.Includes.Count().ShouldBe(2);
+        spec.IncludeStrings.ShouldContain("TagAssignments.Tag");
     }
 
     [Fact]
@@ -1045,7 +1045,7 @@ public class BlogSpecificationsTests
         var spec = new PostsSpec();
 
         // Assert
-        spec.OrderByDescending.Should().NotBeNull();
+        spec.OrderByDescending.ShouldNotBeNull();
     }
 
     [Fact]
@@ -1055,7 +1055,7 @@ public class BlogSpecificationsTests
         var spec = new PostsSpec();
 
         // Assert
-        spec.QueryTags.Should().Contain("GetPosts");
+        spec.QueryTags.ShouldContain("GetPosts");
     }
 
     [Fact]
@@ -1065,8 +1065,8 @@ public class BlogSpecificationsTests
         var spec = new PostsSpec(skip: 10, take: 20);
 
         // Assert
-        spec.Skip.Should().Be(10);
-        spec.Take.Should().Be(20);
+        spec.Skip.ShouldBe(10);
+        spec.Take.ShouldBe(20);
     }
 
     [Fact]
@@ -1076,8 +1076,8 @@ public class BlogSpecificationsTests
         var spec = new PostsSpec();
 
         // Assert
-        spec.Skip.Should().BeNull();
-        spec.Take.Should().BeNull();
+        spec.Skip.ShouldBeNull();
+        spec.Take.ShouldBeNull();
     }
 
     [Fact]
@@ -1087,7 +1087,7 @@ public class BlogSpecificationsTests
         var spec = new PostsSpec();
 
         // Assert
-        spec.AsNoTracking.Should().BeTrue();
+        spec.AsNoTracking.ShouldBe(true);
     }
 
     [Fact]
@@ -1098,7 +1098,7 @@ public class BlogSpecificationsTests
         var spec = new PostsSpec(search: "TypeScript");
 
         // Act & Assert
-        spec.IsSatisfiedBy(post).Should().BeTrue();
+        spec.IsSatisfiedBy(post).ShouldBe(true);
     }
 
     [Fact]
@@ -1109,7 +1109,7 @@ public class BlogSpecificationsTests
         var spec = new PostsSpec(search: "TypeScript");
 
         // Act & Assert
-        spec.IsSatisfiedBy(post).Should().BeTrue();
+        spec.IsSatisfiedBy(post).ShouldBe(true);
     }
 
     [Fact]
@@ -1121,8 +1121,8 @@ public class BlogSpecificationsTests
         var spec = new PostsSpec(status: PostStatus.Published);
 
         // Act & Assert
-        spec.IsSatisfiedBy(draftPost).Should().BeFalse();
-        spec.IsSatisfiedBy(publishedPost).Should().BeTrue();
+        spec.IsSatisfiedBy(draftPost).ShouldBe(false);
+        spec.IsSatisfiedBy(publishedPost).ShouldBe(true);
     }
 
     [Fact]
@@ -1134,8 +1134,8 @@ public class BlogSpecificationsTests
         var spec = new PostsSpec(categoryId: TestId1);
 
         // Act & Assert
-        spec.IsSatisfiedBy(post1).Should().BeTrue();
-        spec.IsSatisfiedBy(post2).Should().BeFalse();
+        spec.IsSatisfiedBy(post1).ShouldBe(true);
+        spec.IsSatisfiedBy(post2).ShouldBe(false);
     }
 
     [Fact]
@@ -1147,8 +1147,8 @@ public class BlogSpecificationsTests
         var spec = new PostsSpec(authorId: AuthorId);
 
         // Act & Assert
-        spec.IsSatisfiedBy(post1).Should().BeTrue();
-        spec.IsSatisfiedBy(post2).Should().BeFalse();
+        spec.IsSatisfiedBy(post1).ShouldBe(true);
+        spec.IsSatisfiedBy(post2).ShouldBe(false);
     }
 
     #endregion
@@ -1162,7 +1162,7 @@ public class BlogSpecificationsTests
         var spec = new PublishedPostsSpec();
 
         // Assert
-        spec.WhereExpressions.Should().HaveCountGreaterThanOrEqualTo(2);
+        spec.WhereExpressions.Count().ShouldBeGreaterThanOrEqualTo(2);
     }
 
     [Fact]
@@ -1172,8 +1172,8 @@ public class BlogSpecificationsTests
         var spec = new PublishedPostsSpec();
 
         // Assert - Includes Category and FeaturedImage
-        spec.Includes.Should().HaveCount(2);
-        spec.IncludeStrings.Should().Contain("TagAssignments.Tag");
+        spec.Includes.Count().ShouldBe(2);
+        spec.IncludeStrings.ShouldContain("TagAssignments.Tag");
     }
 
     [Fact]
@@ -1183,7 +1183,7 @@ public class BlogSpecificationsTests
         var spec = new PublishedPostsSpec();
 
         // Assert
-        spec.OrderByDescending.Should().NotBeNull();
+        spec.OrderByDescending.ShouldNotBeNull();
     }
 
     [Fact]
@@ -1193,7 +1193,7 @@ public class BlogSpecificationsTests
         var spec = new PublishedPostsSpec();
 
         // Assert
-        spec.QueryTags.Should().Contain("GetPublishedPosts");
+        spec.QueryTags.ShouldContain("GetPublishedPosts");
     }
 
     [Fact]
@@ -1203,8 +1203,8 @@ public class BlogSpecificationsTests
         var spec = new PublishedPostsSpec(skip: 5, take: 10);
 
         // Assert
-        spec.Skip.Should().Be(5);
-        spec.Take.Should().Be(10);
+        spec.Skip.ShouldBe(5);
+        spec.Take.ShouldBe(10);
     }
 
     [Fact]
@@ -1218,8 +1218,8 @@ public class BlogSpecificationsTests
         var spec = new PublishedPostsSpec();
 
         // Act & Assert
-        spec.IsSatisfiedBy(publishedPost).Should().BeTrue();
-        spec.IsSatisfiedBy(draftPost).Should().BeFalse();
+        spec.IsSatisfiedBy(publishedPost).ShouldBe(true);
+        spec.IsSatisfiedBy(draftPost).ShouldBe(false);
     }
 
     [Fact]
@@ -1232,7 +1232,7 @@ public class BlogSpecificationsTests
         var spec = new PublishedPostsSpec();
 
         // Act & Assert
-        spec.IsSatisfiedBy(futurePost).Should().BeFalse();
+        spec.IsSatisfiedBy(futurePost).ShouldBe(false);
     }
 
     #endregion
@@ -1246,7 +1246,7 @@ public class BlogSpecificationsTests
         var spec = new PostByIdSpec(TestId1);
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -1256,8 +1256,8 @@ public class BlogSpecificationsTests
         var spec = new PostByIdSpec(TestId1);
 
         // Assert - Includes Category and FeaturedImage
-        spec.Includes.Should().HaveCount(2);
-        spec.IncludeStrings.Should().Contain("TagAssignments.Tag");
+        spec.Includes.Count().ShouldBe(2);
+        spec.IncludeStrings.ShouldContain("TagAssignments.Tag");
     }
 
     [Fact]
@@ -1267,7 +1267,7 @@ public class BlogSpecificationsTests
         var spec = new PostByIdSpec(TestId1);
 
         // Assert
-        spec.QueryTags.Should().Contain("GetPostById");
+        spec.QueryTags.ShouldContain("GetPostById");
     }
 
     [Fact]
@@ -1277,7 +1277,7 @@ public class BlogSpecificationsTests
         var spec = new PostByIdSpec(TestId1);
 
         // Assert
-        spec.AsNoTracking.Should().BeTrue();
+        spec.AsNoTracking.ShouldBe(true);
     }
 
     [Fact]
@@ -1288,7 +1288,7 @@ public class BlogSpecificationsTests
         var spec = new PostByIdSpec(TestId1);
 
         // Act & Assert
-        spec.IsSatisfiedBy(post).Should().BeTrue();
+        spec.IsSatisfiedBy(post).ShouldBe(true);
     }
 
     [Fact]
@@ -1299,7 +1299,7 @@ public class BlogSpecificationsTests
         var spec = new PostByIdSpec(TestId2);
 
         // Act & Assert
-        spec.IsSatisfiedBy(post).Should().BeFalse();
+        spec.IsSatisfiedBy(post).ShouldBe(false);
     }
 
     #endregion
@@ -1313,7 +1313,7 @@ public class BlogSpecificationsTests
         var spec = new PostByIdForUpdateSpec(TestId1);
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -1323,7 +1323,7 @@ public class BlogSpecificationsTests
         var spec = new PostByIdForUpdateSpec(TestId1);
 
         // Assert - Includes TagAssignments and FeaturedImage
-        spec.Includes.Should().HaveCount(2);
+        spec.Includes.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -1333,7 +1333,7 @@ public class BlogSpecificationsTests
         var spec = new PostByIdForUpdateSpec(TestId1);
 
         // Assert
-        spec.AsNoTracking.Should().BeFalse();
+        spec.AsNoTracking.ShouldBe(false);
     }
 
     [Fact]
@@ -1343,7 +1343,7 @@ public class BlogSpecificationsTests
         var spec = new PostByIdForUpdateSpec(TestId1);
 
         // Assert
-        spec.QueryTags.Should().Contain("GetPostByIdForUpdate");
+        spec.QueryTags.ShouldContain("GetPostByIdForUpdate");
     }
 
     [Fact]
@@ -1354,7 +1354,7 @@ public class BlogSpecificationsTests
         var spec = new PostByIdForUpdateSpec(TestId1);
 
         // Act & Assert
-        spec.IsSatisfiedBy(post).Should().BeTrue();
+        spec.IsSatisfiedBy(post).ShouldBe(true);
     }
 
     #endregion
@@ -1368,7 +1368,7 @@ public class BlogSpecificationsTests
         var spec = new PostBySlugSpec("test-slug");
 
         // Assert
-        spec.WhereExpressions.Should().HaveCountGreaterThanOrEqualTo(1);
+        spec.WhereExpressions.Count().ShouldBeGreaterThanOrEqualTo(1);
     }
 
     [Fact]
@@ -1378,8 +1378,8 @@ public class BlogSpecificationsTests
         var spec = new PostBySlugSpec("test-slug");
 
         // Assert - Includes Category and FeaturedImage
-        spec.Includes.Should().HaveCount(2);
-        spec.IncludeStrings.Should().Contain("TagAssignments.Tag");
+        spec.Includes.Count().ShouldBe(2);
+        spec.IncludeStrings.ShouldContain("TagAssignments.Tag");
     }
 
     [Fact]
@@ -1389,7 +1389,7 @@ public class BlogSpecificationsTests
         var spec = new PostBySlugSpec("test-slug");
 
         // Assert
-        spec.QueryTags.Should().Contain("GetPostBySlug");
+        spec.QueryTags.ShouldContain("GetPostBySlug");
     }
 
     [Fact]
@@ -1400,7 +1400,7 @@ public class BlogSpecificationsTests
         var spec = new PostBySlugSpec("TEST-SLUG");
 
         // Act & Assert
-        spec.IsSatisfiedBy(post).Should().BeTrue();
+        spec.IsSatisfiedBy(post).ShouldBe(true);
     }
 
     [Fact]
@@ -1411,7 +1411,7 @@ public class BlogSpecificationsTests
         var spec = new PostBySlugSpec("my-post");
 
         // Act & Assert
-        spec.IsSatisfiedBy(post).Should().BeTrue();
+        spec.IsSatisfiedBy(post).ShouldBe(true);
     }
 
     #endregion
@@ -1425,7 +1425,7 @@ public class BlogSpecificationsTests
         var spec = new ScheduledPostsReadyToPublishSpec();
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(2);
+        spec.WhereExpressions.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -1435,7 +1435,7 @@ public class BlogSpecificationsTests
         var spec = new ScheduledPostsReadyToPublishSpec();
 
         // Assert
-        spec.AsNoTracking.Should().BeFalse();
+        spec.AsNoTracking.ShouldBe(false);
     }
 
     [Fact]
@@ -1445,7 +1445,7 @@ public class BlogSpecificationsTests
         var spec = new ScheduledPostsReadyToPublishSpec();
 
         // Assert
-        spec.QueryTags.Should().Contain("GetScheduledPostsReadyToPublish");
+        spec.QueryTags.ShouldContain("GetScheduledPostsReadyToPublish");
     }
 
     [Fact]
@@ -1458,7 +1458,7 @@ public class BlogSpecificationsTests
         var spec = new ScheduledPostsReadyToPublishSpec();
 
         // Act & Assert
-        spec.IsSatisfiedBy(post).Should().BeTrue();
+        spec.IsSatisfiedBy(post).ShouldBe(true);
     }
 
     [Fact]
@@ -1471,7 +1471,7 @@ public class BlogSpecificationsTests
         var spec = new ScheduledPostsReadyToPublishSpec();
 
         // Act & Assert
-        spec.IsSatisfiedBy(post).Should().BeFalse();
+        spec.IsSatisfiedBy(post).ShouldBe(false);
     }
 
     [Fact]
@@ -1484,7 +1484,7 @@ public class BlogSpecificationsTests
         var spec = new ScheduledPostsReadyToPublishSpec();
 
         // Act & Assert
-        spec.IsSatisfiedBy(post).Should().BeFalse();
+        spec.IsSatisfiedBy(post).ShouldBe(false);
     }
 
     #endregion
@@ -1498,7 +1498,7 @@ public class BlogSpecificationsTests
         var spec = new PostSlugExistsSpec("test-slug");
 
         // Assert
-        spec.WhereExpressions.Should().HaveCountGreaterThanOrEqualTo(1);
+        spec.WhereExpressions.Count().ShouldBeGreaterThanOrEqualTo(1);
     }
 
     [Fact]
@@ -1508,7 +1508,7 @@ public class BlogSpecificationsTests
         var spec = new PostSlugExistsSpec("test-slug");
 
         // Assert
-        spec.QueryTags.Should().Contain("CheckPostSlugExists");
+        spec.QueryTags.ShouldContain("CheckPostSlugExists");
     }
 
     [Fact]
@@ -1519,7 +1519,7 @@ public class BlogSpecificationsTests
         var spec = new PostSlugExistsSpec("unique-slug");
 
         // Act & Assert
-        spec.IsSatisfiedBy(post).Should().BeTrue();
+        spec.IsSatisfiedBy(post).ShouldBe(true);
     }
 
     [Fact]
@@ -1530,7 +1530,7 @@ public class BlogSpecificationsTests
         var spec = new PostSlugExistsSpec("unique-slug", excludeId: TestId1);
 
         // Act & Assert
-        spec.IsSatisfiedBy(post).Should().BeFalse();
+        spec.IsSatisfiedBy(post).ShouldBe(false);
     }
 
     #endregion
@@ -1544,7 +1544,7 @@ public class BlogSpecificationsTests
         var spec = new PostsWithTagForUpdateSpec(TestId1);
 
         // Assert
-        spec.WhereExpressions.Should().HaveCount(1);
+        spec.WhereExpressions.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -1554,7 +1554,7 @@ public class BlogSpecificationsTests
         var spec = new PostsWithTagForUpdateSpec(TestId1);
 
         // Assert
-        spec.Includes.Should().HaveCount(1);
+        spec.Includes.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -1564,7 +1564,7 @@ public class BlogSpecificationsTests
         var spec = new PostsWithTagForUpdateSpec(TestId1);
 
         // Assert
-        spec.AsNoTracking.Should().BeFalse();
+        spec.AsNoTracking.ShouldBe(false);
     }
 
     [Fact]
@@ -1574,7 +1574,7 @@ public class BlogSpecificationsTests
         var spec = new PostsWithTagForUpdateSpec(TestId1);
 
         // Assert
-        spec.QueryTags.Should().Contain("GetPostsWithTagForUpdate");
+        spec.QueryTags.ShouldContain("GetPostsWithTagForUpdate");
     }
 
     #endregion

@@ -16,7 +16,7 @@ public class HasPermissionAttributeTests
         var attribute = new HasPermissionAttribute(permission);
 
         // Assert
-        attribute.Policy.Should().Be($"Permission:{permission}");
+        attribute.Policy.ShouldBe($"Permission:{permission}");
     }
 
     [Fact]
@@ -26,7 +26,7 @@ public class HasPermissionAttributeTests
         var attribute = new HasPermissionAttribute("test:permission");
 
         // Assert
-        attribute.Should().BeAssignableTo<AuthorizeAttribute>();
+        attribute.ShouldBeAssignableTo<AuthorizeAttribute>();
     }
 
     [Fact]
@@ -38,9 +38,9 @@ public class HasPermissionAttributeTests
         var attr3 = new HasPermissionAttribute("roles:manage");
 
         // Assert
-        attr1.Policy.Should().Be("Permission:users:read");
-        attr2.Policy.Should().Be("Permission:users:write");
-        attr3.Policy.Should().Be("Permission:roles:manage");
+        attr1.Policy.ShouldBe("Permission:users:read");
+        attr2.Policy.ShouldBe("Permission:users:write");
+        attr3.Policy.ShouldBe("Permission:roles:manage");
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class HasPermissionAttributeTests
         var attribute = new HasPermissionAttribute("");
 
         // Assert
-        attribute.Policy.Should().Be("Permission:");
+        attribute.Policy.ShouldBe("Permission:");
     }
 
     [Theory]
@@ -64,6 +64,6 @@ public class HasPermissionAttributeTests
         var attribute = new HasPermissionAttribute(permission);
 
         // Assert
-        attribute.Policy.Should().Be($"Permission:{permission}");
+        attribute.Policy.ShouldBe($"Permission:{permission}");
     }
 }

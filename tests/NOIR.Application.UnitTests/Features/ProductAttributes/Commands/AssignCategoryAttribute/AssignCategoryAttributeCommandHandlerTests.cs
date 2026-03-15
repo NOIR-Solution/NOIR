@@ -156,10 +156,10 @@ public class AssignCategoryAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.CategoryName.Should().Be("Electronics");
-        result.Value.AttributeName.Should().Be("Color");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.CategoryName.ShouldBe("Electronics");
+        result.Value.AttributeName.ShouldBe("Color");
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -194,8 +194,8 @@ public class AssignCategoryAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsRequired.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsRequired.ShouldBe(false);
     }
 
     [Fact]
@@ -225,9 +225,9 @@ public class AssignCategoryAttributeCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        command.GetTargetDisplayName().Should().Be("Electronics");
-        command.GetActionDescription().Should().Contain("Screen Size");
-        command.GetActionDescription().Should().Contain("Electronics");
+        command.GetTargetDisplayName().ShouldBe("Electronics");
+        command.GetActionDescription().ShouldContain("Screen Size");
+        command.GetActionDescription().ShouldContain("Electronics");
     }
 
     #endregion
@@ -251,8 +251,8 @@ public class AssignCategoryAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -277,8 +277,8 @@ public class AssignCategoryAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Attribute.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Attribute.NotFound);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -307,8 +307,8 @@ public class AssignCategoryAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Attribute.AlreadyLinkedToCategory);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Attribute.AlreadyLinkedToCategory);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -344,8 +344,8 @@ public class AssignCategoryAttributeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SortOrder.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SortOrder.ShouldBe(0);
     }
 
     [Fact]

@@ -25,16 +25,16 @@ public class NotificationTests
         var notification = Notification.Create(userId, type, category, title, message);
 
         // Assert
-        notification.Should().NotBeNull();
-        notification.Id.Should().NotBe(Guid.Empty);
-        notification.UserId.Should().Be(userId);
-        notification.Type.Should().Be(type);
-        notification.Category.Should().Be(category);
-        notification.Title.Should().Be(title);
-        notification.Message.Should().Be(message);
-        notification.IsRead.Should().BeFalse();
-        notification.EmailSent.Should().BeFalse();
-        notification.IncludedInDigest.Should().BeFalse();
+        notification.ShouldNotBeNull();
+        notification.Id.ShouldNotBe(Guid.Empty);
+        notification.UserId.ShouldBe(userId);
+        notification.Type.ShouldBe(type);
+        notification.Category.ShouldBe(category);
+        notification.Title.ShouldBe(title);
+        notification.Message.ShouldBe(message);
+        notification.IsRead.ShouldBeFalse();
+        notification.EmailSent.ShouldBeFalse();
+        notification.IncludedInDigest.ShouldBeFalse();
     }
 
     [Fact]
@@ -53,10 +53,10 @@ public class NotificationTests
             iconClass, actionUrl, metadata, tenantId);
 
         // Assert
-        notification.IconClass.Should().Be(iconClass);
-        notification.ActionUrl.Should().Be(actionUrl);
-        notification.Metadata.Should().Be(metadata);
-        notification.TenantId.Should().Be(tenantId);
+        notification.IconClass.ShouldBe(iconClass);
+        notification.ActionUrl.ShouldBe(actionUrl);
+        notification.Metadata.ShouldBe(metadata);
+        notification.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public class NotificationTests
         var act = () => Notification.Create(null!, NotificationType.Info, NotificationCategory.System, "Title", "Message");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class NotificationTests
         var act = () => Notification.Create("user-123", NotificationType.Info, NotificationCategory.System, "", "Message");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class NotificationTests
         var act = () => Notification.Create("user-123", NotificationType.Info, NotificationCategory.System, "Title", "");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -100,7 +100,7 @@ public class NotificationTests
         var notification = Notification.Create("user-123", type, NotificationCategory.System, "Title", "Message");
 
         // Assert
-        notification.Type.Should().Be(type);
+        notification.Type.ShouldBe(type);
     }
 
     [Theory]
@@ -115,7 +115,7 @@ public class NotificationTests
         var notification = Notification.Create("user-123", NotificationType.Info, category, "Title", "Message");
 
         // Assert
-        notification.Category.Should().Be(category);
+        notification.Category.ShouldBe(category);
     }
 
     #endregion
@@ -133,9 +133,9 @@ public class NotificationTests
         notification.MarkAsRead();
 
         // Assert
-        notification.IsRead.Should().BeTrue();
-        notification.ReadAt.Should().NotBeNull();
-        notification.ReadAt.Should().BeOnOrAfter(beforeMark);
+        notification.IsRead.ShouldBeTrue();
+        notification.ReadAt.ShouldNotBeNull();
+        notification.ReadAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeMark);
     }
 
     [Fact]
@@ -151,8 +151,8 @@ public class NotificationTests
         notification.MarkAsRead();
 
         // Assert
-        notification.IsRead.Should().BeTrue();
-        notification.ReadAt.Should().Be(firstReadAt);
+        notification.IsRead.ShouldBeTrue();
+        notification.ReadAt.ShouldBe(firstReadAt);
     }
 
     #endregion
@@ -170,8 +170,8 @@ public class NotificationTests
         notification.MarkAsUnread();
 
         // Assert
-        notification.IsRead.Should().BeFalse();
-        notification.ReadAt.Should().BeNull();
+        notification.IsRead.ShouldBeFalse();
+        notification.ReadAt.ShouldBeNull();
     }
 
     [Fact]
@@ -184,8 +184,8 @@ public class NotificationTests
         notification.MarkAsUnread();
 
         // Assert
-        notification.IsRead.Should().BeFalse();
-        notification.ReadAt.Should().BeNull();
+        notification.IsRead.ShouldBeFalse();
+        notification.ReadAt.ShouldBeNull();
     }
 
     #endregion
@@ -202,7 +202,7 @@ public class NotificationTests
         notification.MarkEmailSent();
 
         // Assert
-        notification.EmailSent.Should().BeTrue();
+        notification.EmailSent.ShouldBeTrue();
     }
 
     [Fact]
@@ -215,7 +215,7 @@ public class NotificationTests
         notification.MarkIncludedInDigest();
 
         // Assert
-        notification.IncludedInDigest.Should().BeTrue();
+        notification.IncludedInDigest.ShouldBeTrue();
     }
 
     #endregion
@@ -233,8 +233,8 @@ public class NotificationTests
         notification.AddAction(action);
 
         // Assert
-        notification.Actions.Should().HaveCount(1);
-        notification.Actions.Should().Contain(action);
+        notification.Actions.Count().ShouldBe(1);
+        notification.Actions.ShouldContain(action);
     }
 
     [Fact]
@@ -249,8 +249,8 @@ public class NotificationTests
             .AddAction(NotificationAction.Destructive("Reject", "/api/reject"));
 
         // Assert
-        result.Should().BeSameAs(notification);
-        notification.Actions.Should().HaveCount(2);
+        result.ShouldBeSameAs(notification);
+        notification.Actions.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -263,7 +263,7 @@ public class NotificationTests
         var act = () => notification.AddAction(null!);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>();
+        Should.Throw<ArgumentNullException>(act);
     }
 
     [Fact]
@@ -281,7 +281,7 @@ public class NotificationTests
         notification.AddActions(actions);
 
         // Assert
-        notification.Actions.Should().HaveCount(2);
+        notification.Actions.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -294,7 +294,7 @@ public class NotificationTests
         var act = () => notification.AddActions(null!);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>();
+        Should.Throw<ArgumentNullException>(act);
     }
 
     [Fact]
@@ -305,7 +305,7 @@ public class NotificationTests
         notification.AddAction(NotificationAction.Primary("Test", "/test"));
 
         // Assert
-        notification.Actions.Should().BeAssignableTo<IReadOnlyCollection<NotificationAction>>();
+        notification.Actions.ShouldBeAssignableTo<IReadOnlyCollection<NotificationAction>>();
     }
 
     #endregion
@@ -324,7 +324,7 @@ public class NotificationTests
             "Title", "Message", tenantId: tenantId);
 
         // Assert
-        notification.TenantId.Should().Be(tenantId);
+        notification.TenantId.ShouldBe(tenantId);
     }
 
     #endregion

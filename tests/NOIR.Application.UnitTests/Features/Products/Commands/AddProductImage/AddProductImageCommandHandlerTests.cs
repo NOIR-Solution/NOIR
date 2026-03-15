@@ -85,11 +85,11 @@ public class AddProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Url.Should().Be("https://example.com/new-image.jpg");
-        result.Value.AltText.Should().Be("New Image");
-        result.Value.SortOrder.Should().Be(1);
-        result.Value.IsPrimary.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Url.ShouldBe("https://example.com/new-image.jpg");
+        result.Value.AltText.ShouldBe("New Image");
+        result.Value.SortOrder.ShouldBe(1);
+        result.Value.IsPrimary.ShouldBe(false);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -120,8 +120,8 @@ public class AddProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsPrimary.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsPrimary.ShouldBe(true);
     }
 
     [Fact]
@@ -152,10 +152,10 @@ public class AddProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsPrimary.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsPrimary.ShouldBe(true);
         // The old primary should now be cleared
-        existingProduct.Images.Count(i => i.IsPrimary).Should().Be(1);
+        existingProduct.Images.Count(i => i.IsPrimary).ShouldBe(1);
     }
 
     [Fact]
@@ -182,8 +182,8 @@ public class AddProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.AltText.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.AltText.ShouldBeNull();
     }
 
     #endregion
@@ -206,10 +206,10 @@ public class AddProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-026");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-026");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -276,8 +276,8 @@ public class AddProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SortOrder.Should().Be(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SortOrder.ShouldBe(5);
     }
 
     [Fact]
@@ -307,8 +307,8 @@ public class AddProductImageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingProduct.Images.Should().HaveCount(3);
+        result.IsSuccess.ShouldBe(true);
+        existingProduct.Images.Count().ShouldBe(3);
     }
 
     #endregion

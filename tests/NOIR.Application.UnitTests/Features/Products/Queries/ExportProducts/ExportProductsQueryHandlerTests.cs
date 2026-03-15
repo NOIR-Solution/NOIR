@@ -96,9 +96,9 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Rows.Should().HaveCount(3); // 2 variants from first product + 1 from second (no variants = 1 row)
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Rows.Count().ShouldBe(3); // 2 variants from first product + 1 from second (no variants = 1 row)
     }
 
     [Fact]
@@ -116,10 +116,10 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rows.Should().HaveCount(2);
-        result.Value.Rows.Should().Contain(r => r.VariantName == "Small");
-        result.Value.Rows.Should().Contain(r => r.VariantName == "Large");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rows.Count().ShouldBe(2);
+        result.Value.Rows.ShouldContain(r => r.VariantName == "Small");
+        result.Value.Rows.ShouldContain(r => r.VariantName == "Large");
     }
 
     [Fact]
@@ -137,9 +137,9 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rows.Should().HaveCount(1);
-        result.Value.Rows.First().VariantName.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rows.Count().ShouldBe(1);
+        result.Value.Rows.First().VariantName.ShouldBeNull();
     }
 
     [Fact]
@@ -177,8 +177,8 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rows.First().CategoryName.Should().Be("Electronics");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rows.First().CategoryName.ShouldBe("Electronics");
     }
 
     [Fact]
@@ -197,10 +197,10 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rows.First().Images.Should().Contain("|");
-        result.Value.Rows.First().Images.Should().Contain("img1.jpg");
-        result.Value.Rows.First().Images.Should().Contain("img2.jpg");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rows.First().Images.ShouldContain("|");
+        result.Value.Rows.First().Images.ShouldContain("img1.jpg");
+        result.Value.Rows.First().Images.ShouldContain("img2.jpg");
     }
 
     [Fact]
@@ -219,8 +219,8 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rows.First().Images.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rows.First().Images.ShouldBeNull();
     }
 
     [Fact]
@@ -238,12 +238,12 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var smallRow = result.Value.Rows.First(r => r.VariantName == "Small");
-        smallRow.VariantPrice.Should().Be(19.99m);
+        smallRow.VariantPrice.ShouldBe(19.99m);
 
         var largeRow = result.Value.Rows.First(r => r.VariantName == "Large");
-        largeRow.VariantPrice.Should().Be(24.99m);
+        largeRow.VariantPrice.ShouldBe(24.99m);
     }
 
     [Fact]
@@ -265,8 +265,8 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rows.All(r => r.Stock == 10).Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rows.All(r => r.Stock == 10).ShouldBe(true);
     }
 
     [Fact]
@@ -284,9 +284,9 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rows.Should().Contain(r => r.Sku == "SKU-S");
-        result.Value.Rows.Should().Contain(r => r.Sku == "SKU-L");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rows.ShouldContain(r => r.Sku == "SKU-S");
+        result.Value.Rows.ShouldContain(r => r.Sku == "SKU-L");
     }
 
     [Fact]
@@ -306,8 +306,8 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rows.First().CompareAtPrice.Should().Be(99.99m);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rows.First().CompareAtPrice.ShouldBe(99.99m);
     }
 
     #endregion
@@ -336,7 +336,7 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _productRepositoryMock.Verify(
             x => x.ListAsync(It.IsAny<ProductsForExportSpec>(), It.IsAny<CancellationToken>()),
             Times.Once);
@@ -365,7 +365,7 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _productRepositoryMock.Verify(
             x => x.ListAsync(It.IsAny<ProductsForExportSpec>(), It.IsAny<CancellationToken>()),
             Times.Once);
@@ -397,9 +397,9 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rows.Should().BeEmpty();
-        result.Value.AttributeColumns.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rows.ShouldBeEmpty();
+        result.Value.AttributeColumns.ShouldBeEmpty();
     }
 
     #endregion
@@ -432,7 +432,7 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _attributeRepositoryMock.Verify(
             x => x.ListAsync(It.IsAny<ProductAttributesByIdsSpec>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -454,8 +454,8 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.AttributeColumns.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.AttributeColumns.ShouldNotBeNull();
     }
 
     #endregion
@@ -511,9 +511,9 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // 2 variants from first + 1 row from second (no variants)
-        result.Value.Rows.Should().HaveCount(3);
+        result.Value.Rows.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -533,8 +533,8 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rows.First().Status.Should().Be("Active");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rows.First().Status.ShouldBe("Active");
     }
 
     [Fact]
@@ -554,8 +554,8 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rows.First().Brand.Should().Be("Apple");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rows.First().Brand.ShouldBe("Apple");
     }
 
     [Fact]
@@ -575,8 +575,8 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rows.First().Barcode.Should().Be("1234567890123");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rows.First().Barcode.ShouldBe("1234567890123");
     }
 
     [Fact]
@@ -596,8 +596,8 @@ public class ExportProductsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rows.First().ShortDescription.Should().Be("Short description");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rows.First().ShortDescription.ShouldBe("Short description");
     }
 
     #endregion

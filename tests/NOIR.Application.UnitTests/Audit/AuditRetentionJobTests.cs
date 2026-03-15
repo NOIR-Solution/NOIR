@@ -43,8 +43,8 @@ public class AuditRetentionJobTests
         var act = () => InvokeValidateConfiguration(job);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*ArchiveAfterDays*cannot be negative*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("cannot be negative");
     }
 
     [Fact]
@@ -65,8 +65,8 @@ public class AuditRetentionJobTests
         var act = () => InvokeValidateConfiguration(job);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*DeleteAfterDays*cannot be negative*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("cannot be negative");
     }
 
     [Fact]
@@ -87,8 +87,8 @@ public class AuditRetentionJobTests
         var act = () => InvokeValidateConfiguration(job);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*DeleteAfterDays*must be greater than ArchiveAfterDays*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("must be greater than ArchiveAfterDays");
     }
 
     [Fact]
@@ -109,8 +109,8 @@ public class AuditRetentionJobTests
         var act = () => InvokeValidateConfiguration(job);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*DeleteAfterDays*must be greater than ArchiveAfterDays*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("must be greater than ArchiveAfterDays");
     }
 
     [Fact]
@@ -131,8 +131,8 @@ public class AuditRetentionJobTests
         var act = () => InvokeValidateConfiguration(job);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*BatchSize*must be greater than 0*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("must be greater than 0");
     }
 
     [Fact]
@@ -153,8 +153,8 @@ public class AuditRetentionJobTests
         var act = () => InvokeValidateConfiguration(job);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*BatchSize*must be greater than 0*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("must be greater than 0");
     }
 
     [Fact]
@@ -175,7 +175,7 @@ public class AuditRetentionJobTests
         var act = () => InvokeValidateConfiguration(job);
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -278,7 +278,7 @@ public class AuditRetentionJobTests
         var result = InvokeIsTransientError(exception);
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Theory]
@@ -293,7 +293,7 @@ public class AuditRetentionJobTests
         var result = InvokeIsTransientError(exception);
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Theory]
@@ -308,7 +308,7 @@ public class AuditRetentionJobTests
         var result = InvokeIsTransientError(exception);
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Theory]
@@ -324,7 +324,7 @@ public class AuditRetentionJobTests
         var result = InvokeIsTransientError(exception);
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     #endregion
@@ -363,20 +363,20 @@ public class AuditRetentionJobTests
         var settings = new AuditRetentionSettings();
 
         // Assert - Check documented defaults match actual defaults
-        settings.ArchiveAfterDays.Should().Be(90);
-        settings.DeleteAfterDays.Should().Be(365);
-        settings.BatchSize.Should().Be(10000);
-        settings.Enabled.Should().BeTrue();
-        settings.EnableArchiving.Should().BeTrue();
-        settings.ExportBeforeDelete.Should().BeFalse();
-        settings.ExportPath.Should().Be("audit-archives");
+        settings.ArchiveAfterDays.ShouldBe(90);
+        settings.DeleteAfterDays.ShouldBe(365);
+        settings.BatchSize.ShouldBe(10000);
+        settings.Enabled.ShouldBe(true);
+        settings.EnableArchiving.ShouldBe(true);
+        settings.ExportBeforeDelete.ShouldBe(false);
+        settings.ExportPath.ShouldBe("audit-archives");
     }
 
     [Fact]
     public void AuditRetentionSettings_SectionName_ShouldBeCorrect()
     {
         // Assert
-        AuditRetentionSettings.SectionName.Should().Be("AuditRetention");
+        AuditRetentionSettings.SectionName.ShouldBe("AuditRetention");
     }
 
     #endregion

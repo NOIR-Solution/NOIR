@@ -90,14 +90,14 @@ public class PromotionTests
         var promotion = CreateTestPromotion();
 
         // Assert
-        promotion.Should().NotBeNull();
-        promotion.Id.Should().NotBe(Guid.Empty);
-        promotion.Name.Should().Be("Summer Sale");
-        promotion.Code.Should().Be("SUMMER2026");
-        promotion.PromotionType.Should().Be(PromotionType.VoucherCode);
-        promotion.DiscountType.Should().Be(DiscountType.Percentage);
-        promotion.DiscountValue.Should().Be(20m);
-        promotion.TenantId.Should().Be(TestTenantId);
+        promotion.ShouldNotBeNull();
+        promotion.Id.ShouldNotBe(Guid.Empty);
+        promotion.Name.ShouldBe("Summer Sale");
+        promotion.Code.ShouldBe("SUMMER2026");
+        promotion.PromotionType.ShouldBe(PromotionType.VoucherCode);
+        promotion.DiscountType.ShouldBe(DiscountType.Percentage);
+        promotion.DiscountValue.ShouldBe(20m);
+        promotion.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -107,12 +107,12 @@ public class PromotionTests
         var promotion = CreateTestPromotion();
 
         // Assert
-        promotion.IsActive.Should().BeFalse();
-        promotion.Status.Should().Be(PromotionStatus.Draft);
-        promotion.CurrentUsageCount.Should().Be(0);
-        promotion.Products.Should().BeEmpty();
-        promotion.Categories.Should().BeEmpty();
-        promotion.Usages.Should().BeEmpty();
+        promotion.IsActive.ShouldBeFalse();
+        promotion.Status.ShouldBe(PromotionStatus.Draft);
+        promotion.CurrentUsageCount.ShouldBe(0);
+        promotion.Products.ShouldBeEmpty();
+        promotion.Categories.ShouldBeEmpty();
+        promotion.Usages.ShouldBeEmpty();
     }
 
     [Fact]
@@ -129,13 +129,13 @@ public class PromotionTests
             applyLevel: PromotionApplyLevel.Product);
 
         // Assert
-        promotion.Description.Should().Be("Big summer discounts");
-        promotion.MaxDiscountAmount.Should().Be(500m);
-        promotion.MinOrderValue.Should().Be(100m);
-        promotion.MinItemQuantity.Should().Be(2);
-        promotion.UsageLimitTotal.Should().Be(1000);
-        promotion.UsageLimitPerUser.Should().Be(3);
-        promotion.ApplyLevel.Should().Be(PromotionApplyLevel.Product);
+        promotion.Description.ShouldBe("Big summer discounts");
+        promotion.MaxDiscountAmount.ShouldBe(500m);
+        promotion.MinOrderValue.ShouldBe(100m);
+        promotion.MinItemQuantity.ShouldBe(2);
+        promotion.UsageLimitTotal.ShouldBe(1000);
+        promotion.UsageLimitPerUser.ShouldBe(3);
+        promotion.ApplyLevel.ShouldBe(PromotionApplyLevel.Product);
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public class PromotionTests
         var promotion = CreateTestPromotion(code: "summer2026");
 
         // Assert
-        promotion.Code.Should().Be("SUMMER2026");
+        promotion.Code.ShouldBe("SUMMER2026");
     }
 
     [Theory]
@@ -158,7 +158,7 @@ public class PromotionTests
         var act = () => CreateTestPromotion(name: name!);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -171,7 +171,7 @@ public class PromotionTests
         var act = () => CreateTestPromotion(code: code!);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -184,8 +184,8 @@ public class PromotionTests
         var act = () => CreateTestPromotion(discountValue: discountValue);
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>()
-            .WithMessage("*Discount value must be greater than zero*");
+        Should.Throw<ArgumentOutOfRangeException>(act)
+            .Message.ShouldContain("Discount value must be greater than zero");
     }
 
     [Fact]
@@ -199,8 +199,8 @@ public class PromotionTests
         var act = () => CreateTestPromotion(startDate: startDate, endDate: endDate);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("*End date must be after start date*");
+        Should.Throw<ArgumentException>(act)
+            .Message.ShouldContain("End date must be after start date");
     }
 
     [Fact]
@@ -213,8 +213,8 @@ public class PromotionTests
         var act = () => CreateTestPromotion(startDate: sameDate, endDate: sameDate);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("*End date must be after start date*");
+        Should.Throw<ArgumentException>(act)
+            .Message.ShouldContain("End date must be after start date");
     }
 
     [Theory]
@@ -228,7 +228,7 @@ public class PromotionTests
         var promotion = CreateTestPromotion(promotionType: type);
 
         // Assert
-        promotion.PromotionType.Should().Be(type);
+        promotion.PromotionType.ShouldBe(type);
     }
 
     [Theory]
@@ -241,7 +241,7 @@ public class PromotionTests
         var promotion = CreateTestPromotion(applyLevel: level);
 
         // Assert
-        promotion.ApplyLevel.Should().Be(level);
+        promotion.ApplyLevel.ShouldBe(level);
     }
 
     [Fact]
@@ -251,7 +251,7 @@ public class PromotionTests
         var promotion = CreateTestPromotion(description: null);
 
         // Assert
-        promotion.Description.Should().BeNull();
+        promotion.Description.ShouldBeNull();
     }
 
     [Fact]
@@ -266,11 +266,11 @@ public class PromotionTests
             usageLimitPerUser: null);
 
         // Assert
-        promotion.MaxDiscountAmount.Should().BeNull();
-        promotion.MinOrderValue.Should().BeNull();
-        promotion.MinItemQuantity.Should().BeNull();
-        promotion.UsageLimitTotal.Should().BeNull();
-        promotion.UsageLimitPerUser.Should().BeNull();
+        promotion.MaxDiscountAmount.ShouldBeNull();
+        promotion.MinOrderValue.ShouldBeNull();
+        promotion.MinItemQuantity.ShouldBeNull();
+        promotion.UsageLimitTotal.ShouldBeNull();
+        promotion.UsageLimitPerUser.ShouldBeNull();
     }
 
     #endregion
@@ -303,20 +303,20 @@ public class PromotionTests
             2);
 
         // Assert
-        promotion.Name.Should().Be("Winter Sale");
-        promotion.Description.Should().Be("Big winter discounts");
-        promotion.Code.Should().Be("WINTER2026");
-        promotion.PromotionType.Should().Be(PromotionType.FlashSale);
-        promotion.DiscountType.Should().Be(DiscountType.FixedAmount);
-        promotion.DiscountValue.Should().Be(50m);
-        promotion.StartDate.Should().Be(newStart);
-        promotion.EndDate.Should().Be(newEnd);
-        promotion.ApplyLevel.Should().Be(PromotionApplyLevel.Category);
-        promotion.MaxDiscountAmount.Should().Be(1000m);
-        promotion.MinOrderValue.Should().Be(200m);
-        promotion.MinItemQuantity.Should().Be(5);
-        promotion.UsageLimitTotal.Should().Be(500);
-        promotion.UsageLimitPerUser.Should().Be(2);
+        promotion.Name.ShouldBe("Winter Sale");
+        promotion.Description.ShouldBe("Big winter discounts");
+        promotion.Code.ShouldBe("WINTER2026");
+        promotion.PromotionType.ShouldBe(PromotionType.FlashSale);
+        promotion.DiscountType.ShouldBe(DiscountType.FixedAmount);
+        promotion.DiscountValue.ShouldBe(50m);
+        promotion.StartDate.ShouldBe(newStart);
+        promotion.EndDate.ShouldBe(newEnd);
+        promotion.ApplyLevel.ShouldBe(PromotionApplyLevel.Category);
+        promotion.MaxDiscountAmount.ShouldBe(1000m);
+        promotion.MinOrderValue.ShouldBe(200m);
+        promotion.MinItemQuantity.ShouldBe(5);
+        promotion.UsageLimitTotal.ShouldBe(500);
+        promotion.UsageLimitPerUser.ShouldBe(2);
     }
 
     [Fact]
@@ -332,7 +332,7 @@ public class PromotionTests
             PromotionApplyLevel.Cart, null, null, null, null, null);
 
         // Assert
-        promotion.Code.Should().Be("NEWCODE");
+        promotion.Code.ShouldBe("NEWCODE");
     }
 
     #endregion
@@ -344,14 +344,14 @@ public class PromotionTests
     {
         // Arrange
         var promotion = CreateTestPromotion();
-        promotion.Status.Should().Be(PromotionStatus.Draft);
+        promotion.Status.ShouldBe(PromotionStatus.Draft);
 
         // Act
         promotion.Activate();
 
         // Assert
-        promotion.IsActive.Should().BeTrue();
-        promotion.Status.Should().Be(PromotionStatus.Active);
+        promotion.IsActive.ShouldBeTrue();
+        promotion.Status.ShouldBe(PromotionStatus.Active);
     }
 
     [Fact]
@@ -361,14 +361,14 @@ public class PromotionTests
         var promotion = CreateTestPromotion();
         // Activate then deactivate to get to Draft, then we need to test Scheduled
         // The Activate method allows Draft and Scheduled (anything not Cancelled/Expired)
-        promotion.Status.Should().Be(PromotionStatus.Draft);
+        promotion.Status.ShouldBe(PromotionStatus.Draft);
 
         // Act
         promotion.Activate();
 
         // Assert
-        promotion.IsActive.Should().BeTrue();
-        promotion.Status.Should().Be(PromotionStatus.Active);
+        promotion.IsActive.ShouldBeTrue();
+        promotion.Status.ShouldBe(PromotionStatus.Active);
     }
 
     [Fact]
@@ -380,8 +380,8 @@ public class PromotionTests
 
         // Act & Assert
         var act = () => promotion.Activate();
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Cannot activate promotion in Cancelled status*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot activate promotion in Cancelled status");
     }
 
     [Fact]
@@ -394,7 +394,7 @@ public class PromotionTests
 
         // Act & Assert
         var act = () => promotion.Activate();
-        act.Should().Throw<InvalidOperationException>();
+        Should.Throw<InvalidOperationException>(act);
     }
 
     [Fact]
@@ -408,9 +408,9 @@ public class PromotionTests
         var act = () => promotion.Activate();
 
         // Assert
-        act.Should().NotThrow();
-        promotion.IsActive.Should().BeTrue();
-        promotion.Status.Should().Be(PromotionStatus.Active);
+        act.ShouldNotThrow();
+        promotion.IsActive.ShouldBeTrue();
+        promotion.Status.ShouldBe(PromotionStatus.Active);
     }
 
     #endregion
@@ -428,8 +428,8 @@ public class PromotionTests
         promotion.Deactivate();
 
         // Assert
-        promotion.IsActive.Should().BeFalse();
-        promotion.Status.Should().Be(PromotionStatus.Draft);
+        promotion.IsActive.ShouldBeFalse();
+        promotion.Status.ShouldBe(PromotionStatus.Draft);
     }
 
     [Fact]
@@ -440,8 +440,8 @@ public class PromotionTests
 
         // Act & Assert
         var act = () => promotion.Deactivate();
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Cannot deactivate promotion in Draft status*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot deactivate promotion in Draft status");
     }
 
     [Fact]
@@ -453,8 +453,8 @@ public class PromotionTests
 
         // Act & Assert
         var act = () => promotion.Deactivate();
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Cannot deactivate promotion in Cancelled status*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot deactivate promotion in Cancelled status");
     }
 
     #endregion
@@ -471,8 +471,8 @@ public class PromotionTests
         promotion.Cancel();
 
         // Assert
-        promotion.IsActive.Should().BeFalse();
-        promotion.Status.Should().Be(PromotionStatus.Cancelled);
+        promotion.IsActive.ShouldBeFalse();
+        promotion.Status.ShouldBe(PromotionStatus.Cancelled);
     }
 
     [Fact]
@@ -486,8 +486,8 @@ public class PromotionTests
         promotion.Cancel();
 
         // Assert
-        promotion.IsActive.Should().BeFalse();
-        promotion.Status.Should().Be(PromotionStatus.Cancelled);
+        promotion.IsActive.ShouldBeFalse();
+        promotion.Status.ShouldBe(PromotionStatus.Cancelled);
     }
 
     [Fact]
@@ -499,8 +499,8 @@ public class PromotionTests
 
         // Act & Assert
         var act = () => promotion.Cancel();
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*Cannot cancel promotion in Cancelled status*");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot cancel promotion in Cancelled status");
     }
 
     #endregion
@@ -514,7 +514,7 @@ public class PromotionTests
         var promotion = CreateActivePromotion();
 
         // Act & Assert
-        promotion.IsValid().Should().BeTrue();
+        promotion.IsValid().ShouldBeTrue();
     }
 
     [Fact]
@@ -527,7 +527,7 @@ public class PromotionTests
         // Promotion is Draft/inactive by default
 
         // Act & Assert
-        promotion.IsValid().Should().BeFalse();
+        promotion.IsValid().ShouldBeFalse();
     }
 
     [Fact]
@@ -540,7 +540,7 @@ public class PromotionTests
         promotion.Activate();
 
         // Act & Assert
-        promotion.IsValid().Should().BeFalse();
+        promotion.IsValid().ShouldBeFalse();
     }
 
     [Fact]
@@ -559,7 +559,7 @@ public class PromotionTests
         promotion.Activate();
 
         // Act & Assert
-        promotion.IsValid().Should().BeFalse();
+        promotion.IsValid().ShouldBeFalse();
     }
 
     [Fact]
@@ -571,7 +571,7 @@ public class PromotionTests
         promotion.IncrementUsage();
 
         // Act & Assert
-        promotion.IsValid().Should().BeFalse();
+        promotion.IsValid().ShouldBeFalse();
     }
 
     [Fact]
@@ -583,7 +583,7 @@ public class PromotionTests
         promotion.IncrementUsage();
 
         // Act & Assert
-        promotion.IsValid().Should().BeTrue();
+        promotion.IsValid().ShouldBeTrue();
     }
 
     [Fact]
@@ -597,7 +597,7 @@ public class PromotionTests
         }
 
         // Act & Assert
-        promotion.IsValid().Should().BeTrue();
+        promotion.IsValid().ShouldBeTrue();
     }
 
     #endregion
@@ -611,7 +611,7 @@ public class PromotionTests
         var promotion = CreateActivePromotion(usageLimitPerUser: 3);
 
         // Act & Assert
-        promotion.CanBeUsedBy("user-1", userUsageCount: 1).Should().BeTrue();
+        promotion.CanBeUsedBy("user-1", userUsageCount: 1).ShouldBeTrue();
     }
 
     [Fact]
@@ -621,7 +621,7 @@ public class PromotionTests
         var promotion = CreateActivePromotion(usageLimitPerUser: 2);
 
         // Act & Assert
-        promotion.CanBeUsedBy("user-1", userUsageCount: 2).Should().BeFalse();
+        promotion.CanBeUsedBy("user-1", userUsageCount: 2).ShouldBeFalse();
     }
 
     [Fact]
@@ -631,7 +631,7 @@ public class PromotionTests
         var promotion = CreateActivePromotion(usageLimitPerUser: 2);
 
         // Act & Assert
-        promotion.CanBeUsedBy("user-1", userUsageCount: 5).Should().BeFalse();
+        promotion.CanBeUsedBy("user-1", userUsageCount: 5).ShouldBeFalse();
     }
 
     [Fact]
@@ -641,7 +641,7 @@ public class PromotionTests
         var promotion = CreateActivePromotion(usageLimitPerUser: null);
 
         // Act & Assert
-        promotion.CanBeUsedBy("user-1", userUsageCount: 999).Should().BeTrue();
+        promotion.CanBeUsedBy("user-1", userUsageCount: 999).ShouldBeTrue();
     }
 
     [Fact]
@@ -651,7 +651,7 @@ public class PromotionTests
         var promotion = CreateTestPromotion(); // Draft, not active
 
         // Act & Assert
-        promotion.CanBeUsedBy("user-1", userUsageCount: 0).Should().BeFalse();
+        promotion.CanBeUsedBy("user-1", userUsageCount: 0).ShouldBeFalse();
     }
 
     [Fact]
@@ -662,7 +662,7 @@ public class PromotionTests
         promotion.IncrementUsage();
 
         // Act & Assert - Total limit reached even though user limit not reached
-        promotion.CanBeUsedBy("user-1", userUsageCount: 0).Should().BeFalse();
+        promotion.CanBeUsedBy("user-1", userUsageCount: 0).ShouldBeFalse();
     }
 
     #endregion
@@ -679,7 +679,7 @@ public class PromotionTests
         promotion.IncrementUsage();
 
         // Assert
-        promotion.CurrentUsageCount.Should().Be(1);
+        promotion.CurrentUsageCount.ShouldBe(1);
     }
 
     [Fact]
@@ -694,7 +694,7 @@ public class PromotionTests
         promotion.IncrementUsage();
 
         // Assert
-        promotion.CurrentUsageCount.Should().Be(3);
+        promotion.CurrentUsageCount.ShouldBe(3);
     }
 
     [Fact]
@@ -708,7 +708,7 @@ public class PromotionTests
         promotion.IncrementUsage();
 
         // Assert
-        promotion.CurrentUsageCount.Should().Be(2);
+        promotion.CurrentUsageCount.ShouldBe(2);
     }
 
     #endregion
@@ -727,7 +727,7 @@ public class PromotionTests
         var discount = promotion.CalculateDiscount(200m);
 
         // Assert
-        discount.Should().Be(50m);
+        discount.ShouldBe(50m);
     }
 
     [Fact]
@@ -742,7 +742,7 @@ public class PromotionTests
         var discount = promotion.CalculateDiscount(200m);
 
         // Assert
-        discount.Should().Be(200m);
+        discount.ShouldBe(200m);
     }
 
     [Fact]
@@ -757,7 +757,7 @@ public class PromotionTests
         var discount = promotion.CalculateDiscount(500m);
 
         // Assert
-        discount.Should().Be(100m); // 20% of 500
+        discount.ShouldBe(100m); // 20% of 500
     }
 
     [Fact]
@@ -773,7 +773,7 @@ public class PromotionTests
         var discount = promotion.CalculateDiscount(500m);
 
         // Assert - 50% of 500 = 250, but capped at 100
-        discount.Should().Be(100m);
+        discount.ShouldBe(100m);
     }
 
     [Fact]
@@ -789,7 +789,7 @@ public class PromotionTests
         var discount = promotion.CalculateDiscount(500m);
 
         // Assert - 10% of 500 = 50, below cap of 100
-        discount.Should().Be(50m);
+        discount.ShouldBe(50m);
     }
 
     [Fact]
@@ -804,7 +804,7 @@ public class PromotionTests
         var discount = promotion.CalculateDiscount(300m);
 
         // Assert
-        discount.Should().Be(300m);
+        discount.ShouldBe(300m);
     }
 
     [Fact]
@@ -819,7 +819,7 @@ public class PromotionTests
         var discount = promotion.CalculateDiscount(500m);
 
         // Assert - Free shipping discount is handled separately
-        discount.Should().Be(0m);
+        discount.ShouldBe(0m);
     }
 
     [Fact]
@@ -834,7 +834,7 @@ public class PromotionTests
         var discount = promotion.CalculateDiscount(500m);
 
         // Assert - BuyXGetY calculated differently based on items
-        discount.Should().Be(0m);
+        discount.ShouldBe(0m);
     }
 
     [Theory]
@@ -850,7 +850,7 @@ public class PromotionTests
         var discount = promotion.CalculateDiscount(orderTotal);
 
         // Assert
-        discount.Should().Be(0m);
+        discount.ShouldBe(0m);
     }
 
     [Fact]
@@ -866,7 +866,7 @@ public class PromotionTests
         var discount = promotion.CalculateDiscount(50m);
 
         // Assert
-        discount.Should().Be(25m);
+        discount.ShouldBe(25m);
     }
 
     #endregion
@@ -884,9 +884,9 @@ public class PromotionTests
         promotion.AddProduct(productId);
 
         // Assert
-        promotion.Products.Should().HaveCount(1);
-        promotion.Products.First().ProductId.Should().Be(productId);
-        promotion.Products.First().PromotionId.Should().Be(promotion.Id);
+        promotion.Products.Count().ShouldBe(1);
+        promotion.Products.First().ProductId.ShouldBe(productId);
+        promotion.Products.First().PromotionId.ShouldBe(promotion.Id);
     }
 
     [Fact]
@@ -901,7 +901,7 @@ public class PromotionTests
         promotion.AddProduct(productId);
 
         // Assert
-        promotion.Products.Should().HaveCount(1);
+        promotion.Products.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -919,7 +919,7 @@ public class PromotionTests
         promotion.AddProduct(productId3);
 
         // Assert
-        promotion.Products.Should().HaveCount(3);
+        promotion.Products.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -934,7 +934,7 @@ public class PromotionTests
         promotion.RemoveProduct(productId);
 
         // Assert
-        promotion.Products.Should().BeEmpty();
+        promotion.Products.ShouldBeEmpty();
     }
 
     [Fact]
@@ -948,7 +948,7 @@ public class PromotionTests
         promotion.RemoveProduct(Guid.NewGuid()); // Different ID
 
         // Assert
-        promotion.Products.Should().HaveCount(1);
+        promotion.Products.Count().ShouldBe(1);
     }
 
     #endregion
@@ -966,9 +966,9 @@ public class PromotionTests
         promotion.AddCategory(categoryId);
 
         // Assert
-        promotion.Categories.Should().HaveCount(1);
-        promotion.Categories.First().CategoryId.Should().Be(categoryId);
-        promotion.Categories.First().PromotionId.Should().Be(promotion.Id);
+        promotion.Categories.Count().ShouldBe(1);
+        promotion.Categories.First().CategoryId.ShouldBe(categoryId);
+        promotion.Categories.First().PromotionId.ShouldBe(promotion.Id);
     }
 
     [Fact]
@@ -983,7 +983,7 @@ public class PromotionTests
         promotion.AddCategory(categoryId);
 
         // Assert
-        promotion.Categories.Should().HaveCount(1);
+        promotion.Categories.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -999,7 +999,7 @@ public class PromotionTests
         promotion.AddCategory(catId2);
 
         // Assert
-        promotion.Categories.Should().HaveCount(2);
+        promotion.Categories.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -1014,7 +1014,7 @@ public class PromotionTests
         promotion.RemoveCategory(categoryId);
 
         // Assert
-        promotion.Categories.Should().BeEmpty();
+        promotion.Categories.ShouldBeEmpty();
     }
 
     [Fact]
@@ -1028,7 +1028,7 @@ public class PromotionTests
         promotion.RemoveCategory(Guid.NewGuid());
 
         // Assert
-        promotion.Categories.Should().HaveCount(1);
+        promotion.Categories.Count().ShouldBe(1);
     }
 
     #endregion
@@ -1042,15 +1042,15 @@ public class PromotionTests
         var promotion = CreateTestPromotion();
 
         // Act & Assert - Draft -> Active
-        promotion.Status.Should().Be(PromotionStatus.Draft);
+        promotion.Status.ShouldBe(PromotionStatus.Draft);
         promotion.Activate();
-        promotion.Status.Should().Be(PromotionStatus.Active);
-        promotion.IsActive.Should().BeTrue();
+        promotion.Status.ShouldBe(PromotionStatus.Active);
+        promotion.IsActive.ShouldBeTrue();
 
         // Act & Assert - Active -> Draft (deactivated)
         promotion.Deactivate();
-        promotion.Status.Should().Be(PromotionStatus.Draft);
-        promotion.IsActive.Should().BeFalse();
+        promotion.Status.ShouldBe(PromotionStatus.Draft);
+        promotion.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -1064,8 +1064,8 @@ public class PromotionTests
         promotion.Cancel();
 
         // Assert
-        promotion.Status.Should().Be(PromotionStatus.Cancelled);
-        promotion.IsActive.Should().BeFalse();
+        promotion.Status.ShouldBe(PromotionStatus.Cancelled);
+        promotion.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -1078,8 +1078,8 @@ public class PromotionTests
         promotion.Cancel();
 
         // Assert
-        promotion.Status.Should().Be(PromotionStatus.Cancelled);
-        promotion.IsActive.Should().BeFalse();
+        promotion.Status.ShouldBe(PromotionStatus.Cancelled);
+        promotion.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -1091,7 +1091,7 @@ public class PromotionTests
 
         // Act & Assert
         var act = () => promotion.Activate();
-        act.Should().Throw<InvalidOperationException>();
+        Should.Throw<InvalidOperationException>(act);
     }
 
     [Fact]
@@ -1103,7 +1103,7 @@ public class PromotionTests
 
         // Act & Assert
         var act = () => promotion.Deactivate();
-        act.Should().Throw<InvalidOperationException>();
+        Should.Throw<InvalidOperationException>(act);
     }
 
     [Fact]
@@ -1115,7 +1115,7 @@ public class PromotionTests
 
         // Act & Assert
         var act = () => promotion.Cancel();
-        act.Should().Throw<InvalidOperationException>();
+        Should.Throw<InvalidOperationException>(act);
     }
 
     [Fact]
@@ -1130,8 +1130,8 @@ public class PromotionTests
         promotion.Activate();
 
         // Assert
-        promotion.Status.Should().Be(PromotionStatus.Active);
-        promotion.IsActive.Should().BeTrue();
+        promotion.Status.ShouldBe(PromotionStatus.Active);
+        promotion.IsActive.ShouldBeTrue();
     }
 
     #endregion
@@ -1152,12 +1152,12 @@ public class PromotionTests
         var usage = new PromotionUsage(Guid.NewGuid(), promotionId, userId, orderId, discountAmount, TestTenantId);
 
         // Assert
-        usage.PromotionId.Should().Be(promotionId);
-        usage.UserId.Should().Be(userId);
-        usage.OrderId.Should().Be(orderId);
-        usage.DiscountAmount.Should().Be(discountAmount);
-        usage.UsedAt.Should().BeOnOrAfter(beforeCreate);
-        usage.TenantId.Should().Be(TestTenantId);
+        usage.PromotionId.ShouldBe(promotionId);
+        usage.UserId.ShouldBe(userId);
+        usage.OrderId.ShouldBe(orderId);
+        usage.DiscountAmount.ShouldBe(discountAmount);
+        usage.UsedAt.ShouldBeGreaterThanOrEqualTo(beforeCreate);
+        usage.TenantId.ShouldBe(TestTenantId);
     }
 
     #endregion
@@ -1175,9 +1175,9 @@ public class PromotionTests
         var pp = new PromotionProduct(Guid.NewGuid(), promotionId, productId, TestTenantId);
 
         // Assert
-        pp.PromotionId.Should().Be(promotionId);
-        pp.ProductId.Should().Be(productId);
-        pp.TenantId.Should().Be(TestTenantId);
+        pp.PromotionId.ShouldBe(promotionId);
+        pp.ProductId.ShouldBe(productId);
+        pp.TenantId.ShouldBe(TestTenantId);
     }
 
     #endregion
@@ -1195,9 +1195,9 @@ public class PromotionTests
         var pc = new PromotionCategory(Guid.NewGuid(), promotionId, categoryId, TestTenantId);
 
         // Assert
-        pc.PromotionId.Should().Be(promotionId);
-        pc.CategoryId.Should().Be(categoryId);
-        pc.TenantId.Should().Be(TestTenantId);
+        pc.PromotionId.ShouldBe(promotionId);
+        pc.CategoryId.ShouldBe(categoryId);
+        pc.TenantId.ShouldBe(TestTenantId);
     }
 
     #endregion

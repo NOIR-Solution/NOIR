@@ -71,17 +71,17 @@ public class GetTenantSmtpSettingsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Host.Should().Be("tenant-smtp.example.com");
-        dto.Port.Should().Be(587);
-        dto.Username.Should().Be("tenant@example.com");
-        dto.HasPassword.Should().BeTrue();
-        dto.FromEmail.Should().Be("noreply@tenant.com");
-        dto.FromName.Should().Be("Tenant App");
-        dto.UseSsl.Should().BeTrue();
-        dto.IsConfigured.Should().BeTrue();
-        dto.IsInherited.Should().BeFalse();
+        dto.Host.ShouldBe("tenant-smtp.example.com");
+        dto.Port.ShouldBe(587);
+        dto.Username.ShouldBe("tenant@example.com");
+        dto.HasPassword.ShouldBe(true);
+        dto.FromEmail.ShouldBe("noreply@tenant.com");
+        dto.FromName.ShouldBe("Tenant App");
+        dto.UseSsl.ShouldBe(true);
+        dto.IsConfigured.ShouldBe(true);
+        dto.IsInherited.ShouldBe(false);
     }
 
     [Fact]
@@ -108,8 +108,8 @@ public class GetTenantSmtpSettingsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.HasPassword.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.HasPassword.ShouldBe(false);
     }
 
     #endregion
@@ -143,15 +143,15 @@ public class GetTenantSmtpSettingsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Host.Should().Be("platform-smtp.example.com");
-        dto.Port.Should().Be(25);
-        dto.FromEmail.Should().Be("noreply@platform.com");
-        dto.FromName.Should().Be("Platform");
-        dto.UseSsl.Should().BeFalse();
-        dto.IsInherited.Should().BeTrue();
-        dto.IsConfigured.Should().BeTrue();
+        dto.Host.ShouldBe("platform-smtp.example.com");
+        dto.Port.ShouldBe(25);
+        dto.FromEmail.ShouldBe("noreply@platform.com");
+        dto.FromName.ShouldBe("Platform");
+        dto.UseSsl.ShouldBe(false);
+        dto.IsInherited.ShouldBe(true);
+        dto.IsConfigured.ShouldBe(true);
     }
 
     [Fact]
@@ -172,17 +172,17 @@ public class GetTenantSmtpSettingsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Host.Should().Be(string.Empty);
-        dto.Port.Should().Be(25);
-        dto.Username.Should().BeNull();
-        dto.HasPassword.Should().BeFalse();
-        dto.FromEmail.Should().Be(string.Empty);
-        dto.FromName.Should().Be(string.Empty);
-        dto.UseSsl.Should().BeFalse();
-        dto.IsConfigured.Should().BeFalse();
-        dto.IsInherited.Should().BeTrue();
+        dto.Host.ShouldBe(string.Empty);
+        dto.Port.ShouldBe(25);
+        dto.Username.ShouldBeNull();
+        dto.HasPassword.ShouldBe(false);
+        dto.FromEmail.ShouldBe(string.Empty);
+        dto.FromName.ShouldBe(string.Empty);
+        dto.UseSsl.ShouldBe(false);
+        dto.IsConfigured.ShouldBe(false);
+        dto.IsInherited.ShouldBe(true);
     }
 
     #endregion
@@ -211,9 +211,9 @@ public class GetTenantSmtpSettingsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Host.Should().Be("platform-smtp.example.com");
-        result.Value.IsInherited.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Host.ShouldBe("platform-smtp.example.com");
+        result.Value.IsInherited.ShouldBe(true);
     }
 
     [Fact]
@@ -232,8 +232,8 @@ public class GetTenantSmtpSettingsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsInherited.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsInherited.ShouldBe(true);
     }
 
     #endregion
@@ -264,8 +264,8 @@ public class GetTenantSmtpSettingsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Port.Should().Be(25);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Port.ShouldBe(25);
     }
 
     [Fact]
@@ -291,8 +291,8 @@ public class GetTenantSmtpSettingsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Port.Should().Be(25);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Port.ShouldBe(25);
     }
 
     #endregion
@@ -323,8 +323,8 @@ public class GetTenantSmtpSettingsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.UseSsl.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.UseSsl.ShouldBe(false);
     }
 
     [Theory]
@@ -355,8 +355,8 @@ public class GetTenantSmtpSettingsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.UseSsl.Should().Be(expected);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.UseSsl.ShouldBe(expected);
     }
 
     #endregion

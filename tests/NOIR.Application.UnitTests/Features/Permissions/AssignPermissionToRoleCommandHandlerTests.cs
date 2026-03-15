@@ -67,8 +67,8 @@ public class AssignPermissionToRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEquivalentTo(updatedPermissions);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(updatedPermissions);
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class AssignPermissionToRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _roleIdentityServiceMock.Verify(
             x => x.SetPermissionsAsync(roleId, permissions, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -123,8 +123,8 @@ public class AssignPermissionToRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.RoleNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.RoleNotFound);
         _roleIdentityServiceMock.Verify(
             x => x.SetPermissionsAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -155,8 +155,8 @@ public class AssignPermissionToRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Validation.General);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Validation.General);
     }
 
     #endregion
@@ -220,10 +220,10 @@ public class AssignPermissionToRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
-        result.Value.Should().Contain("new.permission");
-        result.Value.Should().Contain("another.permission");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
+        result.Value.ShouldContain("new.permission");
+        result.Value.ShouldContain("another.permission");
     }
 
     #endregion

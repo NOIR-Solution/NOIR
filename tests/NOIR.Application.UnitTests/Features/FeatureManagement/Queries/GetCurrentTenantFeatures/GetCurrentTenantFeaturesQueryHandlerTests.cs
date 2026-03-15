@@ -41,11 +41,11 @@ public class GetCurrentTenantFeaturesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(3);
-        result.Value["Ecommerce.Products"].IsEffective.Should().BeTrue();
-        result.Value["Ecommerce.Orders"].IsEffective.Should().BeFalse();
-        result.Value["Auth"].IsCore.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(3);
+        result.Value["Ecommerce.Products"].IsEffective.ShouldBe(true);
+        result.Value["Ecommerce.Orders"].IsEffective.ShouldBe(false);
+        result.Value["Auth"].IsCore.ShouldBe(true);
     }
 
     [Fact]
@@ -61,8 +61,8 @@ public class GetCurrentTenantFeaturesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     [Fact]
@@ -81,8 +81,8 @@ public class GetCurrentTenantFeaturesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeAssignableTo<IReadOnlyDictionary<string, EffectiveFeatureState>>();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeAssignableTo<IReadOnlyDictionary<string, EffectiveFeatureState>>();
     }
 
     #endregion

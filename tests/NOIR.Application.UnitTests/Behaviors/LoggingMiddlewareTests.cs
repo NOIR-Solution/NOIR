@@ -124,7 +124,7 @@ public class LoggingMiddlewareTests
         var act = () => _sut.Finally(_loggerMock.Object, envelope);
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public class LoggingMiddlewareTests
         var act = () => _sut.After(_loggerMock.Object, envelope);
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     #endregion
@@ -194,8 +194,8 @@ public class LoggingMiddlewareTests
             _sut.Finally(_loggerMock.Object, commandEnvelope);
         };
 
-        act1.Should().NotThrow();
-        act2.Should().NotThrow();
+        act1.ShouldNotThrow();
+        act2.ShouldNotThrow();
     }
 
     #endregion

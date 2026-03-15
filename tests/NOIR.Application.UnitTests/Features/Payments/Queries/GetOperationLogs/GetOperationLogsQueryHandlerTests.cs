@@ -79,10 +79,10 @@ public class GetOperationLogsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.TotalCount.Should().Be(5);
-        result.Value.PageNumber.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.TotalCount.ShouldBe(5);
+        result.Value.PageNumber.ShouldBe(1);
     }
 
     [Fact]
@@ -109,11 +109,11 @@ public class GetOperationLogsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(10);
-        result.Value.TotalCount.Should().Be(25);
-        result.Value.PageNumber.Should().Be(2);
-        result.Value.TotalPages.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(10);
+        result.Value.TotalCount.ShouldBe(25);
+        result.Value.PageNumber.ShouldBe(2);
+        result.Value.TotalPages.ShouldBe(3);
     }
 
     [Fact]
@@ -144,20 +144,20 @@ public class GetOperationLogsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value.Items[0];
-        dto.Id.Should().Be(log.Id);
-        dto.OperationType.Should().Be(PaymentOperationType.InitiatePayment);
-        dto.Provider.Should().Be("momo");
-        dto.TransactionNumber.Should().Be("TXN-001");
-        dto.CorrelationId.Should().Be("corr-test");
-        dto.RequestData.Should().Be("{\"amount\":100000}");
-        dto.ResponseData.Should().Be("{\"status\":\"success\"}");
-        dto.HttpStatusCode.Should().Be(200);
-        dto.DurationMs.Should().Be(150);
-        dto.Success.Should().BeTrue();
-        dto.UserId.Should().Be("user-123");
-        dto.IpAddress.Should().Be("192.168.1.1");
+        dto.Id.ShouldBe(log.Id);
+        dto.OperationType.ShouldBe(PaymentOperationType.InitiatePayment);
+        dto.Provider.ShouldBe("momo");
+        dto.TransactionNumber.ShouldBe("TXN-001");
+        dto.CorrelationId.ShouldBe("corr-test");
+        dto.RequestData.ShouldBe("{\"amount\":100000}");
+        dto.ResponseData.ShouldBe("{\"status\":\"success\"}");
+        dto.HttpStatusCode.ShouldBe(200);
+        dto.DurationMs.ShouldBe(150);
+        dto.Success.ShouldBe(true);
+        dto.UserId.ShouldBe("user-123");
+        dto.IpAddress.ShouldBe("192.168.1.1");
     }
 
     [Fact]
@@ -259,7 +259,7 @@ public class GetOperationLogsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _operationLogRepositoryMock.Verify(
             x => x.ListAsync(It.IsAny<PaymentOperationLogsByCorrelationIdSpec>(), It.IsAny<CancellationToken>()),
             Times.Once);
@@ -319,11 +319,11 @@ public class GetOperationLogsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value.Items[0];
-        dto.Success.Should().BeFalse();
-        dto.ErrorCode.Should().Be("ERROR_CODE");
-        dto.ErrorMessage.Should().Be("Something went wrong");
+        dto.Success.ShouldBe(false);
+        dto.ErrorCode.ShouldBe("ERROR_CODE");
+        dto.ErrorMessage.ShouldBe("Something went wrong");
     }
 
     #endregion
@@ -352,10 +352,10 @@ public class GetOperationLogsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
-        result.Value.TotalPages.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
+        result.Value.TotalPages.ShouldBe(0);
     }
 
     #endregion

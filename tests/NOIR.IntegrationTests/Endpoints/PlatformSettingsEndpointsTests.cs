@@ -85,9 +85,9 @@ public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplication
         var response = await platformAdminClient.GetAsync("/api/platform-settings/smtp");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var settings = await response.Content.ReadFromJsonAsync<SmtpSettingsDto>();
-        settings.Should().NotBeNull();
+        settings.ShouldNotBeNull();
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplication
         var response = await _client.GetAsync("/api/platform-settings/smtp");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplication
         var response = await tenantAdminClient.GetAsync("/api/platform-settings/smtp");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -124,7 +124,7 @@ public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplication
         var response = await userClient.GetAsync("/api/platform-settings/smtp");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -149,16 +149,16 @@ public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplication
         var response = await platformAdminClient.PutAsJsonAsync("/api/platform-settings/smtp", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var settings = await response.Content.ReadFromJsonAsync<SmtpSettingsDto>();
-        settings.Should().NotBeNull();
-        settings!.Host.Should().Be("smtp.platform.com");
-        settings.Port.Should().Be(465);
-        settings.Username.Should().Be("platform-smtp-user");
-        settings.FromEmail.Should().Be("noreply@platform.com");
-        settings.FromName.Should().Be("Platform System");
-        settings.UseSsl.Should().BeTrue();
-        settings.HasPassword.Should().BeTrue();
+        settings.ShouldNotBeNull();
+        settings!.Host.ShouldBe("smtp.platform.com");
+        settings.Port.ShouldBe(465);
+        settings.Username.ShouldBe("platform-smtp-user");
+        settings.FromEmail.ShouldBe("noreply@platform.com");
+        settings.FromName.ShouldBe("Platform System");
+        settings.UseSsl.ShouldBeTrue();
+        settings.HasPassword.ShouldBeTrue();
     }
 
     [Fact]
@@ -192,11 +192,11 @@ public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplication
         var response = await platformAdminClient.PutAsJsonAsync("/api/platform-settings/smtp", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var settings = await response.Content.ReadFromJsonAsync<SmtpSettingsDto>();
-        settings.Should().NotBeNull();
-        settings!.Host.Should().Be("smtp.updated.com");
-        settings.HasPassword.Should().BeTrue(); // Password should still be set
+        settings.ShouldNotBeNull();
+        settings!.Host.ShouldBe("smtp.updated.com");
+        settings.HasPassword.ShouldBeTrue(); // Password should still be set
     }
 
     [Fact]
@@ -210,7 +210,7 @@ public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplication
         var response = await _client.PutAsJsonAsync("/api/platform-settings/smtp", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -225,7 +225,7 @@ public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplication
         var response = await tenantAdminClient.PutAsJsonAsync("/api/platform-settings/smtp", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -241,7 +241,7 @@ public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplication
         var response = await userClient.PutAsJsonAsync("/api/platform-settings/smtp", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -262,7 +262,7 @@ public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplication
         var response = await platformAdminClient.PutAsJsonAsync("/api/platform-settings/smtp", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -283,7 +283,7 @@ public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplication
         var response = await platformAdminClient.PutAsJsonAsync("/api/platform-settings/smtp", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -300,7 +300,7 @@ public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplication
         var response = await _client.PostAsJsonAsync("/api/platform-settings/smtp/test", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -314,7 +314,7 @@ public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplication
         var response = await tenantAdminClient.PostAsJsonAsync("/api/platform-settings/smtp/test", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -329,7 +329,7 @@ public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplication
         var response = await userClient.PostAsJsonAsync("/api/platform-settings/smtp/test", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -343,7 +343,7 @@ public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplication
         var response = await platformAdminClient.PostAsJsonAsync("/api/platform-settings/smtp/test", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -358,16 +358,16 @@ public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplication
 
         // Act & Assert - All platform-settings endpoints should be forbidden
         var getResponse = await tenantAdminClient.GetAsync("/api/platform-settings/smtp");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
 
         var updateRequest = new UpdateSmtpSettingsRequest(
             "smtp.test.com", 587, null, null, "test@test.com", "Test", true);
         var updateResponse = await tenantAdminClient.PutAsJsonAsync("/api/platform-settings/smtp", updateRequest);
-        updateResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        updateResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
 
         var testRequest = new TestSmtpRequest("test@example.com");
         var testResponse = await tenantAdminClient.PostAsJsonAsync("/api/platform-settings/smtp/test", testRequest);
-        testResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        testResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -378,7 +378,7 @@ public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplication
 
         // Act & Assert - All endpoints should be accessible
         var getResponse = await platformAdminClient.GetAsync("/api/platform-settings/smtp");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var updateRequest = new UpdateSmtpSettingsRequest(
             Host: "smtp.platform-test.com",
@@ -389,7 +389,7 @@ public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplication
             FromName: "Platform Test",
             UseSsl: true);
         var updateResponse = await platformAdminClient.PutAsJsonAsync("/api/platform-settings/smtp", updateRequest);
-        updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        updateResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     #endregion

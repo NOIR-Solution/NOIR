@@ -1,4 +1,3 @@
-using FluentAssertions;
 using NOIR.Infrastructure.Services.Payment.Providers.ZaloPay;
 using Xunit;
 
@@ -23,9 +22,9 @@ public class ZaloPaySignatureHelperTests
         var mac2 = ZaloPaySignatureHelper.CreateMac(rawData, TestKey1);
 
         // Assert
-        mac1.Should().NotBeNullOrEmpty();
-        mac1.Should().Be(mac2, "Same input should produce same MAC");
-        mac1.Should().HaveLength(64, "SHA256 produces 32 bytes = 64 hex characters");
+        mac1.ShouldNotBeNullOrEmpty();
+        mac1.ShouldBe(mac2, "Same input should produce same MAC");
+        mac1.Length.ShouldBe(64, "SHA256 produces 32 bytes = 64 hex characters");
     }
 
     [Fact]
@@ -40,7 +39,7 @@ public class ZaloPaySignatureHelperTests
         var mac2 = ZaloPaySignatureHelper.CreateMac(rawData2, TestKey1);
 
         // Assert
-        mac1.Should().NotBe(mac2, "Different data should produce different MACs");
+        mac1.ShouldNotBe(mac2, "Different data should produce different MACs");
     }
 
     [Fact]
@@ -54,7 +53,7 @@ public class ZaloPaySignatureHelperTests
         var isValid = ZaloPaySignatureHelper.VerifyMac(rawData, TestKey1, mac);
 
         // Assert
-        isValid.Should().BeTrue();
+        isValid.ShouldBe(true);
     }
 
     [Fact]
@@ -69,7 +68,7 @@ public class ZaloPaySignatureHelperTests
         var isValid = ZaloPaySignatureHelper.VerifyMac(tamperedData, TestKey1, mac);
 
         // Assert
-        isValid.Should().BeFalse("Tampered data should fail MAC verification");
+        isValid.ShouldBeFalse("Tampered data should fail MAC verification");
     }
 
     [Fact]
@@ -83,7 +82,7 @@ public class ZaloPaySignatureHelperTests
         var isValid = ZaloPaySignatureHelper.VerifyMac(rawData, TestKey2, mac);
 
         // Assert
-        isValid.Should().BeFalse("Wrong key should fail MAC verification");
+        isValid.ShouldBeFalse("Wrong key should fail MAC verification");
     }
 
     [Fact]
@@ -98,7 +97,7 @@ public class ZaloPaySignatureHelperTests
         var isValid = ZaloPaySignatureHelper.VerifyMac(rawData, TestKey1, upperCaseMac);
 
         // Assert
-        isValid.Should().BeTrue("MAC comparison should be case-insensitive");
+        isValid.ShouldBeTrue("MAC comparison should be case-insensitive");
     }
 
     [Fact]
@@ -115,7 +114,7 @@ public class ZaloPaySignatureHelperTests
             item: "[]");
 
         // Assert
-        result.Should().Be("553|240101_order123|user|50000|1234567890|{}|[]");
+        result.ShouldBe("553|240101_order123|user|50000|1234567890|{}|[]");
     }
 
     [Fact]
@@ -128,7 +127,7 @@ public class ZaloPaySignatureHelperTests
             key1: TestKey1);
 
         // Assert
-        result.Should().Be($"553|240101_order123|{TestKey1}");
+        result.ShouldBe($"553|240101_order123|{TestKey1}");
     }
 
     [Fact]
@@ -143,7 +142,7 @@ public class ZaloPaySignatureHelperTests
             timestamp: 1234567890);
 
         // Assert
-        result.Should().Be("553|123456789|50000|Refund for order|1234567890");
+        result.ShouldBe("553|123456789|50000|Refund for order|1234567890");
     }
 
     [Fact]
@@ -156,8 +155,8 @@ public class ZaloPaySignatureHelperTests
         var result = ZaloPaySignatureHelper.GenerateAppTransId(transactionNumber);
 
         // Assert
-        result.Should().MatchRegex(@"^\d{6}_ORDER123456$", "Format should be yyMMdd_transactionNumber");
-        result.Should().EndWith("_ORDER123456");
+        result.ShouldMatch(@"^\d{6}_ORDER123456$", "Format should be yyMMdd_transactionNumber");
+        result.ShouldEndWith("_ORDER123456");
     }
 
     [Fact]
@@ -171,7 +170,7 @@ public class ZaloPaySignatureHelperTests
 
         // Assert
         var after = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        timestamp.Should().BeInRange(before, after);
+        timestamp.ShouldBeInRange(before, after);
     }
 
     [Fact]
@@ -184,7 +183,7 @@ public class ZaloPaySignatureHelperTests
         var result = ZaloPaySignatureHelper.BuildCallbackMacData(data);
 
         // Assert
-        result.Should().Be(data, "Callback MAC data should be the raw data unchanged");
+        result.ShouldBe(data, "Callback MAC data should be the raw data unchanged");
     }
 
     [Fact]
@@ -200,8 +199,8 @@ public class ZaloPaySignatureHelperTests
         var mac = ZaloPaySignatureHelper.CreateMac(rawData, TestKey1);
 
         // Assert
-        mac.Should().NotBeNullOrEmpty();
-        mac.Should().HaveLength(64);
+        mac.ShouldNotBeNullOrEmpty();
+        mac.Length.ShouldBe(64);
     }
 
     [Fact]
@@ -219,8 +218,8 @@ public class ZaloPaySignatureHelperTests
         var mac = ZaloPaySignatureHelper.CreateMac(rawData, TestKey1);
 
         // Assert
-        mac.Should().NotBeNullOrEmpty();
-        mac.Should().HaveLength(64);
+        mac.ShouldNotBeNullOrEmpty();
+        mac.Length.ShouldBe(64);
     }
 
     [Theory]
@@ -232,8 +231,8 @@ public class ZaloPaySignatureHelperTests
         var mac = ZaloPaySignatureHelper.CreateMac(rawData, key);
 
         // Assert
-        mac.Should().NotBeNullOrEmpty("Even empty inputs should produce a MAC");
-        mac.Should().HaveLength(64);
+        mac.ShouldNotBeNullOrEmpty("Even empty inputs should produce a MAC");
+        mac.Length.ShouldBe(64);
     }
 
     [Fact]
@@ -247,6 +246,6 @@ public class ZaloPaySignatureHelperTests
         var isValid = ZaloPaySignatureHelper.VerifyMac(callbackData, TestKey2, mac);
 
         // Assert
-        isValid.Should().BeTrue("Key2 should be used for callback MAC verification");
+        isValid.ShouldBeTrue("Key2 should be used for callback MAC verification");
     }
 }

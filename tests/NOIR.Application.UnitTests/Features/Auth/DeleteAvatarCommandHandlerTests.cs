@@ -107,8 +107,8 @@ public class DeleteAvatarCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(true);
     }
 
     [Fact]
@@ -170,9 +170,9 @@ public class DeleteAvatarCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().BeTrue();
-        result.Value.Message.Should().Be("profile.avatar.noAvatar");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(true);
+        result.Value.Message.ShouldBe("profile.avatar.noAvatar");
     }
 
     [Fact]
@@ -217,8 +217,8 @@ public class DeleteAvatarCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(true);
     }
 
     #endregion
@@ -235,8 +235,8 @@ public class DeleteAvatarCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.Unauthorized);
     }
 
     [Fact]
@@ -249,8 +249,8 @@ public class DeleteAvatarCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.Unauthorized);
     }
 
     [Fact]
@@ -269,8 +269,8 @@ public class DeleteAvatarCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.UserNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.UserNotFound);
     }
 
     #endregion
@@ -307,8 +307,8 @@ public class DeleteAvatarCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.UpdateFailed);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.UpdateFailed);
     }
 
     #endregion

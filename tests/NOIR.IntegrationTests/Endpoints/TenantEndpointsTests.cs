@@ -95,10 +95,10 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/tenants");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<PaginatedList<TenantListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeNull();
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/tenants");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await userClient.GetAsync("/api/tenants");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -135,11 +135,11 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/tenants?pageNumber=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<PaginatedList<TenantListDto>>();
-        result.Should().NotBeNull();
-        result!.PageNumber.Should().Be(1);
-        result.Items.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.PageNumber.ShouldBe(1);
+        result.Items.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     [Fact]
@@ -156,10 +156,10 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/tenants?search={command.Name}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<PaginatedList<TenantListDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().Contain(t => t.Name == command.Name);
+        result.ShouldNotBeNull();
+        result!.Items.ShouldContain(t => t.Name == command.Name);
     }
 
     #endregion
@@ -182,11 +182,11 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/tenants/{createdTenant!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var tenant = await response.Content.ReadFromJsonAsync<TenantDto>();
-        tenant.Should().NotBeNull();
-        tenant!.Id.Should().Be(createdTenant.Id);
-        tenant.Name.Should().Be(command.Name);
+        tenant.ShouldNotBeNull();
+        tenant!.Id.ShouldBe(createdTenant.Id);
+        tenant.Name.ShouldBe(command.Name);
     }
 
     [Fact]
@@ -199,7 +199,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/tenants/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -209,7 +209,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync($"/api/tenants/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -227,12 +227,12 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/tenants", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var tenant = await response.Content.ReadFromJsonAsync<TenantDto>();
-        tenant.Should().NotBeNull();
-        tenant!.Identifier.Should().Be(command.Identifier);
-        tenant.Name.Should().Be(command.Name);
-        tenant.IsActive.Should().BeTrue();
+        tenant.ShouldNotBeNull();
+        tenant!.Identifier.ShouldBe(command.Identifier);
+        tenant.Name.ShouldBe(command.Name);
+        tenant.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -249,7 +249,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/tenants", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 
     [Fact]
@@ -266,7 +266,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/tenants", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -283,7 +283,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/tenants", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -296,7 +296,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/tenants", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -311,7 +311,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await userClient.PostAsJsonAsync("/api/tenants", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -339,11 +339,11 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/tenants/{createdTenant.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updatedTenant = await response.Content.ReadFromJsonAsync<TenantDto>();
-        updatedTenant.Should().NotBeNull();
-        updatedTenant!.Name.Should().Be("Updated Tenant Name");
-        updatedTenant.IsActive.Should().BeFalse();
+        updatedTenant.ShouldNotBeNull();
+        updatedTenant!.Name.ShouldBe("Updated Tenant Name");
+        updatedTenant.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -360,7 +360,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/tenants/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -384,7 +384,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/tenants/{createdTenant.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -402,7 +402,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await userClient.PutAsJsonAsync($"/api/tenants/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -424,11 +424,11 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/tenants/{createdTenant!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Verify it's deleted (should return 404)
         var getResponse = await adminClient.GetAsync($"/api/tenants/{createdTenant.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -441,7 +441,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/tenants/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -451,7 +451,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.DeleteAsync($"/api/tenants/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -465,7 +465,7 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await userClient.DeleteAsync($"/api/tenants/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion
@@ -481,20 +481,20 @@ public class TenantEndpointsTests : IClassFixture<CustomWebApplicationFactory>
 
         // Act & Assert - All operations should be forbidden
         var listResponse = await userClient.GetAsync("/api/tenants");
-        listResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        listResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
 
         var getResponse = await userClient.GetAsync($"/api/tenants/{Guid.NewGuid()}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
 
         var createResponse = await userClient.PostAsJsonAsync("/api/tenants", CreateTestTenantCommand());
-        createResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        createResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
 
         var updateRequest = new UpdateTenantRequest("test", "Test", IsActive: true);
         var updateResponse = await userClient.PutAsJsonAsync($"/api/tenants/{Guid.NewGuid()}", updateRequest);
-        updateResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        updateResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
 
         var deleteResponse = await userClient.DeleteAsync($"/api/tenants/{Guid.NewGuid()}");
-        deleteResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        deleteResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion

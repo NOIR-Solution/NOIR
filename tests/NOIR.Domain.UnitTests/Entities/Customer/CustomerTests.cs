@@ -36,14 +36,14 @@ public class CustomerTests
         var customer = CreateTestCustomer();
 
         // Assert
-        customer.Should().NotBeNull();
-        customer.Id.Should().NotBe(Guid.Empty);
-        customer.UserId.Should().Be(TestUserId);
-        customer.Email.Should().Be(TestEmail);
-        customer.FirstName.Should().Be(TestFirstName);
-        customer.LastName.Should().Be(TestLastName);
-        customer.Phone.Should().Be(TestPhone);
-        customer.TenantId.Should().Be(TestTenantId);
+        customer.ShouldNotBeNull();
+        customer.Id.ShouldNotBe(Guid.Empty);
+        customer.UserId.ShouldBe(TestUserId);
+        customer.Email.ShouldBe(TestEmail);
+        customer.FirstName.ShouldBe(TestFirstName);
+        customer.LastName.ShouldBe(TestLastName);
+        customer.Phone.ShouldBe(TestPhone);
+        customer.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class CustomerTests
         var customer = CreateTestCustomer();
 
         // Assert
-        customer.Segment.Should().Be(CustomerSegment.New);
+        customer.Segment.ShouldBe(CustomerSegment.New);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class CustomerTests
         var customer = CreateTestCustomer();
 
         // Assert
-        customer.Tier.Should().Be(CustomerTier.Standard);
+        customer.Tier.ShouldBe(CustomerTier.Standard);
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class CustomerTests
         var customer = CreateTestCustomer();
 
         // Assert
-        customer.IsActive.Should().BeTrue();
+        customer.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -83,10 +83,10 @@ public class CustomerTests
         var customer = CreateTestCustomer();
 
         // Assert
-        customer.LastOrderDate.Should().BeNull();
-        customer.TotalOrders.Should().Be(0);
-        customer.TotalSpent.Should().Be(0m);
-        customer.AverageOrderValue.Should().Be(0m);
+        customer.LastOrderDate.ShouldBeNull();
+        customer.TotalOrders.ShouldBe(0);
+        customer.TotalSpent.ShouldBe(0m);
+        customer.AverageOrderValue.ShouldBe(0m);
     }
 
     [Fact]
@@ -96,8 +96,8 @@ public class CustomerTests
         var customer = CreateTestCustomer();
 
         // Assert
-        customer.LoyaltyPoints.Should().Be(0);
-        customer.LifetimeLoyaltyPoints.Should().Be(0);
+        customer.LoyaltyPoints.ShouldBe(0);
+        customer.LifetimeLoyaltyPoints.ShouldBe(0);
     }
 
     [Fact]
@@ -107,8 +107,8 @@ public class CustomerTests
         var customer = CreateTestCustomer();
 
         // Assert
-        customer.Tags.Should().BeNull();
-        customer.Notes.Should().BeNull();
+        customer.Tags.ShouldBeNull();
+        customer.Notes.ShouldBeNull();
     }
 
     [Fact]
@@ -118,8 +118,8 @@ public class CustomerTests
         var customer = CreateTestCustomer();
 
         // Assert
-        customer.Addresses.Should().NotBeNull();
-        customer.Addresses.Should().BeEmpty();
+        customer.Addresses.ShouldNotBeNull();
+        customer.Addresses.ShouldBeEmpty();
     }
 
     [Fact]
@@ -129,8 +129,8 @@ public class CustomerTests
         var customer = CreateTestCustomer();
 
         // Assert
-        customer.GroupMemberships.Should().NotBeNull();
-        customer.GroupMemberships.Should().BeEmpty();
+        customer.GroupMemberships.ShouldNotBeNull();
+        customer.GroupMemberships.ShouldBeEmpty();
     }
 
     [Fact]
@@ -140,8 +140,8 @@ public class CustomerTests
         var customer = CreateTestCustomer(userId: null);
 
         // Assert
-        customer.UserId.Should().BeNull();
-        customer.Email.Should().Be(TestEmail);
+        customer.UserId.ShouldBeNull();
+        customer.Email.ShouldBe(TestEmail);
     }
 
     [Fact]
@@ -151,7 +151,7 @@ public class CustomerTests
         var customer = CreateTestCustomer(phone: null);
 
         // Assert
-        customer.Phone.Should().BeNull();
+        customer.Phone.ShouldBeNull();
     }
 
     [Fact]
@@ -161,7 +161,7 @@ public class CustomerTests
         var customer = CreateTestCustomer(tenantId: null);
 
         // Assert
-        customer.TenantId.Should().BeNull();
+        customer.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -172,7 +172,7 @@ public class CustomerTests
         var customer2 = CreateTestCustomer();
 
         // Assert
-        customer1.Id.Should().NotBe(customer2.Id);
+        customer1.Id.ShouldNotBe(customer2.Id);
     }
 
     #endregion
@@ -193,10 +193,10 @@ public class CustomerTests
         customer.UpdateProfile(newFirstName, newLastName, newEmail, newPhone);
 
         // Assert
-        customer.FirstName.Should().Be(newFirstName);
-        customer.LastName.Should().Be(newLastName);
-        customer.Email.Should().Be(newEmail);
-        customer.Phone.Should().Be(newPhone);
+        customer.FirstName.ShouldBe(newFirstName);
+        customer.LastName.ShouldBe(newLastName);
+        customer.Email.ShouldBe(newEmail);
+        customer.Phone.ShouldBe(newPhone);
     }
 
     [Fact]
@@ -209,7 +209,7 @@ public class CustomerTests
         customer.UpdateProfile("Jane", "Smith", "jane@example.com", null);
 
         // Assert
-        customer.Phone.Should().BeNull();
+        customer.Phone.ShouldBeNull();
     }
 
     [Fact]
@@ -225,9 +225,9 @@ public class CustomerTests
         customer.UpdateProfile("Jane", "Smith", "jane@example.com", null);
 
         // Assert
-        customer.LoyaltyPoints.Should().Be(originalPoints);
-        customer.Segment.Should().Be(originalSegment);
-        customer.IsActive.Should().BeTrue();
+        customer.LoyaltyPoints.ShouldBe(originalPoints);
+        customer.Segment.ShouldBe(originalSegment);
+        customer.IsActive.ShouldBeTrue();
     }
 
     #endregion
@@ -245,9 +245,9 @@ public class CustomerTests
         customer.UpdateRfmMetrics(lastOrderDate, 10, 5_000_000m);
 
         // Assert
-        customer.LastOrderDate.Should().Be(lastOrderDate);
-        customer.TotalOrders.Should().Be(10);
-        customer.TotalSpent.Should().Be(5_000_000m);
+        customer.LastOrderDate.ShouldBe(lastOrderDate);
+        customer.TotalOrders.ShouldBe(10);
+        customer.TotalSpent.ShouldBe(5_000_000m);
     }
 
     [Fact]
@@ -260,7 +260,7 @@ public class CustomerTests
         customer.UpdateRfmMetrics(DateTimeOffset.UtcNow, 10, 5_000_000m);
 
         // Assert
-        customer.AverageOrderValue.Should().Be(500_000m);
+        customer.AverageOrderValue.ShouldBe(500_000m);
     }
 
     [Fact]
@@ -273,7 +273,7 @@ public class CustomerTests
         customer.UpdateRfmMetrics(DateTimeOffset.UtcNow, 0, 0m);
 
         // Assert
-        customer.AverageOrderValue.Should().Be(0m);
+        customer.AverageOrderValue.ShouldBe(0m);
     }
 
     [Fact]
@@ -286,7 +286,7 @@ public class CustomerTests
         customer.UpdateRfmMetrics(DateTimeOffset.UtcNow, 1, 250_000m);
 
         // Assert
-        customer.AverageOrderValue.Should().Be(250_000m);
+        customer.AverageOrderValue.ShouldBe(250_000m);
     }
 
     #endregion
@@ -304,7 +304,7 @@ public class CustomerTests
         customer.RecalculateSegment();
 
         // Assert
-        customer.Segment.Should().Be(CustomerSegment.VIP);
+        customer.Segment.ShouldBe(CustomerSegment.VIP);
     }
 
     [Fact]
@@ -318,7 +318,7 @@ public class CustomerTests
         customer.RecalculateSegment();
 
         // Assert
-        customer.Segment.Should().NotBe(CustomerSegment.VIP);
+        customer.Segment.ShouldNotBe(CustomerSegment.VIP);
     }
 
     [Fact]
@@ -332,7 +332,7 @@ public class CustomerTests
         customer.RecalculateSegment();
 
         // Assert
-        customer.Segment.Should().NotBe(CustomerSegment.VIP);
+        customer.Segment.ShouldNotBe(CustomerSegment.VIP);
     }
 
     [Fact]
@@ -346,7 +346,7 @@ public class CustomerTests
         customer.RecalculateSegment();
 
         // Assert
-        customer.Segment.Should().Be(CustomerSegment.New);
+        customer.Segment.ShouldBe(CustomerSegment.New);
     }
 
     [Fact]
@@ -360,7 +360,7 @@ public class CustomerTests
         customer.RecalculateSegment();
 
         // Assert
-        customer.Segment.Should().Be(CustomerSegment.New);
+        customer.Segment.ShouldBe(CustomerSegment.New);
     }
 
     // Note: The code path (TotalOrders > 1 AND LastOrderDate == null) is unreachable
@@ -379,7 +379,7 @@ public class CustomerTests
         customer.RecalculateSegment();
 
         // Assert
-        customer.Segment.Should().Be(CustomerSegment.Active);
+        customer.Segment.ShouldBe(CustomerSegment.Active);
     }
 
     [Fact]
@@ -393,7 +393,7 @@ public class CustomerTests
         customer.RecalculateSegment();
 
         // Assert
-        customer.Segment.Should().Be(CustomerSegment.Active);
+        customer.Segment.ShouldBe(CustomerSegment.Active);
     }
 
     [Fact]
@@ -407,7 +407,7 @@ public class CustomerTests
         customer.RecalculateSegment();
 
         // Assert
-        customer.Segment.Should().Be(CustomerSegment.AtRisk);
+        customer.Segment.ShouldBe(CustomerSegment.AtRisk);
     }
 
     [Fact]
@@ -421,7 +421,7 @@ public class CustomerTests
         customer.RecalculateSegment();
 
         // Assert
-        customer.Segment.Should().Be(CustomerSegment.AtRisk);
+        customer.Segment.ShouldBe(CustomerSegment.AtRisk);
     }
 
     [Fact]
@@ -435,7 +435,7 @@ public class CustomerTests
         customer.RecalculateSegment();
 
         // Assert
-        customer.Segment.Should().Be(CustomerSegment.AtRisk);
+        customer.Segment.ShouldBe(CustomerSegment.AtRisk);
     }
 
     [Fact]
@@ -449,7 +449,7 @@ public class CustomerTests
         customer.RecalculateSegment();
 
         // Assert
-        customer.Segment.Should().Be(CustomerSegment.Dormant);
+        customer.Segment.ShouldBe(CustomerSegment.Dormant);
     }
 
     [Fact]
@@ -463,7 +463,7 @@ public class CustomerTests
         customer.RecalculateSegment();
 
         // Assert
-        customer.Segment.Should().Be(CustomerSegment.Dormant);
+        customer.Segment.ShouldBe(CustomerSegment.Dormant);
     }
 
     [Fact]
@@ -477,7 +477,7 @@ public class CustomerTests
         customer.RecalculateSegment();
 
         // Assert
-        customer.Segment.Should().Be(CustomerSegment.Dormant);
+        customer.Segment.ShouldBe(CustomerSegment.Dormant);
     }
 
     [Fact]
@@ -491,7 +491,7 @@ public class CustomerTests
         customer.RecalculateSegment();
 
         // Assert
-        customer.Segment.Should().Be(CustomerSegment.Lost);
+        customer.Segment.ShouldBe(CustomerSegment.Lost);
     }
 
     [Fact]
@@ -505,7 +505,7 @@ public class CustomerTests
         customer.RecalculateSegment();
 
         // Assert
-        customer.Segment.Should().Be(CustomerSegment.Lost);
+        customer.Segment.ShouldBe(CustomerSegment.Lost);
     }
 
     [Theory]
@@ -524,7 +524,7 @@ public class CustomerTests
         customer.RecalculateSegment();
 
         // Assert
-        customer.Segment.Should().Be(expectedSegment);
+        customer.Segment.ShouldBe(expectedSegment);
     }
 
     [Fact]
@@ -538,7 +538,7 @@ public class CustomerTests
         customer.RecalculateSegment();
 
         // Assert - VIP check happens before recency check
-        customer.Segment.Should().Be(CustomerSegment.VIP);
+        customer.Segment.ShouldBe(CustomerSegment.VIP);
     }
 
     #endregion
@@ -561,7 +561,7 @@ public class CustomerTests
         customer.SetSegment(segment);
 
         // Assert
-        customer.Segment.Should().Be(segment);
+        customer.Segment.ShouldBe(segment);
     }
 
     #endregion
@@ -578,8 +578,8 @@ public class CustomerTests
         customer.AddLoyaltyPoints(500);
 
         // Assert
-        customer.LoyaltyPoints.Should().Be(500);
-        customer.LifetimeLoyaltyPoints.Should().Be(500);
+        customer.LoyaltyPoints.ShouldBe(500);
+        customer.LifetimeLoyaltyPoints.ShouldBe(500);
     }
 
     [Fact]
@@ -594,8 +594,8 @@ public class CustomerTests
         customer.AddLoyaltyPoints(300);
 
         // Assert
-        customer.LoyaltyPoints.Should().Be(600);
-        customer.LifetimeLoyaltyPoints.Should().Be(600);
+        customer.LoyaltyPoints.ShouldBe(600);
+        customer.LifetimeLoyaltyPoints.ShouldBe(600);
     }
 
     [Fact]
@@ -608,8 +608,8 @@ public class CustomerTests
         var act = () => customer.AddLoyaltyPoints(0);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Points must be positive.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Points must be positive.");
     }
 
     [Fact]
@@ -622,8 +622,8 @@ public class CustomerTests
         var act = () => customer.AddLoyaltyPoints(-10);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Points must be positive.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Points must be positive.");
     }
 
     [Fact]
@@ -636,7 +636,7 @@ public class CustomerTests
         customer.AddLoyaltyPoints(5000);
 
         // Assert
-        customer.Tier.Should().Be(CustomerTier.Silver);
+        customer.Tier.ShouldBe(CustomerTier.Silver);
     }
 
     #endregion
@@ -654,7 +654,7 @@ public class CustomerTests
         customer.RedeemLoyaltyPoints(200);
 
         // Assert
-        customer.LoyaltyPoints.Should().Be(300);
+        customer.LoyaltyPoints.ShouldBe(300);
     }
 
     [Fact]
@@ -668,7 +668,7 @@ public class CustomerTests
         customer.RedeemLoyaltyPoints(200);
 
         // Assert
-        customer.LifetimeLoyaltyPoints.Should().Be(500);
+        customer.LifetimeLoyaltyPoints.ShouldBe(500);
     }
 
     [Fact]
@@ -682,7 +682,7 @@ public class CustomerTests
         customer.RedeemLoyaltyPoints(300);
 
         // Assert
-        customer.LoyaltyPoints.Should().Be(0);
+        customer.LoyaltyPoints.ShouldBe(0);
     }
 
     [Fact]
@@ -696,8 +696,8 @@ public class CustomerTests
         var act = () => customer.RedeemLoyaltyPoints(200);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Insufficient loyalty points. Available: 100, Requested: 200");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Insufficient loyalty points. Available: 100, Requested: 200");
     }
 
     [Fact]
@@ -711,8 +711,8 @@ public class CustomerTests
         var act = () => customer.RedeemLoyaltyPoints(0);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Points must be positive.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Points must be positive.");
     }
 
     [Fact]
@@ -726,8 +726,8 @@ public class CustomerTests
         var act = () => customer.RedeemLoyaltyPoints(-5);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Points must be positive.");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Points must be positive.");
     }
 
     [Fact]
@@ -740,8 +740,8 @@ public class CustomerTests
         var act = () => customer.RedeemLoyaltyPoints(1);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Insufficient loyalty points. Available: 0, Requested: 1");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Insufficient loyalty points. Available: 0, Requested: 1");
     }
 
     [Fact]
@@ -757,8 +757,8 @@ public class CustomerTests
         customer.RedeemLoyaltyPoints(100);
 
         // Assert
-        customer.LoyaltyPoints.Should().Be(400);
-        customer.LifetimeLoyaltyPoints.Should().Be(1000);
+        customer.LoyaltyPoints.ShouldBe(400);
+        customer.LifetimeLoyaltyPoints.ShouldBe(1000);
     }
 
     #endregion
@@ -773,7 +773,7 @@ public class CustomerTests
         customer.AddLoyaltyPoints(4999);
 
         // Assert - AddLoyaltyPoints calls UpdateTier internally
-        customer.Tier.Should().Be(CustomerTier.Standard);
+        customer.Tier.ShouldBe(CustomerTier.Standard);
     }
 
     [Fact]
@@ -784,7 +784,7 @@ public class CustomerTests
         customer.AddLoyaltyPoints(5000);
 
         // Assert
-        customer.Tier.Should().Be(CustomerTier.Silver);
+        customer.Tier.ShouldBe(CustomerTier.Silver);
     }
 
     [Fact]
@@ -795,7 +795,7 @@ public class CustomerTests
         customer.AddLoyaltyPoints(10000);
 
         // Assert
-        customer.Tier.Should().Be(CustomerTier.Gold);
+        customer.Tier.ShouldBe(CustomerTier.Gold);
     }
 
     [Fact]
@@ -806,7 +806,7 @@ public class CustomerTests
         customer.AddLoyaltyPoints(20000);
 
         // Assert
-        customer.Tier.Should().Be(CustomerTier.Platinum);
+        customer.Tier.ShouldBe(CustomerTier.Platinum);
     }
 
     [Fact]
@@ -817,7 +817,7 @@ public class CustomerTests
         customer.AddLoyaltyPoints(50000);
 
         // Assert
-        customer.Tier.Should().Be(CustomerTier.Diamond);
+        customer.Tier.ShouldBe(CustomerTier.Diamond);
     }
 
     [Theory]
@@ -841,7 +841,7 @@ public class CustomerTests
         }
 
         // Assert
-        customer.Tier.Should().Be(expectedTier);
+        customer.Tier.ShouldBe(expectedTier);
     }
 
     [Fact]
@@ -856,9 +856,9 @@ public class CustomerTests
 
         // Assert - Still Gold because LifetimeLoyaltyPoints is 10000
         // Note: RedeemLoyaltyPoints does NOT call UpdateTier, so tier stays
-        customer.Tier.Should().Be(CustomerTier.Gold);
-        customer.LoyaltyPoints.Should().Be(1000);
-        customer.LifetimeLoyaltyPoints.Should().Be(10000);
+        customer.Tier.ShouldBe(CustomerTier.Gold);
+        customer.LoyaltyPoints.ShouldBe(1000);
+        customer.LifetimeLoyaltyPoints.ShouldBe(10000);
     }
 
     #endregion
@@ -875,7 +875,7 @@ public class CustomerTests
         customer.AddTag("premium");
 
         // Assert
-        customer.Tags.Should().Be("premium");
+        customer.Tags.ShouldBe("premium");
     }
 
     [Fact]
@@ -889,7 +889,7 @@ public class CustomerTests
         customer.AddTag("newsletter");
 
         // Assert
-        customer.Tags.Should().Be("premium,newsletter");
+        customer.Tags.ShouldBe("premium,newsletter");
     }
 
     [Fact]
@@ -903,7 +903,7 @@ public class CustomerTests
         customer.AddTag("premium");
 
         // Assert
-        customer.Tags.Should().Be("premium");
+        customer.Tags.ShouldBe("premium");
     }
 
     [Fact]
@@ -917,7 +917,7 @@ public class CustomerTests
         customer.AddTag("PREMIUM");
 
         // Assert
-        customer.Tags.Should().Be("Premium");
+        customer.Tags.ShouldBe("Premium");
     }
 
     [Fact]
@@ -930,7 +930,7 @@ public class CustomerTests
         customer.AddTag("  premium  ");
 
         // Assert
-        customer.Tags.Should().Be("premium");
+        customer.Tags.ShouldBe("premium");
     }
 
     [Fact]
@@ -943,7 +943,7 @@ public class CustomerTests
         customer.AddTag("");
 
         // Assert
-        customer.Tags.Should().BeNull();
+        customer.Tags.ShouldBeNull();
     }
 
     [Fact]
@@ -956,7 +956,7 @@ public class CustomerTests
         customer.AddTag("   ");
 
         // Assert
-        customer.Tags.Should().BeNull();
+        customer.Tags.ShouldBeNull();
     }
 
     [Fact]
@@ -971,7 +971,7 @@ public class CustomerTests
         customer.RemoveTag("premium");
 
         // Assert
-        customer.Tags.Should().Be("newsletter");
+        customer.Tags.ShouldBe("newsletter");
     }
 
     [Fact]
@@ -985,7 +985,7 @@ public class CustomerTests
         customer.RemoveTag("PREMIUM");
 
         // Assert
-        customer.Tags.Should().BeNull();
+        customer.Tags.ShouldBeNull();
     }
 
     [Fact]
@@ -999,7 +999,7 @@ public class CustomerTests
         customer.RemoveTag("premium");
 
         // Assert
-        customer.Tags.Should().BeNull();
+        customer.Tags.ShouldBeNull();
     }
 
     [Fact]
@@ -1013,7 +1013,7 @@ public class CustomerTests
         customer.RemoveTag("vip");
 
         // Assert
-        customer.Tags.Should().Be("premium");
+        customer.Tags.ShouldBe("premium");
     }
 
     [Fact]
@@ -1026,7 +1026,7 @@ public class CustomerTests
         customer.RemoveTag("premium");
 
         // Assert
-        customer.Tags.Should().BeNull();
+        customer.Tags.ShouldBeNull();
     }
 
     [Fact]
@@ -1040,7 +1040,7 @@ public class CustomerTests
         customer.RemoveTag("");
 
         // Assert
-        customer.Tags.Should().Be("premium");
+        customer.Tags.ShouldBe("premium");
     }
 
     #endregion
@@ -1057,7 +1057,7 @@ public class CustomerTests
         customer.AddNote("First contact via phone");
 
         // Assert
-        customer.Notes.Should().Be("First contact via phone");
+        customer.Notes.ShouldBe("First contact via phone");
     }
 
     [Fact]
@@ -1071,7 +1071,7 @@ public class CustomerTests
         customer.AddNote("Second note");
 
         // Assert
-        customer.Notes.Should().Be("First note\n---\nSecond note");
+        customer.Notes.ShouldBe("First note\n---\nSecond note");
     }
 
     [Fact]
@@ -1086,7 +1086,7 @@ public class CustomerTests
         customer.AddNote("Note 3");
 
         // Assert
-        customer.Notes.Should().Be("Note 1\n---\nNote 2\n---\nNote 3");
+        customer.Notes.ShouldBe("Note 1\n---\nNote 2\n---\nNote 3");
     }
 
     [Fact]
@@ -1099,7 +1099,7 @@ public class CustomerTests
         customer.AddNote("");
 
         // Assert
-        customer.Notes.Should().BeNull();
+        customer.Notes.ShouldBeNull();
     }
 
     [Fact]
@@ -1112,7 +1112,7 @@ public class CustomerTests
         customer.AddNote("   ");
 
         // Assert
-        customer.Notes.Should().BeNull();
+        customer.Notes.ShouldBeNull();
     }
 
     [Fact]
@@ -1126,7 +1126,7 @@ public class CustomerTests
         customer.AddNote("");
 
         // Assert
-        customer.Notes.Should().Be("Existing note");
+        customer.Notes.ShouldBe("Existing note");
     }
 
     #endregion
@@ -1143,7 +1143,7 @@ public class CustomerTests
         customer.Deactivate();
 
         // Assert
-        customer.IsActive.Should().BeFalse();
+        customer.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -1157,7 +1157,7 @@ public class CustomerTests
         customer.Activate();
 
         // Assert
-        customer.IsActive.Should().BeTrue();
+        customer.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -1171,7 +1171,7 @@ public class CustomerTests
         customer.Deactivate();
 
         // Assert
-        customer.IsActive.Should().BeFalse();
+        customer.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -1184,7 +1184,7 @@ public class CustomerTests
         customer.Activate();
 
         // Assert
-        customer.IsActive.Should().BeTrue();
+        customer.IsActive.ShouldBeTrue();
     }
 
     #endregion
@@ -1206,15 +1206,15 @@ public class CustomerTests
         customer.AddNote("Great customer, frequent buyer");
 
         // Assert
-        customer.Tier.Should().Be(CustomerTier.Gold);
-        customer.Segment.Should().Be(CustomerSegment.Active);
-        customer.LoyaltyPoints.Should().Be(7000);
-        customer.LifetimeLoyaltyPoints.Should().Be(10000);
-        customer.Tags.Should().Be("loyal");
-        customer.Notes.Should().Be("Great customer, frequent buyer");
-        customer.TotalOrders.Should().Be(15);
-        customer.TotalSpent.Should().Be(8_000_000m);
-        customer.IsActive.Should().BeTrue();
+        customer.Tier.ShouldBe(CustomerTier.Gold);
+        customer.Segment.ShouldBe(CustomerSegment.Active);
+        customer.LoyaltyPoints.ShouldBe(7000);
+        customer.LifetimeLoyaltyPoints.ShouldBe(10000);
+        customer.Tags.ShouldBe("loyal");
+        customer.Notes.ShouldBe("Great customer, frequent buyer");
+        customer.TotalOrders.ShouldBe(15);
+        customer.TotalSpent.ShouldBe(8_000_000m);
+        customer.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -1222,20 +1222,20 @@ public class CustomerTests
     {
         // Arrange
         var customer = CreateTestCustomer();
-        customer.Tier.Should().Be(CustomerTier.Standard);
+        customer.Tier.ShouldBe(CustomerTier.Standard);
 
         // Act & Assert - Progress through tiers
         customer.AddLoyaltyPoints(5000);
-        customer.Tier.Should().Be(CustomerTier.Silver);
+        customer.Tier.ShouldBe(CustomerTier.Silver);
 
         customer.AddLoyaltyPoints(5000); // Total: 10000
-        customer.Tier.Should().Be(CustomerTier.Gold);
+        customer.Tier.ShouldBe(CustomerTier.Gold);
 
         customer.AddLoyaltyPoints(10000); // Total: 20000
-        customer.Tier.Should().Be(CustomerTier.Platinum);
+        customer.Tier.ShouldBe(CustomerTier.Platinum);
 
         customer.AddLoyaltyPoints(30000); // Total: 50000
-        customer.Tier.Should().Be(CustomerTier.Diamond);
+        customer.Tier.ShouldBe(CustomerTier.Diamond);
     }
 
     #endregion

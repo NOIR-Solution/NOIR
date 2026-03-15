@@ -38,12 +38,12 @@ public class GetPipelinesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
-        result.Value[0].Name.Should().Be("Sales");
-        result.Value[0].IsDefault.Should().BeTrue();
-        result.Value[0].Stages.Should().HaveCount(2);
-        result.Value[0].Stages[0].Name.Should().Be("Qualification");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
+        result.Value[0].Name.ShouldBe("Sales");
+        result.Value[0].IsDefault.ShouldBe(true);
+        result.Value[0].Stages.Count().ShouldBe(2);
+        result.Value[0].Stages[0].Name.ShouldBe("Qualification");
     }
 
     [Fact]
@@ -60,8 +60,8 @@ public class GetPipelinesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     [Fact]
@@ -86,9 +86,9 @@ public class GetPipelinesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value[0].Stages[0].Name.Should().Be("Qualification");
-        result.Value[0].Stages[1].Name.Should().Be("Proposal");
-        result.Value[0].Stages[2].Name.Should().Be("Negotiation");
+        result.IsSuccess.ShouldBe(true);
+        result.Value[0].Stages[0].Name.ShouldBe("Qualification");
+        result.Value[0].Stages[1].Name.ShouldBe("Proposal");
+        result.Value[0].Stages[2].Name.ShouldBe("Negotiation");
     }
 }

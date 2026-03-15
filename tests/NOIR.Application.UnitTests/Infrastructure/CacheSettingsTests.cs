@@ -16,7 +16,7 @@ public class CacheSettingsTests
     public void CacheSettings_ShouldHaveCorrectSectionName()
     {
         // Assert
-        CacheSettings.SectionName.Should().Be("Cache");
+        CacheSettings.SectionName.ShouldBe("Cache");
     }
 
     [Fact]
@@ -26,15 +26,15 @@ public class CacheSettingsTests
         var settings = new CacheSettings();
 
         // Assert
-        settings.DefaultExpirationMinutes.Should().Be(30);
-        settings.PermissionExpirationMinutes.Should().Be(60);
-        settings.UserProfileExpirationMinutes.Should().Be(15);
-        settings.BlogPostExpirationMinutes.Should().Be(5);
-        settings.FailSafeMaxDurationMinutes.Should().Be(120);
-        settings.FactorySoftTimeoutMs.Should().Be(100);
-        settings.FactoryHardTimeoutMs.Should().Be(2000);
-        settings.EnableBackplane.Should().BeFalse();
-        settings.RedisConnectionString.Should().BeNull();
+        settings.DefaultExpirationMinutes.ShouldBe(30);
+        settings.PermissionExpirationMinutes.ShouldBe(60);
+        settings.UserProfileExpirationMinutes.ShouldBe(15);
+        settings.BlogPostExpirationMinutes.ShouldBe(5);
+        settings.FailSafeMaxDurationMinutes.ShouldBe(120);
+        settings.FactorySoftTimeoutMs.ShouldBe(100);
+        settings.FactoryHardTimeoutMs.ShouldBe(2000);
+        settings.EnableBackplane.ShouldBe(false);
+        settings.RedisConnectionString.ShouldBeNull();
     }
 
     #endregion
@@ -51,7 +51,7 @@ public class CacheSettingsTests
         settings.DefaultExpirationMinutes = 60;
 
         // Assert
-        settings.DefaultExpirationMinutes.Should().Be(60);
+        settings.DefaultExpirationMinutes.ShouldBe(60);
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class CacheSettingsTests
         settings.PermissionExpirationMinutes = 120;
 
         // Assert
-        settings.PermissionExpirationMinutes.Should().Be(120);
+        settings.PermissionExpirationMinutes.ShouldBe(120);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class CacheSettingsTests
         settings.UserProfileExpirationMinutes = 30;
 
         // Assert
-        settings.UserProfileExpirationMinutes.Should().Be(30);
+        settings.UserProfileExpirationMinutes.ShouldBe(30);
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class CacheSettingsTests
         settings.BlogPostExpirationMinutes = 10;
 
         // Assert
-        settings.BlogPostExpirationMinutes.Should().Be(10);
+        settings.BlogPostExpirationMinutes.ShouldBe(10);
     }
 
     [Fact]
@@ -103,7 +103,7 @@ public class CacheSettingsTests
         settings.FailSafeMaxDurationMinutes = 240;
 
         // Assert
-        settings.FailSafeMaxDurationMinutes.Should().Be(240);
+        settings.FailSafeMaxDurationMinutes.ShouldBe(240);
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class CacheSettingsTests
         settings.FactorySoftTimeoutMs = 200;
 
         // Assert
-        settings.FactorySoftTimeoutMs.Should().Be(200);
+        settings.FactorySoftTimeoutMs.ShouldBe(200);
     }
 
     [Fact]
@@ -129,7 +129,7 @@ public class CacheSettingsTests
         settings.FactoryHardTimeoutMs = 5000;
 
         // Assert
-        settings.FactoryHardTimeoutMs.Should().Be(5000);
+        settings.FactoryHardTimeoutMs.ShouldBe(5000);
     }
 
     [Fact]
@@ -142,7 +142,7 @@ public class CacheSettingsTests
         settings.EnableBackplane = true;
 
         // Assert
-        settings.EnableBackplane.Should().BeTrue();
+        settings.EnableBackplane.ShouldBe(true);
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class CacheSettingsTests
         settings.RedisConnectionString = connectionString;
 
         // Assert
-        settings.RedisConnectionString.Should().Be(connectionString);
+        settings.RedisConnectionString.ShouldBe(connectionString);
     }
 
     #endregion
@@ -181,7 +181,7 @@ public class CacheSettingsTests
             results);
 
         // Assert
-        isValid.Should().BeFalse();
+        isValid.ShouldBe(false);
     }
 
     [Theory]
@@ -202,7 +202,7 @@ public class CacheSettingsTests
             results);
 
         // Assert
-        isValid.Should().BeTrue();
+        isValid.ShouldBe(true);
     }
 
     [Theory]
@@ -223,7 +223,7 @@ public class CacheSettingsTests
             results);
 
         // Assert
-        isValid.Should().BeFalse();
+        isValid.ShouldBe(false);
     }
 
     [Theory]
@@ -244,7 +244,7 @@ public class CacheSettingsTests
             results);
 
         // Assert
-        isValid.Should().BeTrue();
+        isValid.ShouldBe(true);
     }
 
     [Theory]
@@ -265,7 +265,7 @@ public class CacheSettingsTests
             results);
 
         // Assert
-        isValid.Should().BeFalse();
+        isValid.ShouldBe(false);
     }
 
     [Theory]
@@ -286,7 +286,7 @@ public class CacheSettingsTests
             results);
 
         // Assert
-        isValid.Should().BeTrue();
+        isValid.ShouldBe(true);
     }
 
     #endregion

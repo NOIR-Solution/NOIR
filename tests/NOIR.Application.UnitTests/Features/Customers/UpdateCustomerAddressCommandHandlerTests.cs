@@ -81,17 +81,17 @@ public class UpdateCustomerAddressCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.AddressType.Should().Be(AddressType.Billing);
-        result.Value.FullName.Should().Be("Jane Smith");
-        result.Value.Phone.Should().Be("0909876543");
-        result.Value.AddressLine1.Should().Be("456 Oak Ave");
-        result.Value.Province.Should().Be("Ha Noi");
-        result.Value.AddressLine2.Should().Be("Suite 200");
-        result.Value.Ward.Should().Be("Ward 5");
-        result.Value.District.Should().Be("District 3");
-        result.Value.PostalCode.Should().Be("10000");
-        result.Value.IsDefault.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.AddressType.ShouldBe(AddressType.Billing);
+        result.Value.FullName.ShouldBe("Jane Smith");
+        result.Value.Phone.ShouldBe("0909876543");
+        result.Value.AddressLine1.ShouldBe("456 Oak Ave");
+        result.Value.Province.ShouldBe("Ha Noi");
+        result.Value.AddressLine2.ShouldBe("Suite 200");
+        result.Value.Ward.ShouldBe("Ward 5");
+        result.Value.District.ShouldBe("District 3");
+        result.Value.PostalCode.ShouldBe("10000");
+        result.Value.IsDefault.ShouldBe(true);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -147,11 +147,11 @@ public class UpdateCustomerAddressCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsDefault.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsDefault.ShouldBe(true);
 
         // The previously default address should no longer be default
-        defaultAddress.IsDefault.Should().BeFalse();
+        defaultAddress.IsDefault.ShouldBe(false);
     }
 
     #endregion
@@ -181,8 +181,8 @@ public class UpdateCustomerAddressCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CUSTOMER-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CUSTOMER-002");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -214,8 +214,8 @@ public class UpdateCustomerAddressCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CUSTOMER-005");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CUSTOMER-005");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),

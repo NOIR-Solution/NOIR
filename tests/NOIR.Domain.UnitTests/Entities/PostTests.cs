@@ -22,13 +22,13 @@ public class PostTests
         var post = Post.Create(title, slug, authorId);
 
         // Assert
-        post.Should().NotBeNull();
-        post.Id.Should().NotBe(Guid.Empty);
-        post.Title.Should().Be(title);
-        post.Slug.Should().Be(slug);
-        post.AuthorId.Should().Be(authorId);
-        post.Status.Should().Be(PostStatus.Draft);
-        post.ViewCount.Should().Be(0);
+        post.ShouldNotBeNull();
+        post.Id.ShouldNotBe(Guid.Empty);
+        post.Title.ShouldBe(title);
+        post.Slug.ShouldBe(slug);
+        post.AuthorId.ShouldBe(authorId);
+        post.Status.ShouldBe(PostStatus.Draft);
+        post.ViewCount.ShouldBe(0);
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public class PostTests
         var post = Post.Create("Title", slug, Guid.NewGuid());
 
         // Assert
-        post.Slug.Should().Be("my-first-post");
+        post.Slug.ShouldBe("my-first-post");
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class PostTests
         var post = Post.Create("Title", "slug", Guid.NewGuid(), tenantId);
 
         // Assert
-        post.TenantId.Should().Be(tenantId);
+        post.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -64,9 +64,9 @@ public class PostTests
         var post = Post.Create("Title", "slug", Guid.NewGuid());
 
         // Assert
-        post.Status.Should().Be(PostStatus.Draft);
-        post.PublishedAt.Should().BeNull();
-        post.ScheduledPublishAt.Should().BeNull();
+        post.Status.ShouldBe(PostStatus.Draft);
+        post.PublishedAt.ShouldBeNull();
+        post.ScheduledPublishAt.ShouldBeNull();
     }
 
     #endregion
@@ -88,11 +88,11 @@ public class PostTests
         post.UpdateContent(newTitle, newSlug, excerpt, contentJson, contentHtml);
 
         // Assert
-        post.Title.Should().Be(newTitle);
-        post.Slug.Should().Be("updated-slug");
-        post.Excerpt.Should().Be(excerpt);
-        post.ContentJson.Should().Be(contentJson);
-        post.ContentHtml.Should().Be(contentHtml);
+        post.Title.ShouldBe(newTitle);
+        post.Slug.ShouldBe("updated-slug");
+        post.Excerpt.ShouldBe(excerpt);
+        post.ContentJson.ShouldBe(contentJson);
+        post.ContentHtml.ShouldBe(contentHtml);
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class PostTests
         post.UpdateContent("New Title", "NEW-SLUG", null, null, null);
 
         // Assert
-        post.Slug.Should().Be("new-slug");
+        post.Slug.ShouldBe("new-slug");
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class PostTests
         post.UpdateContent("Title", "slug", null, null, htmlWith400Words);
 
         // Assert
-        post.ReadingTimeMinutes.Should().Be(2);
+        post.ReadingTimeMinutes.ShouldBe(2);
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class PostTests
         post.UpdateContent("Title", "slug", null, null, "");
 
         // Assert
-        post.ReadingTimeMinutes.Should().Be(1); // Minimum 1 minute
+        post.ReadingTimeMinutes.ShouldBe(1); // Minimum 1 minute
     }
 
     #endregion
@@ -152,9 +152,9 @@ public class PostTests
         post.SetFeaturedImage(mediaFileId, altText);
 
         // Assert
-        post.FeaturedImageId.Should().Be(mediaFileId);
-        post.FeaturedImageAlt.Should().Be(altText);
-        post.FeaturedImageUrl.Should().BeNull();
+        post.FeaturedImageId.ShouldBe(mediaFileId);
+        post.FeaturedImageAlt.ShouldBe(altText);
+        post.FeaturedImageUrl.ShouldBeNull();
     }
 
     [Fact]
@@ -168,7 +168,7 @@ public class PostTests
         post.SetFeaturedImage(null);
 
         // Assert
-        post.FeaturedImageId.Should().BeNull();
+        post.FeaturedImageId.ShouldBeNull();
     }
 
     [Fact]
@@ -184,9 +184,9 @@ public class PostTests
         post.UpdateFeaturedImage(imageUrl, altText);
 
         // Assert
-        post.FeaturedImageUrl.Should().Be(imageUrl);
-        post.FeaturedImageAlt.Should().Be(altText);
-        post.FeaturedImageId.Should().BeNull();
+        post.FeaturedImageUrl.ShouldBe(imageUrl);
+        post.FeaturedImageAlt.ShouldBe(altText);
+        post.FeaturedImageId.ShouldBeNull();
     }
 
     #endregion
@@ -207,10 +207,10 @@ public class PostTests
         post.UpdateSeo(metaTitle, metaDescription, canonicalUrl, allowIndexing);
 
         // Assert
-        post.MetaTitle.Should().Be(metaTitle);
-        post.MetaDescription.Should().Be(metaDescription);
-        post.CanonicalUrl.Should().Be(canonicalUrl);
-        post.AllowIndexing.Should().BeTrue();
+        post.MetaTitle.ShouldBe(metaTitle);
+        post.MetaDescription.ShouldBe(metaDescription);
+        post.CanonicalUrl.ShouldBe(canonicalUrl);
+        post.AllowIndexing.ShouldBeTrue();
     }
 
     [Fact]
@@ -223,7 +223,7 @@ public class PostTests
         post.UpdateSeo(null, null, null, false);
 
         // Assert
-        post.AllowIndexing.Should().BeFalse();
+        post.AllowIndexing.ShouldBeFalse();
     }
 
     #endregion
@@ -241,7 +241,7 @@ public class PostTests
         post.SetCategory(categoryId);
 
         // Assert
-        post.CategoryId.Should().Be(categoryId);
+        post.CategoryId.ShouldBe(categoryId);
     }
 
     [Fact]
@@ -255,7 +255,7 @@ public class PostTests
         post.SetCategory(null);
 
         // Assert
-        post.CategoryId.Should().BeNull();
+        post.CategoryId.ShouldBeNull();
     }
 
     #endregion
@@ -273,10 +273,10 @@ public class PostTests
         post.Publish();
 
         // Assert
-        post.Status.Should().Be(PostStatus.Published);
-        post.PublishedAt.Should().NotBeNull();
-        post.PublishedAt.Should().BeOnOrAfter(beforePublish);
-        post.ScheduledPublishAt.Should().BeNull();
+        post.Status.ShouldBe(PostStatus.Published);
+        post.PublishedAt.ShouldNotBeNull();
+        post.PublishedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforePublish);
+        post.ScheduledPublishAt.ShouldBeNull();
     }
 
     [Fact]
@@ -290,8 +290,8 @@ public class PostTests
         post.Publish();
 
         // Assert
-        post.Status.Should().Be(PostStatus.Published);
-        post.ScheduledPublishAt.Should().BeNull();
+        post.Status.ShouldBe(PostStatus.Published);
+        post.ScheduledPublishAt.ShouldBeNull();
     }
 
     [Fact]
@@ -305,9 +305,9 @@ public class PostTests
         post.Schedule(scheduledDate);
 
         // Assert
-        post.Status.Should().Be(PostStatus.Scheduled);
-        post.ScheduledPublishAt.Should().Be(scheduledDate);
-        post.PublishedAt.Should().BeNull();
+        post.Status.ShouldBe(PostStatus.Scheduled);
+        post.ScheduledPublishAt.ShouldBe(scheduledDate);
+        post.PublishedAt.ShouldBeNull();
     }
 
     [Fact]
@@ -321,9 +321,9 @@ public class PostTests
         post.Unpublish();
 
         // Assert
-        post.Status.Should().Be(PostStatus.Draft);
-        post.PublishedAt.Should().BeNull();
-        post.ScheduledPublishAt.Should().BeNull();
+        post.Status.ShouldBe(PostStatus.Draft);
+        post.PublishedAt.ShouldBeNull();
+        post.ScheduledPublishAt.ShouldBeNull();
     }
 
     [Fact]
@@ -337,8 +337,8 @@ public class PostTests
         post.Unpublish();
 
         // Assert
-        post.Status.Should().Be(PostStatus.Draft);
-        post.ScheduledPublishAt.Should().BeNull();
+        post.Status.ShouldBe(PostStatus.Draft);
+        post.ScheduledPublishAt.ShouldBeNull();
     }
 
     [Fact]
@@ -352,7 +352,7 @@ public class PostTests
         post.Archive();
 
         // Assert
-        post.Status.Should().Be(PostStatus.Archived);
+        post.Status.ShouldBe(PostStatus.Archived);
     }
 
     #endregion
@@ -370,7 +370,7 @@ public class PostTests
         post.IncrementViewCount();
 
         // Assert
-        post.ViewCount.Should().Be(initialCount + 1);
+        post.ViewCount.ShouldBe(initialCount + 1);
     }
 
     [Fact]
@@ -386,7 +386,7 @@ public class PostTests
         }
 
         // Assert
-        post.ViewCount.Should().Be(100);
+        post.ViewCount.ShouldBe(100);
     }
 
     #endregion
@@ -400,8 +400,8 @@ public class PostTests
         var post = Post.Create("Title", "slug", Guid.NewGuid());
 
         // Assert
-        post.TagAssignments.Should().NotBeNull();
-        post.TagAssignments.Should().BeEmpty();
+        post.TagAssignments.ShouldNotBeNull();
+        post.TagAssignments.ShouldBeEmpty();
     }
 
     #endregion
@@ -418,7 +418,7 @@ public class PostTests
         post.Publish();
 
         // Assert
-        post.Status.Should().Be(PostStatus.Published);
+        post.Status.ShouldBe(PostStatus.Published);
     }
 
     [Fact]
@@ -431,7 +431,7 @@ public class PostTests
         post.Schedule(DateTimeOffset.UtcNow.AddDays(1));
 
         // Assert
-        post.Status.Should().Be(PostStatus.Scheduled);
+        post.Status.ShouldBe(PostStatus.Scheduled);
     }
 
     [Fact]
@@ -445,7 +445,7 @@ public class PostTests
         post.Archive();
 
         // Assert
-        post.Status.Should().Be(PostStatus.Archived);
+        post.Status.ShouldBe(PostStatus.Archived);
     }
 
     [Fact]
@@ -460,7 +460,7 @@ public class PostTests
         post.Unpublish();
 
         // Assert
-        post.Status.Should().Be(PostStatus.Draft);
+        post.Status.ShouldBe(PostStatus.Draft);
     }
 
     #endregion

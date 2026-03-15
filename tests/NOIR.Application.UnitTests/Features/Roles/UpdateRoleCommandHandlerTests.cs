@@ -103,10 +103,10 @@ public class UpdateRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be(newName);
-        result.Value.UserCount.Should().Be(5);
-        result.Value.Permissions.Should().Contain("permissions.read");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe(newName);
+        result.Value.UserCount.ShouldBe(5);
+        result.Value.Permissions.ShouldContain("permissions.read");
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class UpdateRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     #endregion
@@ -180,8 +180,8 @@ public class UpdateRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.RoleNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.RoleNotFound);
         _roleIdentityServiceMock.Verify(
             x => x.UpdateRoleAsync(
                 It.IsAny<string>(),
@@ -222,8 +222,8 @@ public class UpdateRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Business.AlreadyExists);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Business.AlreadyExists);
         _roleIdentityServiceMock.Verify(
             x => x.UpdateRoleAsync(
                 It.IsAny<string>(),
@@ -274,8 +274,8 @@ public class UpdateRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Validation.General);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Validation.General);
     }
 
     [Fact]
@@ -312,8 +312,8 @@ public class UpdateRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.System.UnknownError);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.System.UnknownError);
     }
 
     #endregion

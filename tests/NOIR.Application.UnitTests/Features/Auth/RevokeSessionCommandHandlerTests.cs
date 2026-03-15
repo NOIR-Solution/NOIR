@@ -75,7 +75,7 @@ public class RevokeSessionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     [Fact]
@@ -130,7 +130,7 @@ public class RevokeSessionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _refreshTokenServiceMock.Verify(
             x => x.RevokeTokenAsync(sessionToken, null, It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Once);
@@ -151,8 +151,8 @@ public class RevokeSessionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.Unauthorized);
         _refreshTokenServiceMock.Verify(
             x => x.GetActiveSessionsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -170,8 +170,8 @@ public class RevokeSessionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.Unauthorized);
     }
 
     [Fact]
@@ -186,8 +186,8 @@ public class RevokeSessionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.Unauthorized);
     }
 
     #endregion
@@ -213,8 +213,8 @@ public class RevokeSessionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("Session.NotFound");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("Session.NotFound");
     }
 
     [Fact]
@@ -238,8 +238,8 @@ public class RevokeSessionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("Session.NotFound");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("Session.NotFound");
         _refreshTokenServiceMock.Verify(
             x => x.RevokeTokenAsync(It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -337,8 +337,8 @@ public class RevokeSessionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("Session.NotFound");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("Session.NotFound");
         _refreshTokenServiceMock.Verify(
             x => x.RevokeTokenAsync(It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never);

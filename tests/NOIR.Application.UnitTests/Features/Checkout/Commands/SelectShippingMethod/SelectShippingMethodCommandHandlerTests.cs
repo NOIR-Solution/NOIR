@@ -126,10 +126,10 @@ public class SelectShippingMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ShippingMethod.Should().Be(TestShippingMethod);
-        result.Value.ShippingCost.Should().Be(TestShippingCost);
-        result.Value.Status.Should().Be(CheckoutSessionStatus.ShippingSelected);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShippingMethod.ShouldBe(TestShippingMethod);
+        result.Value.ShippingCost.ShouldBe(TestShippingCost);
+        result.Value.Status.ShouldBe(CheckoutSessionStatus.ShippingSelected);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -160,8 +160,8 @@ public class SelectShippingMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.EstimatedDeliveryAt.Should().BeCloseTo(estimatedDelivery, TimeSpan.FromSeconds(1));
+        result.IsSuccess.ShouldBe(true);
+        result.Value.EstimatedDeliveryAt!.Value.ShouldBe(estimatedDelivery, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
@@ -187,8 +187,8 @@ public class SelectShippingMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.GrandTotal.Should().Be(result.Value.SubTotal + 50000m);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.GrandTotal.ShouldBe(result.Value.SubTotal + 50000m);
     }
 
     [Theory]
@@ -220,9 +220,9 @@ public class SelectShippingMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ShippingMethod.Should().Be(shippingMethod);
-        result.Value.ShippingCost.Should().Be(shippingCost);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShippingMethod.ShouldBe(shippingMethod);
+        result.Value.ShippingCost.ShouldBe(shippingCost);
     }
 
     #endregion
@@ -247,9 +247,9 @@ public class SelectShippingMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-008");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-008");
+        result.Error.Message.ShouldContain("not found");
     }
 
     [Fact]
@@ -275,9 +275,9 @@ public class SelectShippingMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-009");
-        result.Error.Message.Should().Contain("expired");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-009");
+        result.Error.Message.ShouldContain("expired");
     }
 
     [Fact]
@@ -299,9 +299,9 @@ public class SelectShippingMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-010");
-        result.Error.Message.Should().Contain("Shipping address must be set");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-010");
+        result.Error.Message.ShouldContain("Shipping address must be set");
     }
 
     [Theory]
@@ -326,8 +326,8 @@ public class SelectShippingMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-010");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-010");
     }
 
     #endregion
@@ -357,8 +357,8 @@ public class SelectShippingMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ShippingCost.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShippingCost.ShouldBe(0);
     }
 
     [Fact]
@@ -384,8 +384,8 @@ public class SelectShippingMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.EstimatedDeliveryAt.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.EstimatedDeliveryAt.ShouldBeNull();
     }
 
     [Fact]
@@ -448,9 +448,9 @@ public class SelectShippingMethodCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ShippingMethod.Should().Be("Express");
-        result.Value.ShippingCost.Should().Be(50000m);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShippingMethod.ShouldBe("Express");
+        result.Value.ShippingCost.ShouldBe(50000m);
     }
 
     #endregion

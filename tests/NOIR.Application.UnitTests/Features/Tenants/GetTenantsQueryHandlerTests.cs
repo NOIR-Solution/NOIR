@@ -62,9 +62,9 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(3);
-        result.Value.TotalCount.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(3);
+        result.Value.TotalCount.ShouldBe(3);
     }
 
     [Fact]
@@ -88,9 +88,9 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(2);
-        result.Value.Items.Should().OnlyContain(t =>
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(2);
+        result.Value.Items.ShouldAllBe(t =>
             t.Name!.ToLowerInvariant().Contains("acme") ||
             t.Identifier!.ToLowerInvariant().Contains("acme"));
     }
@@ -115,9 +115,9 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items[0].Identifier.Should().Be("acme-corp");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items[0].Identifier.ShouldBe("acme-corp");
     }
 
     [Fact]
@@ -141,9 +141,9 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(2);
-        result.Value.Items.Should().AllSatisfy(t => t.IsActive.Should().BeTrue());
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(2);
+        result.Value.Items.ShouldAllBe(t => t.IsActive == true);
     }
 
     [Fact]
@@ -167,9 +167,9 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(2);
-        result.Value.Items.Should().AllSatisfy(t => t.IsActive.Should().BeFalse());
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(2);
+        result.Value.Items.ShouldAllBe(t => t.IsActive == false);
     }
 
     [Fact]
@@ -192,9 +192,9 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items[0].Identifier.Should().Be("active-tenant");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items[0].Identifier.ShouldBe("active-tenant");
     }
 
     [Fact]
@@ -216,13 +216,13 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value.Items[0];
-        dto.Id.Should().Be(tenant.Id);
-        dto.Identifier.Should().Be(tenant.Identifier);
-        dto.Name.Should().Be(tenant.Name);
-        dto.IsActive.Should().Be(tenant.IsActive);
-        dto.CreatedAt.Should().Be(tenant.CreatedAt);
+        dto.Id.ShouldBe(tenant.Id);
+        dto.Identifier.ShouldBe(tenant.Identifier);
+        dto.Name.ShouldBe(tenant.Name);
+        dto.IsActive.ShouldBe(tenant.IsActive);
+        dto.CreatedAt.ShouldBe(tenant.CreatedAt);
     }
 
     [Fact]
@@ -246,10 +246,10 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items[0].Name.Should().Be("Alpha Inc");
-        result.Value.Items[1].Name.Should().Be("Middle Corp");
-        result.Value.Items[2].Name.Should().Be("Zebra Corp");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items[0].Name.ShouldBe("Alpha Inc");
+        result.Value.Items[1].Name.ShouldBe("Middle Corp");
+        result.Value.Items[2].Name.ShouldBe("Zebra Corp");
     }
 
     #endregion
@@ -276,11 +276,11 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(10);
-        result.Value.TotalCount.Should().Be(25);
-        result.Value.PageNumber.Should().Be(2);
-        result.Value.TotalPages.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(10);
+        result.Value.TotalCount.ShouldBe(25);
+        result.Value.PageNumber.ShouldBe(2);
+        result.Value.TotalPages.ShouldBe(3);
     }
 
     [Fact]
@@ -303,10 +303,10 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.TotalCount.Should().Be(15);
-        result.Value.TotalPages.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.TotalCount.ShouldBe(15);
+        result.Value.TotalPages.ShouldBe(3);
     }
 
     [Fact]
@@ -329,10 +329,10 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(2);
-        result.Value.TotalCount.Should().Be(7);
-        result.Value.HasNextPage.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(2);
+        result.Value.TotalCount.ShouldBe(7);
+        result.Value.HasNextPage.ShouldBe(false);
     }
 
     [Fact]
@@ -355,9 +355,9 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.HasPreviousPage.Should().BeFalse();
-        result.Value.HasNextPage.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.HasPreviousPage.ShouldBe(false);
+        result.Value.HasNextPage.ShouldBe(true);
     }
 
     #endregion
@@ -378,9 +378,9 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
     }
 
     [Fact]
@@ -403,9 +403,9 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
     }
 
     [Fact]
@@ -428,9 +428,9 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
     }
 
     #endregion
@@ -479,10 +479,10 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items[0].Identifier.Should().Be("acme-active");
-        result.Value.Items[0].IsActive.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items[0].Identifier.ShouldBe("acme-active");
+        result.Value.Items[0].IsActive.ShouldBe(true);
     }
 
     [Fact]
@@ -507,11 +507,11 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // 10 active tenants matching "acme", page 2 with size 3 = 3 items
-        result.Value.Items.Should().HaveCount(3);
-        result.Value.TotalCount.Should().Be(10);
-        result.Value.Items.Should().AllSatisfy(t => t.IsActive.Should().BeTrue());
+        result.Value.Items.Count().ShouldBe(3);
+        result.Value.TotalCount.ShouldBe(10);
+        result.Value.Items.ShouldAllBe(t => t.IsActive == true);
     }
 
     #endregion
@@ -537,8 +537,8 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -560,8 +560,8 @@ public class GetTenantsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
     }
 
     #endregion

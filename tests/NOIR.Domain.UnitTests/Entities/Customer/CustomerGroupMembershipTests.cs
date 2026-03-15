@@ -23,11 +23,11 @@ public class CustomerGroupMembershipTests
         var membership = CustomerGroupMembership.Create(groupId, customerId, TestTenantId);
 
         // Assert
-        membership.Should().NotBeNull();
-        membership.Id.Should().NotBe(Guid.Empty);
-        membership.CustomerGroupId.Should().Be(groupId);
-        membership.CustomerId.Should().Be(customerId);
-        membership.TenantId.Should().Be(TestTenantId);
+        membership.ShouldNotBeNull();
+        membership.Id.ShouldNotBe(Guid.Empty);
+        membership.CustomerGroupId.ShouldBe(groupId);
+        membership.CustomerId.ShouldBe(customerId);
+        membership.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public class CustomerGroupMembershipTests
         var membership = CustomerGroupMembership.Create(groupId, customerId);
 
         // Assert
-        membership.TenantId.Should().BeNull();
+        membership.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class CustomerGroupMembershipTests
         var membership2 = CustomerGroupMembership.Create(groupId, customerId, TestTenantId);
 
         // Assert
-        membership1.Id.Should().NotBe(membership2.Id);
+        membership1.Id.ShouldNotBe(membership2.Id);
     }
 
     [Fact]
@@ -72,10 +72,10 @@ public class CustomerGroupMembershipTests
         var membership2 = CustomerGroupMembership.Create(groupId2, customerId, TestTenantId);
 
         // Assert
-        membership1.CustomerGroupId.Should().Be(groupId1);
-        membership2.CustomerGroupId.Should().Be(groupId2);
-        membership1.CustomerId.Should().Be(customerId);
-        membership2.CustomerId.Should().Be(customerId);
+        membership1.CustomerGroupId.ShouldBe(groupId1);
+        membership2.CustomerGroupId.ShouldBe(groupId2);
+        membership1.CustomerId.ShouldBe(customerId);
+        membership2.CustomerId.ShouldBe(customerId);
     }
 
     [Fact]
@@ -85,9 +85,9 @@ public class CustomerGroupMembershipTests
         var membership = CustomerGroupMembership.Create(Guid.Empty, Guid.Empty, TestTenantId);
 
         // Assert
-        membership.CustomerGroupId.Should().Be(Guid.Empty);
-        membership.CustomerId.Should().Be(Guid.Empty);
-        membership.Id.Should().NotBe(Guid.Empty); // Id is always auto-generated
+        membership.CustomerGroupId.ShouldBe(Guid.Empty);
+        membership.CustomerId.ShouldBe(Guid.Empty);
+        membership.Id.ShouldNotBe(Guid.Empty); // Id is always auto-generated
     }
 
     #endregion

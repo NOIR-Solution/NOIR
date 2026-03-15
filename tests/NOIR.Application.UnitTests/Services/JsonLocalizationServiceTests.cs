@@ -92,7 +92,7 @@ public class JsonLocalizationServiceTests
         var culture = service.CurrentCulture;
 
         // Assert
-        culture.Should().Be("en");
+        culture.ShouldBe("en");
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class JsonLocalizationServiceTests
         var culture = service.CurrentCulture;
 
         // Assert
-        culture.Should().Be("vi");
+        culture.ShouldBe("vi");
     }
 
     [Fact]
@@ -121,7 +121,7 @@ public class JsonLocalizationServiceTests
         var culture = service.CurrentCulture;
 
         // Assert
-        culture.Should().Be("vi");
+        culture.ShouldBe("vi");
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class JsonLocalizationServiceTests
         var culture = service.CurrentCulture;
 
         // Assert
-        culture.Should().Be("vi");
+        culture.ShouldBe("vi");
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public class JsonLocalizationServiceTests
         var culture = service.CurrentCulture;
 
         // Assert
-        culture.Should().Be("en");
+        culture.ShouldBe("en");
     }
 
     [Fact]
@@ -163,7 +163,7 @@ public class JsonLocalizationServiceTests
         var culture = service.CurrentCulture;
 
         // Assert
-        culture.Should().Be("vi");
+        culture.ShouldBe("vi");
     }
 
     [Fact]
@@ -177,7 +177,7 @@ public class JsonLocalizationServiceTests
         var culture = service.CurrentCulture;
 
         // Assert
-        culture.Should().Be("vi");
+        culture.ShouldBe("vi");
     }
 
     [Fact]
@@ -191,7 +191,7 @@ public class JsonLocalizationServiceTests
         var culture = service.CurrentCulture;
 
         // Assert
-        culture.Should().Be("vi");
+        culture.ShouldBe("vi");
     }
 
     #endregion
@@ -208,7 +208,7 @@ public class JsonLocalizationServiceTests
         var cultures = service.SupportedCultures;
 
         // Assert
-        cultures.Should().ContainInOrder("en", "vi");
+        cultures.ShouldBe(new[] { "en", "vi" });
     }
 
     #endregion
@@ -226,7 +226,7 @@ public class JsonLocalizationServiceTests
         var result = service.Get("");
 
         // Assert
-        result.Should().Be("");
+        result.ShouldBe("");
     }
 
     [Fact]
@@ -240,7 +240,7 @@ public class JsonLocalizationServiceTests
         var result = service.Get(null!);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -254,7 +254,7 @@ public class JsonLocalizationServiceTests
         var result = service[""];
 
         // Assert
-        result.Should().Be("");
+        result.ShouldBe("");
     }
 
     #endregion
@@ -275,7 +275,7 @@ public class JsonLocalizationServiceTests
         var result = service.Get("test.key", 1, 2, 3);
 
         // Assert - Key not found returns key
-        result.Should().Be("test.key");
+        result.ShouldBe("test.key");
     }
 
     [Fact]
@@ -289,7 +289,7 @@ public class JsonLocalizationServiceTests
         var result = service.Get("test.key");
 
         // Assert
-        result.Should().Be("test.key");
+        result.ShouldBe("test.key");
     }
 
     #endregion

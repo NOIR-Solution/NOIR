@@ -68,13 +68,13 @@ public class ValidatePromoCodeQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsValid.Should().BeTrue();
-        result.Value.Message.Should().Be("Promotion code is valid.");
-        result.Value.DiscountAmount.Should().Be(100000m); // 20% of 500000
-        result.Value.Code.Should().Be("TESTCODE");
-        result.Value.DiscountType.Should().Be(DiscountType.Percentage);
-        result.Value.DiscountValue.Should().Be(20m);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsValid.ShouldBe(true);
+        result.Value.Message.ShouldBe("Promotion code is valid.");
+        result.Value.DiscountAmount.ShouldBe(100000m); // 20% of 500000
+        result.Value.Code.ShouldBe("TESTCODE");
+        result.Value.DiscountType.ShouldBe(DiscountType.Percentage);
+        result.Value.DiscountValue.ShouldBe(20m);
     }
 
     [Fact]
@@ -97,9 +97,9 @@ public class ValidatePromoCodeQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsValid.Should().BeTrue();
-        result.Value.DiscountAmount.Should().Be(50000m);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsValid.ShouldBe(true);
+        result.Value.DiscountAmount.ShouldBe(50000m);
     }
 
     [Fact]
@@ -123,10 +123,10 @@ public class ValidatePromoCodeQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsValid.Should().BeTrue();
-        result.Value.DiscountAmount.Should().Be(100000m); // Capped
-        result.Value.MaxDiscountAmount.Should().Be(100000m);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsValid.ShouldBe(true);
+        result.Value.DiscountAmount.ShouldBe(100000m); // Capped
+        result.Value.MaxDiscountAmount.ShouldBe(100000m);
     }
 
     #endregion
@@ -149,10 +149,10 @@ public class ValidatePromoCodeQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue(); // Returns Success with IsValid=false, not Failure
-        result.Value.IsValid.Should().BeFalse();
-        result.Value.Message.Should().Be("Invalid promotion code.");
-        result.Value.Code.Should().Be("INVALID");
+        result.IsSuccess.ShouldBe(true); // Returns Success with IsValid=false, not Failure
+        result.Value.IsValid.ShouldBe(false);
+        result.Value.Message.ShouldBe("Invalid promotion code.");
+        result.Value.Code.ShouldBe("INVALID");
     }
 
     [Fact]
@@ -181,9 +181,9 @@ public class ValidatePromoCodeQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsValid.Should().BeFalse();
-        result.Value.Message.Should().Be("This promotion is not yet active.");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsValid.ShouldBe(false);
+        result.Value.Message.ShouldBe("This promotion is not yet active.");
     }
 
     [Fact]
@@ -214,9 +214,9 @@ public class ValidatePromoCodeQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsValid.Should().BeFalse();
-        result.Value.Message.Should().Be("This promotion has been cancelled.");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsValid.ShouldBe(false);
+        result.Value.Message.ShouldBe("This promotion has been cancelled.");
     }
 
     [Fact]
@@ -237,9 +237,9 @@ public class ValidatePromoCodeQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsValid.Should().BeFalse();
-        result.Value.Message.Should().Contain("Minimum order value");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsValid.ShouldBe(false);
+        result.Value.Message.ShouldContain("Minimum order value");
     }
 
     #endregion
@@ -281,9 +281,9 @@ public class ValidatePromoCodeQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsValid.Should().BeFalse();
-        result.Value.Message.Should().Contain("usage limit");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsValid.ShouldBe(false);
+        result.Value.Message.ShouldContain("usage limit");
     }
 
     [Fact]
@@ -304,8 +304,8 @@ public class ValidatePromoCodeQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsValid.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsValid.ShouldBe(true);
 
         // Should NOT have called the PromotionByIdSpec for usage check
         _promotionRepositoryMock.Verify(

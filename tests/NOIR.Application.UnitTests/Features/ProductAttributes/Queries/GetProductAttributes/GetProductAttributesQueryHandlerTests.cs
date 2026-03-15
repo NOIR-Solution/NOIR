@@ -66,9 +66,9 @@ public class GetProductAttributesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(3);
-        result.Value.TotalCount.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(3);
+        result.Value.TotalCount.ShouldBe(3);
     }
 
     [Fact]
@@ -95,9 +95,9 @@ public class GetProductAttributesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items.First().Name.Should().Be("Color");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items.First().Name.ShouldBe("Color");
     }
 
     [Fact]
@@ -124,9 +124,9 @@ public class GetProductAttributesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items.First().IsActive.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items.First().IsActive.ShouldBe(true);
     }
 
     [Fact]
@@ -153,9 +153,9 @@ public class GetProductAttributesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items.First().IsFilterable.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items.First().IsFilterable.ShouldBe(true);
     }
 
     [Fact]
@@ -182,9 +182,9 @@ public class GetProductAttributesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items.First().IsVariantAttribute.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items.First().IsVariantAttribute.ShouldBe(true);
     }
 
     [Theory]
@@ -216,9 +216,9 @@ public class GetProductAttributesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items.First().Type.Should().Be(typeFilter);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items.First().Type.ShouldBe(typeFilter);
     }
 
     [Fact]
@@ -247,12 +247,12 @@ public class GetProductAttributesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.TotalCount.Should().Be(50);
-        result.Value.PageIndex.Should().Be(1); // PageNumber 2 = PageIndex 1 (0-based)
-        result.Value.PageSize.Should().Be(5);
-        result.Value.TotalPages.Should().Be(10); // 50 items / 5 per page
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.TotalCount.ShouldBe(50);
+        result.Value.PageIndex.ShouldBe(1); // PageNumber 2 = PageIndex 1 (0-based)
+        result.Value.PageSize.ShouldBe(5);
+        result.Value.TotalPages.ShouldBe(10); // 50 items / 5 per page
     }
 
     #endregion
@@ -281,9 +281,9 @@ public class GetProductAttributesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
     }
 
     [Fact]
@@ -354,8 +354,8 @@ public class GetProductAttributesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -381,9 +381,9 @@ public class GetProductAttributesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PageSize.Should().Be(20); // Default page size
-        result.Value.PageIndex.Should().Be(0); // PageNumber 1 = PageIndex 0
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PageSize.ShouldBe(20); // Default page size
+        result.Value.PageIndex.ShouldBe(0); // PageNumber 1 = PageIndex 0
     }
 
     #endregion

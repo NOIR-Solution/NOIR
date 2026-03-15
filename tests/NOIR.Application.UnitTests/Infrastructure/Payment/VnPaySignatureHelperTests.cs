@@ -1,4 +1,3 @@
-using FluentAssertions;
 using NOIR.Infrastructure.Services.Payment.Providers.VnPay;
 using Xunit;
 
@@ -22,9 +21,9 @@ public class VnPaySignatureHelperTests
         var signature2 = VnPaySignatureHelper.CreateSignature(rawData, TestHashSecret);
 
         // Assert
-        signature1.Should().NotBeNullOrEmpty();
-        signature1.Should().Be(signature2, "Same input should produce same signature");
-        signature1.Should().HaveLength(128, "SHA512 produces 64 bytes = 128 hex characters");
+        signature1.ShouldNotBeNullOrEmpty();
+        signature1.ShouldBe(signature2, "Same input should produce same signature");
+        signature1.Length.ShouldBe(128, "SHA512 produces 64 bytes = 128 hex characters");
     }
 
     [Fact]
@@ -39,7 +38,7 @@ public class VnPaySignatureHelperTests
         var signature2 = VnPaySignatureHelper.CreateSignature(rawData2, TestHashSecret);
 
         // Assert
-        signature1.Should().NotBe(signature2, "Different data should produce different signatures");
+        signature1.ShouldNotBe(signature2, "Different data should produce different signatures");
     }
 
     [Fact]
@@ -55,7 +54,7 @@ public class VnPaySignatureHelperTests
         var signature2 = VnPaySignatureHelper.CreateSignature(rawData, key2);
 
         // Assert
-        signature1.Should().NotBe(signature2, "Different keys should produce different signatures");
+        signature1.ShouldNotBe(signature2, "Different keys should produce different signatures");
     }
 
     [Fact]
@@ -69,7 +68,7 @@ public class VnPaySignatureHelperTests
         var isValid = VnPaySignatureHelper.VerifySignature(rawData, TestHashSecret, signature);
 
         // Assert
-        isValid.Should().BeTrue();
+        isValid.ShouldBe(true);
     }
 
     [Fact]
@@ -84,7 +83,7 @@ public class VnPaySignatureHelperTests
         var isValid = VnPaySignatureHelper.VerifySignature(tamperedData, TestHashSecret, signature);
 
         // Assert
-        isValid.Should().BeFalse("Tampered data should fail signature verification");
+        isValid.ShouldBeFalse("Tampered data should fail signature verification");
     }
 
     [Fact]
@@ -100,7 +99,7 @@ public class VnPaySignatureHelperTests
         var isValid = VnPaySignatureHelper.VerifySignature(rawData, wrongKey, signature);
 
         // Assert
-        isValid.Should().BeFalse("Wrong key should fail signature verification");
+        isValid.ShouldBeFalse("Wrong key should fail signature verification");
     }
 
     [Fact]
@@ -115,7 +114,7 @@ public class VnPaySignatureHelperTests
         var isValid = VnPaySignatureHelper.VerifySignature(rawData, TestHashSecret, upperCaseSignature);
 
         // Assert
-        isValid.Should().BeTrue("Signature comparison should be case-insensitive");
+        isValid.ShouldBeTrue("Signature comparison should be case-insensitive");
     }
 
     [Fact]
@@ -133,9 +132,9 @@ public class VnPaySignatureHelperTests
         var result = VnPaySignatureHelper.BuildDataString(parameters);
 
         // Assert
-        result.Should().Contain("vnp_Apple=first");
-        result.IndexOf("vnp_Apple").Should().BeLessThan(result.IndexOf("vnp_Middle"));
-        result.IndexOf("vnp_Middle").Should().BeLessThan(result.IndexOf("vnp_Zebra"));
+        result.ShouldContain("vnp_Apple=first");
+        result.IndexOf("vnp_Apple").ShouldBeLessThan(result.IndexOf("vnp_Middle"));
+        result.IndexOf("vnp_Middle").ShouldBeLessThan(result.IndexOf("vnp_Zebra"));
     }
 
     [Fact]
@@ -153,9 +152,9 @@ public class VnPaySignatureHelperTests
         var result = VnPaySignatureHelper.BuildDataString(parameters);
 
         // Assert
-        result.Should().Contain("vnp_Filled=value");
-        result.Should().NotContain("vnp_Empty");
-        result.Should().NotContain("vnp_Null");
+        result.ShouldContain("vnp_Filled=value");
+        result.ShouldNotContain("vnp_Empty");
+        result.ShouldNotContain("vnp_Null");
     }
 
     [Fact]
@@ -171,7 +170,7 @@ public class VnPaySignatureHelperTests
         var result = VnPaySignatureHelper.BuildDataString(parameters);
 
         // Assert
-        result.Should().Contain("vnp_OrderInfo=Payment+for+order+%23123");
+        result.ShouldContain("vnp_OrderInfo=Payment+for+order+%23123");
     }
 
     [Fact]
@@ -184,11 +183,11 @@ public class VnPaySignatureHelperTests
         var result = VnPaySignatureHelper.ParseQueryString(queryString);
 
         // Assert
-        result.Should().ContainKey("vnp_Amount");
-        result["vnp_Amount"].Should().Be("1000000");
-        result.Should().ContainKey("vnp_Command");
-        result["vnp_Command"].Should().Be("pay");
-        result.Should().HaveCount(3);
+        result.ShouldContainKey("vnp_Amount");
+        result["vnp_Amount"].ShouldBe("1000000");
+        result.ShouldContainKey("vnp_Command");
+        result["vnp_Command"].ShouldBe("pay");
+        result.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -201,8 +200,8 @@ public class VnPaySignatureHelperTests
         var result = VnPaySignatureHelper.ParseQueryString(queryString);
 
         // Assert
-        result.Should().ContainKey("vnp_Amount");
-        result["vnp_Amount"].Should().Be("1000000");
+        result.ShouldContainKey("vnp_Amount");
+        result["vnp_Amount"].ShouldBe("1000000");
     }
 
     [Fact]
@@ -215,7 +214,7 @@ public class VnPaySignatureHelperTests
         var result = VnPaySignatureHelper.ParseQueryString(queryString);
 
         // Assert
-        result["vnp_OrderInfo"].Should().Be("Payment for order #123");
+        result["vnp_OrderInfo"].ShouldBe("Payment for order #123");
     }
 
     [Fact]
@@ -236,7 +235,7 @@ public class VnPaySignatureHelperTests
         var isValid = VnPaySignatureHelper.ValidateResponseSignature(parameters, TestHashSecret);
 
         // Assert
-        isValid.Should().BeTrue();
+        isValid.ShouldBe(true);
     }
 
     [Fact]
@@ -253,7 +252,7 @@ public class VnPaySignatureHelperTests
         var isValid = VnPaySignatureHelper.ValidateResponseSignature(parameters, TestHashSecret);
 
         // Assert
-        isValid.Should().BeFalse("Missing signature should fail validation");
+        isValid.ShouldBeFalse("Missing signature should fail validation");
     }
 
     [Fact]
@@ -276,6 +275,6 @@ public class VnPaySignatureHelperTests
         var isValid = VnPaySignatureHelper.ValidateResponseSignature(parameters, TestHashSecret);
 
         // Assert
-        isValid.Should().BeFalse("Tampered data should fail validation");
+        isValid.ShouldBeFalse("Tampered data should fail validation");
     }
 }

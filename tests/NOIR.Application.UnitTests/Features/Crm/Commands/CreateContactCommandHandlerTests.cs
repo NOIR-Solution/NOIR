@@ -50,10 +50,10 @@ public class CreateContactCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.FirstName.Should().Be("John");
-        result.Value.LastName.Should().Be("Doe");
-        result.Value.Email.Should().Be("john@example.com");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.FirstName.ShouldBe("John");
+        result.Value.LastName.ShouldBe("Doe");
+        result.Value.Email.ShouldBe("john@example.com");
 
         _contactRepoMock.Verify(
             x => x.AddAsync(It.IsAny<CrmContact>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -79,7 +79,7 @@ public class CreateContactCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _contactRepoMock.Verify(
             x => x.AddAsync(It.IsAny<CrmContact>(), It.IsAny<CancellationToken>()), Times.Never);
     }

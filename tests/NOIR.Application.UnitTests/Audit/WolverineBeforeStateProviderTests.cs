@@ -39,10 +39,10 @@ public class WolverineBeforeStateProviderTests
         var result = await _sut.GetBeforeStateAsync(typeof(TestDto), "123", CancellationToken.None);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().BeOfType<TestDto>();
-        ((TestDto)result!).Id.Should().Be("123");
-        ((TestDto)result).Name.Should().Be("Test Name");
+        result.ShouldNotBeNull();
+        result.ShouldBeOfType<TestDto>();
+        ((TestDto)result!).Id.ShouldBe("123");
+        ((TestDto)result).Name.ShouldBe("Test Name");
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class WolverineBeforeStateProviderTests
         var act = () => _sut.Register<TestDto>(null!);
 
         // Assert
-        act.Should().Throw<ArgumentNullException>();
+        Should.Throw<ArgumentNullException>(act);
     }
 
     [Fact]
@@ -69,8 +69,8 @@ public class WolverineBeforeStateProviderTests
         var result = await _sut.GetBeforeStateAsync(typeof(TestDto), "any", CancellationToken.None);
 
         // Assert
-        result.Should().NotBeNull();
-        ((TestDto)result!).Name.Should().Be("Second");
+        result.ShouldNotBeNull();
+        ((TestDto)result!).Name.ShouldBe("Second");
     }
 
     #endregion
@@ -84,7 +84,7 @@ public class WolverineBeforeStateProviderTests
         var result = await _sut.GetBeforeStateAsync(typeof(TestDto), "123", CancellationToken.None);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -94,7 +94,7 @@ public class WolverineBeforeStateProviderTests
         var result = await _sut.GetBeforeStateAsync(null!, "123", CancellationToken.None);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class WolverineBeforeStateProviderTests
         var result = await _sut.GetBeforeStateAsync(typeof(TestDto), null!, CancellationToken.None);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class WolverineBeforeStateProviderTests
         var result = await _sut.GetBeforeStateAsync(typeof(TestDto), "123", CancellationToken.None);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class WolverineBeforeStateProviderTests
         var result = await _sut.GetBeforeStateAsync(typeof(TestDto), "123", CancellationToken.None);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -153,7 +153,7 @@ public class WolverineBeforeStateProviderTests
         var result = await _sut.GetBeforeStateAsync(typeof(TestDto), "123", cts.Token);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -173,7 +173,7 @@ public class WolverineBeforeStateProviderTests
         await _sut.GetBeforeStateAsync(typeof(TestDto), expectedId, CancellationToken.None);
 
         // Assert
-        capturedId.Should().Be(expectedId);
+        capturedId.ShouldBe(expectedId);
     }
 
     [Fact]
@@ -193,7 +193,7 @@ public class WolverineBeforeStateProviderTests
         await _sut.GetBeforeStateAsync(typeof(TestDto), expectedId, CancellationToken.None);
 
         // Assert
-        capturedId.Should().Be(expectedId);
+        capturedId.ShouldBe(expectedId);
     }
 
     #endregion
@@ -220,9 +220,9 @@ public class WolverineBeforeStateProviderTests
         var results = await Task.WhenAll(tasks);
 
         // Assert
-        results.Should().HaveCount(100);
-        results.Should().AllSatisfy(r => r.Should().NotBeNull());
-        callCount.Should().Be(100);
+        results.Count().ShouldBe(100);
+        foreach (var r in results) r.ShouldNotBeNull();
+        callCount.ShouldBe(100);
     }
 
     [Fact]
@@ -240,7 +240,7 @@ public class WolverineBeforeStateProviderTests
 
         // Assert - should not throw, last registration wins
         var result = await _sut.GetBeforeStateAsync(typeof(TestDto), "any", CancellationToken.None);
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     #endregion
@@ -259,11 +259,11 @@ public class WolverineBeforeStateProviderTests
         var anotherResult = await _sut.GetBeforeStateAsync(typeof(AnotherDto), 456L, CancellationToken.None);
 
         // Assert
-        testResult.Should().BeOfType<TestDto>();
-        ((TestDto)testResult!).Name.Should().Be("TestDto");
+        testResult.ShouldBeOfType<TestDto>();
+        ((TestDto)testResult!).Name.ShouldBe("TestDto");
 
-        anotherResult.Should().BeOfType<AnotherDto>();
-        ((AnotherDto)anotherResult!).Description.Should().Be("AnotherDto");
+        anotherResult.ShouldBeOfType<AnotherDto>();
+        ((AnotherDto)anotherResult!).Description.ShouldBe("AnotherDto");
     }
 
     #endregion

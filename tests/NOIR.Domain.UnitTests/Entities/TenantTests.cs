@@ -19,11 +19,11 @@ public class TenantTests
         var tenant = Tenant.Create(identifier, name);
 
         // Assert
-        tenant.Should().NotBeNull();
-        tenant.Id.Should().NotBeNullOrEmpty();
-        tenant.Identifier.Should().Be(identifier);
-        tenant.Name.Should().Be(name);
-        tenant.IsActive.Should().BeTrue();
+        tenant.ShouldNotBeNull();
+        tenant.Id.ShouldNotBeNullOrEmpty();
+        tenant.Identifier.ShouldBe(identifier);
+        tenant.Name.ShouldBe(name);
+        tenant.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class TenantTests
         var tenant = Tenant.Create("  ACME-Corp  ", "Acme");
 
         // Assert
-        tenant.Identifier.Should().Be("acme-corp");
+        tenant.Identifier.ShouldBe("acme-corp");
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class TenantTests
         var tenant = Tenant.Create("acme", "  Acme Corporation  ");
 
         // Assert
-        tenant.Name.Should().Be("Acme Corporation");
+        tenant.Name.ShouldBe("Acme Corporation");
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class TenantTests
         var tenant = Tenant.Create("acme", "Acme", isActive: false);
 
         // Assert
-        tenant.IsActive.Should().BeFalse();
+        tenant.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class TenantTests
         var act = () => Tenant.Create(null!, "Name");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class TenantTests
         var act = () => Tenant.Create("", "Name");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class TenantTests
         var act = () => Tenant.Create("   ", "Name");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -93,7 +93,7 @@ public class TenantTests
         var act = () => Tenant.Create("identifier", null!);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -103,7 +103,7 @@ public class TenantTests
         var act = () => Tenant.Create("identifier", "");
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public class TenantTests
         var tenant = Tenant.Create("acme", "Acme");
 
         // Assert
-        Guid.TryParse(tenant.Id, out _).Should().BeTrue();
+        Guid.TryParse(tenant.Id, out _).ShouldBeTrue();
     }
 
     [Fact]
@@ -127,7 +127,9 @@ public class TenantTests
 
         // Assert
         var after = DateTimeOffset.UtcNow;
-        tenant.CreatedAt.Should().BeOnOrAfter(before).And.BeOnOrBefore(after);
+        tenant.CreatedAt.ShouldBeGreaterThanOrEqualTo(before);
+
+        tenant.CreatedAt.ShouldBeLessThanOrEqualTo(after);
     }
 
     #endregion
@@ -144,8 +146,8 @@ public class TenantTests
         var guidId = tenant.GetGuidId();
 
         // Assert
-        guidId.Should().NotBe(Guid.Empty);
-        guidId.ToString().Should().Be(tenant.Id);
+        guidId.ShouldNotBe(Guid.Empty);
+        guidId.ToString().ShouldBe(tenant.Id);
     }
 
     #endregion
@@ -164,9 +166,9 @@ public class TenantTests
         var updated = original.CreateUpdated(newIdentifier, newName, null, null, null, true);
 
         // Assert
-        updated.Identifier.Should().Be(newIdentifier);
-        updated.Name.Should().Be(newName);
-        updated.IsActive.Should().BeTrue();
+        updated.Identifier.ShouldBe(newIdentifier);
+        updated.Name.ShouldBe(newName);
+        updated.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -179,7 +181,7 @@ public class TenantTests
         var updated = original.CreateUpdated("updated", "Updated", null, null, null, true);
 
         // Assert
-        updated.Id.Should().Be(original.Id);
+        updated.Id.ShouldBe(original.Id);
     }
 
     [Fact]
@@ -193,8 +195,8 @@ public class TenantTests
         var updated = original.CreateUpdated("updated", "Updated", null, null, null, true);
 
         // Assert
-        updated.ModifiedAt.Should().NotBeNull();
-        updated.ModifiedAt.Should().BeOnOrAfter(beforeUpdate);
+        updated.ModifiedAt.ShouldNotBeNull();
+        updated.ModifiedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeUpdate);
     }
 
     [Fact]
@@ -207,7 +209,7 @@ public class TenantTests
         var updated = original.CreateUpdated("  UPDATED  ", "Updated", null, null, null, true);
 
         // Assert
-        updated.Identifier.Should().Be("updated");
+        updated.Identifier.ShouldBe("updated");
     }
 
     [Fact]
@@ -220,7 +222,7 @@ public class TenantTests
         var updated = original.CreateUpdated("updated", "  Updated Name  ", null, null, null, true);
 
         // Assert
-        updated.Name.Should().Be("Updated Name");
+        updated.Name.ShouldBe("Updated Name");
     }
 
     [Fact]
@@ -233,7 +235,7 @@ public class TenantTests
         var act = () => tenant.CreateUpdated(null!, "Name", null, null, null, true);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -246,7 +248,7 @@ public class TenantTests
         var act = () => tenant.CreateUpdated("identifier", null!, null, null, null, true);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     #endregion
@@ -263,7 +265,7 @@ public class TenantTests
         var activated = tenant.CreateActivated();
 
         // Assert
-        activated.IsActive.Should().BeTrue();
+        activated.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -277,8 +279,8 @@ public class TenantTests
         var activated = tenant.CreateActivated();
 
         // Assert
-        activated.ModifiedAt.Should().NotBeNull();
-        activated.ModifiedAt.Should().BeOnOrAfter(beforeActivation);
+        activated.ModifiedAt.ShouldNotBeNull();
+        activated.ModifiedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeActivation);
     }
 
     [Fact]
@@ -291,9 +293,9 @@ public class TenantTests
         var activated = tenant.CreateActivated();
 
         // Assert
-        activated.Id.Should().Be(tenant.Id);
-        activated.Identifier.Should().Be(tenant.Identifier);
-        activated.Name.Should().Be(tenant.Name);
+        activated.Id.ShouldBe(tenant.Id);
+        activated.Identifier.ShouldBe(tenant.Identifier);
+        activated.Name.ShouldBe(tenant.Name);
     }
 
     #endregion
@@ -310,7 +312,7 @@ public class TenantTests
         var deactivated = tenant.CreateDeactivated();
 
         // Assert
-        deactivated.IsActive.Should().BeFalse();
+        deactivated.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -324,8 +326,8 @@ public class TenantTests
         var deactivated = tenant.CreateDeactivated();
 
         // Assert
-        deactivated.ModifiedAt.Should().NotBeNull();
-        deactivated.ModifiedAt.Should().BeOnOrAfter(beforeDeactivation);
+        deactivated.ModifiedAt.ShouldNotBeNull();
+        deactivated.ModifiedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeDeactivation);
     }
 
     [Fact]
@@ -338,9 +340,9 @@ public class TenantTests
         var deactivated = tenant.CreateDeactivated();
 
         // Assert
-        deactivated.Id.Should().Be(tenant.Id);
-        deactivated.Identifier.Should().Be(tenant.Identifier);
-        deactivated.Name.Should().Be(tenant.Name);
+        deactivated.Id.ShouldBe(tenant.Id);
+        deactivated.Identifier.ShouldBe(tenant.Identifier);
+        deactivated.Name.ShouldBe(tenant.Name);
     }
 
     #endregion
@@ -357,9 +359,9 @@ public class TenantTests
         var deleted = tenant.CreateDeleted();
 
         // Assert
-        deleted.IsDeleted.Should().BeTrue();
-        deleted.DeletedAt.Should().NotBeNull();
-        deleted.DeletedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
+        deleted.IsDeleted.ShouldBeTrue();
+        deleted.DeletedAt.ShouldNotBeNull();
+        deleted.DeletedAt!.Value.ShouldBe(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
@@ -373,7 +375,7 @@ public class TenantTests
         var deleted = tenant.CreateDeleted(deletedBy);
 
         // Assert
-        deleted.DeletedBy.Should().Be(deletedBy);
+        deleted.DeletedBy.ShouldBe(deletedBy);
     }
 
     [Fact]
@@ -386,10 +388,10 @@ public class TenantTests
         var deleted = tenant.CreateDeleted("admin");
 
         // Assert
-        deleted.Id.Should().Be(tenant.Id);
-        deleted.Identifier.Should().Be(tenant.Identifier);
-        deleted.Name.Should().Be(tenant.Name);
-        deleted.IsActive.Should().Be(tenant.IsActive);
+        deleted.Id.ShouldBe(tenant.Id);
+        deleted.Identifier.ShouldBe(tenant.Identifier);
+        deleted.Name.ShouldBe(tenant.Name);
+        deleted.IsActive.ShouldBe(tenant.IsActive);
     }
 
     [Fact]
@@ -403,8 +405,8 @@ public class TenantTests
         var deleted = tenant.CreateDeleted();
 
         // Assert
-        deleted.ModifiedAt.Should().NotBeNull();
-        deleted.ModifiedAt.Should().BeOnOrAfter(beforeDeletion);
+        deleted.ModifiedAt.ShouldNotBeNull();
+        deleted.ModifiedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeDeletion);
     }
 
     #endregion
@@ -418,11 +420,11 @@ public class TenantTests
         var tenant = Tenant.Create("acme", "Acme");
 
         // Assert
-        tenant.IsDeleted.Should().BeFalse();
-        tenant.DeletedAt.Should().BeNull();
-        tenant.DeletedBy.Should().BeNull();
-        tenant.CreatedBy.Should().BeNull();
-        tenant.ModifiedBy.Should().BeNull();
+        tenant.IsDeleted.ShouldBeFalse();
+        tenant.DeletedAt.ShouldBeNull();
+        tenant.DeletedBy.ShouldBeNull();
+        tenant.CreatedBy.ShouldBeNull();
+        tenant.ModifiedBy.ShouldBeNull();
     }
 
     #endregion

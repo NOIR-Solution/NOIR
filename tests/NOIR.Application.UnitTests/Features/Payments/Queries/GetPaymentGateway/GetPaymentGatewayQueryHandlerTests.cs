@@ -63,10 +63,10 @@ public class GetPaymentGatewayQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Provider.Should().Be("vnpay");
-        result.Value.DisplayName.Should().Be("VNPay");
-        result.Value.IsActive.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Provider.ShouldBe("vnpay");
+        result.Value.DisplayName.ShouldBe("VNPay");
+        result.Value.IsActive.ShouldBe(true);
     }
 
     [Fact]
@@ -88,21 +88,21 @@ public class GetPaymentGatewayQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Id.Should().Be(gateway.Id);
-        dto.Provider.Should().Be("momo");
-        dto.DisplayName.Should().Be("MoMo");
-        dto.IsActive.Should().BeTrue();
-        dto.SortOrder.Should().Be(5);
-        dto.Environment.Should().Be(GatewayEnvironment.Sandbox);
-        dto.HasCredentials.Should().BeTrue();
-        dto.WebhookUrl.Should().Be("https://api.example.com/webhooks/vnpay");
-        dto.MinAmount.Should().Be(10000);
-        dto.MaxAmount.Should().Be(100000000);
-        dto.SupportedCurrencies.Should().Be("[\"VND\"]");
-        dto.HealthStatus.Should().Be(GatewayHealthStatus.Healthy);
-        dto.LastHealthCheck.Should().NotBeNull();
+        dto.Id.ShouldBe(gateway.Id);
+        dto.Provider.ShouldBe("momo");
+        dto.DisplayName.ShouldBe("MoMo");
+        dto.IsActive.ShouldBe(true);
+        dto.SortOrder.ShouldBe(5);
+        dto.Environment.ShouldBe(GatewayEnvironment.Sandbox);
+        dto.HasCredentials.ShouldBe(true);
+        dto.WebhookUrl.ShouldBe("https://api.example.com/webhooks/vnpay");
+        dto.MinAmount.ShouldBe(10000);
+        dto.MaxAmount.ShouldBe(100000000);
+        dto.SupportedCurrencies.ShouldBe("[\"VND\"]");
+        dto.HealthStatus.ShouldBe(GatewayHealthStatus.Healthy);
+        dto.LastHealthCheck.ShouldNotBeNull();
     }
 
     [Fact]
@@ -123,8 +123,8 @@ public class GetPaymentGatewayQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(false);
     }
 
     [Fact]
@@ -145,8 +145,8 @@ public class GetPaymentGatewayQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.HasCredentials.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.HasCredentials.ShouldBe(false);
     }
 
     #endregion
@@ -171,8 +171,8 @@ public class GetPaymentGatewayQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Payment.GatewayNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.GatewayNotFound);
     }
 
     #endregion

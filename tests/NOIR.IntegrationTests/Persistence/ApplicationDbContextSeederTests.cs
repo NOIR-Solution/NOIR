@@ -47,7 +47,7 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
             foreach (var roleName in Roles.Defaults)
             {
                 var role = await roleManager.FindByNameAsync(roleName);
-                role.Should().NotBeNull($"Role '{roleName}' should exist");
+                role.ShouldNotBeNull($"Role '{roleName}' should exist");
             }
         });
     }
@@ -63,9 +63,9 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
             var adminUser = await userManager.FindByEmailAsync("admin@noir.local");
 
             // Assert
-            adminUser.Should().NotBeNull();
-            adminUser!.EmailConfirmed.Should().BeTrue();
-            adminUser.IsActive.Should().BeTrue();
+            adminUser.ShouldNotBeNull();
+            adminUser!.EmailConfirmed.ShouldBeTrue();
+            adminUser.IsActive.ShouldBeTrue();
         });
     }
 
@@ -80,9 +80,9 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
             var adminUser = await userManager.FindByEmailAsync("admin@noir.local");
 
             // Assert
-            adminUser.Should().NotBeNull();
+            adminUser.ShouldNotBeNull();
             var isInAdminRole = await userManager.IsInRoleAsync(adminUser!, Roles.Admin);
-            isInAdminRole.Should().BeTrue();
+            isInAdminRole.ShouldBeTrue();
         });
     }
 
@@ -97,7 +97,7 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
             var adminRole = await roleManager.FindByNameAsync(Roles.Admin);
 
             // Assert
-            adminRole.Should().NotBeNull();
+            adminRole.ShouldNotBeNull();
 
             var claims = await roleManager.GetClaimsAsync(adminRole!);
             var permissionClaims = claims
@@ -106,7 +106,7 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
                 .ToList();
 
             // Admin should have admin permissions
-            permissionClaims.Should().Contain(Permissions.AdminDefaults);
+            foreach (var perm in Permissions.AdminDefaults) permissionClaims.ShouldContain(perm);
         });
     }
 
@@ -121,7 +121,7 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
             var userRole = await roleManager.FindByNameAsync(Roles.User);
 
             // Assert
-            userRole.Should().NotBeNull();
+            userRole.ShouldNotBeNull();
 
             var claims = await roleManager.GetClaimsAsync(userRole!);
             var permissionClaims = claims
@@ -130,7 +130,7 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
                 .ToList();
 
             // User should have user permissions
-            permissionClaims.Should().Contain(Permissions.UserDefaults);
+            foreach (var perm in Permissions.UserDefaults) permissionClaims.ShouldContain(perm);
         });
     }
 
@@ -147,12 +147,12 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
 
             // Assert - Should have exactly the default roles, no duplicates
             var roles = roleManager.Roles.ToList();
-            roles.Should().HaveCount(Roles.Defaults.Count());
+            roles.Count().ShouldBe(Roles.Defaults.Count());
 
             // Each default role should exist exactly once
             foreach (var roleName in Roles.Defaults)
             {
-                roles.Count(r => r.Name == roleName).Should().Be(1,
+                roles.Count(r => r.Name == roleName).ShouldBe(1,
                     $"Role '{roleName}' should exist exactly once");
             }
 
@@ -169,7 +169,7 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
 
             // Arrange
             var adminRole = await roleManager.FindByNameAsync(Roles.Admin);
-            adminRole.Should().NotBeNull();
+            adminRole.ShouldNotBeNull();
 
             // Assert - Each admin permission should exist exactly once
             var claims = await roleManager.GetClaimsAsync(adminRole!);
@@ -181,7 +181,7 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
             var groupedClaims = permissionClaims.GroupBy(c => c.Value);
             foreach (var group in groupedClaims)
             {
-                group.Count().Should().Be(1,
+                group.Count().ShouldBe(1,
                     $"Permission '{group.Key}' should exist exactly once on Admin role");
             }
         });
@@ -203,8 +203,8 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
                 .Where(u => u.Email == "admin@noir.local")
                 .ToListAsync();
 
-            adminUsers.Should().HaveCount(1);
-            adminUsers[0].Should().NotBeNull();
+            adminUsers.Count().ShouldBe(1);
+            adminUsers[0].ShouldNotBeNull();
         });
     }
 
@@ -219,9 +219,9 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
             var adminUser = await userManager.FindByEmailAsync("admin@noir.local");
 
             // Assert
-            adminUser.Should().NotBeNull();
+            adminUser.ShouldNotBeNull();
             var passwordValid = await userManager.CheckPasswordAsync(adminUser!, "123qwe");
-            passwordValid.Should().BeTrue();
+            passwordValid.ShouldBeTrue();
         });
     }
 
@@ -236,8 +236,8 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
             var adminUser = await userManager.FindByEmailAsync("admin@noir.local");
 
             // Assert - Admin user should have confirmed email set during seeding
-            adminUser.Should().NotBeNull();
-            adminUser!.EmailConfirmed.Should().BeTrue();
+            adminUser.ShouldNotBeNull();
+            adminUser!.EmailConfirmed.ShouldBeTrue();
         });
     }
 
@@ -254,7 +254,7 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
 
             // Assert - Tables should exist and be queryable
             var canConnect = await context.Database.CanConnectAsync();
-            canConnect.Should().BeTrue();
+            canConnect.ShouldBeTrue();
 
             // Query each DbSet to ensure tables exist
             _ = await context.RefreshTokens.Take(1).ToListAsync();
@@ -274,13 +274,13 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
 
             // Assert - Should have exactly the default roles (PlatformAdmin, Admin, User)
             var roles = roleManager.Roles.ToList();
-            roles.Should().HaveCount(Roles.Defaults.Count);
+            roles.Count().ShouldBe(Roles.Defaults.Count);
 
             // Should have exactly 1 admin user
             var adminUsers = await userManager.Users
                 .Where(u => u.Email == "admin@noir.local")
                 .ToListAsync();
-            adminUsers.Should().HaveCount(1);
+            adminUsers.Count().ShouldBe(1);
         });
     }
 
@@ -299,11 +299,11 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
             foreach (var roleName in Roles.Defaults)
             {
                 var role = await roleManager.FindByNameAsync(roleName);
-                role.Should().NotBeNull($"Role '{roleName}' should exist");
+                role.ShouldNotBeNull($"Role '{roleName}' should exist");
 
                 var claims = await roleManager.GetClaimsAsync(role!);
                 var permissionClaims = claims.Where(c => c.Type == Permissions.ClaimType);
-                permissionClaims.Should().NotBeEmpty($"Role '{roleName}' should have permissions");
+                permissionClaims.ShouldNotBeEmpty($"Role '{roleName}' should have permissions");
             }
         });
     }
@@ -325,9 +325,9 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(t => t.Identifier == "default");
 
-            defaultTenant.Should().NotBeNull();
-            defaultTenant!.IsActive.Should().BeTrue();
-            defaultTenant.IsDeleted.Should().BeFalse();
+            defaultTenant.ShouldNotBeNull();
+            defaultTenant!.IsActive.ShouldBeTrue();
+            defaultTenant.IsDeleted.ShouldBeFalse();
         });
     }
 
@@ -344,7 +344,7 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(t => t.Identifier == "default");
 
-            defaultTenant.Should().NotBeNull();
+            defaultTenant.ShouldNotBeNull();
 
             // Soft delete by mutating tracked entity properties
             defaultTenant!.IsDeleted = true;
@@ -356,7 +356,7 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
             var verifyDeleted = await tenantContext.TenantInfo
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(t => t.Identifier == "default");
-            verifyDeleted!.IsDeleted.Should().BeTrue();
+            verifyDeleted!.IsDeleted.ShouldBeTrue();
 
             // Act - Re-run the seeder which should restore the tenant
             var settings = new DefaultTenantSettings
@@ -372,11 +372,11 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(t => t.Identifier == "default");
 
-            restoredTenant.Should().NotBeNull();
-            restoredTenant!.IsDeleted.Should().BeFalse();
-            restoredTenant.DeletedAt.Should().BeNull();
-            restoredTenant.DeletedBy.Should().BeNull();
-            restoredTenant.IsActive.Should().BeTrue();
+            restoredTenant.ShouldNotBeNull();
+            restoredTenant!.IsDeleted.ShouldBeFalse();
+            restoredTenant.DeletedAt.ShouldBeNull();
+            restoredTenant.DeletedBy.ShouldBeNull();
+            restoredTenant.IsActive.ShouldBeTrue();
         });
     }
 

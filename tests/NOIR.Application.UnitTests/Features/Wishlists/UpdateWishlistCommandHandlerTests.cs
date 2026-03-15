@@ -62,8 +62,8 @@ public class UpdateWishlistCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Updated Name");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Updated Name");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -87,8 +87,8 @@ public class UpdateWishlistCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingWishlist.IsPublic.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        existingWishlist.IsPublic.ShouldBe(true);
     }
 
     #endregion
@@ -111,7 +111,7 @@ public class UpdateWishlistCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -139,7 +139,7 @@ public class UpdateWishlistCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),

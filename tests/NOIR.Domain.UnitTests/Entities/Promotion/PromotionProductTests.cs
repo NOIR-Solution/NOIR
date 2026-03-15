@@ -24,10 +24,10 @@ public class PromotionProductTests
         var pp = new PromotionProduct(id, promotionId, productId, TestTenantId);
 
         // Assert
-        pp.Id.Should().Be(id);
-        pp.PromotionId.Should().Be(promotionId);
-        pp.ProductId.Should().Be(productId);
-        pp.TenantId.Should().Be(TestTenantId);
+        pp.Id.ShouldBe(id);
+        pp.PromotionId.ShouldBe(promotionId);
+        pp.ProductId.ShouldBe(productId);
+        pp.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class PromotionProductTests
         var pp = new PromotionProduct(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), null);
 
         // Assert
-        pp.TenantId.Should().BeNull();
+        pp.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -52,9 +52,9 @@ public class PromotionProductTests
         var pp = new PromotionProduct(id, promotionId, productId, TestTenantId);
 
         // Assert
-        pp.Id.Should().Be(id);
-        pp.PromotionId.Should().Be(promotionId);
-        pp.ProductId.Should().Be(productId);
+        pp.Id.ShouldBe(id);
+        pp.PromotionId.ShouldBe(promotionId);
+        pp.ProductId.ShouldBe(productId);
     }
 
     [Fact]
@@ -65,9 +65,9 @@ public class PromotionProductTests
         var pp2 = new PromotionProduct(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), TestTenantId);
 
         // Assert
-        pp1.Id.Should().NotBe(pp2.Id);
-        pp1.PromotionId.Should().NotBe(pp2.PromotionId);
-        pp1.ProductId.Should().NotBe(pp2.ProductId);
+        pp1.Id.ShouldNotBe(pp2.Id);
+        pp1.PromotionId.ShouldNotBe(pp2.PromotionId);
+        pp1.ProductId.ShouldNotBe(pp2.ProductId);
     }
 
     #endregion
@@ -89,10 +89,10 @@ public class PromotionProductTests
         promotion.AddProduct(productId);
 
         // Assert
-        promotion.Products.Should().HaveCount(1);
+        promotion.Products.Count().ShouldBe(1);
         var pp = promotion.Products.First();
-        pp.PromotionId.Should().Be(promotion.Id);
-        pp.ProductId.Should().Be(productId);
+        pp.PromotionId.ShouldBe(promotion.Id);
+        pp.ProductId.ShouldBe(productId);
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class PromotionProductTests
         promotion.AddProduct(productId);
 
         // Assert
-        promotion.Products.Should().HaveCount(1);
+        promotion.Products.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -132,8 +132,8 @@ public class PromotionProductTests
         promotion.RemoveProduct(productId1);
 
         // Assert
-        promotion.Products.Should().HaveCount(1);
-        promotion.Products.First().ProductId.Should().Be(productId2);
+        promotion.Products.Count().ShouldBe(1);
+        promotion.Products.First().ProductId.ShouldBe(productId2);
     }
 
     #endregion

@@ -2,7 +2,7 @@
 
 // Testing Framework
 global using Xunit;
-global using FluentAssertions;
+global using Shouldly;
 global using Moq;
 global using Bogus;
 global using MockQueryable.Moq;

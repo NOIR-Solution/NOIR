@@ -69,13 +69,13 @@ public class GetPromotionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.TotalCount.Should().Be(5);
-        result.Value.PageIndex.Should().Be(0);
-        result.Value.PageNumber.Should().Be(1);
-        result.Value.PageSize.Should().Be(20);
-        result.Value.TotalPages.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.TotalCount.ShouldBe(5);
+        result.Value.PageIndex.ShouldBe(0);
+        result.Value.PageNumber.ShouldBe(1);
+        result.Value.PageSize.ShouldBe(20);
+        result.Value.TotalPages.ShouldBe(1);
     }
 
     [Fact]
@@ -102,13 +102,13 @@ public class GetPromotionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(10);
-        result.Value.TotalCount.Should().Be(25);
-        result.Value.PageIndex.Should().Be(1);
-        result.Value.PageNumber.Should().Be(2);
-        result.Value.PageSize.Should().Be(10);
-        result.Value.TotalPages.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(10);
+        result.Value.TotalCount.ShouldBe(25);
+        result.Value.PageIndex.ShouldBe(1);
+        result.Value.PageNumber.ShouldBe(2);
+        result.Value.PageSize.ShouldBe(10);
+        result.Value.TotalPages.ShouldBe(3);
     }
 
     [Fact]
@@ -133,10 +133,10 @@ public class GetPromotionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
-        result.Value.TotalPages.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
+        result.Value.TotalPages.ShouldBe(0);
     }
 
     [Fact]
@@ -163,11 +163,11 @@ public class GetPromotionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var item = result.Value.Items.First();
-        item.Name.Should().Be("Flash Sale");
-        item.Code.Should().Be("FLASH2026");
-        item.PromotionType.Should().Be(PromotionType.FlashSale);
+        item.Name.ShouldBe("Flash Sale");
+        item.Code.ShouldBe("FLASH2026");
+        item.PromotionType.ShouldBe(PromotionType.FlashSale);
     }
 
     #endregion

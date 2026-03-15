@@ -102,7 +102,7 @@ public class HistoricalLogServiceTests : IDisposable
         var sut = CreateSut();
 
         // Assert
-        sut.Should().NotBeNull();
+        sut.ShouldNotBeNull();
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class HistoricalLogServiceTests : IDisposable
         var sut = CreateSut();
 
         // Assert
-        sut.Should().BeAssignableTo<IHistoricalLogService>();
+        sut.ShouldBeAssignableTo<IHistoricalLogService>();
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public class HistoricalLogServiceTests : IDisposable
         var sut = CreateSut();
 
         // Assert
-        sut.Should().BeAssignableTo<IScopedService>();
+        sut.ShouldBeAssignableTo<IScopedService>();
     }
 
     #endregion
@@ -139,7 +139,7 @@ public class HistoricalLogServiceTests : IDisposable
         var dates = await sut.GetAvailableDatesAsync();
 
         // Assert
-        dates.Should().BeEmpty();
+        dates.ShouldBeEmpty();
     }
 
     [Fact]
@@ -158,9 +158,9 @@ public class HistoricalLogServiceTests : IDisposable
         var dates = await sut.GetAvailableDatesAsync();
 
         // Assert
-        dates.Should().HaveCount(2);
-        dates.Should().Contain(today);
-        dates.Should().Contain(yesterday);
+        dates.Count().ShouldBe(2);
+        dates.ShouldContain(today);
+        dates.ShouldContain(yesterday);
     }
 
     [Fact]
@@ -181,9 +181,9 @@ public class HistoricalLogServiceTests : IDisposable
         var dates = (await sut.GetAvailableDatesAsync()).ToList();
 
         // Assert
-        dates[0].Should().Be(day3);
-        dates[1].Should().Be(day2);
-        dates[2].Should().Be(day1);
+        dates[0].ShouldBe(day3);
+        dates[1].ShouldBe(day2);
+        dates[2].ShouldBe(day1);
     }
 
     [Fact]
@@ -207,8 +207,8 @@ public class HistoricalLogServiceTests : IDisposable
         var dates = await sut.GetAvailableDatesAsync();
 
         // Assert
-        dates.Should().HaveCount(1);
-        dates.Should().Contain(today);
+        dates.Count().ShouldBe(1);
+        dates.ShouldContain(today);
     }
 
     #endregion
@@ -227,9 +227,9 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Items.Should().BeEmpty();
-        result.TotalCount.Should().Be(0);
-        result.TotalPages.Should().Be(0);
+        result.Items.ShouldBeEmpty();
+        result.TotalCount.ShouldBe(0);
+        result.TotalPages.ShouldBe(0);
     }
 
     [Fact]
@@ -249,8 +249,8 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Items.Should().HaveCount(3);
-        result.TotalCount.Should().Be(3);
+        result.Items.Count().ShouldBe(3);
+        result.TotalCount.ShouldBe(3);
     }
 
     [Fact]
@@ -268,7 +268,7 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Items.First().Level.Should().Be(DevLogLevel.Error);
+        result.Items.First().Level.ShouldBe(DevLogLevel.Error);
     }
 
     [Fact]
@@ -287,7 +287,7 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Items.First().Timestamp.Should().BeCloseTo(expectedTime, TimeSpan.FromSeconds(1));
+        result.Items.First().Timestamp.ShouldBe(expectedTime, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
@@ -305,7 +305,7 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Items.First().SourceContext.Should().Be("NOIR.Application.Services.TestService");
+        result.Items.First().SourceContext.ShouldBe("NOIR.Application.Services.TestService");
     }
 
     [Fact]
@@ -326,8 +326,8 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Items.Should().HaveCount(2);
-        result.Items.All(e => e.Level >= DevLogLevel.Warning).Should().BeTrue();
+        result.Items.Count().ShouldBe(2);
+        result.Items.All(e => e.Level >= DevLogLevel.Warning).ShouldBe(true);
     }
 
     [Fact]
@@ -348,8 +348,8 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Items.Should().HaveCount(2);
-        result.Items.Select(e => e.Level).Should().BeEquivalentTo(new[] { DevLogLevel.Debug, DevLogLevel.Error });
+        result.Items.Count().ShouldBe(2);
+        result.Items.Select(e => e.Level).OrderBy(x => x).ShouldBe(new[] { DevLogLevel.Debug, DevLogLevel.Error }.OrderBy(x => x));
     }
 
     [Fact]
@@ -369,7 +369,7 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Items.Should().HaveCount(2);
+        result.Items.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -389,7 +389,7 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Items.Should().HaveCount(2);
+        result.Items.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -409,7 +409,7 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Items.Should().HaveCount(2);
+        result.Items.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -429,8 +429,8 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Items.Should().HaveCount(1);
-        result.Items.First().SourceContext.Should().StartWith("NOIR.Application");
+        result.Items.Count().ShouldBe(1);
+        result.Items.First().SourceContext.ShouldStartWith("NOIR.Application");
     }
 
     [Fact]
@@ -449,8 +449,8 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Items.Should().HaveCount(1);
-        result.Items.First().Exception.Should().NotBeNull();
+        result.Items.Count().ShouldBe(1);
+        result.Items.First().Exception.ShouldNotBeNull();
     }
 
     [Fact]
@@ -470,11 +470,11 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Items.Should().HaveCount(10);
-        result.Page.Should().Be(2);
-        result.PageSize.Should().Be(10);
-        result.TotalCount.Should().Be(25);
-        result.TotalPages.Should().Be(3);
+        result.Items.Count().ShouldBe(10);
+        result.Page.ShouldBe(2);
+        result.PageSize.ShouldBe(10);
+        result.TotalCount.ShouldBe(25);
+        result.TotalPages.ShouldBe(3);
     }
 
     [Fact]
@@ -494,7 +494,7 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.TotalPages.Should().Be(4); // 17 items / 5 per page = 4 pages
+        result.TotalPages.ShouldBe(4); // 17 items / 5 per page = 4 pages
     }
 
     [Fact]
@@ -515,9 +515,9 @@ public class HistoricalLogServiceTests : IDisposable
         var items = result.Items.ToList();
 
         // Assert
-        items[0].Message.Should().Be("Third");
-        items[1].Message.Should().Be("Second");
-        items[2].Message.Should().Be("First");
+        items[0].Message.ShouldBe("Third");
+        items[1].Message.ShouldBe("Second");
+        items[2].Message.ShouldBe("First");
     }
 
     [Fact]
@@ -538,9 +538,9 @@ public class HistoricalLogServiceTests : IDisposable
         var items = result.Items.ToList();
 
         // Assert
-        items[0].Message.Should().Be("First");
-        items[1].Message.Should().Be("Second");
-        items[2].Message.Should().Be("Third");
+        items[0].Message.ShouldBe("First");
+        items[1].Message.ShouldBe("Second");
+        items[2].Message.ShouldBe("Third");
     }
 
     [Fact]
@@ -567,7 +567,7 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Items.Should().HaveCount(2);
+        result.Items.Count().ShouldBe(2);
     }
 
     #endregion
@@ -593,7 +593,7 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.SearchLogsAsync(day1, day3, query);
 
         // Assert
-        result.Items.Should().HaveCount(3);
+        result.Items.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -617,8 +617,8 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.SearchLogsAsync(day1, day2, query);
 
         // Assert
-        result.Items.Should().HaveCount(2);
-        result.Items.All(e => e.Level == DevLogLevel.Error).Should().BeTrue();
+        result.Items.Count().ShouldBe(2);
+        result.Items.All(e => e.Level == DevLogLevel.Error).ShouldBe(true);
     }
 
     [Fact]
@@ -639,9 +639,9 @@ public class HistoricalLogServiceTests : IDisposable
         var items = result.Items.ToList();
 
         // Assert - Service returns entries with timestamps, verify both are present
-        items.Should().HaveCount(2);
-        items.Should().Contain(e => e.Message == "Day 1");
-        items.Should().Contain(e => e.Message == "Day 2");
+        items.Count().ShouldBe(2);
+        items.ShouldContain(e => e.Message == "Day 1");
+        items.ShouldContain(e => e.Message == "Day 2");
     }
 
     [Fact]
@@ -662,7 +662,7 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.SearchLogsAsync(day1, day3, query);
 
         // Assert
-        result.Items.Should().HaveCount(2);
+        result.Items.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -689,9 +689,9 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.SearchLogsAsync(day1, day2, query);
 
         // Assert - Service uses early termination optimization, may not read all files
-        result.Items.Should().HaveCount(5);
-        result.TotalCount.Should().BeGreaterThanOrEqualTo(10); // At least from one day
-        result.TotalPages.Should().BeGreaterThanOrEqualTo(2);
+        result.Items.Count().ShouldBe(5);
+        result.TotalCount.ShouldBeGreaterThanOrEqualTo(10); // At least from one day
+        result.TotalPages.ShouldBeGreaterThanOrEqualTo(2);
     }
 
     #endregion
@@ -710,7 +710,7 @@ public class HistoricalLogServiceTests : IDisposable
         var size = await sut.GetLogFileSizeAsync(fromDate, toDate);
 
         // Assert
-        size.Should().Be(0);
+        size.ShouldBe(0);
     }
 
     [Fact]
@@ -729,7 +729,7 @@ public class HistoricalLogServiceTests : IDisposable
         var size = await sut.GetLogFileSizeAsync(day1, day2);
 
         // Assert
-        size.Should().BeGreaterThan(0);
+        size.ShouldBeGreaterThan(0);
     }
 
     [Fact]
@@ -749,7 +749,7 @@ public class HistoricalLogServiceTests : IDisposable
         var size = await sut.GetLogFileSizeAsync(day1, day3);
 
         // Assert
-        size.Should().BeGreaterThan(0);
+        size.ShouldBeGreaterThan(0);
     }
 
     #endregion
@@ -771,8 +771,8 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Items.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result.Items.ShouldNotBeNull();
     }
 
     [Fact]
@@ -793,7 +793,7 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Items.Should().BeEmpty();
+        result.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -815,7 +815,7 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query, cts.Token);
 
         // Assert - Should return partial or empty results, not throw
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     #endregion
@@ -841,10 +841,10 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Items.Should().HaveCount(1);
+        result.Items.Count().ShouldBe(1);
         var entry = result.Items.First();
-        entry.Message.Should().Be("Test message");
-        entry.Level.Should().Be(DevLogLevel.Information);
+        entry.Message.ShouldBe("Test message");
+        entry.Level.ShouldBe(DevLogLevel.Information);
     }
 
     [Fact]
@@ -866,11 +866,11 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Items.Should().HaveCount(1);
+        result.Items.Count().ShouldBe(1);
         var entry = result.Items.First();
-        entry.Message.Should().Be("Full format test");
-        entry.Level.Should().Be(DevLogLevel.Warning);
-        entry.SourceContext.Should().Be("TestSource");
+        entry.Message.ShouldBe("Full format test");
+        entry.Level.ShouldBe(DevLogLevel.Warning);
+        entry.SourceContext.ShouldBe("TestSource");
     }
 
     [Theory]
@@ -905,7 +905,7 @@ public class HistoricalLogServiceTests : IDisposable
         var result = await sut.GetLogsAsync(date, query);
 
         // Assert
-        result.Items.First().Level.Should().Be(expectedLevel);
+        result.Items.First().Level.ShouldBe(expectedLevel);
     }
 
     [Fact]
@@ -928,9 +928,9 @@ public class HistoricalLogServiceTests : IDisposable
 
         // Assert
         var entry = result.Items.First();
-        entry.Exception.Should().NotBeNull();
-        entry.Exception!.Type.Should().Be("System.InvalidOperationException");
-        entry.Exception.Message.Should().Be("Test error message");
+        entry.Exception.ShouldNotBeNull();
+        entry.Exception!.Type.ShouldBe("System.InvalidOperationException");
+        entry.Exception.Message.ShouldBe("Test error message");
     }
 
     #endregion

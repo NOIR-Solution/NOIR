@@ -40,7 +40,7 @@ public class LogoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _cookieAuthServiceMock.Verify(x => x.ClearAuthCookies(), Times.Once);
     }
 
@@ -55,7 +55,7 @@ public class LogoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _cookieAuthServiceMock.Verify(x => x.ClearAuthCookies(), Times.Once);
     }
 
@@ -71,7 +71,7 @@ public class LogoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _refreshTokenServiceMock.Verify(
             x => x.RevokeTokenAsync(
                 refreshToken,
@@ -94,7 +94,7 @@ public class LogoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _cookieAuthServiceMock.Verify(x => x.GetRefreshTokenFromCookie(), Times.Once);
         _refreshTokenServiceMock.Verify(
             x => x.RevokeTokenAsync(
@@ -116,7 +116,7 @@ public class LogoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _refreshTokenServiceMock.Verify(
             x => x.RevokeAllUserTokensAsync(
                 "user-123",
@@ -162,7 +162,7 @@ public class LogoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _refreshTokenServiceMock.Verify(
             x => x.RevokeTokenAsync(
                 It.IsAny<string>(),
@@ -183,7 +183,7 @@ public class LogoutCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _refreshTokenServiceMock.Verify(
             x => x.RevokeTokenAsync(
                 It.IsAny<string>(),

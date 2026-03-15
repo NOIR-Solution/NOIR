@@ -507,10 +507,10 @@ public class TenantValidatorsTests
 
             // Assert
             result.ShouldNotHaveAnyValidationErrors();
-            command.TenantId.Should().Be(tenantId);
-            command.Identifier.Should().Be(request.Identifier);
-            command.Name.Should().Be(request.Name);
-            command.IsActive.Should().Be(request.IsActive);
+            command.TenantId.ShouldBe(tenantId);
+            command.Identifier.ShouldBe(request.Identifier);
+            command.Name.ShouldBe(request.Name);
+            command.IsActive.ShouldBe(request.IsActive);
         }
     }
 

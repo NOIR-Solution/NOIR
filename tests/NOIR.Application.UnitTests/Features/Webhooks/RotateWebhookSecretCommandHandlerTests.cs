@@ -60,9 +60,9 @@ public class RotateWebhookSecretCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Secret.Should().NotBeNullOrWhiteSpace();
-        result.Value.Secret.Should().HaveLength(64); // 32 bytes = 64 hex chars
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Secret.ShouldNotBeNullOrWhiteSpace();
+        result.Value.Secret.Length.ShouldBe(64); // 32 bytes = 64 hex chars
     }
 
     [Fact]
@@ -87,8 +87,8 @@ public class RotateWebhookSecretCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Secret.Should().NotBe(originalSecret);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Secret.ShouldNotBe(originalSecret);
     }
 
     [Fact]
@@ -137,8 +137,8 @@ public class RotateWebhookSecretCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-WEBHOOK-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-WEBHOOK-002");
     }
 
     #endregion

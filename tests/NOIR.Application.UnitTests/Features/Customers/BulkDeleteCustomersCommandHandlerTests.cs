@@ -79,10 +79,10 @@ public class BulkDeleteCustomersCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(2);
-        result.Value.Failed.Should().Be(0);
-        result.Value.Errors.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(2);
+        result.Value.Failed.ShouldBe(0);
+        result.Value.Errors.ShouldBeEmpty();
 
         _customerRepositoryMock.Verify(
             x => x.Remove(It.IsAny<Customer>()),
@@ -121,11 +121,11 @@ public class BulkDeleteCustomersCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(0);
-        result.Value.Failed.Should().Be(2);
-        result.Value.Errors.Should().HaveCount(2);
-        result.Value.Errors.Should().AllSatisfy(e => e.Message.Should().Contain("not found"));
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(0);
+        result.Value.Failed.ShouldBe(2);
+        result.Value.Errors.Count().ShouldBe(2);
+        result.Value.Errors.ShouldAllBe(e => e.Message.Contains("not found"));
     }
 
     #endregion

@@ -59,15 +59,15 @@ public class CartTests
         var cart = Domain.Entities.Cart.Cart.CreateForUser(TestUserId, TestCurrency, TestTenantId);
 
         // Assert
-        cart.Should().NotBeNull();
-        cart.Id.Should().NotBe(Guid.Empty);
-        cart.UserId.Should().Be(TestUserId);
-        cart.SessionId.Should().BeNull();
-        cart.Status.Should().Be(CartStatus.Active);
-        cart.Currency.Should().Be(TestCurrency);
-        cart.TenantId.Should().Be(TestTenantId);
-        cart.ExpiresAt.Should().BeNull();
-        cart.Items.Should().BeEmpty();
+        cart.ShouldNotBeNull();
+        cart.Id.ShouldNotBe(Guid.Empty);
+        cart.UserId.ShouldBe(TestUserId);
+        cart.SessionId.ShouldBeNull();
+        cart.Status.ShouldBe(CartStatus.Active);
+        cart.Currency.ShouldBe(TestCurrency);
+        cart.TenantId.ShouldBe(TestTenantId);
+        cart.ExpiresAt.ShouldBeNull();
+        cart.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class CartTests
         var cart = Domain.Entities.Cart.Cart.CreateForUser(TestUserId);
 
         // Assert
-        cart.Status.Should().Be(CartStatus.Active);
+        cart.Status.ShouldBe(CartStatus.Active);
     }
 
     [Fact]
@@ -87,7 +87,7 @@ public class CartTests
         var cart = Domain.Entities.Cart.Cart.CreateForUser(TestUserId);
 
         // Assert
-        cart.Currency.Should().Be("VND");
+        cart.Currency.ShouldBe("VND");
     }
 
     [Fact]
@@ -100,8 +100,8 @@ public class CartTests
         var cart = Domain.Entities.Cart.Cart.CreateForUser(TestUserId);
 
         // Assert
-        cart.LastActivityAt.Should().BeOnOrAfter(before);
-        cart.LastActivityAt.Should().BeOnOrBefore(DateTimeOffset.UtcNow);
+        cart.LastActivityAt.ShouldBeGreaterThanOrEqualTo(before);
+        cart.LastActivityAt.ShouldBeLessThanOrEqualTo(DateTimeOffset.UtcNow);
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class CartTests
         var cart = Domain.Entities.Cart.Cart.CreateForUser(TestUserId);
 
         // Assert
-        cart.IsGuest.Should().BeFalse();
+        cart.IsGuest.ShouldBeFalse();
     }
 
     [Fact]
@@ -121,13 +121,13 @@ public class CartTests
         var cart = Domain.Entities.Cart.Cart.CreateForUser(TestUserId);
 
         // Assert
-        cart.DomainEvents.Should().ContainSingle();
+        cart.DomainEvents.ShouldHaveSingleItem();
         var domainEvent = cart.DomainEvents.First();
-        domainEvent.Should().BeOfType<CartCreatedEvent>();
+        domainEvent.ShouldBeOfType<CartCreatedEvent>();
         var createdEvent = (CartCreatedEvent)domainEvent;
-        createdEvent.CartId.Should().Be(cart.Id);
-        createdEvent.UserId.Should().Be(TestUserId);
-        createdEvent.SessionId.Should().BeNull();
+        createdEvent.CartId.ShouldBe(cart.Id);
+        createdEvent.UserId.ShouldBe(TestUserId);
+        createdEvent.SessionId.ShouldBeNull();
     }
 
     [Fact]
@@ -137,9 +137,9 @@ public class CartTests
         var cart = Domain.Entities.Cart.Cart.CreateForUser(TestUserId);
 
         // Assert
-        cart.IsEmpty.Should().BeTrue();
-        cart.ItemCount.Should().Be(0);
-        cart.Subtotal.Should().Be(0m);
+        cart.IsEmpty.ShouldBeTrue();
+        cart.ItemCount.ShouldBe(0);
+        cart.Subtotal.ShouldBe(0m);
     }
 
     #endregion
@@ -153,14 +153,14 @@ public class CartTests
         var cart = Domain.Entities.Cart.Cart.CreateForGuest(TestSessionId, TestCurrency, TestTenantId);
 
         // Assert
-        cart.Should().NotBeNull();
-        cart.Id.Should().NotBe(Guid.Empty);
-        cart.UserId.Should().BeNull();
-        cart.SessionId.Should().Be(TestSessionId);
-        cart.Status.Should().Be(CartStatus.Active);
-        cart.Currency.Should().Be(TestCurrency);
-        cart.TenantId.Should().Be(TestTenantId);
-        cart.Items.Should().BeEmpty();
+        cart.ShouldNotBeNull();
+        cart.Id.ShouldNotBe(Guid.Empty);
+        cart.UserId.ShouldBeNull();
+        cart.SessionId.ShouldBe(TestSessionId);
+        cart.Status.ShouldBe(CartStatus.Active);
+        cart.Currency.ShouldBe(TestCurrency);
+        cart.TenantId.ShouldBe(TestTenantId);
+        cart.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -173,9 +173,9 @@ public class CartTests
         var cart = Domain.Entities.Cart.Cart.CreateForGuest(TestSessionId);
 
         // Assert
-        cart.ExpiresAt.Should().NotBeNull();
-        cart.ExpiresAt!.Value.Should().BeAfter(before.AddDays(29));
-        cart.ExpiresAt!.Value.Should().BeOnOrBefore(DateTimeOffset.UtcNow.AddDays(30));
+        cart.ExpiresAt.ShouldNotBeNull();
+        cart.ExpiresAt!.Value.ShouldBeGreaterThan(before.AddDays(29));
+        cart.ExpiresAt!.Value.ShouldBeLessThanOrEqualTo(DateTimeOffset.UtcNow.AddDays(30));
     }
 
     [Fact]
@@ -185,7 +185,7 @@ public class CartTests
         var cart = Domain.Entities.Cart.Cart.CreateForGuest(TestSessionId);
 
         // Assert
-        cart.IsGuest.Should().BeTrue();
+        cart.IsGuest.ShouldBeTrue();
     }
 
     [Fact]
@@ -195,11 +195,11 @@ public class CartTests
         var cart = Domain.Entities.Cart.Cart.CreateForGuest(TestSessionId);
 
         // Assert
-        cart.DomainEvents.Should().ContainSingle();
+        cart.DomainEvents.ShouldHaveSingleItem();
         var createdEvent = cart.DomainEvents.OfType<CartCreatedEvent>().Single();
-        createdEvent.CartId.Should().Be(cart.Id);
-        createdEvent.UserId.Should().BeNull();
-        createdEvent.SessionId.Should().Be(TestSessionId);
+        createdEvent.CartId.ShouldBe(cart.Id);
+        createdEvent.UserId.ShouldBeNull();
+        createdEvent.SessionId.ShouldBe(TestSessionId);
     }
 
     #endregion
@@ -216,15 +216,15 @@ public class CartTests
         var item = cart.AddItem(ProductId1, VariantId1, "Test Product", "Size: M", 50000m, 2, "http://img.jpg");
 
         // Assert
-        item.Should().NotBeNull();
-        cart.Items.Should().HaveCount(1);
-        item.ProductId.Should().Be(ProductId1);
-        item.ProductVariantId.Should().Be(VariantId1);
-        item.ProductName.Should().Be("Test Product");
-        item.VariantName.Should().Be("Size: M");
-        item.UnitPrice.Should().Be(50000m);
-        item.Quantity.Should().Be(2);
-        item.ImageUrl.Should().Be("http://img.jpg");
+        item.ShouldNotBeNull();
+        cart.Items.Count().ShouldBe(1);
+        item.ProductId.ShouldBe(ProductId1);
+        item.ProductVariantId.ShouldBe(VariantId1);
+        item.ProductName.ShouldBe("Test Product");
+        item.VariantName.ShouldBe("Size: M");
+        item.UnitPrice.ShouldBe(50000m);
+        item.Quantity.ShouldBe(2);
+        item.ImageUrl.ShouldBe("http://img.jpg");
     }
 
     [Fact]
@@ -237,7 +237,7 @@ public class CartTests
         var item = cart.AddItem(ProductId1, VariantId1, "Product", "Variant", 10000m);
 
         // Assert
-        item.Quantity.Should().Be(1);
+        item.Quantity.ShouldBe(1);
     }
 
     [Fact]
@@ -251,8 +251,8 @@ public class CartTests
         var item = cart.AddItem(ProductId1, VariantId1, "Product", "Variant", 50000m, 3);
 
         // Assert
-        cart.Items.Should().HaveCount(1);
-        item.Quantity.Should().Be(5); // 2 + 3
+        cart.Items.Count().ShouldBe(1);
+        item.Quantity.ShouldBe(5); // 2 + 3
     }
 
     [Fact]
@@ -267,7 +267,7 @@ public class CartTests
         cart.AddItem(ProductId1, variantId2, "Product", "Size: M", 55000m, 1);
 
         // Assert
-        cart.Items.Should().HaveCount(2);
+        cart.Items.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -281,8 +281,8 @@ public class CartTests
         cart.AddItem(ProductId2, VariantId2, "Product 2", "Variant 2", 20000m, 2);
 
         // Assert
-        cart.Items.Should().HaveCount(2);
-        cart.ItemCount.Should().Be(3); // 1 + 2
+        cart.Items.Count().ShouldBe(2);
+        cart.ItemCount.ShouldBe(3); // 1 + 2
     }
 
     [Fact]
@@ -295,8 +295,8 @@ public class CartTests
         var act = () => cart.AddItem(ProductId1, VariantId1, "Product", "Variant", 10000m, 0);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Quantity must be greater than zero");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Quantity must be greater than zero");
     }
 
     [Fact]
@@ -309,8 +309,8 @@ public class CartTests
         var act = () => cart.AddItem(ProductId1, VariantId1, "Product", "Variant", 10000m, -1);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Quantity must be greater than zero");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Quantity must be greater than zero");
     }
 
     [Theory]
@@ -343,8 +343,8 @@ public class CartTests
         var act = () => cart.AddItem(ProductId1, VariantId1, "Product", "Variant", 10000m);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot add items to an inactive cart");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot add items to an inactive cart");
     }
 
     [Fact]
@@ -358,13 +358,13 @@ public class CartTests
         var item = cart.AddItem(ProductId1, VariantId1, "Product", "Variant", 10000m, 3);
 
         // Assert
-        cart.DomainEvents.Should().ContainSingle();
+        cart.DomainEvents.ShouldHaveSingleItem();
         var addedEvent = cart.DomainEvents.OfType<CartItemAddedEvent>().Single();
-        addedEvent.CartId.Should().Be(cart.Id);
-        addedEvent.CartItemId.Should().Be(item.Id);
-        addedEvent.ProductId.Should().Be(ProductId1);
-        addedEvent.ProductVariantId.Should().Be(VariantId1);
-        addedEvent.Quantity.Should().Be(3);
+        addedEvent.CartId.ShouldBe(cart.Id);
+        addedEvent.CartItemId.ShouldBe(item.Id);
+        addedEvent.ProductId.ShouldBe(ProductId1);
+        addedEvent.ProductVariantId.ShouldBe(VariantId1);
+        addedEvent.Quantity.ShouldBe(3);
     }
 
     [Fact]
@@ -379,7 +379,7 @@ public class CartTests
         cart.AddItem(ProductId1, VariantId1, "Product", "Variant", 50000m, 2);
 
         // Assert - no CartItemAddedEvent for duplicate, just quantity update
-        cart.DomainEvents.OfType<CartItemAddedEvent>().Should().BeEmpty();
+        cart.DomainEvents.OfType<CartItemAddedEvent>().ShouldBeEmpty();
     }
 
     [Fact]
@@ -394,7 +394,7 @@ public class CartTests
         cart.AddItem(ProductId1, VariantId1, "Product", "Variant", 10000m);
 
         // Assert
-        cart.LastActivityAt.Should().BeOnOrAfter(initialActivity);
+        cart.LastActivityAt.ShouldBeGreaterThanOrEqualTo(initialActivity);
     }
 
     #endregion
@@ -412,7 +412,7 @@ public class CartTests
         cart.UpdateItemQuantity(item.Id, 5);
 
         // Assert
-        item.Quantity.Should().Be(5);
+        item.Quantity.ShouldBe(5);
     }
 
     [Fact]
@@ -426,7 +426,7 @@ public class CartTests
         cart.UpdateItemQuantity(item.Id, 0);
 
         // Assert
-        cart.Items.Should().BeEmpty();
+        cart.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -440,7 +440,7 @@ public class CartTests
         cart.UpdateItemQuantity(item.Id, -1);
 
         // Assert
-        cart.Items.Should().BeEmpty();
+        cart.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -453,8 +453,8 @@ public class CartTests
         var act = () => cart.UpdateItemQuantity(Guid.NewGuid(), 5);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cart item not found");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cart item not found");
     }
 
     [Fact]
@@ -469,8 +469,8 @@ public class CartTests
         var act = () => cart.UpdateItemQuantity(item.Id, 3);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot update items in an inactive cart");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot update items in an inactive cart");
     }
 
     [Fact]
@@ -486,10 +486,10 @@ public class CartTests
 
         // Assert
         var updatedEvent = cart.DomainEvents.OfType<CartItemQuantityUpdatedEvent>().Single();
-        updatedEvent.CartId.Should().Be(cart.Id);
-        updatedEvent.CartItemId.Should().Be(item.Id);
-        updatedEvent.OldQuantity.Should().Be(2);
-        updatedEvent.NewQuantity.Should().Be(5);
+        updatedEvent.CartId.ShouldBe(cart.Id);
+        updatedEvent.CartItemId.ShouldBe(item.Id);
+        updatedEvent.OldQuantity.ShouldBe(2);
+        updatedEvent.NewQuantity.ShouldBe(5);
     }
 
     #endregion
@@ -507,7 +507,7 @@ public class CartTests
         cart.RemoveItem(item.Id);
 
         // Assert
-        cart.Items.Should().BeEmpty();
+        cart.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -520,7 +520,7 @@ public class CartTests
         var act = () => cart.RemoveItem(Guid.NewGuid());
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -535,8 +535,8 @@ public class CartTests
         var act = () => cart.RemoveItem(item.Id);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot remove items from an inactive cart");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot remove items from an inactive cart");
     }
 
     [Fact]
@@ -552,10 +552,10 @@ public class CartTests
 
         // Assert
         var removedEvent = cart.DomainEvents.OfType<CartItemRemovedEvent>().Single();
-        removedEvent.CartId.Should().Be(cart.Id);
-        removedEvent.CartItemId.Should().Be(item.Id);
-        removedEvent.ProductId.Should().Be(ProductId1);
-        removedEvent.ProductVariantId.Should().Be(VariantId1);
+        removedEvent.CartId.ShouldBe(cart.Id);
+        removedEvent.CartItemId.ShouldBe(item.Id);
+        removedEvent.ProductId.ShouldBe(ProductId1);
+        removedEvent.ProductVariantId.ShouldBe(VariantId1);
     }
 
     [Fact]
@@ -570,8 +570,8 @@ public class CartTests
         cart.RemoveItem(item1.Id);
 
         // Assert
-        cart.Items.Should().HaveCount(1);
-        cart.Items.Should().Contain(i => i.Id == item2.Id);
+        cart.Items.Count().ShouldBe(1);
+        cart.Items.ShouldContain(i => i.Id == item2.Id);
     }
 
     #endregion
@@ -588,10 +588,10 @@ public class CartTests
         cart.Clear();
 
         // Assert
-        cart.Items.Should().BeEmpty();
-        cart.IsEmpty.Should().BeTrue();
-        cart.ItemCount.Should().Be(0);
-        cart.Subtotal.Should().Be(0m);
+        cart.Items.ShouldBeEmpty();
+        cart.IsEmpty.ShouldBeTrue();
+        cart.ItemCount.ShouldBe(0);
+        cart.Subtotal.ShouldBe(0m);
     }
 
     [Fact]
@@ -604,8 +604,8 @@ public class CartTests
         var act = () => cart.Clear();
 
         // Assert
-        act.Should().NotThrow();
-        cart.Items.Should().BeEmpty();
+        act.ShouldNotThrow();
+        cart.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -619,8 +619,8 @@ public class CartTests
         var act = () => cart.Clear();
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot clear an inactive cart");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot clear an inactive cart");
     }
 
     #endregion
@@ -640,8 +640,8 @@ public class CartTests
         targetCart.MergeFrom(sourceCart);
 
         // Assert
-        targetCart.Items.Should().HaveCount(2);
-        targetCart.ItemCount.Should().Be(3); // 2 + 1
+        targetCart.Items.Count().ShouldBe(2);
+        targetCart.ItemCount.ShouldBe(3); // 2 + 1
     }
 
     [Fact]
@@ -658,8 +658,8 @@ public class CartTests
         targetCart.MergeFrom(sourceCart);
 
         // Assert
-        targetCart.Items.Should().HaveCount(1);
-        targetCart.Items.First().Quantity.Should().Be(5); // 2 + 3
+        targetCart.Items.Count().ShouldBe(1);
+        targetCart.Items.First().Quantity.ShouldBe(5); // 2 + 3
     }
 
     [Fact]
@@ -675,8 +675,8 @@ public class CartTests
         var act = () => targetCart.MergeFrom(sourceCart);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot merge into an inactive cart");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot merge into an inactive cart");
     }
 
     [Fact]
@@ -691,7 +691,7 @@ public class CartTests
         targetCart.MergeFrom(sourceCart);
 
         // Assert
-        targetCart.Items.Should().HaveCount(1);
+        targetCart.Items.Count().ShouldBe(1);
     }
 
     #endregion
@@ -708,7 +708,7 @@ public class CartTests
         cart.MarkAsAbandoned();
 
         // Assert
-        cart.Status.Should().Be(CartStatus.Abandoned);
+        cart.Status.ShouldBe(CartStatus.Abandoned);
     }
 
     [Fact]
@@ -723,10 +723,10 @@ public class CartTests
 
         // Assert
         var abandonedEvent = cart.DomainEvents.OfType<CartAbandonedEvent>().Single();
-        abandonedEvent.CartId.Should().Be(cart.Id);
-        abandonedEvent.UserId.Should().Be(TestUserId);
-        abandonedEvent.ItemCount.Should().Be(cart.ItemCount);
-        abandonedEvent.Subtotal.Should().Be(cart.Subtotal);
+        abandonedEvent.CartId.ShouldBe(cart.Id);
+        abandonedEvent.UserId.ShouldBe(TestUserId);
+        abandonedEvent.ItemCount.ShouldBe(cart.ItemCount);
+        abandonedEvent.Subtotal.ShouldBe(cart.Subtotal);
     }
 
     [Fact]
@@ -740,7 +740,7 @@ public class CartTests
         cart.MarkAsAbandoned();
 
         // Assert
-        cart.Status.Should().Be(CartStatus.Converted);
+        cart.Status.ShouldBe(CartStatus.Converted);
     }
 
     [Fact]
@@ -755,7 +755,7 @@ public class CartTests
         cart.MarkAsAbandoned();
 
         // Assert
-        cart.DomainEvents.Should().BeEmpty();
+        cart.DomainEvents.ShouldBeEmpty();
     }
 
     #endregion
@@ -773,7 +773,7 @@ public class CartTests
         cart.MarkAsConverted(orderId);
 
         // Assert
-        cart.Status.Should().Be(CartStatus.Converted);
+        cart.Status.ShouldBe(CartStatus.Converted);
     }
 
     [Fact]
@@ -787,7 +787,7 @@ public class CartTests
         cart.MarkAsConverted(Guid.NewGuid());
 
         // Assert
-        cart.Status.Should().Be(CartStatus.Converted);
+        cart.Status.ShouldBe(CartStatus.Converted);
     }
 
     [Fact]
@@ -803,9 +803,9 @@ public class CartTests
 
         // Assert
         var convertedEvent = cart.DomainEvents.OfType<CartConvertedEvent>().Single();
-        convertedEvent.CartId.Should().Be(cart.Id);
-        convertedEvent.OrderId.Should().Be(orderId);
-        convertedEvent.UserId.Should().Be(TestUserId);
+        convertedEvent.CartId.ShouldBe(cart.Id);
+        convertedEvent.OrderId.ShouldBe(orderId);
+        convertedEvent.UserId.ShouldBe(TestUserId);
     }
 
     [Fact]
@@ -819,7 +819,7 @@ public class CartTests
         cart.MarkAsConverted(Guid.NewGuid());
 
         // Assert
-        cart.Status.Should().Be(CartStatus.Expired);
+        cart.Status.ShouldBe(CartStatus.Expired);
     }
 
     #endregion
@@ -836,7 +836,7 @@ public class CartTests
         cart.MarkAsExpired();
 
         // Assert
-        cart.Status.Should().Be(CartStatus.Expired);
+        cart.Status.ShouldBe(CartStatus.Expired);
     }
 
     [Fact]
@@ -850,7 +850,7 @@ public class CartTests
         cart.MarkAsExpired();
 
         // Assert
-        cart.Status.Should().Be(CartStatus.Expired);
+        cart.Status.ShouldBe(CartStatus.Expired);
     }
 
     [Fact]
@@ -864,7 +864,7 @@ public class CartTests
         cart.MarkAsExpired();
 
         // Assert
-        cart.Status.Should().Be(CartStatus.Converted);
+        cart.Status.ShouldBe(CartStatus.Converted);
     }
 
     #endregion
@@ -882,7 +882,7 @@ public class CartTests
         cart.MarkAsMerged(targetCartId, TestUserId, 3);
 
         // Assert
-        cart.Status.Should().Be(CartStatus.Merged);
+        cart.Status.ShouldBe(CartStatus.Merged);
     }
 
     [Fact]
@@ -898,10 +898,10 @@ public class CartTests
 
         // Assert
         var mergedEvent = cart.DomainEvents.OfType<CartMergedEvent>().Single();
-        mergedEvent.SourceCartId.Should().Be(cart.Id);
-        mergedEvent.TargetCartId.Should().Be(targetCartId);
-        mergedEvent.UserId.Should().Be(TestUserId);
-        mergedEvent.MergedItemCount.Should().Be(5);
+        mergedEvent.SourceCartId.ShouldBe(cart.Id);
+        mergedEvent.TargetCartId.ShouldBe(targetCartId);
+        mergedEvent.UserId.ShouldBe(TestUserId);
+        mergedEvent.MergedItemCount.ShouldBe(5);
     }
 
     [Fact]
@@ -915,7 +915,7 @@ public class CartTests
         cart.MarkAsMerged(Guid.NewGuid(), TestUserId, 0);
 
         // Assert
-        cart.Status.Should().Be(CartStatus.Abandoned);
+        cart.Status.ShouldBe(CartStatus.Abandoned);
     }
 
     #endregion
@@ -933,7 +933,7 @@ public class CartTests
         cart.Reactivate();
 
         // Assert
-        cart.Status.Should().Be(CartStatus.Active);
+        cart.Status.ShouldBe(CartStatus.Active);
     }
 
     [Fact]
@@ -948,7 +948,7 @@ public class CartTests
         cart.Reactivate();
 
         // Assert
-        cart.LastActivityAt.Should().BeOnOrAfter(beforeReactivate);
+        cart.LastActivityAt.ShouldBeGreaterThanOrEqualTo(beforeReactivate);
     }
 
     [Fact]
@@ -961,7 +961,7 @@ public class CartTests
         cart.Reactivate();
 
         // Assert
-        cart.Status.Should().Be(CartStatus.Active);
+        cart.Status.ShouldBe(CartStatus.Active);
     }
 
     [Fact]
@@ -975,7 +975,7 @@ public class CartTests
         cart.Reactivate();
 
         // Assert
-        cart.Status.Should().Be(CartStatus.Converted);
+        cart.Status.ShouldBe(CartStatus.Converted);
     }
 
     [Fact]
@@ -989,7 +989,7 @@ public class CartTests
         cart.Reactivate();
 
         // Assert
-        cart.Status.Should().Be(CartStatus.Expired);
+        cart.Status.ShouldBe(CartStatus.Expired);
     }
 
     #endregion
@@ -1006,10 +1006,10 @@ public class CartTests
         cart.AssociateWithUser(TestUserId);
 
         // Assert
-        cart.UserId.Should().Be(TestUserId);
-        cart.SessionId.Should().BeNull();
-        cart.ExpiresAt.Should().BeNull();
-        cart.IsGuest.Should().BeFalse();
+        cart.UserId.ShouldBe(TestUserId);
+        cart.SessionId.ShouldBeNull();
+        cart.ExpiresAt.ShouldBeNull();
+        cart.IsGuest.ShouldBeFalse();
     }
 
     [Fact]
@@ -1023,7 +1023,7 @@ public class CartTests
         cart.AssociateWithUser(TestUserId);
 
         // Assert
-        cart.LastActivityAt.Should().BeOnOrAfter(beforeAssociate);
+        cart.LastActivityAt.ShouldBeGreaterThanOrEqualTo(beforeAssociate);
     }
 
     [Fact]
@@ -1036,8 +1036,8 @@ public class CartTests
         var act = () => cart.AssociateWithUser(string.Empty);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("UserId cannot be empty");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("UserId cannot be empty");
     }
 
     [Fact]
@@ -1050,8 +1050,8 @@ public class CartTests
         var act = () => cart.AssociateWithUser(null!);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("UserId cannot be empty");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("UserId cannot be empty");
     }
 
     #endregion
@@ -1065,7 +1065,7 @@ public class CartTests
         var cart = CreateActiveUserCart();
 
         // Act & Assert
-        cart.IsOwnedBy(TestUserId, null).Should().BeTrue();
+        cart.IsOwnedBy(TestUserId, null).ShouldBeTrue();
     }
 
     [Fact]
@@ -1075,7 +1075,7 @@ public class CartTests
         var cart = CreateActiveGuestCart();
 
         // Act & Assert
-        cart.IsOwnedBy(null, TestSessionId).Should().BeTrue();
+        cart.IsOwnedBy(null, TestSessionId).ShouldBeTrue();
     }
 
     [Fact]
@@ -1085,7 +1085,7 @@ public class CartTests
         var cart = CreateActiveUserCart();
 
         // Act & Assert
-        cart.IsOwnedBy("other-user", "other-session").Should().BeFalse();
+        cart.IsOwnedBy("other-user", "other-session").ShouldBeFalse();
     }
 
     [Fact]
@@ -1095,7 +1095,7 @@ public class CartTests
         var cart = CreateActiveUserCart();
 
         // Act & Assert
-        cart.IsOwnedBy(null, null).Should().BeFalse();
+        cart.IsOwnedBy(null, null).ShouldBeFalse();
     }
 
     [Fact]
@@ -1105,7 +1105,7 @@ public class CartTests
         var cart = CreateActiveUserCart();
 
         // Act & Assert
-        cart.IsOwnedBy(string.Empty, string.Empty).Should().BeFalse();
+        cart.IsOwnedBy(string.Empty, string.Empty).ShouldBeFalse();
     }
 
     #endregion
@@ -1121,7 +1121,7 @@ public class CartTests
         cart.AddItem(ProductId2, VariantId2, "Product 2", "Variant 2", 20000m, 5);
 
         // Act & Assert
-        cart.ItemCount.Should().Be(8); // 3 + 5
+        cart.ItemCount.ShouldBe(8); // 3 + 5
     }
 
     [Fact]
@@ -1133,7 +1133,7 @@ public class CartTests
         cart.AddItem(ProductId2, VariantId2, "Product 2", "Variant 2", 20000m, 2); // 40,000
 
         // Act & Assert
-        cart.Subtotal.Should().Be(70000m);
+        cart.Subtotal.ShouldBe(70000m);
     }
 
     [Fact]
@@ -1143,7 +1143,7 @@ public class CartTests
         var cart = CreateActiveUserCart();
 
         // Act & Assert
-        cart.IsEmpty.Should().BeTrue();
+        cart.IsEmpty.ShouldBeTrue();
     }
 
     [Fact]
@@ -1154,7 +1154,7 @@ public class CartTests
         cart.AddItem(ProductId1, VariantId1, "Product", "Variant", 10000m);
 
         // Act & Assert
-        cart.IsEmpty.Should().BeFalse();
+        cart.IsEmpty.ShouldBeFalse();
     }
 
     [Fact]
@@ -1164,7 +1164,7 @@ public class CartTests
         var cart = CreateActiveUserCart();
 
         // Assert
-        cart.IsGuest.Should().BeFalse();
+        cart.IsGuest.ShouldBeFalse();
     }
 
     [Fact]
@@ -1174,7 +1174,7 @@ public class CartTests
         var cart = CreateActiveGuestCart();
 
         // Assert
-        cart.IsGuest.Should().BeTrue();
+        cart.IsGuest.ShouldBeTrue();
     }
 
     #endregion

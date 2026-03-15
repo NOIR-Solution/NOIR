@@ -73,10 +73,10 @@ public class CrmActivityEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.GetAsync("/api/crm/activities");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<ActivityDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeNull();
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class CrmActivityEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await _client.GetAsync("/api/crm/activities");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -99,10 +99,10 @@ public class CrmActivityEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.GetAsync("/api/crm/activities?page=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<ActivityDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.Items.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     #endregion
@@ -125,12 +125,12 @@ public class CrmActivityEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.GetAsync($"/api/crm/activities/{createdActivity!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var activity = await response.Content.ReadFromJsonWithEnumsAsync<ActivityDto>();
-        activity.Should().NotBeNull();
-        activity!.Id.Should().Be(createdActivity.Id);
-        activity.Subject.Should().Be(createRequest.Subject);
-        activity.Type.Should().Be(createRequest.Type);
+        activity.ShouldNotBeNull();
+        activity!.Id.ShouldBe(createdActivity.Id);
+        activity.Subject.ShouldBe(createRequest.Subject);
+        activity.Type.ShouldBe(createRequest.Type);
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public class CrmActivityEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.GetAsync($"/api/crm/activities/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -163,11 +163,11 @@ public class CrmActivityEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.PostAsJsonWithEnumsAsync("/api/crm/activities", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var activity = await response.Content.ReadFromJsonWithEnumsAsync<ActivityDto>();
-        activity.Should().NotBeNull();
-        activity!.Subject.Should().Be(request.Subject);
-        activity.Type.Should().Be(ActivityType.Call);
+        activity.ShouldNotBeNull();
+        activity!.Subject.ShouldBe(request.Subject);
+        activity.Type.ShouldBe(ActivityType.Call);
     }
 
     [Fact]
@@ -180,7 +180,7 @@ public class CrmActivityEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await _client.PostAsJsonWithEnumsAsync("/api/crm/activities", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -211,12 +211,12 @@ public class CrmActivityEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/crm/activities/{createdActivity!.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updatedActivity = await response.Content.ReadFromJsonWithEnumsAsync<ActivityDto>();
-        updatedActivity.Should().NotBeNull();
-        updatedActivity!.Subject.Should().Be("Updated Meeting Subject");
-        updatedActivity.Type.Should().Be(ActivityType.Meeting);
-        updatedActivity.DurationMinutes.Should().Be(60);
+        updatedActivity.ShouldNotBeNull();
+        updatedActivity!.Subject.ShouldBe("Updated Meeting Subject");
+        updatedActivity.Type.ShouldBe(ActivityType.Meeting);
+        updatedActivity.DurationMinutes.ShouldBe(60);
     }
 
     [Fact]
@@ -233,7 +233,7 @@ public class CrmActivityEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.PutAsJsonWithEnumsAsync($"/api/crm/activities/{Guid.NewGuid()}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -256,11 +256,11 @@ public class CrmActivityEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.DeleteAsync($"/api/crm/activities/{createdActivity!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Verify it's deleted (soft delete - should return not found)
         var getResponse = await adminClient.GetAsync($"/api/crm/activities/{createdActivity.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -273,7 +273,7 @@ public class CrmActivityEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.DeleteAsync($"/api/crm/activities/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -291,16 +291,16 @@ public class CrmActivityEndpointsTests : IClassFixture<CustomWebApplicationFacto
         // Create
         var createRequest = CreateTestActivityRequest(userId, contact.Id);
         var createResponse = await adminClient.PostAsJsonWithEnumsAsync("/api/crm/activities", createRequest);
-        createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        createResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var created = await createResponse.Content.ReadFromJsonWithEnumsAsync<ActivityDto>();
-        created.Should().NotBeNull();
+        created.ShouldNotBeNull();
         var activityId = created!.Id;
 
         // Read
         var getResponse = await adminClient.GetAsync($"/api/crm/activities/{activityId}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var fetched = await getResponse.Content.ReadFromJsonWithEnumsAsync<ActivityDto>();
-        fetched!.Subject.Should().Be(createRequest.Subject);
+        fetched!.Subject.ShouldBe(createRequest.Subject);
 
         // Update
         var updateRequest = new UpdateActivityRequest(
@@ -310,18 +310,18 @@ public class CrmActivityEndpointsTests : IClassFixture<CustomWebApplicationFacto
             ContactId: contact.Id,
             Description: "Updated via CRUD test");
         var updateResponse = await adminClient.PutAsJsonWithEnumsAsync($"/api/crm/activities/{activityId}", updateRequest);
-        updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        updateResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await updateResponse.Content.ReadFromJsonWithEnumsAsync<ActivityDto>();
-        updated!.Subject.Should().Be("CrudUpdated Activity");
-        updated.Type.Should().Be(ActivityType.Email);
+        updated!.Subject.ShouldBe("CrudUpdated Activity");
+        updated.Type.ShouldBe(ActivityType.Email);
 
         // Delete
         var deleteResponse = await adminClient.DeleteAsync($"/api/crm/activities/{activityId}");
-        deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        deleteResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Verify deleted
         var verifyResponse = await adminClient.GetAsync($"/api/crm/activities/{activityId}");
-        verifyResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        verifyResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -343,10 +343,10 @@ public class CrmActivityEndpointsTests : IClassFixture<CustomWebApplicationFacto
         var response = await adminClient.GetAsync($"/api/crm/activities?contactId={contact.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<ActivityDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().OnlyContain(a => a.ContactId == contact.Id);
+        result.ShouldNotBeNull();
+        result!.Items.ShouldAllBe(a => a.ContactId == contact.Id);
     }
 
     #endregion

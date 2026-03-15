@@ -47,7 +47,7 @@ public class LogLevelServiceTests
         var sut = CreateSut();
 
         // Assert
-        sut.Should().NotBeNull();
+        sut.ShouldNotBeNull();
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class LogLevelServiceTests
         var sut = CreateSut();
 
         // Assert
-        sut.Should().BeAssignableTo<ILogLevelService>();
+        sut.ShouldBeAssignableTo<ILogLevelService>();
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class LogLevelServiceTests
         var sut = CreateSut();
 
         // Assert
-        sut.Should().BeAssignableTo<ISingletonService>();
+        sut.ShouldBeAssignableTo<ISingletonService>();
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public class LogLevelServiceTests
         var sut = new LogLevelService(levelSwitch, Options.Create(settings), _loggerMock.Object);
 
         // Assert
-        levelSwitch.MinimumLevel.Should().Be(LogEventLevel.Warning);
+        levelSwitch.MinimumLevel.ShouldBe(LogEventLevel.Warning);
     }
 
     [Fact]
@@ -92,9 +92,9 @@ public class LogLevelServiceTests
 
         // Assert
         var overrides = sut.GetOverrides().ToList();
-        overrides.Should().HaveCount(2);
-        overrides.Should().Contain(o => o.SourcePrefix == "Microsoft" && o.Level == "Warning");
-        overrides.Should().Contain(o => o.SourcePrefix == "System" && o.Level == "Error");
+        overrides.Count().ShouldBe(2);
+        overrides.ShouldContain(o => o.SourcePrefix == "Microsoft" && o.Level == "Warning");
+        overrides.ShouldContain(o => o.SourcePrefix == "System" && o.Level == "Error");
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class LogLevelServiceTests
         var sut = new LogLevelService(levelSwitch, Options.Create(settings), _loggerMock.Object);
 
         // Assert
-        levelSwitch.MinimumLevel.Should().Be(LogEventLevel.Information);
+        levelSwitch.MinimumLevel.ShouldBe(LogEventLevel.Information);
     }
 
     #endregion
@@ -125,7 +125,7 @@ public class LogLevelServiceTests
         var level = sut.GetCurrentLevel();
 
         // Assert
-        level.Should().Be("Information");
+        level.ShouldBe("Information");
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class LogLevelServiceTests
         var level = sut.GetCurrentLevel();
 
         // Assert
-        level.Should().Be("Error");
+        level.ShouldBe("Error");
     }
 
     #endregion
@@ -156,7 +156,7 @@ public class LogLevelServiceTests
         var result = sut.SetLevel("Warning");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -169,7 +169,7 @@ public class LogLevelServiceTests
         sut.SetLevel("Error");
 
         // Assert
-        _globalLevelSwitch.MinimumLevel.Should().Be(LogEventLevel.Error);
+        _globalLevelSwitch.MinimumLevel.ShouldBe(LogEventLevel.Error);
     }
 
     [Fact]
@@ -182,7 +182,7 @@ public class LogLevelServiceTests
         var result = sut.SetLevel("InvalidLevel");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -196,7 +196,7 @@ public class LogLevelServiceTests
         sut.SetLevel("InvalidLevel");
 
         // Assert
-        _globalLevelSwitch.MinimumLevel.Should().Be(originalLevel);
+        _globalLevelSwitch.MinimumLevel.ShouldBe(originalLevel);
     }
 
     [Fact]
@@ -211,7 +211,7 @@ public class LogLevelServiceTests
         sut.SetLevel("Debug");
 
         // Assert
-        receivedLevel.Should().Be("Debug");
+        receivedLevel.ShouldBe("Debug");
     }
 
     [Fact]
@@ -226,7 +226,7 @@ public class LogLevelServiceTests
         sut.SetLevel("InvalidLevel");
 
         // Assert
-        eventRaised.Should().BeFalse();
+        eventRaised.ShouldBe(false);
     }
 
     [Theory]
@@ -245,8 +245,8 @@ public class LogLevelServiceTests
         var result = sut.SetLevel(levelName);
 
         // Assert
-        result.Should().BeTrue();
-        _globalLevelSwitch.MinimumLevel.Should().Be(expected);
+        result.ShouldBe(true);
+        _globalLevelSwitch.MinimumLevel.ShouldBe(expected);
     }
 
     [Theory]
@@ -262,8 +262,8 @@ public class LogLevelServiceTests
         var result = sut.SetLevel(levelName);
 
         // Assert
-        result.Should().BeTrue();
-        _globalLevelSwitch.MinimumLevel.Should().Be(LogEventLevel.Verbose);
+        result.ShouldBe(true);
+        _globalLevelSwitch.MinimumLevel.ShouldBe(LogEventLevel.Verbose);
     }
 
     [Theory]
@@ -286,8 +286,8 @@ public class LogLevelServiceTests
         var result = sut.SetLevel(alias);
 
         // Assert
-        result.Should().BeTrue();
-        _globalLevelSwitch.MinimumLevel.Should().Be(expected);
+        result.ShouldBe(true);
+        _globalLevelSwitch.MinimumLevel.ShouldBe(expected);
     }
 
     [Fact]
@@ -344,12 +344,12 @@ public class LogLevelServiceTests
         var levels = sut.GetAvailableLevels();
 
         // Assert
-        levels.Should().Contain("Verbose");
-        levels.Should().Contain("Debug");
-        levels.Should().Contain("Information");
-        levels.Should().Contain("Warning");
-        levels.Should().Contain("Error");
-        levels.Should().Contain("Fatal");
+        levels.ShouldContain("Verbose");
+        levels.ShouldContain("Debug");
+        levels.ShouldContain("Information");
+        levels.ShouldContain("Warning");
+        levels.ShouldContain("Error");
+        levels.ShouldContain("Fatal");
     }
 
     [Fact]
@@ -362,7 +362,7 @@ public class LogLevelServiceTests
         var levels = sut.GetAvailableLevels();
 
         // Assert
-        levels.Should().HaveCount(6);
+        levels.Count().ShouldBe(6);
     }
 
     #endregion
@@ -379,7 +379,7 @@ public class LogLevelServiceTests
         var overrides = sut.GetOverrides().ToList();
 
         // Assert
-        overrides.Should().HaveCount(2);
+        overrides.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -402,9 +402,9 @@ public class LogLevelServiceTests
         var overrides = sut.GetOverrides().ToList();
 
         // Assert
-        overrides[0].SourcePrefix.Should().Be("Apple");
-        overrides[1].SourcePrefix.Should().Be("Microsoft");
-        overrides[2].SourcePrefix.Should().Be("Zebra");
+        overrides[0].SourcePrefix.ShouldBe("Apple");
+        overrides[1].SourcePrefix.ShouldBe("Microsoft");
+        overrides[2].SourcePrefix.ShouldBe("Zebra");
     }
 
     #endregion
@@ -421,7 +421,7 @@ public class LogLevelServiceTests
         var result = sut.SetOverride("NOIR.Tests", "Debug");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -435,7 +435,7 @@ public class LogLevelServiceTests
 
         // Assert
         var overrides = sut.GetOverrides().ToList();
-        overrides.Should().Contain(o => o.SourcePrefix == "NOIR.Tests" && o.Level == "Debug");
+        overrides.ShouldContain(o => o.SourcePrefix == "NOIR.Tests" && o.Level == "Debug");
     }
 
     [Fact]
@@ -450,7 +450,7 @@ public class LogLevelServiceTests
         // Assert
         var overrides = sut.GetOverrides().ToList();
         var microsoftOverride = overrides.First(o => o.SourcePrefix == "Microsoft");
-        microsoftOverride.Level.Should().Be("Error");
+        microsoftOverride.Level.ShouldBe("Error");
     }
 
     [Fact]
@@ -463,7 +463,7 @@ public class LogLevelServiceTests
         var result = sut.SetOverride("", "Debug");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -476,7 +476,7 @@ public class LogLevelServiceTests
         var result = sut.SetOverride("   ", "Debug");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -489,7 +489,7 @@ public class LogLevelServiceTests
         var result = sut.SetOverride("NOIR.Tests", "InvalidLevel");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -503,7 +503,7 @@ public class LogLevelServiceTests
         sut.SetOverride("NOIR.Tests", "InvalidLevel");
 
         // Assert
-        sut.GetOverrides().Count().Should().Be(originalCount);
+        sut.GetOverrides().Count().ShouldBe(originalCount);
     }
 
     [Fact]
@@ -540,7 +540,7 @@ public class LogLevelServiceTests
         var result = sut.RemoveOverride("Microsoft");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -554,7 +554,7 @@ public class LogLevelServiceTests
 
         // Assert
         var overrides = sut.GetOverrides().ToList();
-        overrides.Should().NotContain(o => o.SourcePrefix == "Microsoft");
+        overrides.ShouldNotContain(o => o.SourcePrefix == "Microsoft");
     }
 
     [Fact]
@@ -567,7 +567,7 @@ public class LogLevelServiceTests
         var result = sut.RemoveOverride("NonExistent");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -604,7 +604,7 @@ public class LogLevelServiceTests
         var result = sut.GetGlobalSwitch();
 
         // Assert
-        result.Should().BeSameAs(_globalLevelSwitch);
+        result.ShouldBeSameAs(_globalLevelSwitch);
     }
 
     #endregion
@@ -621,8 +621,8 @@ public class LogLevelServiceTests
         var result = sut.GetSourceSwitch("Microsoft");
 
         // Assert
-        result.Should().NotBeNull();
-        result!.MinimumLevel.Should().Be(LogEventLevel.Warning);
+        result.ShouldNotBeNull();
+        result!.MinimumLevel.ShouldBe(LogEventLevel.Warning);
     }
 
     [Fact]
@@ -635,7 +635,7 @@ public class LogLevelServiceTests
         var result = sut.GetSourceSwitch("NonExistent");
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     #endregion
@@ -652,9 +652,9 @@ public class LogLevelServiceTests
         var switches = sut.GetAllSourceSwitches();
 
         // Assert
-        switches.Should().HaveCount(2);
-        switches.Should().ContainKey("Microsoft");
-        switches.Should().ContainKey("System");
+        switches.Count().ShouldBe(2);
+        switches.ShouldContainKey("Microsoft");
+        switches.ShouldContainKey("System");
     }
 
     [Fact]
@@ -667,7 +667,7 @@ public class LogLevelServiceTests
         var switches = sut.GetAllSourceSwitches();
 
         // Assert
-        switches.Should().BeAssignableTo<IReadOnlyDictionary<string, LoggingLevelSwitch>>();
+        switches.ShouldBeAssignableTo<IReadOnlyDictionary<string, LoggingLevelSwitch>>();
     }
 
     #endregion
@@ -687,7 +687,7 @@ public class LogLevelServiceTests
         sut.SetLevel("Debug");
 
         // Assert
-        callCount.Should().Be(2);
+        callCount.ShouldBe(2);
     }
 
     [Fact]
@@ -704,7 +704,7 @@ public class LogLevelServiceTests
         sut.SetLevel("Error");
 
         // Assert
-        receivedLevels.Should().Equal("Debug", "Warning", "Error");
+        receivedLevels.ShouldBe(new[] { "Debug", "Warning", "Error" });
     }
 
     #endregion

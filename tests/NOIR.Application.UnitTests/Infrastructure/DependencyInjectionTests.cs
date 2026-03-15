@@ -79,7 +79,7 @@ public class DependencyInjectionTests
 
         // Assert
         var storage = provider.GetService<IBlobStorage>();
-        storage.Should().NotBeNull();
+        storage.ShouldNotBeNull();
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class DependencyInjectionTests
 
         // Assert - Should fallback to local storage
         var storage = provider.GetService<IBlobStorage>();
-        storage.Should().NotBeNull();
+        storage.ShouldNotBeNull();
     }
 
     [Fact]
@@ -121,7 +121,7 @@ public class DependencyInjectionTests
 
         // Assert - Should fallback to local storage
         var storage = provider.GetService<IBlobStorage>();
-        storage.Should().NotBeNull();
+        storage.ShouldNotBeNull();
     }
 
     [Fact]
@@ -141,7 +141,7 @@ public class DependencyInjectionTests
 
         // Assert - Should fallback to local storage
         var storage = provider.GetService<IBlobStorage>();
-        storage.Should().NotBeNull();
+        storage.ShouldNotBeNull();
     }
 
     #endregion
@@ -162,7 +162,7 @@ public class DependencyInjectionTests
         // Assert - DbContext should NOT be registered in Testing environment
         var dbContextDescriptor = services.FirstOrDefault(d =>
             d.ServiceType == typeof(ApplicationDbContext));
-        dbContextDescriptor.Should().BeNull();
+        dbContextDescriptor.ShouldBeNull();
     }
 
     [Fact]
@@ -179,7 +179,7 @@ public class DependencyInjectionTests
         // Assert - Hangfire services should NOT be registered in Testing environment
         var hangfireDescriptor = services.FirstOrDefault(d =>
             d.ServiceType.FullName?.Contains("Hangfire") == true);
-        hangfireDescriptor.Should().BeNull();
+        hangfireDescriptor.ShouldBeNull();
     }
 
     #endregion
@@ -198,10 +198,10 @@ public class DependencyInjectionTests
         services.AddInfrastructureServices(config, env);
 
         // Assert
-        services.Should().Contain(d => d.ServiceType == typeof(AuditableEntityInterceptor));
-        services.Should().Contain(d => d.ServiceType == typeof(DomainEventInterceptor));
-        services.Should().Contain(d => d.ServiceType == typeof(EntityAuditLogInterceptor));
-        services.Should().Contain(d => d.ServiceType == typeof(TenantIdSetterInterceptor));
+        services.ShouldContain(d => d.ServiceType == typeof(AuditableEntityInterceptor));
+        services.ShouldContain(d => d.ServiceType == typeof(DomainEventInterceptor));
+        services.ShouldContain(d => d.ServiceType == typeof(EntityAuditLogInterceptor));
+        services.ShouldContain(d => d.ServiceType == typeof(TenantIdSetterInterceptor));
     }
 
     [Fact]
@@ -216,9 +216,9 @@ public class DependencyInjectionTests
         services.AddInfrastructureServices(config, env);
 
         // Assert
-        services.Should().Contain(d =>
+        services.ShouldContain(d =>
             d.ServiceType == typeof(Microsoft.AspNetCore.Authorization.IAuthorizationHandler));
-        services.Should().Contain(d =>
+        services.ShouldContain(d =>
             d.ServiceType == typeof(Microsoft.AspNetCore.Authorization.IAuthorizationPolicyProvider));
     }
 
@@ -234,7 +234,7 @@ public class DependencyInjectionTests
         services.AddInfrastructureServices(config, env);
 
         // Assert
-        services.Should().Contain(d =>
+        services.ShouldContain(d =>
             d.ServiceType == typeof(Microsoft.Extensions.Options.IConfigureOptions<JwtSettings>));
     }
 
@@ -250,7 +250,7 @@ public class DependencyInjectionTests
         services.AddInfrastructureServices(config, env);
 
         // Assert
-        services.Should().Contain(d =>
+        services.ShouldContain(d =>
             d.ServiceType == typeof(Microsoft.Extensions.Options.IConfigureOptions<EmailSettings>));
     }
 
@@ -266,7 +266,7 @@ public class DependencyInjectionTests
         services.AddInfrastructureServices(config, env);
 
         // Assert
-        services.Should().Contain(d =>
+        services.ShouldContain(d =>
             d.ServiceType == typeof(Microsoft.Extensions.Options.IConfigureOptions<StorageSettings>));
     }
 
@@ -286,7 +286,7 @@ public class DependencyInjectionTests
         services.AddInfrastructureServices(config, env);
 
         // Assert - Identity services should be registered
-        services.Should().Contain(d =>
+        services.ShouldContain(d =>
             d.ServiceType == typeof(Microsoft.AspNetCore.Identity.UserManager<ApplicationUser>));
     }
 
@@ -306,7 +306,7 @@ public class DependencyInjectionTests
         services.AddInfrastructureServices(config, env);
 
         // Assert - Multi-tenant services should be registered
-        services.Should().Contain(d =>
+        services.ShouldContain(d =>
             d.ServiceType.FullName != null && d.ServiceType.FullName.Contains("MultiTenant"));
     }
 
@@ -340,7 +340,7 @@ public class DependencyInjectionTests
         var act = () => services.AddInfrastructureServices(config, env);
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -360,7 +360,7 @@ public class DependencyInjectionTests
 
         // Assert - Should complete without error
         var provider = services.BuildServiceProvider();
-        provider.Should().NotBeNull();
+        provider.ShouldNotBeNull();
     }
 
     #endregion
@@ -380,7 +380,7 @@ public class DependencyInjectionTests
         // Assert - DbContext should be registered when environment is not "Testing"
         var dbContextDescriptor = services.FirstOrDefault(d =>
             d.ServiceType == typeof(ApplicationDbContext));
-        dbContextDescriptor.Should().NotBeNull();
+        dbContextDescriptor.ShouldNotBeNull();
     }
 
     #endregion
@@ -399,7 +399,7 @@ public class DependencyInjectionTests
         var result = services.AddInfrastructureServices(config, env);
 
         // Assert
-        result.Should().BeSameAs(services);
+        result.ShouldBeSameAs(services);
     }
 
     #endregion
@@ -420,6 +420,6 @@ public class ApplicationDependencyInjectionTests
         var result = services.AddApplicationServices();
 
         // Assert
-        result.Should().BeSameAs(services);
+        result.ShouldBeSameAs(services);
     }
 }

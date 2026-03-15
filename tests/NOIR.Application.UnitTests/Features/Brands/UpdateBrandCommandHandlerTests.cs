@@ -97,9 +97,9 @@ public class UpdateBrandCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Updated Brand");
-        result.Value.Slug.Should().Be("updated-brand");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Updated Brand");
+        result.Value.Slug.ShouldBe("updated-brand");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -125,7 +125,7 @@ public class UpdateBrandCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         _brandRepositoryMock.Verify(
             x => x.FirstOrDefaultAsync(It.IsAny<BrandSlugExistsSpec>(), It.IsAny<CancellationToken>()),
@@ -169,18 +169,18 @@ public class UpdateBrandCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("New Name");
-        result.Value.Slug.Should().Be("new-slug");
-        result.Value.Description.Should().Be("New Description");
-        result.Value.Website.Should().Be("https://newwebsite.com");
-        result.Value.LogoUrl.Should().Be("https://cdn.test.com/logo.png");
-        result.Value.BannerUrl.Should().Be("https://cdn.test.com/banner.png");
-        result.Value.MetaTitle.Should().Be("New Meta Title");
-        result.Value.MetaDescription.Should().Be("New Meta Description");
-        result.Value.IsActive.Should().BeTrue();
-        result.Value.IsFeatured.Should().BeTrue();
-        result.Value.SortOrder.Should().Be(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("New Name");
+        result.Value.Slug.ShouldBe("new-slug");
+        result.Value.Description.ShouldBe("New Description");
+        result.Value.Website.ShouldBe("https://newwebsite.com");
+        result.Value.LogoUrl.ShouldBe("https://cdn.test.com/logo.png");
+        result.Value.BannerUrl.ShouldBe("https://cdn.test.com/banner.png");
+        result.Value.MetaTitle.ShouldBe("New Meta Title");
+        result.Value.MetaDescription.ShouldBe("New Meta Description");
+        result.Value.IsActive.ShouldBe(true);
+        result.Value.IsFeatured.ShouldBe(true);
+        result.Value.SortOrder.ShouldBe(5);
     }
 
     [Fact]
@@ -208,8 +208,8 @@ public class UpdateBrandCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Slug.Should().Be("new-unique-slug");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Slug.ShouldBe("new-unique-slug");
     }
 
     #endregion
@@ -234,8 +234,8 @@ public class UpdateBrandCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Brand.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Brand.NotFound);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -272,8 +272,8 @@ public class UpdateBrandCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Brand.DuplicateSlug);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Brand.DuplicateSlug);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),

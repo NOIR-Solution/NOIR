@@ -24,9 +24,9 @@ public class PropertyBasedTests
             var result = Result.Success();
 
             // Assert - This invariant must always hold
-            result.IsSuccess.Should().BeTrue();
-            result.IsFailure.Should().BeFalse();
-            result.Error.Should().Be(Error.None);
+            result.IsSuccess.ShouldBe(true);
+            result.IsFailure.ShouldBe(false);
+            result.Error.ShouldBe(Error.None);
         }
     }
 
@@ -47,11 +47,11 @@ public class PropertyBasedTests
             var result = Result.Failure(error);
 
             // Assert - This invariant must always hold
-            result.IsSuccess.Should().BeFalse();
-            result.IsFailure.Should().BeTrue();
-            result.Error.Should().NotBe(Error.None);
-            result.Error.Code.Should().Be(errorCode);
-            result.Error.Message.Should().Be(errorMessage);
+            result.IsSuccess.ShouldBe(false);
+            result.IsFailure.ShouldBe(true);
+            result.Error.ShouldNotBe(Error.None);
+            result.Error.Code.ShouldBe(errorCode);
+            result.Error.Message.ShouldBe(errorMessage);
         }
     }
 
@@ -69,9 +69,9 @@ public class PropertyBasedTests
             var result = Result.Success(value);
 
             // Assert
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Should().Be(value);
-            result.Error.Should().Be(Error.None);
+            result.IsSuccess.ShouldBe(true);
+            result.Value.ShouldBe(value);
+            result.Error.ShouldBe(Error.None);
         }
     }
 
@@ -89,9 +89,9 @@ public class PropertyBasedTests
             var result = Result.Failure<int>(error);
 
             // Assert
-            result.IsFailure.Should().BeTrue();
+            result.IsFailure.ShouldBe(true);
             var act = () => result.Value;
-            act.Should().Throw<InvalidOperationException>();
+            Should.Throw<InvalidOperationException>(() => { act(); });
         }
     }
 
@@ -104,7 +104,7 @@ public class PropertyBasedTests
         {
             // This should never throw
             var act = () => Result.Success();
-            act.Should().NotThrow();
+            act.ShouldNotThrow();
         }
     }
 
@@ -125,8 +125,8 @@ public class PropertyBasedTests
             var failure = Result.Failure(error);
 
             // Invariants
-            success.Error.Should().Be(Error.None);
-            failure.Error.Should().NotBe(Error.None);
+            success.Error.ShouldBe(Error.None);
+            failure.Error.ShouldNotBe(Error.None);
         }
     }
 
@@ -151,7 +151,7 @@ public class PropertyBasedTests
             var refreshToken = RefreshToken.Create(GenerateTestToken(), userId, expirationDays);
 
             // Assert - Token should be unique
-            tokens.Contains(refreshToken.Token).Should().BeFalse(
+            tokens.Contains(refreshToken.Token).ShouldBeFalse(
                 $"Token collision detected after {tokens.Count} iterations");
             tokens.Add(refreshToken.Token);
         }
@@ -173,8 +173,8 @@ public class PropertyBasedTests
             var refreshToken = RefreshToken.Create(GenerateTestToken(), userId, expirationDays);
 
             // Assert
-            refreshToken.ExpiresAt.Should().BeAfter(beforeCreation);
-            refreshToken.IsExpired.Should().BeFalse();
+            refreshToken.ExpiresAt.ShouldBeGreaterThan(beforeCreation);
+            refreshToken.IsExpired.ShouldBe(false);
         }
     }
 
@@ -192,7 +192,7 @@ public class PropertyBasedTests
             var refreshToken = RefreshToken.Create(GenerateTestToken(), userId, 7);
 
             // Assert
-            refreshToken.UserId.Should().Be(userId);
+            refreshToken.UserId.ShouldBe(userId);
         }
     }
 
@@ -219,17 +219,17 @@ public class PropertyBasedTests
                 deviceFingerprint, userAgent, deviceName, tokenFamily);
 
             // Assert - All values should be preserved
-            refreshToken.UserId.Should().Be(userId);
-            refreshToken.TenantId.Should().Be(tenantId);
-            refreshToken.CreatedByIp.Should().Be(ipAddress);
-            refreshToken.DeviceFingerprint.Should().Be(deviceFingerprint);
-            refreshToken.UserAgent.Should().Be(userAgent);
-            refreshToken.DeviceName.Should().Be(deviceName);
+            refreshToken.UserId.ShouldBe(userId);
+            refreshToken.TenantId.ShouldBe(tenantId);
+            refreshToken.CreatedByIp.ShouldBe(ipAddress);
+            refreshToken.DeviceFingerprint.ShouldBe(deviceFingerprint);
+            refreshToken.UserAgent.ShouldBe(userAgent);
+            refreshToken.DeviceName.ShouldBe(deviceName);
 
             if (tokenFamily.HasValue)
-                refreshToken.TokenFamily.Should().Be(tokenFamily.Value);
+                refreshToken.TokenFamily.ShouldBe(tokenFamily.Value);
             else
-                refreshToken.TokenFamily.Should().NotBeEmpty();
+                refreshToken.TokenFamily.ShouldNotBe(Guid.Empty);
         }
     }
 
@@ -251,10 +251,10 @@ public class PropertyBasedTests
                 _faker.Random.Bool() ? _faker.Random.AlphaNumeric(88) : null);
 
             // Assert
-            refreshToken.IsRevoked.Should().BeTrue();
-            refreshToken.IsActive.Should().BeFalse();
-            refreshToken.RevokedAt.Should().NotBeNull();
-            refreshToken.RevokedAt!.Value.Should().BeOnOrAfter(beforeRevoke);
+            refreshToken.IsRevoked.ShouldBe(true);
+            refreshToken.IsActive.ShouldBe(false);
+            refreshToken.RevokedAt.ShouldNotBeNull();
+            refreshToken.RevokedAt!.Value.ShouldBeGreaterThanOrEqualTo(beforeRevoke);
         }
     }
 
@@ -269,12 +269,12 @@ public class PropertyBasedTests
             var refreshToken = RefreshToken.Create(GenerateTestToken(), _faker.Random.Guid().ToString(), 7);
 
             // Assert - Initially active
-            refreshToken.IsActive.Should().Be(!refreshToken.IsRevoked && !refreshToken.IsExpired);
+            refreshToken.IsActive.ShouldBe(!refreshToken.IsRevoked && !refreshToken.IsExpired);
 
             // After revocation
             refreshToken.Revoke();
-            refreshToken.IsActive.Should().BeFalse();
-            refreshToken.IsActive.Should().Be(!refreshToken.IsRevoked && !refreshToken.IsExpired);
+            refreshToken.IsActive.ShouldBe(false);
+            refreshToken.IsActive.ShouldBe(!refreshToken.IsRevoked && !refreshToken.IsExpired);
         }
     }
 
@@ -297,8 +297,8 @@ public class PropertyBasedTests
             var error = Error.NotFound(entity, id);
 
             // Assert
-            error.Type.Should().Be(ErrorType.NotFound);
-            error.Code.Should().Be(ErrorCodes.Business.NotFound);
+            error.Type.ShouldBe(ErrorType.NotFound);
+            error.Code.ShouldBe(ErrorCodes.Business.NotFound);
         }
     }
 
@@ -317,8 +317,8 @@ public class PropertyBasedTests
             var error = Error.Validation(propertyName, message);
 
             // Assert
-            error.Type.Should().Be(ErrorType.Validation);
-            error.Code.Should().Be(ErrorCodes.Validation.General);
+            error.Type.ShouldBe(ErrorType.Validation);
+            error.Code.ShouldBe(ErrorCodes.Validation.General);
         }
     }
 
@@ -346,11 +346,11 @@ public class PropertyBasedTests
             var error = Error.ValidationErrors(errors);
 
             // Assert - All messages from the final dictionary should be in the result
-            error.Type.Should().Be(ErrorType.Validation);
+            error.Type.ShouldBe(ErrorType.Validation);
             var allFinalMessages = errors.Values.SelectMany(v => v);
             foreach (var msg in allFinalMessages)
             {
-                error.Message.Should().Contain(msg);
+                error.Message.ShouldContain(msg);
             }
         }
     }
@@ -363,13 +363,13 @@ public class PropertyBasedTests
         for (int i = 0; i < iterations; i++)
         {
             // Act & Assert
-            Error.NotFound(_faker.Random.Word(), _faker.Random.Guid()).Should().NotBeNull();
-            Error.NotFound(_faker.Lorem.Sentence()).Should().NotBeNull();
-            Error.Validation(_faker.Random.Word(), _faker.Lorem.Sentence()).Should().NotBeNull();
-            Error.Conflict(_faker.Lorem.Sentence()).Should().NotBeNull();
-            Error.Unauthorized(_faker.Lorem.Sentence()).Should().NotBeNull();
-            Error.Forbidden(_faker.Lorem.Sentence()).Should().NotBeNull();
-            Error.Failure(_faker.Random.Word(), _faker.Lorem.Sentence()).Should().NotBeNull();
+            Error.NotFound(_faker.Random.Word(), _faker.Random.Guid()).ShouldNotBeNull();
+            Error.NotFound(_faker.Lorem.Sentence()).ShouldNotBeNull();
+            Error.Validation(_faker.Random.Word(), _faker.Lorem.Sentence()).ShouldNotBeNull();
+            Error.Conflict(_faker.Lorem.Sentence()).ShouldNotBeNull();
+            Error.Unauthorized(_faker.Lorem.Sentence()).ShouldNotBeNull();
+            Error.Forbidden(_faker.Lorem.Sentence()).ShouldNotBeNull();
+            Error.Failure(_faker.Random.Word(), _faker.Lorem.Sentence()).ShouldNotBeNull();
         }
     }
 
@@ -429,7 +429,7 @@ public class PropertyBasedTests
 
             // Assert - Should match manual AND check
             var expected = testValue > lowerBound && testValue < upperBound;
-            result.Should().Be(expected);
+            result.ShouldBe(expected);
         }
     }
 
@@ -455,7 +455,7 @@ public class PropertyBasedTests
 
             // Assert - Should match manual OR check
             var expected = testValue < threshold1 || testValue > threshold2;
-            result.Should().Be(expected);
+            result.ShouldBe(expected);
         }
     }
 
@@ -479,7 +479,7 @@ public class PropertyBasedTests
 
             // Assert - Should match manual NOT check
             var expected = !(testValue > threshold);
-            result.Should().Be(expected);
+            result.ShouldBe(expected);
         }
     }
 
@@ -502,8 +502,8 @@ public class PropertyBasedTests
             var result = spec.Evaluate(entities).ToList();
 
             // Assert - All results should satisfy the condition
-            result.Should().OnlyContain(e => e.Value > threshold);
-            result.Count.Should().Be(entities.Count(e => e.Value > threshold));
+            result.ShouldAllBe(e => e.Value > threshold);
+            result.Count.ShouldBe(entities.Count(e => e.Value > threshold));
         }
     }
 
@@ -522,7 +522,7 @@ public class PropertyBasedTests
             var result = spec.IsSatisfiedBy(null!);
 
             // Assert
-            result.Should().BeFalse();
+            result.ShouldBe(false);
         }
     }
 
@@ -551,7 +551,7 @@ public class PropertyBasedTests
             var result2 = notAOrNotB.IsSatisfiedBy(entity);
 
             // Assert - De Morgan's Law should hold
-            result1.Should().Be(result2);
+            result1.ShouldBe(result2);
         }
     }
 
@@ -572,8 +572,8 @@ public class PropertyBasedTests
         {
             var inputToken = GenerateTestToken();
             var refreshToken = RefreshToken.Create(inputToken, _faker.Random.Guid().ToString(), 7);
-            refreshToken.Token.Should().Be(inputToken, "Token value should be preserved exactly");
-            refreshToken.Token.Length.Should().Be(minExpectedLength,
+            refreshToken.Token.ShouldBe(inputToken, "Token value should be preserved exactly");
+            refreshToken.Token.Length.ShouldBe(minExpectedLength,
                 "Test token should be 64 characters (2 GUIDs without hyphens)");
         }
     }
@@ -593,7 +593,7 @@ public class PropertyBasedTests
             .ToList();
 
         // Hex uses 16 characters (0-9, a-f), should see all of them
-        charCounts.Count.Should().BeGreaterThanOrEqualTo(15,
+        charCounts.Count.ShouldBeGreaterThanOrEqualTo(15,
             "Test token character distribution lacks variety");
     }
 
@@ -609,8 +609,8 @@ public class PropertyBasedTests
         for (int i = 0; i < iterations; i++)
         {
             var token = RefreshToken.Create(GenerateTestToken(), _faker.Random.Guid().ToString(), 1);
-            token.ExpiresAt.Should().BeAfter(DateTimeOffset.UtcNow);
-            token.IsExpired.Should().BeFalse();
+            token.ExpiresAt.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
+            token.IsExpired.ShouldBe(false);
         }
     }
 
@@ -622,10 +622,10 @@ public class PropertyBasedTests
         for (int i = 0; i < iterations; i++)
         {
             var token = RefreshToken.Create(GenerateTestToken(), _faker.Random.Guid().ToString(), 365);
-            token.ExpiresAt.Should().BeCloseTo(
+            token.ExpiresAt.ShouldBe(
                 DateTimeOffset.UtcNow.AddDays(365),
                 TimeSpan.FromSeconds(5));
-            token.IsExpired.Should().BeFalse();
+            token.IsExpired.ShouldBe(false);
         }
     }
 
@@ -634,9 +634,9 @@ public class PropertyBasedTests
     {
         // Property: Edge case - Empty strings should be handled
         var error = new Error(string.Empty, string.Empty);
-        error.Should().NotBeNull();
-        error.Code.Should().BeEmpty();
-        error.Message.Should().BeEmpty();
+        error.ShouldNotBeNull();
+        error.Code.ShouldBeEmpty();
+        error.Message.ShouldBeEmpty();
     }
 
     [Fact]
@@ -646,8 +646,8 @@ public class PropertyBasedTests
         var none1 = Error.None;
         var none2 = Error.None;
 
-        none1.Should().Be(none2);
-        ReferenceEquals(none1, none2).Should().BeTrue();
+        none1.ShouldBe(none2);
+        ReferenceEquals(none1, none2).ShouldBe(true);
     }
 
     #endregion

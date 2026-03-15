@@ -22,7 +22,7 @@ public class ModuleCatalogTests
         var modules = _catalog.GetAllModules();
 
         // Assert
-        modules.Should().HaveCount(35);
+        modules.Count().ShouldBe(35);
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class ModuleCatalogTests
         var names = modules.Select(m => m.Name).ToList();
 
         // Assert
-        names.Should().OnlyHaveUniqueItems();
+        names.ShouldBeUnique();
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class ModuleCatalogTests
         var coreModules = _catalog.GetAllModules().Where(m => m.IsCore).ToList();
 
         // Assert
-        coreModules.Should().HaveCount(8);
+        coreModules.Count().ShouldBe(8);
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class ModuleCatalogTests
         var toggleable = _catalog.GetAllModules().Where(m => !m.IsCore).ToList();
 
         // Assert
-        toggleable.Should().HaveCount(27);
+        toggleable.Count().ShouldBe(27);
     }
 
     [Fact]
@@ -63,8 +63,8 @@ public class ModuleCatalogTests
         var module = _catalog.GetModule("Ecommerce.Products");
 
         // Assert
-        module.Should().NotBeNull();
-        module!.Name.Should().Be("Ecommerce.Products");
+        module.ShouldNotBeNull();
+        module!.Name.ShouldBe("Ecommerce.Products");
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class ModuleCatalogTests
         var module = _catalog.GetModule("NonExistent.Module");
 
         // Assert
-        module.Should().BeNull();
+        module.ShouldBeNull();
     }
 
     [Fact]
@@ -84,45 +84,45 @@ public class ModuleCatalogTests
         var module = _catalog.GetModule("ecommerce.products");
 
         // Assert
-        module.Should().NotBeNull();
+        module.ShouldNotBeNull();
     }
 
     [Fact]
     public void IsCore_WithCoreModule_ShouldReturnTrue()
     {
         // Act & Assert
-        _catalog.IsCore("Core.Auth").Should().BeTrue();
-        _catalog.IsCore("Core.Users").Should().BeTrue();
-        _catalog.IsCore("Core.Dashboard").Should().BeTrue();
+        _catalog.IsCore("Core.Auth").ShouldBe(true);
+        _catalog.IsCore("Core.Users").ShouldBe(true);
+        _catalog.IsCore("Core.Dashboard").ShouldBe(true);
     }
 
     [Fact]
     public void IsCore_WithNonCoreModule_ShouldReturnFalse()
     {
         // Act & Assert
-        _catalog.IsCore("Ecommerce.Products").Should().BeFalse();
-        _catalog.IsCore("Content.Blog").Should().BeFalse();
+        _catalog.IsCore("Ecommerce.Products").ShouldBe(false);
+        _catalog.IsCore("Content.Blog").ShouldBe(false);
     }
 
     [Fact]
     public void Exists_WithModuleName_ShouldReturnTrue()
     {
         // Act & Assert
-        _catalog.Exists("Ecommerce.Products").Should().BeTrue();
+        _catalog.Exists("Ecommerce.Products").ShouldBe(true);
     }
 
     [Fact]
     public void Exists_WithFeatureName_ShouldReturnTrue()
     {
         // Act & Assert
-        _catalog.Exists("Ecommerce.Products.Variants").Should().BeTrue();
+        _catalog.Exists("Ecommerce.Products.Variants").ShouldBe(true);
     }
 
     [Fact]
     public void Exists_WithInvalidName_ShouldReturnFalse()
     {
         // Act & Assert
-        _catalog.Exists("Nonexistent").Should().BeFalse();
+        _catalog.Exists("Nonexistent").ShouldBe(false);
     }
 
     [Fact]
@@ -132,7 +132,7 @@ public class ModuleCatalogTests
         var parent = _catalog.GetParentModuleName("Ecommerce.Products.Variants");
 
         // Assert
-        parent.Should().Be("Ecommerce.Products");
+        parent.ShouldBe("Ecommerce.Products");
     }
 
     [Fact]
@@ -142,7 +142,7 @@ public class ModuleCatalogTests
         var parent = _catalog.GetParentModuleName("Core.Auth");
 
         // Assert
-        parent.Should().BeNull();
+        parent.ShouldBeNull();
     }
 
     [Fact]
@@ -152,8 +152,8 @@ public class ModuleCatalogTests
         var feature = _catalog.GetFeature("Ecommerce.Products.Variants");
 
         // Assert
-        feature.Should().NotBeNull();
-        feature!.Name.Should().Be("Ecommerce.Products.Variants");
+        feature.ShouldNotBeNull();
+        feature!.Name.ShouldBe("Ecommerce.Products.Variants");
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class ModuleCatalogTests
         var sortOrders = modules.Select(m => m.SortOrder).ToList();
 
         // Assert
-        sortOrders.Should().BeInAscendingOrder();
+        sortOrders.ShouldBeInOrder(SortDirection.Ascending);
     }
 
     [Fact]
@@ -177,6 +177,6 @@ public class ModuleCatalogTests
             .ToList();
 
         // Assert
-        featureNames.Should().OnlyHaveUniqueItems();
+        featureNames.ShouldBeUnique();
     }
 }

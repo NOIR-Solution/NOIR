@@ -27,14 +27,14 @@ public class ResourceShareTests
             sharedByUserId);
 
         // Assert
-        share.Should().NotBeNull();
-        share.Id.Should().NotBeEmpty();
-        share.ResourceType.Should().Be("document"); // lowercase
-        share.ResourceId.Should().Be(resourceId);
-        share.SharedWithUserId.Should().Be(sharedWithUserId);
-        share.Permission.Should().Be(SharePermission.Edit);
-        share.SharedByUserId.Should().Be(sharedByUserId);
-        share.ExpiresAt.Should().BeNull();
+        share.ShouldNotBeNull();
+        share.Id.ShouldNotBe(Guid.Empty);
+        share.ResourceType.ShouldBe("document"); // lowercase
+        share.ResourceId.ShouldBe(resourceId);
+        share.SharedWithUserId.ShouldBe(sharedWithUserId);
+        share.Permission.ShouldBe(SharePermission.Edit);
+        share.SharedByUserId.ShouldBe(sharedByUserId);
+        share.ExpiresAt.ShouldBeNull();
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class ResourceShareTests
             expiresAt: expiresAt);
 
         // Assert
-        share.ExpiresAt.Should().Be(expiresAt);
+        share.ExpiresAt.ShouldBe(expiresAt);
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class ResourceShareTests
         var share = ResourceShare.Create("DOCUMENT", Guid.NewGuid(), "user", SharePermission.View);
 
         // Assert
-        share.ResourceType.Should().Be("document");
+        share.ResourceType.ShouldBe("document");
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class ResourceShareTests
         var share = ResourceShare.Create("FoLdEr", Guid.NewGuid(), "user", SharePermission.View);
 
         // Assert
-        share.ResourceType.Should().Be("folder");
+        share.ResourceType.ShouldBe("folder");
     }
 
     [Theory]
@@ -85,7 +85,7 @@ public class ResourceShareTests
         var act = () => ResourceShare.Create(resourceType!, Guid.NewGuid(), "user", SharePermission.View);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -98,7 +98,7 @@ public class ResourceShareTests
         var act = () => ResourceShare.Create("document", Guid.NewGuid(), userId!, SharePermission.View);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class ResourceShareTests
         var act = () => ResourceShare.Create("document", Guid.Empty, "user", SharePermission.View);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -118,7 +118,7 @@ public class ResourceShareTests
         var share = ResourceShare.Create("document", Guid.NewGuid(), "user", SharePermission.View);
 
         // Assert
-        share.SharedByUserId.Should().BeNull();
+        share.SharedByUserId.ShouldBeNull();
     }
 
     [Fact]
@@ -129,7 +129,7 @@ public class ResourceShareTests
         var share2 = ResourceShare.Create("doc", Guid.NewGuid(), "user2", SharePermission.View);
 
         // Assert
-        share1.Id.Should().NotBe(share2.Id);
+        share1.Id.ShouldNotBe(share2.Id);
     }
 
     [Theory]
@@ -143,7 +143,7 @@ public class ResourceShareTests
         var share = ResourceShare.Create("document", Guid.NewGuid(), "user", permission);
 
         // Assert
-        share.Permission.Should().Be(permission);
+        share.Permission.ShouldBe(permission);
     }
 
     #endregion
@@ -157,7 +157,7 @@ public class ResourceShareTests
         var share = ResourceShare.Create("doc", Guid.NewGuid(), "user", SharePermission.View);
 
         // Act & Assert
-        share.IsValid().Should().BeTrue();
+        share.IsValid().ShouldBeTrue();
     }
 
     [Fact]
@@ -172,7 +172,7 @@ public class ResourceShareTests
             expiresAt: DateTimeOffset.UtcNow.AddHours(1));
 
         // Act & Assert
-        share.IsValid().Should().BeTrue();
+        share.IsValid().ShouldBeTrue();
     }
 
     [Fact]
@@ -187,7 +187,7 @@ public class ResourceShareTests
             expiresAt: DateTimeOffset.UtcNow.AddHours(-1));
 
         // Act & Assert
-        share.IsValid().Should().BeFalse();
+        share.IsValid().ShouldBeFalse();
     }
 
     [Fact]
@@ -202,7 +202,7 @@ public class ResourceShareTests
             expiresAt: DateTimeOffset.UtcNow.AddYears(1));
 
         // Act & Assert
-        share.IsValid().Should().BeTrue();
+        share.IsValid().ShouldBeTrue();
     }
 
     #endregion
@@ -229,7 +229,7 @@ public class ResourceShareTests
         var result = share.AllowsAction(action);
 
         // Assert
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Fact]
@@ -244,7 +244,7 @@ public class ResourceShareTests
             expiresAt: DateTimeOffset.UtcNow.AddHours(-1));
 
         // Act & Assert
-        share.AllowsAction("read").Should().BeFalse();
+        share.AllowsAction("read").ShouldBeFalse();
     }
 
     [Fact]
@@ -259,10 +259,10 @@ public class ResourceShareTests
             expiresAt: DateTimeOffset.UtcNow.AddDays(1));
 
         // Act & Assert
-        share.AllowsAction("read").Should().BeTrue();
-        share.AllowsAction("edit").Should().BeTrue();
-        share.AllowsAction("delete").Should().BeTrue();
-        share.AllowsAction("share").Should().BeTrue();
+        share.AllowsAction("read").ShouldBeTrue();
+        share.AllowsAction("edit").ShouldBeTrue();
+        share.AllowsAction("delete").ShouldBeTrue();
+        share.AllowsAction("share").ShouldBeTrue();
     }
 
     [Fact]
@@ -272,7 +272,7 @@ public class ResourceShareTests
         var share = ResourceShare.Create("doc", Guid.NewGuid(), "user", SharePermission.Admin);
 
         // Act & Assert
-        share.AllowsAction("unknown_action").Should().BeFalse();
+        share.AllowsAction("unknown_action").ShouldBeFalse();
     }
 
     [Fact]
@@ -282,9 +282,9 @@ public class ResourceShareTests
         var share = ResourceShare.Create("doc", Guid.NewGuid(), "user", SharePermission.View);
 
         // Act & Assert
-        share.AllowsAction("READ").Should().BeTrue();
-        share.AllowsAction("Read").Should().BeTrue();
-        share.AllowsAction("read").Should().BeTrue();
+        share.AllowsAction("READ").ShouldBeTrue();
+        share.AllowsAction("Read").ShouldBeTrue();
+        share.AllowsAction("read").ShouldBeTrue();
     }
 
     #endregion
@@ -301,7 +301,7 @@ public class ResourceShareTests
         share.UpdatePermission(SharePermission.Edit);
 
         // Assert
-        share.Permission.Should().Be(SharePermission.Edit);
+        share.Permission.ShouldBe(SharePermission.Edit);
     }
 
     [Fact]
@@ -314,7 +314,7 @@ public class ResourceShareTests
         share.UpdatePermission(SharePermission.Admin);
 
         // Assert
-        share.Permission.Should().Be(SharePermission.Admin);
+        share.Permission.ShouldBe(SharePermission.Admin);
     }
 
     [Fact]
@@ -327,7 +327,7 @@ public class ResourceShareTests
         share.UpdatePermission(SharePermission.View);
 
         // Assert
-        share.Permission.Should().Be(SharePermission.View);
+        share.Permission.ShouldBe(SharePermission.View);
     }
 
     [Fact]
@@ -348,11 +348,11 @@ public class ResourceShareTests
         share.UpdatePermission(SharePermission.Edit);
 
         // Assert
-        share.ResourceType.Should().Be("document");
-        share.ResourceId.Should().Be(resourceId);
-        share.SharedWithUserId.Should().Be("user-123");
-        share.SharedByUserId.Should().Be("owner-456");
-        share.ExpiresAt.Should().Be(expiresAt);
+        share.ResourceType.ShouldBe("document");
+        share.ResourceId.ShouldBe(resourceId);
+        share.SharedWithUserId.ShouldBe("user-123");
+        share.SharedByUserId.ShouldBe("owner-456");
+        share.ExpiresAt.ShouldBe(expiresAt);
     }
 
     #endregion
@@ -370,7 +370,7 @@ public class ResourceShareTests
         share.UpdateExpiration(newExpiration);
 
         // Assert
-        share.ExpiresAt.Should().Be(newExpiration);
+        share.ExpiresAt.ShouldBe(newExpiration);
     }
 
     [Fact]
@@ -388,8 +388,8 @@ public class ResourceShareTests
         share.UpdateExpiration(null);
 
         // Assert
-        share.ExpiresAt.Should().BeNull();
-        share.IsValid().Should().BeTrue();
+        share.ExpiresAt.ShouldBeNull();
+        share.IsValid().ShouldBeTrue();
     }
 
     [Fact]
@@ -409,8 +409,8 @@ public class ResourceShareTests
         share.UpdateExpiration(newExpiration);
 
         // Assert
-        share.ExpiresAt.Should().Be(newExpiration);
-        share.ExpiresAt.Should().BeAfter(originalExpiration);
+        share.ExpiresAt.ShouldBe(newExpiration);
+        share.ExpiresAt!.Value.ShouldBeGreaterThan(originalExpiration);
     }
 
     [Fact]
@@ -430,8 +430,8 @@ public class ResourceShareTests
         share.UpdateExpiration(newExpiration);
 
         // Assert
-        share.ExpiresAt.Should().Be(newExpiration);
-        share.ExpiresAt.Should().BeBefore(originalExpiration);
+        share.ExpiresAt.ShouldBe(newExpiration);
+        share.ExpiresAt!.Value.ShouldBeLessThan(originalExpiration);
     }
 
     [Fact]
@@ -450,11 +450,11 @@ public class ResourceShareTests
         share.UpdateExpiration(DateTimeOffset.UtcNow.AddDays(7));
 
         // Assert
-        share.ResourceType.Should().Be("document");
-        share.ResourceId.Should().Be(resourceId);
-        share.SharedWithUserId.Should().Be("user-123");
-        share.SharedByUserId.Should().Be("owner-456");
-        share.Permission.Should().Be(SharePermission.Edit);
+        share.ResourceType.ShouldBe("document");
+        share.ResourceId.ShouldBe(resourceId);
+        share.SharedWithUserId.ShouldBe("user-123");
+        share.SharedByUserId.ShouldBe("owner-456");
+        share.Permission.ShouldBe(SharePermission.Edit);
     }
 
     #endregion
@@ -468,11 +468,11 @@ public class ResourceShareTests
         var share = ResourceShare.Create("doc", Guid.NewGuid(), "user", SharePermission.View);
 
         // Assert
-        share.CreatedBy.Should().BeNull();
-        share.ModifiedBy.Should().BeNull();
-        share.IsDeleted.Should().BeFalse();
-        share.DeletedAt.Should().BeNull();
-        share.DeletedBy.Should().BeNull();
+        share.CreatedBy.ShouldBeNull();
+        share.ModifiedBy.ShouldBeNull();
+        share.IsDeleted.ShouldBeFalse();
+        share.DeletedAt.ShouldBeNull();
+        share.DeletedBy.ShouldBeNull();
     }
 
     #endregion

@@ -21,10 +21,10 @@ public class ThumbHashGeneratorTests
         var result = await ThumbHashGenerator.GenerateAsync(stream);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
+        result.ShouldNotBeNullOrEmpty();
         // ThumbHash should be valid Base64
         var action = () => Convert.FromBase64String(result);
-        action.Should().NotThrow();
+        action.ShouldNotThrow();
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class ThumbHashGeneratorTests
         var result = await ThumbHashGenerator.GenerateAsync(stream);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
+        result.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -50,10 +50,10 @@ public class ThumbHashGeneratorTests
         var result = await ThumbHashGenerator.GenerateAsync(stream);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
+        result.ShouldNotBeNullOrEmpty();
         // ThumbHash is compact - typically around 25-35 bytes when decoded
         var bytes = Convert.FromBase64String(result);
-        bytes.Length.Should().BeLessThan(50);
+        bytes.Length.ShouldBeLessThan(50);
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public class ThumbHashGeneratorTests
         var result = await ThumbHashGenerator.GenerateAsync(stream);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
+        result.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -79,9 +79,9 @@ public class ThumbHashGeneratorTests
         var result = await ThumbHashGenerator.GenerateAsync(stream);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
+        result.ShouldNotBeNullOrEmpty();
         var (_, _, aspectRatio) = ThumbHashGenerator.GetApproximateDimensions(result);
-        aspectRatio.Should().BeGreaterThan(1.0f); // Width > Height
+        aspectRatio.ShouldBeGreaterThan(1.0f); // Width > Height
     }
 
     [Fact]
@@ -94,9 +94,9 @@ public class ThumbHashGeneratorTests
         var result = await ThumbHashGenerator.GenerateAsync(stream);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
+        result.ShouldNotBeNullOrEmpty();
         var (_, _, aspectRatio) = ThumbHashGenerator.GetApproximateDimensions(result);
-        aspectRatio.Should().BeLessThan(1.0f); // Width < Height
+        aspectRatio.ShouldBeLessThan(1.0f); // Width < Height
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class ThumbHashGeneratorTests
         var result = await ThumbHashGenerator.GenerateAsync(stream);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
+        result.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public class ThumbHashGeneratorTests
         var result2 = await ThumbHashGenerator.GenerateAsync(stream2);
 
         // Assert - Same image should produce same hash
-        result1.Should().Be(result2);
+        result1.ShouldBe(result2);
     }
 
     [Fact]
@@ -142,7 +142,7 @@ public class ThumbHashGeneratorTests
         var result2 = await ThumbHashGenerator.GenerateAsync(stream2);
 
         // Assert
-        result1.Should().NotBe(result2);
+        result1.ShouldNotBe(result2);
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class ThumbHashGeneratorTests
         var result = await ThumbHashGenerator.GenerateAsync(stream);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
+        result.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -187,7 +187,7 @@ public class ThumbHashGeneratorTests
         var result = ThumbHashGenerator.DecodeToDataUrl(thumbHash);
 
         // Assert
-        result.Should().StartWith("data:image/png;base64,");
+        result.ShouldStartWith("data:image/png;base64,");
     }
 
     [Fact]
@@ -203,7 +203,7 @@ public class ThumbHashGeneratorTests
         // Assert
         var base64Part = result.Replace("data:image/png;base64,", "");
         var action = () => Convert.FromBase64String(base64Part);
-        action.Should().NotThrow();
+        action.ShouldNotThrow();
     }
 
     [Fact]
@@ -223,7 +223,7 @@ public class ThumbHashGeneratorTests
         // Verify it's a valid image by loading it
         using var pngStream = new MemoryStream(pngBytes);
         var info = await Image.IdentifyAsync(pngStream);
-        info.Should().NotBeNull();
+        info.ShouldNotBeNull();
     }
 
     [Fact]
@@ -251,10 +251,10 @@ public class ThumbHashGeneratorTests
         var result = ThumbHashGenerator.GetAverageColor(thumbHash);
 
         // Assert
-        result.Should().StartWith("#");
-        result.Should().HaveLength(7);
+        result.ShouldStartWith("#");
+        result.Length.ShouldBe(7);
         var r = Convert.ToInt32(result.Substring(1, 2), 16);
-        r.Should().BeGreaterThan(150); // Should have high red component
+        r.ShouldBeGreaterThan(150); // Should have high red component
     }
 
     [Fact]
@@ -268,9 +268,9 @@ public class ThumbHashGeneratorTests
         var result = ThumbHashGenerator.GetAverageColor(thumbHash);
 
         // Assert
-        result.Should().StartWith("#");
+        result.ShouldStartWith("#");
         var b = Convert.ToInt32(result.Substring(5, 2), 16);
-        b.Should().BeGreaterThan(150); // Should have high blue component
+        b.ShouldBeGreaterThan(150); // Should have high blue component
     }
 
     [Fact]
@@ -284,7 +284,7 @@ public class ThumbHashGeneratorTests
         var result = ThumbHashGenerator.GetAverageColor(thumbHash);
 
         // Assert
-        result.Should().MatchRegex("^#[0-9A-F]{6}$");
+        result.ShouldMatch("^#[0-9A-F]{6}$");
     }
 
     [Fact]
@@ -312,7 +312,7 @@ public class ThumbHashGeneratorTests
         var (width, height, aspectRatio) = ThumbHashGenerator.GetApproximateDimensions(thumbHash);
 
         // Assert
-        aspectRatio.Should().BeApproximately(1.0f, 0.1f);
+        aspectRatio.ShouldBe(1.0f, 0.1f);
     }
 
     [Fact]
@@ -326,8 +326,8 @@ public class ThumbHashGeneratorTests
         var (width, height, aspectRatio) = ThumbHashGenerator.GetApproximateDimensions(thumbHash);
 
         // Assert
-        aspectRatio.Should().BeGreaterThan(1.5f);
-        width.Should().BeGreaterThan(height);
+        aspectRatio.ShouldBeGreaterThan(1.5f);
+        width.ShouldBeGreaterThan(height);
     }
 
     [Fact]
@@ -341,8 +341,8 @@ public class ThumbHashGeneratorTests
         var (width, height, aspectRatio) = ThumbHashGenerator.GetApproximateDimensions(thumbHash);
 
         // Assert
-        aspectRatio.Should().BeLessThan(0.7f);
-        height.Should().BeGreaterThan(width);
+        aspectRatio.ShouldBeLessThan(0.7f);
+        height.ShouldBeGreaterThan(width);
     }
 
     [Fact]
@@ -356,9 +356,9 @@ public class ThumbHashGeneratorTests
         var (width, height, aspectRatio) = ThumbHashGenerator.GetApproximateDimensions(thumbHash);
 
         // Assert
-        width.Should().BePositive();
-        height.Should().BePositive();
-        aspectRatio.Should().BePositive();
+        width.ShouldBeGreaterThan(0);
+        height.ShouldBeGreaterThan(0);
+        aspectRatio.ShouldBeGreaterThan(0);
     }
 
     [Fact]
@@ -414,11 +414,11 @@ public class ThumbHashGeneratorTests
         var (width, height, aspectRatio) = ThumbHashGenerator.GetApproximateDimensions(thumbHash);
 
         // Assert
-        dataUrl.Should().StartWith("data:image/png;base64,");
-        color.Should().StartWith("#");
-        width.Should().BePositive();
-        height.Should().BePositive();
-        aspectRatio.Should().BeApproximately(1.0f, 0.1f);
+        dataUrl.ShouldStartWith("data:image/png;base64,");
+        color.ShouldStartWith("#");
+        width.ShouldBeGreaterThan(0);
+        height.ShouldBeGreaterThan(0);
+        aspectRatio.ShouldBe(1.0f, 0.1f);
     }
 
     [Fact]
@@ -446,8 +446,8 @@ public class ThumbHashGeneratorTests
         var dataUrl = ThumbHashGenerator.DecodeToDataUrl(thumbHash);
 
         // Assert
-        thumbHash.Should().NotBeNullOrEmpty();
-        dataUrl.Should().NotBeNullOrEmpty();
+        thumbHash.ShouldNotBeNullOrEmpty();
+        dataUrl.ShouldNotBeNullOrEmpty();
     }
 
     #endregion

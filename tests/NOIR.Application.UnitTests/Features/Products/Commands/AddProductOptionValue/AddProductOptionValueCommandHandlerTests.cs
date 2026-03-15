@@ -92,9 +92,9 @@ public class AddProductOptionValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Value.Should().Be("blue");
-        result.Value.DisplayValue.Should().Be("Blue");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Value.ShouldBe("blue");
+        result.Value.DisplayValue.ShouldBe("Blue");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -128,8 +128,8 @@ public class AddProductOptionValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ColorCode.Should().Be("#00FF00");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ColorCode.ShouldBe("#00FF00");
     }
 
     [Fact]
@@ -159,8 +159,8 @@ public class AddProductOptionValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SwatchUrl.Should().Be("https://example.com/pattern-swatch.jpg");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SwatchUrl.ShouldBe("https://example.com/pattern-swatch.jpg");
     }
 
     [Fact]
@@ -190,9 +190,9 @@ public class AddProductOptionValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Value.Should().Be("light_blue");
-        result.Value.DisplayValue.Should().Be("Light Blue");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Value.ShouldBe("light_blue");
+        result.Value.DisplayValue.ShouldBe("Light Blue");
     }
 
     #endregion
@@ -215,11 +215,11 @@ public class AddProductOptionValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-021");
-        result.Error.Message.Should().Contain("Product");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-021");
+        result.Error.Message.ShouldContain("Product");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -247,11 +247,11 @@ public class AddProductOptionValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-051");
-        result.Error.Message.Should().Contain("Option");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-051");
+        result.Error.Message.ShouldContain("Option");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -287,10 +287,10 @@ public class AddProductOptionValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-052");
-        result.Error.Message.Should().Contain("already exists");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-052");
+        result.Error.Message.ShouldContain("already exists");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -325,8 +325,8 @@ public class AddProductOptionValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        option.Values.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        option.Values.Count().ShouldBe(2);
     }
 
     #endregion
@@ -396,9 +396,9 @@ public class AddProductOptionValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ColorCode.Should().BeNull();
-        result.Value.SwatchUrl.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ColorCode.ShouldBeNull();
+        result.Value.SwatchUrl.ShouldBeNull();
     }
 
     [Fact]
@@ -430,8 +430,8 @@ public class AddProductOptionValueCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        option.Values.Should().HaveCount(3);
+        result.IsSuccess.ShouldBe(true);
+        option.Values.Count().ShouldBe(3);
     }
 
     #endregion

@@ -110,7 +110,7 @@ public class ReviewModerationHandlerTests
             .ThrowsAsync(new Exception("Notification hub down"));
 
         // Act & Assert
-        await ((Func<Task>)(() => _sut.Handle(evt, CancellationToken.None))).Should().NotThrowAsync();
+        await _sut.Handle(evt, CancellationToken.None);
         _logger.Verify(
             x => x.Log(
                 LogLevel.Warning,

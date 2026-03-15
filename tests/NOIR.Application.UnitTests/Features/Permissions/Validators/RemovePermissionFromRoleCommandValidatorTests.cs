@@ -156,8 +156,8 @@ public class RemovePermissionFromRoleCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Permission cannot be empty.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Permission cannot be empty.");
     }
 
     [Fact]
@@ -172,8 +172,8 @@ public class RemovePermissionFromRoleCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Permission cannot be empty.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Permission cannot be empty.");
     }
 
     [Fact]
@@ -188,8 +188,8 @@ public class RemovePermissionFromRoleCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Permission 'invalid:permission' is not a valid permission.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Permission 'invalid:permission' is not a valid permission.");
     }
 
     [Fact]
@@ -204,8 +204,8 @@ public class RemovePermissionFromRoleCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage == "Permission 'invalid:permission' is not a valid permission.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage == "Permission 'invalid:permission' is not a valid permission.");
     }
 
     [Theory]
@@ -263,8 +263,8 @@ public class RemovePermissionFromRoleCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().HaveCountGreaterThanOrEqualTo(2);
+        result.IsValid.ShouldBe(false);
+        result.Errors.Count().ShouldBeGreaterThanOrEqualTo(2);
     }
 
     #endregion

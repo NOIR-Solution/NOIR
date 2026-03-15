@@ -38,9 +38,9 @@ public class ShippingProviderEndpointsTests : IClassFixture<CustomWebApplication
         var response = await adminClient.GetAsync("/api/shipping-providers");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<List<ShippingProviderDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class ShippingProviderEndpointsTests : IClassFixture<CustomWebApplication
         var response = await _client.GetAsync("/api/shipping-providers");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -67,7 +67,7 @@ public class ShippingProviderEndpointsTests : IClassFixture<CustomWebApplication
         var response = await adminClient.GetAsync("/api/shipping-providers/active");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class ShippingProviderEndpointsTests : IClassFixture<CustomWebApplication
         var response = await _client.GetAsync("/api/shipping-providers/active");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -94,7 +94,7 @@ public class ShippingProviderEndpointsTests : IClassFixture<CustomWebApplication
         var response = await adminClient.GetAsync("/api/shipping-providers/schemas");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public class ShippingProviderEndpointsTests : IClassFixture<CustomWebApplication
         var response = await _client.GetAsync("/api/shipping-providers/schemas");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -121,7 +121,7 @@ public class ShippingProviderEndpointsTests : IClassFixture<CustomWebApplication
         var response = await adminClient.GetAsync($"/api/shipping-providers/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -142,7 +142,7 @@ public class ShippingProviderEndpointsTests : IClassFixture<CustomWebApplication
         var response = await adminClient.PutAsJsonAsync($"/api/shipping-providers/{Guid.NewGuid()}", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -159,7 +159,7 @@ public class ShippingProviderEndpointsTests : IClassFixture<CustomWebApplication
         var response = await adminClient.PostAsync($"/api/shipping-providers/{Guid.NewGuid()}/activate", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -176,7 +176,7 @@ public class ShippingProviderEndpointsTests : IClassFixture<CustomWebApplication
         var response = await adminClient.PostAsync($"/api/shipping-providers/{Guid.NewGuid()}/deactivate", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion

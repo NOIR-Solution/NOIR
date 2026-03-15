@@ -84,7 +84,7 @@ public class ReorderProductImagesCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public class ReorderProductImagesCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
+        result.IsValid.ShouldBe(false);
     }
 
     [Fact]

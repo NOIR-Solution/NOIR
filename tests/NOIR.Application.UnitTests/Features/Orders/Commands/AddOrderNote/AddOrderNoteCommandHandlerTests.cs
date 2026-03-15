@@ -90,12 +90,12 @@ public class AddOrderNoteCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Content.Should().Be("This order needs special packaging");
-        result.Value.OrderId.Should().Be(order.Id);
-        result.Value.CreatedByUserId.Should().Be(TestUserId);
-        result.Value.CreatedByUserName.Should().Be(TestUserName);
-        result.Value.IsInternal.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Content.ShouldBe("This order needs special packaging");
+        result.Value.OrderId.ShouldBe(order.Id);
+        result.Value.CreatedByUserId.ShouldBe(TestUserId);
+        result.Value.CreatedByUserName.ShouldBe(TestUserName);
+        result.Value.IsInternal.ShouldBe(true);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -130,8 +130,8 @@ public class AddOrderNoteCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CreatedByUserName.Should().Be("Unknown");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CreatedByUserName.ShouldBe("Unknown");
     }
 
     #endregion
@@ -155,9 +155,9 @@ public class AddOrderNoteCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be(ErrorCodes.Order.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.NotFound);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),

@@ -62,11 +62,11 @@ public class CancelInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(InventoryReceiptStatus.Cancelled);
-        result.Value.CancelledBy.Should().Be("admin-user");
-        result.Value.CancelledAt.Should().NotBeNull();
-        result.Value.CancellationReason.Should().Be("No longer needed");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(InventoryReceiptStatus.Cancelled);
+        result.Value.CancelledBy.ShouldBe("admin-user");
+        result.Value.CancelledAt.ShouldNotBeNull();
+        result.Value.CancellationReason.ShouldBe("No longer needed");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -94,9 +94,9 @@ public class CancelInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(InventoryReceiptStatus.Cancelled);
-        result.Value.CancellationReason.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(InventoryReceiptStatus.Cancelled);
+        result.Value.CancellationReason.ShouldBeNull();
     }
 
     #endregion
@@ -119,9 +119,9 @@ public class CancelInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-INVENTORY-003");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-INVENTORY-003");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -151,9 +151,9 @@ public class CancelInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-INVENTORY-005");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-INVENTORY-005");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -178,9 +178,9 @@ public class CancelInventoryReceiptCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-INVENTORY-005");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-INVENTORY-005");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),

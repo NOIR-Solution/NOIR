@@ -63,9 +63,9 @@ public class DeactivateWebhookSubscriptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeFalse();
-        result.Value.Status.Should().Be(WebhookSubscriptionStatus.Inactive);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(false);
+        result.Value.Status.ShouldBe(WebhookSubscriptionStatus.Inactive);
     }
 
     [Fact]
@@ -114,8 +114,8 @@ public class DeactivateWebhookSubscriptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-WEBHOOK-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-WEBHOOK-002");
     }
 
     #endregion

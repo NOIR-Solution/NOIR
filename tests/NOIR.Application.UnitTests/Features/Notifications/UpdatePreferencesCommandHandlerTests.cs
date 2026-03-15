@@ -76,8 +76,8 @@ public class UpdatePreferencesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.Unauthorized);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.Unauthorized);
     }
 
     #endregion
@@ -103,11 +103,11 @@ public class UpdatePreferencesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
         var dto = result.Value.First();
-        dto.InAppEnabled.Should().BeFalse();
-        dto.EmailFrequency.Should().Be(EmailFrequency.Weekly);
+        dto.InAppEnabled.ShouldBe(false);
+        dto.EmailFrequency.ShouldBe(EmailFrequency.Weekly);
     }
 
     [Fact]
@@ -135,8 +135,8 @@ public class UpdatePreferencesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -162,8 +162,8 @@ public class UpdatePreferencesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
         _repositoryMock.Verify(
             x => x.AddAsync(It.IsAny<NotificationPreference>(), It.IsAny<CancellationToken>()),
             Times.Once);
@@ -190,8 +190,8 @@ public class UpdatePreferencesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
         _repositoryMock.Verify(
             x => x.AddAsync(It.IsAny<NotificationPreference>(), It.IsAny<CancellationToken>()),
             Times.Once); // Only the new one
@@ -224,9 +224,9 @@ public class UpdatePreferencesCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value.First();
-        dto.CategoryName.Should().Be(expectedName);
+        dto.CategoryName.ShouldBe(expectedName);
     }
 
     #endregion

@@ -71,8 +71,8 @@ public class GetTagsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -97,8 +97,8 @@ public class GetTagsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -127,13 +127,13 @@ public class GetTagsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value[0];
-        dto.Id.Should().Be(tagId);
-        dto.Name.Should().Be("JavaScript");
-        dto.Slug.Should().Be("javascript");
-        dto.Description.Should().Be("JavaScript programming language");
-        dto.Color.Should().Be("#F7DF1E");
+        dto.Id.ShouldBe(tagId);
+        dto.Name.ShouldBe("JavaScript");
+        dto.Slug.ShouldBe("javascript");
+        dto.Description.ShouldBe("JavaScript programming language");
+        dto.Color.ShouldBe("#F7DF1E");
     }
 
     [Fact]
@@ -152,8 +152,8 @@ public class GetTagsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     #endregion
@@ -181,8 +181,8 @@ public class GetTagsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -207,8 +207,8 @@ public class GetTagsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -227,8 +227,8 @@ public class GetTagsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     [Fact]
@@ -253,8 +253,8 @@ public class GetTagsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -279,8 +279,8 @@ public class GetTagsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
     }
 
     #endregion
@@ -314,8 +314,8 @@ public class GetTagsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value[0].PostCount.Should().Be(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value[0].PostCount.ShouldBe(5);
     }
 
     [Fact]
@@ -338,8 +338,8 @@ public class GetTagsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value[0].PostCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value[0].PostCount.ShouldBe(0);
     }
 
     #endregion
@@ -369,8 +369,8 @@ public class GetTagsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value[0].Color.Should().Be("#3B82F6");
+        result.IsSuccess.ShouldBe(true);
+        result.Value[0].Color.ShouldBe("#3B82F6");
     }
 
     [Fact]
@@ -396,8 +396,8 @@ public class GetTagsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value[0].Color.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value[0].Color.ShouldBeNull();
     }
 
     #endregion
@@ -427,8 +427,8 @@ public class GetTagsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value[0].Description.Should().Be("This is a detailed description of the tag");
+        result.IsSuccess.ShouldBe(true);
+        result.Value[0].Description.ShouldBe("This is a detailed description of the tag");
     }
 
     [Fact]
@@ -454,8 +454,8 @@ public class GetTagsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value[0].Description.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value[0].Description.ShouldBeNull();
     }
 
     #endregion
@@ -486,9 +486,13 @@ public class GetTagsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(4);
-        result.Value.Select(t => t.Name).Should().Contain(new[] { "Alpha", "Beta", "Gamma", "Delta" });
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(4);
+        var names = result.Value.Select(t => t.Name).ToList();
+        names.ShouldContain("Alpha");
+        names.ShouldContain("Beta");
+        names.ShouldContain("Gamma");
+        names.ShouldContain("Delta");
     }
 
     [Fact]
@@ -514,20 +518,20 @@ public class GetTagsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(3);
 
         var tag1 = result.Value.First(t => t.Name == "Tag1");
-        tag1.Description.Should().Be("Desc1");
-        tag1.Color.Should().Be("#FF0000");
+        tag1.Description.ShouldBe("Desc1");
+        tag1.Color.ShouldBe("#FF0000");
 
         var tag2 = result.Value.First(t => t.Name == "Tag2");
-        tag2.Description.Should().BeNull();
-        tag2.Color.Should().Be("#00FF00");
+        tag2.Description.ShouldBeNull();
+        tag2.Color.ShouldBe("#00FF00");
 
         var tag3 = result.Value.First(t => t.Name == "Tag3");
-        tag3.Description.Should().Be("Desc3");
-        tag3.Color.Should().BeNull();
+        tag3.Description.ShouldBe("Desc3");
+        tag3.Color.ShouldBeNull();
     }
 
     #endregion

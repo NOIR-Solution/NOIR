@@ -84,19 +84,19 @@ public class OrderItemTests
             TestTenantId);
 
         // Assert
-        item.Should().NotBeNull();
-        item.Id.Should().NotBe(Guid.Empty);
-        item.OrderId.Should().Be(orderId);
-        item.ProductId.Should().Be(productId);
-        item.ProductVariantId.Should().Be(variantId);
-        item.ProductName.Should().Be("Ao Thun Nam");
-        item.VariantName.Should().Be("Size M - Blue");
-        item.UnitPrice.Should().Be(250_000m);
-        item.Quantity.Should().Be(3);
-        item.Sku.Should().Be("SKU-AT-001");
-        item.ImageUrl.Should().Be("https://img.example.com/ao-thun.jpg");
-        item.OptionsSnapshot.Should().Be("Color: Blue, Size: M");
-        item.TenantId.Should().Be(TestTenantId);
+        item.ShouldNotBeNull();
+        item.Id.ShouldNotBe(Guid.Empty);
+        item.OrderId.ShouldBe(orderId);
+        item.ProductId.ShouldBe(productId);
+        item.ProductVariantId.ShouldBe(variantId);
+        item.ProductName.ShouldBe("Ao Thun Nam");
+        item.VariantName.ShouldBe("Size M - Blue");
+        item.UnitPrice.ShouldBe(250_000m);
+        item.Quantity.ShouldBe(3);
+        item.Sku.ShouldBe("SKU-AT-001");
+        item.ImageUrl.ShouldBe("https://img.example.com/ao-thun.jpg");
+        item.OptionsSnapshot.ShouldBe("Color: Blue, Size: M");
+        item.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -106,8 +106,8 @@ public class OrderItemTests
         var item = CreateViaStaticFactory();
 
         // Assert
-        item.DiscountAmount.Should().Be(0);
-        item.TaxAmount.Should().Be(0);
+        item.DiscountAmount.ShouldBe(0);
+        item.TaxAmount.ShouldBe(0);
     }
 
     [Fact]
@@ -119,9 +119,9 @@ public class OrderItemTests
             "Product", "Variant", 50_000m, 1);
 
         // Assert
-        item.Sku.Should().BeNull();
-        item.ImageUrl.Should().BeNull();
-        item.OptionsSnapshot.Should().BeNull();
+        item.Sku.ShouldBeNull();
+        item.ImageUrl.ShouldBeNull();
+        item.OptionsSnapshot.ShouldBeNull();
     }
 
     [Fact]
@@ -131,7 +131,7 @@ public class OrderItemTests
         var item = CreateViaStaticFactory(tenantId: null);
 
         // Assert
-        item.TenantId.Should().BeNull();
+        item.TenantId.ShouldBeNull();
     }
 
     [Fact]
@@ -142,7 +142,7 @@ public class OrderItemTests
         var item2 = CreateViaStaticFactory();
 
         // Assert
-        item1.Id.Should().NotBe(item2.Id);
+        item1.Id.ShouldNotBe(item2.Id);
     }
 
     #endregion
@@ -156,7 +156,7 @@ public class OrderItemTests
         var item = CreateViaStaticFactory(unitPrice: 150_000m, quantity: 4);
 
         // Assert
-        item.Subtotal.Should().Be(600_000m);
+        item.Subtotal.ShouldBe(600_000m);
     }
 
     [Theory]
@@ -171,7 +171,7 @@ public class OrderItemTests
         var item = CreateViaStaticFactory(unitPrice: unitPrice, quantity: quantity);
 
         // Assert
-        item.Subtotal.Should().Be(expectedSubtotal);
+        item.Subtotal.ShouldBe(expectedSubtotal);
     }
 
     #endregion
@@ -185,8 +185,8 @@ public class OrderItemTests
         var item = CreateViaStaticFactory(unitPrice: 200_000m, quantity: 2);
 
         // Assert
-        item.LineTotal.Should().Be(item.Subtotal);
-        item.LineTotal.Should().Be(400_000m);
+        item.LineTotal.ShouldBe(item.Subtotal);
+        item.LineTotal.ShouldBe(400_000m);
     }
 
     [Fact]
@@ -197,7 +197,7 @@ public class OrderItemTests
         item.SetDiscount(20_000m);
 
         // Assert - LineTotal = (100000 * 3) - 20000 + 0 = 280000
-        item.LineTotal.Should().Be(280_000m);
+        item.LineTotal.ShouldBe(280_000m);
     }
 
     [Fact]
@@ -208,7 +208,7 @@ public class OrderItemTests
         item.SetTax(15_000m);
 
         // Assert - LineTotal = (100000 * 2) - 0 + 15000 = 215000
-        item.LineTotal.Should().Be(215_000m);
+        item.LineTotal.ShouldBe(215_000m);
     }
 
     [Fact]
@@ -220,7 +220,7 @@ public class OrderItemTests
         item.SetTax(15_000m);
 
         // Assert - LineTotal = (100000 * 3) - 20000 + 15000 = 295000
-        item.LineTotal.Should().Be(295_000m);
+        item.LineTotal.ShouldBe(295_000m);
     }
 
     [Fact]
@@ -233,8 +233,8 @@ public class OrderItemTests
 
         // Assert - LineTotal = (500000 * 2) - 100000 + 50000 = 950000
         var expected = item.Subtotal - item.DiscountAmount + item.TaxAmount;
-        item.LineTotal.Should().Be(expected);
-        item.LineTotal.Should().Be(950_000m);
+        item.LineTotal.ShouldBe(expected);
+        item.LineTotal.ShouldBe(950_000m);
     }
 
     #endregion
@@ -251,7 +251,7 @@ public class OrderItemTests
         item.SetDiscount(50_000m);
 
         // Assert
-        item.DiscountAmount.Should().Be(50_000m);
+        item.DiscountAmount.ShouldBe(50_000m);
     }
 
     [Fact]
@@ -265,7 +265,7 @@ public class OrderItemTests
         item.SetDiscount(0m);
 
         // Assert
-        item.DiscountAmount.Should().Be(0);
+        item.DiscountAmount.ShouldBe(0);
     }
 
     [Fact]
@@ -279,7 +279,7 @@ public class OrderItemTests
         item.SetDiscount(50_000m);
 
         // Assert
-        item.DiscountAmount.Should().Be(50_000m);
+        item.DiscountAmount.ShouldBe(50_000m);
     }
 
     [Fact]
@@ -292,8 +292,8 @@ public class OrderItemTests
         var act = () => item.SetDiscount(-10_000m);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Discount amount cannot be negative");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Discount amount cannot be negative");
     }
 
     [Fact]
@@ -301,13 +301,13 @@ public class OrderItemTests
     {
         // Arrange
         var item = CreateViaStaticFactory(unitPrice: 100_000m, quantity: 2);
-        item.LineTotal.Should().Be(200_000m);
+        item.LineTotal.ShouldBe(200_000m);
 
         // Act
         item.SetDiscount(30_000m);
 
         // Assert
-        item.LineTotal.Should().Be(170_000m);
+        item.LineTotal.ShouldBe(170_000m);
     }
 
     #endregion
@@ -324,7 +324,7 @@ public class OrderItemTests
         item.SetTax(10_000m);
 
         // Assert
-        item.TaxAmount.Should().Be(10_000m);
+        item.TaxAmount.ShouldBe(10_000m);
     }
 
     [Fact]
@@ -338,7 +338,7 @@ public class OrderItemTests
         item.SetTax(0m);
 
         // Assert
-        item.TaxAmount.Should().Be(0);
+        item.TaxAmount.ShouldBe(0);
     }
 
     [Fact]
@@ -352,7 +352,7 @@ public class OrderItemTests
         item.SetTax(25_000m);
 
         // Assert
-        item.TaxAmount.Should().Be(25_000m);
+        item.TaxAmount.ShouldBe(25_000m);
     }
 
     [Fact]
@@ -365,8 +365,8 @@ public class OrderItemTests
         var act = () => item.SetTax(-5_000m);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Tax amount cannot be negative");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Tax amount cannot be negative");
     }
 
     [Fact]
@@ -374,13 +374,13 @@ public class OrderItemTests
     {
         // Arrange
         var item = CreateViaStaticFactory(unitPrice: 100_000m, quantity: 2);
-        item.LineTotal.Should().Be(200_000m);
+        item.LineTotal.ShouldBe(200_000m);
 
         // Act
         item.SetTax(20_000m);
 
         // Assert
-        item.LineTotal.Should().Be(220_000m);
+        item.LineTotal.ShouldBe(220_000m);
     }
 
     #endregion
@@ -394,8 +394,8 @@ public class OrderItemTests
         var item = CreateViaStaticFactory(unitPrice: 10_000m, quantity: 10_000);
 
         // Assert
-        item.Subtotal.Should().Be(100_000_000m);
-        item.LineTotal.Should().Be(100_000_000m);
+        item.Subtotal.ShouldBe(100_000_000m);
+        item.LineTotal.ShouldBe(100_000_000m);
     }
 
     [Fact]
@@ -405,7 +405,7 @@ public class OrderItemTests
         var item = CreateViaStaticFactory(unitPrice: 99_000m, quantity: 1);
 
         // Assert
-        item.Subtotal.Should().Be(99_000m);
+        item.Subtotal.ShouldBe(99_000m);
     }
 
     [Fact]
@@ -418,7 +418,7 @@ public class OrderItemTests
         item.SetDiscount(150_000m);
 
         // Assert - entity doesn't enforce discount <= subtotal
-        item.LineTotal.Should().Be(-50_000m);
+        item.LineTotal.ShouldBe(-50_000m);
     }
 
     [Fact]
@@ -432,7 +432,7 @@ public class OrderItemTests
         item.SetTax(30_000m);
 
         // Assert - LineTotal = (200000 * 3) - 50000 + 30000 = 580000
-        item.LineTotal.Should().Be(580_000m);
+        item.LineTotal.ShouldBe(580_000m);
     }
 
     #endregion

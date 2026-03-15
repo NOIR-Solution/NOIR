@@ -95,11 +95,11 @@ public class UpdateProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Name.Should().Be("updated_color");
-        result.Value.DisplayName.Should().Be("Updated Color");
-        result.Value.SortOrder.Should().Be(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Name.ShouldBe("updated_color");
+        result.Value.DisplayName.ShouldBe("Updated Color");
+        result.Value.SortOrder.ShouldBe(5);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -135,8 +135,8 @@ public class UpdateProductOptionCommandHandlerTests
 
         // Assert
         // When displayName is null, domain entity defaults to the name value
-        result.IsSuccess.Should().BeTrue();
-        result.Value.DisplayName.Should().Be("material");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.DisplayName.ShouldBe("material");
     }
 
     [Fact]
@@ -166,8 +166,8 @@ public class UpdateProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SortOrder.Should().Be(10);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SortOrder.ShouldBe(10);
     }
 
     [Fact]
@@ -199,10 +199,10 @@ public class UpdateProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // First option should be unchanged
         var firstOption = existingProduct.Options.First(o => o.Id == firstOptionId);
-        firstOption.Name.Should().Be("color");
+        firstOption.Name.ShouldBe("color");
     }
 
     #endregion
@@ -225,11 +225,11 @@ public class UpdateProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-021");
-        result.Error.Message.Should().Contain("Product");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-021");
+        result.Error.Message.ShouldContain("Product");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -256,11 +256,11 @@ public class UpdateProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-051");
-        result.Error.Message.Should().Contain("Option");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-051");
+        result.Error.Message.ShouldContain("Option");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -296,10 +296,10 @@ public class UpdateProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-050");
-        result.Error.Message.Should().Contain("already exists");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-050");
+        result.Error.Message.ShouldContain("already exists");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -335,7 +335,7 @@ public class UpdateProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     #endregion
@@ -402,8 +402,8 @@ public class UpdateProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SortOrder.Should().Be(-1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SortOrder.ShouldBe(-1);
     }
 
     [Fact]
@@ -433,8 +433,8 @@ public class UpdateProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.DisplayName.Should().Be("");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.DisplayName.ShouldBe("");
     }
 
     [Fact]
@@ -466,8 +466,8 @@ public class UpdateProductOptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("material");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("material");
     }
 
     #endregion

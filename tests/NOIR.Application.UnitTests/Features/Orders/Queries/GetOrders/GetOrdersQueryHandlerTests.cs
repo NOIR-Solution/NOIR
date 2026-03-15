@@ -90,9 +90,9 @@ public class GetOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(3);
-        result.Value.TotalCount.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(3);
+        result.Value.TotalCount.ShouldBe(3);
     }
 
     [Fact]
@@ -122,9 +122,9 @@ public class GetOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items[0].Status.Should().Be(OrderStatus.Confirmed);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items[0].Status.ShouldBe(OrderStatus.Confirmed);
     }
 
     [Fact]
@@ -154,9 +154,9 @@ public class GetOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items[0].CustomerEmail.Should().Be("john@example.com");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items[0].CustomerEmail.ShouldBe("john@example.com");
     }
 
     [Fact]
@@ -188,8 +188,8 @@ public class GetOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -225,15 +225,15 @@ public class GetOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value.Items[0];
-        dto.OrderNumber.Should().Be("ORD-20250126-0042");
-        dto.CustomerEmail.Should().Be("jane@example.com");
-        dto.CustomerName.Should().Be("Jane Doe");
+        dto.OrderNumber.ShouldBe("ORD-20250126-0042");
+        dto.CustomerEmail.ShouldBe("jane@example.com");
+        dto.CustomerName.ShouldBe("Jane Doe");
         // GrandTotal is recalculated when AddItem is called: SubTotal (200) - Discount (0) + Shipping (0) + Tax (0) = 200
-        dto.GrandTotal.Should().Be(200.00m);
-        dto.Status.Should().Be(OrderStatus.Confirmed);
-        dto.ItemCount.Should().Be(1);
+        dto.GrandTotal.ShouldBe(200.00m);
+        dto.Status.ShouldBe(OrderStatus.Confirmed);
+        dto.ItemCount.ShouldBe(1);
     }
 
     [Fact]
@@ -258,9 +258,9 @@ public class GetOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
     }
 
     #endregion
@@ -295,13 +295,13 @@ public class GetOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PageNumber.Should().Be(2);
-        result.Value.PageSize.Should().Be(10);
-        result.Value.TotalCount.Should().Be(25);
-        result.Value.TotalPages.Should().Be(3);
-        result.Value.HasPreviousPage.Should().BeTrue();
-        result.Value.HasNextPage.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PageNumber.ShouldBe(2);
+        result.Value.PageSize.ShouldBe(10);
+        result.Value.TotalCount.ShouldBe(25);
+        result.Value.TotalPages.ShouldBe(3);
+        result.Value.HasPreviousPage.ShouldBe(true);
+        result.Value.HasNextPage.ShouldBe(true);
     }
 
     [Fact]
@@ -331,9 +331,9 @@ public class GetOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.HasPreviousPage.Should().BeFalse();
-        result.Value.HasNextPage.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.HasPreviousPage.ShouldBe(false);
+        result.Value.HasNextPage.ShouldBe(true);
     }
 
     [Fact]
@@ -363,9 +363,9 @@ public class GetOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.HasPreviousPage.Should().BeTrue();
-        result.Value.HasNextPage.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.HasPreviousPage.ShouldBe(true);
+        result.Value.HasNextPage.ShouldBe(false);
     }
 
     [Fact]
@@ -394,10 +394,10 @@ public class GetOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.PageSize.Should().Be(5);
-        result.Value.TotalPages.Should().Be(10);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.PageSize.ShouldBe(5);
+        result.Value.TotalPages.ShouldBe(10);
     }
 
     [Fact]
@@ -424,9 +424,9 @@ public class GetOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PageNumber.Should().Be(1);
-        result.Value.PageSize.Should().Be(20);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PageNumber.ShouldBe(1);
+        result.Value.PageSize.ShouldBe(20);
     }
 
     #endregion
@@ -467,10 +467,10 @@ public class GetOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items[0].Status.Should().Be(OrderStatus.Confirmed);
-        result.Value.Items[0].CustomerEmail.Should().Be("john@example.com");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items[0].Status.ShouldBe(OrderStatus.Confirmed);
+        result.Value.Items[0].CustomerEmail.ShouldBe("john@example.com");
     }
 
     [Fact]
@@ -512,8 +512,8 @@ public class GetOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
     }
 
     #endregion
@@ -585,10 +585,10 @@ public class GetOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(2);
-        result.Value.Items.First(o => o.OrderNumber == "ORD-001").ItemCount.Should().Be(2);
-        result.Value.Items.First(o => o.OrderNumber == "ORD-002").ItemCount.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(2);
+        result.Value.Items.First(o => o.OrderNumber == "ORD-001").ItemCount.ShouldBe(2);
+        result.Value.Items.First(o => o.OrderNumber == "ORD-002").ItemCount.ShouldBe(1);
     }
 
     [Fact]
@@ -616,8 +616,8 @@ public class GetOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items[0].Currency.Should().Be("VND");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items[0].Currency.ShouldBe("VND");
     }
 
     [Fact]
@@ -650,11 +650,11 @@ public class GetOrdersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().Contain(o => o.Status == OrderStatus.Pending);
-        result.Value.Items.Should().Contain(o => o.Status == OrderStatus.Confirmed);
-        result.Value.Items.Should().Contain(o => o.Status == OrderStatus.Processing);
-        result.Value.Items.Should().Contain(o => o.Status == OrderStatus.Shipped);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldContain(o => o.Status == OrderStatus.Pending);
+        result.Value.Items.ShouldContain(o => o.Status == OrderStatus.Confirmed);
+        result.Value.Items.ShouldContain(o => o.Status == OrderStatus.Processing);
+        result.Value.Items.ShouldContain(o => o.Status == OrderStatus.Shipped);
     }
 
     #endregion

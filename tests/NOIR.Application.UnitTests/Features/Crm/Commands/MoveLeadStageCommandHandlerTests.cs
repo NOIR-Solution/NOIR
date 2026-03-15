@@ -49,9 +49,9 @@ public class MoveLeadStageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        lead.StageId.Should().Be(newStageId);
-        lead.SortOrder.Should().Be(2.5);
+        result.IsSuccess.ShouldBe(true);
+        lead.StageId.ShouldBe(newStageId);
+        lead.SortOrder.ShouldBe(2.5);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -72,7 +72,7 @@ public class MoveLeadStageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -93,7 +93,7 @@ public class MoveLeadStageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public class MoveLeadStageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 
     [Fact]
@@ -131,9 +131,9 @@ public class MoveLeadStageCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        lead.StageId.Should().Be(currentStageId);
-        lead.SortOrder.Should().Be(5.0);
+        result.IsSuccess.ShouldBe(true);
+        lead.StageId.ShouldBe(currentStageId);
+        lead.SortOrder.ShouldBe(5.0);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

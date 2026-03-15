@@ -83,16 +83,16 @@ public class CheckoutSessionTests
         var session = CheckoutSession.Create(TestCartId, TestEmail, 500000m, TestCurrency, TestUserId, TestTenantId);
 
         // Assert
-        session.Should().NotBeNull();
-        session.Id.Should().NotBe(Guid.Empty);
-        session.CartId.Should().Be(TestCartId);
-        session.UserId.Should().Be(TestUserId);
-        session.CustomerEmail.Should().Be(TestEmail);
-        session.SubTotal.Should().Be(500000m);
-        session.GrandTotal.Should().Be(500000m);
-        session.Currency.Should().Be(TestCurrency);
-        session.TenantId.Should().Be(TestTenantId);
-        session.Status.Should().Be(CheckoutSessionStatus.Started);
+        session.ShouldNotBeNull();
+        session.Id.ShouldNotBe(Guid.Empty);
+        session.CartId.ShouldBe(TestCartId);
+        session.UserId.ShouldBe(TestUserId);
+        session.CustomerEmail.ShouldBe(TestEmail);
+        session.SubTotal.ShouldBe(500000m);
+        session.GrandTotal.ShouldBe(500000m);
+        session.Currency.ShouldBe(TestCurrency);
+        session.TenantId.ShouldBe(TestTenantId);
+        session.Status.ShouldBe(CheckoutSessionStatus.Started);
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public class CheckoutSessionTests
         var session = CreateStartedSession();
 
         // Assert
-        session.Status.Should().Be(CheckoutSessionStatus.Started);
+        session.Status.ShouldBe(CheckoutSessionStatus.Started);
     }
 
     [Fact]
@@ -115,8 +115,8 @@ public class CheckoutSessionTests
         var session = CreateStartedSession();
 
         // Assert
-        session.ExpiresAt.Should().BeAfter(before.AddMinutes(14));
-        session.ExpiresAt.Should().BeOnOrBefore(DateTimeOffset.UtcNow.AddMinutes(15));
+        session.ExpiresAt.ShouldBeGreaterThan(before.AddMinutes(14));
+        session.ExpiresAt.ShouldBeLessThanOrEqualTo(DateTimeOffset.UtcNow.AddMinutes(15));
     }
 
     [Fact]
@@ -126,11 +126,11 @@ public class CheckoutSessionTests
         var session = CreateStartedSession(subTotal: 300000m);
 
         // Assert
-        session.SubTotal.Should().Be(300000m);
-        session.DiscountAmount.Should().Be(0m);
-        session.TaxAmount.Should().Be(0m);
-        session.ShippingCost.Should().Be(0m);
-        session.GrandTotal.Should().Be(300000m);
+        session.SubTotal.ShouldBe(300000m);
+        session.DiscountAmount.ShouldBe(0m);
+        session.TaxAmount.ShouldBe(0m);
+        session.ShippingCost.ShouldBe(0m);
+        session.GrandTotal.ShouldBe(300000m);
     }
 
     [Fact]
@@ -140,7 +140,7 @@ public class CheckoutSessionTests
         var session = CreateStartedSession();
 
         // Assert
-        session.BillingSameAsShipping.Should().BeTrue();
+        session.BillingSameAsShipping.ShouldBeTrue();
     }
 
     [Fact]
@@ -150,7 +150,7 @@ public class CheckoutSessionTests
         var session = CheckoutSession.Create(TestCartId, TestEmail, 100000m, TestCurrency, userId: null);
 
         // Assert
-        session.UserId.Should().BeNull();
+        session.UserId.ShouldBeNull();
     }
 
     [Fact]
@@ -160,11 +160,11 @@ public class CheckoutSessionTests
         var session = CreateStartedSession();
 
         // Assert
-        session.DomainEvents.Should().ContainSingle();
+        session.DomainEvents.ShouldHaveSingleItem();
         var createdEvent = session.DomainEvents.OfType<CheckoutSessionCreatedEvent>().Single();
-        createdEvent.SessionId.Should().Be(session.Id);
-        createdEvent.CartId.Should().Be(TestCartId);
-        createdEvent.UserId.Should().Be(TestUserId);
+        createdEvent.SessionId.ShouldBe(session.Id);
+        createdEvent.CartId.ShouldBe(TestCartId);
+        createdEvent.UserId.ShouldBe(TestUserId);
     }
 
     [Fact]
@@ -174,8 +174,8 @@ public class CheckoutSessionTests
         var session = CreateStartedSession();
 
         // Assert
-        session.ShippingAddress.Should().BeNull();
-        session.BillingAddress.Should().BeNull();
+        session.ShippingAddress.ShouldBeNull();
+        session.BillingAddress.ShouldBeNull();
     }
 
     [Fact]
@@ -185,9 +185,9 @@ public class CheckoutSessionTests
         var session = CreateStartedSession();
 
         // Assert
-        session.ShippingMethod.Should().BeNull();
-        session.PaymentMethod.Should().BeNull();
-        session.PaymentGatewayId.Should().BeNull();
+        session.ShippingMethod.ShouldBeNull();
+        session.PaymentMethod.ShouldBeNull();
+        session.PaymentGatewayId.ShouldBeNull();
     }
 
     [Fact]
@@ -197,8 +197,8 @@ public class CheckoutSessionTests
         var session = CreateStartedSession();
 
         // Assert
-        session.OrderId.Should().BeNull();
-        session.OrderNumber.Should().BeNull();
+        session.OrderId.ShouldBeNull();
+        session.OrderNumber.ShouldBeNull();
     }
 
     #endregion
@@ -215,8 +215,8 @@ public class CheckoutSessionTests
         session.SetCustomerInfo("Nguyen Van B", "0909876543");
 
         // Assert
-        session.CustomerName.Should().Be("Nguyen Van B");
-        session.CustomerPhone.Should().Be("0909876543");
+        session.CustomerName.ShouldBe("Nguyen Van B");
+        session.CustomerPhone.ShouldBe("0909876543");
     }
 
     [Fact]
@@ -229,7 +229,7 @@ public class CheckoutSessionTests
         session.SetCustomerInfo("Name", "0901234567", "newemail@example.com");
 
         // Assert
-        session.CustomerEmail.Should().Be("newemail@example.com");
+        session.CustomerEmail.ShouldBe("newemail@example.com");
     }
 
     [Fact]
@@ -243,7 +243,7 @@ public class CheckoutSessionTests
         session.SetCustomerInfo("Name", "0901234567");
 
         // Assert
-        session.CustomerEmail.Should().Be(originalEmail);
+        session.CustomerEmail.ShouldBe(originalEmail);
     }
 
     [Fact]
@@ -257,7 +257,7 @@ public class CheckoutSessionTests
         session.SetCustomerInfo("Name", "0901234567", string.Empty);
 
         // Assert
-        session.CustomerEmail.Should().Be(originalEmail);
+        session.CustomerEmail.ShouldBe(originalEmail);
     }
 
     #endregion
@@ -275,8 +275,8 @@ public class CheckoutSessionTests
         session.SetShippingAddress(address);
 
         // Assert
-        session.ShippingAddress.Should().Be(address);
-        session.Status.Should().Be(CheckoutSessionStatus.AddressComplete);
+        session.ShippingAddress.ShouldBe(address);
+        session.Status.ShouldBe(CheckoutSessionStatus.AddressComplete);
     }
 
     [Fact]
@@ -284,14 +284,14 @@ public class CheckoutSessionTests
     {
         // Arrange
         var session = CreateStartedSession();
-        session.BillingSameAsShipping.Should().BeTrue(); // default
+        session.BillingSameAsShipping.ShouldBeTrue(); // default
         var address = CreateTestAddress();
 
         // Act
         session.SetShippingAddress(address);
 
         // Assert
-        session.BillingAddress.Should().Be(address);
+        session.BillingAddress.ShouldBe(address);
     }
 
     [Fact]
@@ -307,9 +307,9 @@ public class CheckoutSessionTests
 
         // Assert
         var statusEvent = session.DomainEvents.OfType<CheckoutSessionStatusChangedEvent>().Single();
-        statusEvent.SessionId.Should().Be(session.Id);
-        statusEvent.OldStatus.Should().Be(CheckoutSessionStatus.Started);
-        statusEvent.NewStatus.Should().Be(CheckoutSessionStatus.AddressComplete);
+        statusEvent.SessionId.ShouldBe(session.Id);
+        statusEvent.OldStatus.ShouldBe(CheckoutSessionStatus.Started);
+        statusEvent.NewStatus.ShouldBe(CheckoutSessionStatus.AddressComplete);
     }
 
     [Fact]
@@ -324,8 +324,8 @@ public class CheckoutSessionTests
 
         // Assert
         var addressEvent = session.DomainEvents.OfType<CheckoutAddressSetEvent>().Single();
-        addressEvent.SessionId.Should().Be(session.Id);
-        addressEvent.AddressType.Should().Be("Shipping");
+        addressEvent.SessionId.ShouldBe(session.Id);
+        addressEvent.AddressType.ShouldBe("Shipping");
     }
 
     [Fact]
@@ -340,10 +340,10 @@ public class CheckoutSessionTests
         session.SetShippingAddress(newAddress);
 
         // Assert
-        session.ShippingAddress!.FullName.Should().Be("Tran Van B");
-        session.Status.Should().Be(CheckoutSessionStatus.AddressComplete);
+        session.ShippingAddress!.FullName.ShouldBe("Tran Van B");
+        session.Status.ShouldBe(CheckoutSessionStatus.AddressComplete);
         // No status change event - already in AddressComplete
-        session.DomainEvents.OfType<CheckoutSessionStatusChangedEvent>().Should().BeEmpty();
+        session.DomainEvents.OfType<CheckoutSessionStatusChangedEvent>().ShouldBeEmpty();
     }
 
     [Theory]
@@ -375,8 +375,8 @@ public class CheckoutSessionTests
         var act = () => session.SetShippingAddress(CreateTestAddress());
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"Cannot modify checkout session in {terminalStatus} status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldBe($"Cannot modify checkout session in {terminalStatus} status");
     }
 
     [Fact]
@@ -390,7 +390,7 @@ public class CheckoutSessionTests
         session.SetShippingAddress(CreateTestAddress());
 
         // Assert
-        session.ExpiresAt.Should().BeOnOrAfter(expiresAtBefore);
+        session.ExpiresAt.ShouldBeGreaterThanOrEqualTo(expiresAtBefore);
     }
 
     #endregion
@@ -408,8 +408,8 @@ public class CheckoutSessionTests
         session.SetBillingAddress(differentAddress, sameAsShipping: true);
 
         // Assert
-        session.BillingSameAsShipping.Should().BeTrue();
-        session.BillingAddress.Should().Be(session.ShippingAddress);
+        session.BillingSameAsShipping.ShouldBeTrue();
+        session.BillingAddress.ShouldBe(session.ShippingAddress);
     }
 
     [Fact]
@@ -423,9 +423,9 @@ public class CheckoutSessionTests
         session.SetBillingAddress(billingAddress, sameAsShipping: false);
 
         // Assert
-        session.BillingSameAsShipping.Should().BeFalse();
-        session.BillingAddress.Should().Be(billingAddress);
-        session.BillingAddress!.FullName.Should().Be("Billing Person");
+        session.BillingSameAsShipping.ShouldBeFalse();
+        session.BillingAddress.ShouldBe(billingAddress);
+        session.BillingAddress!.FullName.ShouldBe("Billing Person");
     }
 
     [Fact]
@@ -440,7 +440,7 @@ public class CheckoutSessionTests
 
         // Assert
         var addressEvent = session.DomainEvents.OfType<CheckoutAddressSetEvent>().Single();
-        addressEvent.AddressType.Should().Be("Billing");
+        addressEvent.AddressType.ShouldBe("Billing");
     }
 
     [Fact]
@@ -454,8 +454,8 @@ public class CheckoutSessionTests
         var act = () => session.SetBillingAddress(CreateTestAddress(), true);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot modify checkout session in Completed status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot modify checkout session in Completed status");
     }
 
     #endregion
@@ -473,10 +473,10 @@ public class CheckoutSessionTests
         session.SelectShippingMethod("Express Delivery", 50000m, estimatedDelivery);
 
         // Assert
-        session.ShippingMethod.Should().Be("Express Delivery");
-        session.ShippingCost.Should().Be(50000m);
-        session.EstimatedDeliveryAt.Should().Be(estimatedDelivery);
-        session.Status.Should().Be(CheckoutSessionStatus.ShippingSelected);
+        session.ShippingMethod.ShouldBe("Express Delivery");
+        session.ShippingCost.ShouldBe(50000m);
+        session.EstimatedDeliveryAt.ShouldBe(estimatedDelivery);
+        session.Status.ShouldBe(CheckoutSessionStatus.ShippingSelected);
     }
 
     [Fact]
@@ -484,13 +484,13 @@ public class CheckoutSessionTests
     {
         // Arrange
         var session = CreateSessionWithAddress();
-        session.SubTotal.Should().Be(500000m);
+        session.SubTotal.ShouldBe(500000m);
 
         // Act
         session.SelectShippingMethod("Express", 50000m);
 
         // Assert
-        session.GrandTotal.Should().Be(550000m); // 500,000 + 50,000
+        session.GrandTotal.ShouldBe(550000m); // 500,000 + 50,000
     }
 
     [Fact]
@@ -503,8 +503,8 @@ public class CheckoutSessionTests
         var act = () => session.SelectShippingMethod("Express", 50000m);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Shipping address must be set before selecting shipping method");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Shipping address must be set before selecting shipping method");
     }
 
     [Fact]
@@ -519,8 +519,8 @@ public class CheckoutSessionTests
 
         // Assert
         var statusEvent = session.DomainEvents.OfType<CheckoutSessionStatusChangedEvent>().Single();
-        statusEvent.OldStatus.Should().Be(CheckoutSessionStatus.AddressComplete);
-        statusEvent.NewStatus.Should().Be(CheckoutSessionStatus.ShippingSelected);
+        statusEvent.OldStatus.ShouldBe(CheckoutSessionStatus.AddressComplete);
+        statusEvent.NewStatus.ShouldBe(CheckoutSessionStatus.ShippingSelected);
     }
 
     [Fact]
@@ -535,9 +535,9 @@ public class CheckoutSessionTests
 
         // Assert
         var shippingEvent = session.DomainEvents.OfType<CheckoutShippingSelectedEvent>().Single();
-        shippingEvent.SessionId.Should().Be(session.Id);
-        shippingEvent.ShippingMethod.Should().Be("Express");
-        shippingEvent.ShippingCost.Should().Be(50000m);
+        shippingEvent.SessionId.ShouldBe(session.Id);
+        shippingEvent.ShippingMethod.ShouldBe("Express");
+        shippingEvent.ShippingCost.ShouldBe(50000m);
     }
 
     [Fact]
@@ -550,7 +550,7 @@ public class CheckoutSessionTests
         session.SelectShippingMethod("Standard", 30000m);
 
         // Assert
-        session.EstimatedDeliveryAt.Should().BeNull();
+        session.EstimatedDeliveryAt.ShouldBeNull();
     }
 
     [Fact]
@@ -564,8 +564,8 @@ public class CheckoutSessionTests
         var act = () => session.SelectShippingMethod("Express", 50000m);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot modify checkout session in Completed status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot modify checkout session in Completed status");
     }
 
     [Fact]
@@ -579,8 +579,8 @@ public class CheckoutSessionTests
         var act = () => session.SelectShippingMethod("Express", 50000m);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot modify checkout session in Expired status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot modify checkout session in Expired status");
     }
 
     #endregion
@@ -598,9 +598,9 @@ public class CheckoutSessionTests
         session.SelectPaymentMethod(PaymentMethod.CreditCard, gatewayId);
 
         // Assert
-        session.PaymentMethod.Should().Be(PaymentMethod.CreditCard);
-        session.PaymentGatewayId.Should().Be(gatewayId);
-        session.Status.Should().Be(CheckoutSessionStatus.PaymentPending);
+        session.PaymentMethod.ShouldBe(PaymentMethod.CreditCard);
+        session.PaymentGatewayId.ShouldBe(gatewayId);
+        session.Status.ShouldBe(CheckoutSessionStatus.PaymentPending);
     }
 
     [Fact]
@@ -613,9 +613,9 @@ public class CheckoutSessionTests
         session.SelectPaymentMethod(PaymentMethod.COD, null);
 
         // Assert
-        session.PaymentMethod.Should().Be(PaymentMethod.COD);
-        session.PaymentGatewayId.Should().BeNull();
-        session.Status.Should().Be(CheckoutSessionStatus.PaymentPending);
+        session.PaymentMethod.ShouldBe(PaymentMethod.COD);
+        session.PaymentGatewayId.ShouldBeNull();
+        session.Status.ShouldBe(CheckoutSessionStatus.PaymentPending);
     }
 
     [Fact]
@@ -630,8 +630,8 @@ public class CheckoutSessionTests
 
         // Assert
         var statusEvent = session.DomainEvents.OfType<CheckoutSessionStatusChangedEvent>().Single();
-        statusEvent.OldStatus.Should().Be(CheckoutSessionStatus.ShippingSelected);
-        statusEvent.NewStatus.Should().Be(CheckoutSessionStatus.PaymentPending);
+        statusEvent.OldStatus.ShouldBe(CheckoutSessionStatus.ShippingSelected);
+        statusEvent.NewStatus.ShouldBe(CheckoutSessionStatus.PaymentPending);
     }
 
     [Fact]
@@ -645,8 +645,8 @@ public class CheckoutSessionTests
         var act = () => session.SelectPaymentMethod(PaymentMethod.COD, null);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot modify checkout session in Completed status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot modify checkout session in Completed status");
     }
 
     [Theory]
@@ -667,7 +667,7 @@ public class CheckoutSessionTests
         session.SelectPaymentMethod(method, Guid.NewGuid());
 
         // Assert
-        session.PaymentMethod.Should().Be(method);
+        session.PaymentMethod.ShouldBe(method);
     }
 
     #endregion
@@ -684,7 +684,7 @@ public class CheckoutSessionTests
         session.MarkAsPaymentProcessing();
 
         // Assert
-        session.Status.Should().Be(CheckoutSessionStatus.PaymentProcessing);
+        session.Status.ShouldBe(CheckoutSessionStatus.PaymentProcessing);
     }
 
     [Fact]
@@ -697,7 +697,7 @@ public class CheckoutSessionTests
         session.MarkAsPaymentProcessing();
 
         // Assert
-        session.Status.Should().Be(CheckoutSessionStatus.PaymentProcessing);
+        session.Status.ShouldBe(CheckoutSessionStatus.PaymentProcessing);
     }
 
     [Fact]
@@ -712,8 +712,8 @@ public class CheckoutSessionTests
 
         // Assert
         var statusEvent = session.DomainEvents.OfType<CheckoutSessionStatusChangedEvent>().Single();
-        statusEvent.OldStatus.Should().Be(CheckoutSessionStatus.PaymentPending);
-        statusEvent.NewStatus.Should().Be(CheckoutSessionStatus.PaymentProcessing);
+        statusEvent.OldStatus.ShouldBe(CheckoutSessionStatus.PaymentPending);
+        statusEvent.NewStatus.ShouldBe(CheckoutSessionStatus.PaymentProcessing);
     }
 
     [Theory]
@@ -739,8 +739,8 @@ public class CheckoutSessionTests
         var act = () => session.MarkAsPaymentProcessing();
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"Cannot start payment processing in {invalidStatus} status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldBe($"Cannot start payment processing in {invalidStatus} status");
     }
 
     #endregion
@@ -759,9 +759,9 @@ public class CheckoutSessionTests
         session.Complete(orderId, orderNumber);
 
         // Assert
-        session.Status.Should().Be(CheckoutSessionStatus.Completed);
-        session.OrderId.Should().Be(orderId);
-        session.OrderNumber.Should().Be(orderNumber);
+        session.Status.ShouldBe(CheckoutSessionStatus.Completed);
+        session.OrderId.ShouldBe(orderId);
+        session.OrderNumber.ShouldBe(orderNumber);
     }
 
     [Fact]
@@ -774,7 +774,7 @@ public class CheckoutSessionTests
         session.Complete(Guid.NewGuid(), "ORD-001");
 
         // Assert
-        session.Status.Should().Be(CheckoutSessionStatus.Completed);
+        session.Status.ShouldBe(CheckoutSessionStatus.Completed);
     }
 
     [Fact]
@@ -790,17 +790,17 @@ public class CheckoutSessionTests
         session.Complete(orderId, orderNumber);
 
         // Assert
-        session.DomainEvents.Should().HaveCount(2);
+        session.DomainEvents.Count().ShouldBe(2);
 
         var statusEvent = session.DomainEvents.OfType<CheckoutSessionStatusChangedEvent>().Single();
-        statusEvent.OldStatus.Should().Be(CheckoutSessionStatus.PaymentProcessing);
-        statusEvent.NewStatus.Should().Be(CheckoutSessionStatus.Completed);
+        statusEvent.OldStatus.ShouldBe(CheckoutSessionStatus.PaymentProcessing);
+        statusEvent.NewStatus.ShouldBe(CheckoutSessionStatus.Completed);
 
         var completedEvent = session.DomainEvents.OfType<CheckoutCompletedEvent>().Single();
-        completedEvent.SessionId.Should().Be(session.Id);
-        completedEvent.OrderId.Should().Be(orderId);
-        completedEvent.OrderNumber.Should().Be(orderNumber);
-        completedEvent.GrandTotal.Should().Be(session.GrandTotal);
+        completedEvent.SessionId.ShouldBe(session.Id);
+        completedEvent.OrderId.ShouldBe(orderId);
+        completedEvent.OrderNumber.ShouldBe(orderNumber);
+        completedEvent.GrandTotal.ShouldBe(session.GrandTotal);
     }
 
     [Theory]
@@ -830,8 +830,8 @@ public class CheckoutSessionTests
         var act = () => session.Complete(Guid.NewGuid(), "ORD-001");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"Cannot complete checkout in {invalidStatus} status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldBe($"Cannot complete checkout in {invalidStatus} status");
     }
 
     [Fact]
@@ -845,8 +845,8 @@ public class CheckoutSessionTests
         var act = () => session.Complete(Guid.NewGuid(), "ORD-002");
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot complete checkout in Completed status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot complete checkout in Completed status");
     }
 
     #endregion
@@ -863,7 +863,7 @@ public class CheckoutSessionTests
         session.MarkAsExpired();
 
         // Assert
-        session.Status.Should().Be(CheckoutSessionStatus.Expired);
+        session.Status.ShouldBe(CheckoutSessionStatus.Expired);
     }
 
     [Fact]
@@ -878,12 +878,12 @@ public class CheckoutSessionTests
 
         // Assert
         var statusEvent = session.DomainEvents.OfType<CheckoutSessionStatusChangedEvent>().Single();
-        statusEvent.OldStatus.Should().Be(CheckoutSessionStatus.Started);
-        statusEvent.NewStatus.Should().Be(CheckoutSessionStatus.Expired);
+        statusEvent.OldStatus.ShouldBe(CheckoutSessionStatus.Started);
+        statusEvent.NewStatus.ShouldBe(CheckoutSessionStatus.Expired);
 
         var expiredEvent = session.DomainEvents.OfType<CheckoutExpiredEvent>().Single();
-        expiredEvent.SessionId.Should().Be(session.Id);
-        expiredEvent.CartId.Should().Be(TestCartId);
+        expiredEvent.SessionId.ShouldBe(session.Id);
+        expiredEvent.CartId.ShouldBe(TestCartId);
     }
 
     [Fact]
@@ -897,7 +897,7 @@ public class CheckoutSessionTests
         session.MarkAsExpired();
 
         // Assert
-        session.Status.Should().Be(CheckoutSessionStatus.Completed);
+        session.Status.ShouldBe(CheckoutSessionStatus.Completed);
     }
 
     [Fact]
@@ -912,7 +912,7 @@ public class CheckoutSessionTests
         session.MarkAsExpired();
 
         // Assert
-        session.DomainEvents.Should().BeEmpty();
+        session.DomainEvents.ShouldBeEmpty();
     }
 
     [Theory]
@@ -946,7 +946,7 @@ public class CheckoutSessionTests
         session.MarkAsExpired();
 
         // Assert
-        session.Status.Should().Be(CheckoutSessionStatus.Expired);
+        session.Status.ShouldBe(CheckoutSessionStatus.Expired);
     }
 
     #endregion
@@ -963,7 +963,7 @@ public class CheckoutSessionTests
         session.MarkAsAbandoned();
 
         // Assert
-        session.Status.Should().Be(CheckoutSessionStatus.Abandoned);
+        session.Status.ShouldBe(CheckoutSessionStatus.Abandoned);
     }
 
     [Fact]
@@ -978,13 +978,13 @@ public class CheckoutSessionTests
 
         // Assert
         var statusEvent = session.DomainEvents.OfType<CheckoutSessionStatusChangedEvent>().Single();
-        statusEvent.OldStatus.Should().Be(CheckoutSessionStatus.AddressComplete);
-        statusEvent.NewStatus.Should().Be(CheckoutSessionStatus.Abandoned);
+        statusEvent.OldStatus.ShouldBe(CheckoutSessionStatus.AddressComplete);
+        statusEvent.NewStatus.ShouldBe(CheckoutSessionStatus.Abandoned);
 
         var abandonedEvent = session.DomainEvents.OfType<CheckoutAbandonedEvent>().Single();
-        abandonedEvent.SessionId.Should().Be(session.Id);
-        abandonedEvent.CartId.Should().Be(TestCartId);
-        abandonedEvent.LastStatus.Should().Be(CheckoutSessionStatus.AddressComplete);
+        abandonedEvent.SessionId.ShouldBe(session.Id);
+        abandonedEvent.CartId.ShouldBe(TestCartId);
+        abandonedEvent.LastStatus.ShouldBe(CheckoutSessionStatus.AddressComplete);
     }
 
     [Fact]
@@ -998,7 +998,7 @@ public class CheckoutSessionTests
         session.MarkAsAbandoned();
 
         // Assert
-        session.Status.Should().Be(CheckoutSessionStatus.Completed);
+        session.Status.ShouldBe(CheckoutSessionStatus.Completed);
     }
 
     [Fact]
@@ -1012,7 +1012,7 @@ public class CheckoutSessionTests
         session.MarkAsAbandoned();
 
         // Assert
-        session.Status.Should().Be(CheckoutSessionStatus.Expired);
+        session.Status.ShouldBe(CheckoutSessionStatus.Expired);
     }
 
     [Fact]
@@ -1027,7 +1027,7 @@ public class CheckoutSessionTests
         session.MarkAsAbandoned();
 
         // Assert
-        session.DomainEvents.Should().BeEmpty();
+        session.DomainEvents.ShouldBeEmpty();
     }
 
     #endregion
@@ -1044,9 +1044,9 @@ public class CheckoutSessionTests
         session.ApplyCoupon("SAVE50K", 50000m);
 
         // Assert
-        session.CouponCode.Should().Be("SAVE50K");
-        session.DiscountAmount.Should().Be(50000m);
-        session.GrandTotal.Should().Be(450000m); // 500,000 - 50,000
+        session.CouponCode.ShouldBe("SAVE50K");
+        session.DiscountAmount.ShouldBe(50000m);
+        session.GrandTotal.ShouldBe(450000m); // 500,000 - 50,000
     }
 
     [Fact]
@@ -1054,13 +1054,13 @@ public class CheckoutSessionTests
     {
         // Arrange
         var session = CreateSessionWithShipping(); // 500,000 + 50,000 shipping
-        session.GrandTotal.Should().Be(550000m);
+        session.GrandTotal.ShouldBe(550000m);
 
         // Act
         session.ApplyCoupon("DISCOUNT", 100000m);
 
         // Assert
-        session.GrandTotal.Should().Be(450000m); // 500,000 - 100,000 + 50,000
+        session.GrandTotal.ShouldBe(450000m); // 500,000 - 100,000 + 50,000
     }
 
     [Fact]
@@ -1074,8 +1074,8 @@ public class CheckoutSessionTests
         var act = () => session.ApplyCoupon("CODE", 10000m);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot modify checkout session in Completed status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot modify checkout session in Completed status");
     }
 
     [Fact]
@@ -1089,8 +1089,8 @@ public class CheckoutSessionTests
         var act = () => session.ApplyCoupon("CODE", 10000m);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot modify checkout session in Expired status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot modify checkout session in Expired status");
     }
 
     #endregion
@@ -1108,9 +1108,9 @@ public class CheckoutSessionTests
         session.RemoveCoupon();
 
         // Assert
-        session.CouponCode.Should().BeNull();
-        session.DiscountAmount.Should().Be(0m);
-        session.GrandTotal.Should().Be(500000m);
+        session.CouponCode.ShouldBeNull();
+        session.DiscountAmount.ShouldBe(0m);
+        session.GrandTotal.ShouldBe(500000m);
     }
 
     [Fact]
@@ -1123,7 +1123,7 @@ public class CheckoutSessionTests
         var act = () => session.RemoveCoupon();
 
         // Assert
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -1137,8 +1137,8 @@ public class CheckoutSessionTests
         var act = () => session.RemoveCoupon();
 
         // Assert
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("Cannot modify checkout session in Completed status");
+        Should.Throw<InvalidOperationException>(act)
+            .Message.ShouldContain("Cannot modify checkout session in Completed status");
     }
 
     #endregion
@@ -1155,8 +1155,8 @@ public class CheckoutSessionTests
         session.SetTax(50000m);
 
         // Assert
-        session.TaxAmount.Should().Be(50000m);
-        session.GrandTotal.Should().Be(550000m); // 500,000 + 50,000
+        session.TaxAmount.ShouldBe(50000m);
+        session.GrandTotal.ShouldBe(550000m); // 500,000 + 50,000
     }
 
     [Fact]
@@ -1171,7 +1171,7 @@ public class CheckoutSessionTests
 
         // Assert
         // GrandTotal = SubTotal - Discount + Shipping + Tax = 500,000 - 100,000 + 50,000 + 25,000
-        session.GrandTotal.Should().Be(475000m);
+        session.GrandTotal.ShouldBe(475000m);
     }
 
     #endregion
@@ -1188,7 +1188,7 @@ public class CheckoutSessionTests
         session.SetCustomerNotes("Please deliver after 6pm");
 
         // Assert
-        session.CustomerNotes.Should().Be("Please deliver after 6pm");
+        session.CustomerNotes.ShouldBe("Please deliver after 6pm");
     }
 
     [Fact]
@@ -1202,7 +1202,7 @@ public class CheckoutSessionTests
         session.SetCustomerNotes(null);
 
         // Assert
-        session.CustomerNotes.Should().BeNull();
+        session.CustomerNotes.ShouldBeNull();
     }
 
     #endregion
@@ -1220,8 +1220,8 @@ public class CheckoutSessionTests
         session.ExtendExpiration(30);
 
         // Assert
-        session.ExpiresAt.Should().BeAfter(beforeExtend.AddMinutes(29));
-        session.ExpiresAt.Should().BeOnOrBefore(DateTimeOffset.UtcNow.AddMinutes(30));
+        session.ExpiresAt.ShouldBeGreaterThan(beforeExtend.AddMinutes(29));
+        session.ExpiresAt.ShouldBeLessThanOrEqualTo(DateTimeOffset.UtcNow.AddMinutes(30));
     }
 
     [Fact]
@@ -1235,8 +1235,8 @@ public class CheckoutSessionTests
         session.ExtendExpiration();
 
         // Assert
-        session.ExpiresAt.Should().BeAfter(beforeExtend.AddMinutes(14));
-        session.ExpiresAt.Should().BeOnOrBefore(DateTimeOffset.UtcNow.AddMinutes(15));
+        session.ExpiresAt.ShouldBeGreaterThan(beforeExtend.AddMinutes(14));
+        session.ExpiresAt.ShouldBeLessThanOrEqualTo(DateTimeOffset.UtcNow.AddMinutes(15));
     }
 
     [Fact]
@@ -1251,7 +1251,7 @@ public class CheckoutSessionTests
         session.ExtendExpiration(60);
 
         // Assert
-        session.ExpiresAt.Should().Be(expiresAtAfterComplete);
+        session.ExpiresAt.ShouldBe(expiresAtAfterComplete);
     }
 
     [Fact]
@@ -1266,7 +1266,7 @@ public class CheckoutSessionTests
         session.ExtendExpiration(60);
 
         // Assert
-        session.ExpiresAt.Should().Be(expiresAtAfterExpiry);
+        session.ExpiresAt.ShouldBe(expiresAtAfterExpiry);
     }
 
     [Fact]
@@ -1281,7 +1281,7 @@ public class CheckoutSessionTests
         session.ExtendExpiration(60);
 
         // Assert
-        session.ExpiresAt.Should().Be(expiresAtAfterAbandoned);
+        session.ExpiresAt.ShouldBe(expiresAtAfterAbandoned);
     }
 
     #endregion
@@ -1295,7 +1295,7 @@ public class CheckoutSessionTests
         var session = CreateStartedSession();
 
         // Assert
-        session.IsExpired.Should().BeFalse();
+        session.IsExpired.ShouldBeFalse();
     }
 
     [Fact]
@@ -1306,7 +1306,7 @@ public class CheckoutSessionTests
         session.Complete(Guid.NewGuid(), "ORD-001");
 
         // Assert
-        session.IsExpired.Should().BeFalse();
+        session.IsExpired.ShouldBeFalse();
     }
 
     [Fact]
@@ -1318,7 +1318,7 @@ public class CheckoutSessionTests
         session.MarkAsExpired();
 
         // Assert
-        session.IsExpired.Should().BeFalse();
+        session.IsExpired.ShouldBeFalse();
     }
 
     [Fact]
@@ -1329,7 +1329,7 @@ public class CheckoutSessionTests
         session.MarkAsAbandoned();
 
         // Assert
-        session.IsExpired.Should().BeFalse();
+        session.IsExpired.ShouldBeFalse();
     }
 
     #endregion
@@ -1343,7 +1343,7 @@ public class CheckoutSessionTests
         var session = CreateStartedSession(subTotal: 1000000m);
 
         // Assert
-        session.GrandTotal.Should().Be(1000000m);
+        session.GrandTotal.ShouldBe(1000000m);
     }
 
     [Fact]
@@ -1363,7 +1363,7 @@ public class CheckoutSessionTests
 
         // Assert
         // GrandTotal = SubTotal(500,000) - Discount(100,000) + Shipping(50,000) + Tax(25,000) = 475,000
-        session.GrandTotal.Should().Be(475000m);
+        session.GrandTotal.ShouldBe(475000m);
     }
 
     [Fact]
@@ -1376,7 +1376,7 @@ public class CheckoutSessionTests
         session.ApplyCoupon("MEGA_DISCOUNT", 200000m);
 
         // Assert
-        session.GrandTotal.Should().Be(-100000m); // 100,000 - 200,000
+        session.GrandTotal.ShouldBe(-100000m); // 100,000 - 200,000
     }
 
     #endregion
@@ -1388,46 +1388,46 @@ public class CheckoutSessionTests
     {
         // 1. Create session
         var session = CheckoutSession.Create(TestCartId, TestEmail, 500000m, TestCurrency, TestUserId, TestTenantId);
-        session.Status.Should().Be(CheckoutSessionStatus.Started);
+        session.Status.ShouldBe(CheckoutSessionStatus.Started);
 
         // 2. Set customer info
         session.SetCustomerInfo("Nguyen Van A", "0901234567");
-        session.CustomerName.Should().Be("Nguyen Van A");
+        session.CustomerName.ShouldBe("Nguyen Van A");
 
         // 3. Set shipping address
         session.SetShippingAddress(CreateTestAddress());
-        session.Status.Should().Be(CheckoutSessionStatus.AddressComplete);
+        session.Status.ShouldBe(CheckoutSessionStatus.AddressComplete);
 
         // 4. Select shipping method
         session.SelectShippingMethod("Express Delivery", 50000m, DateTimeOffset.UtcNow.AddDays(3));
-        session.Status.Should().Be(CheckoutSessionStatus.ShippingSelected);
-        session.GrandTotal.Should().Be(550000m);
+        session.Status.ShouldBe(CheckoutSessionStatus.ShippingSelected);
+        session.GrandTotal.ShouldBe(550000m);
 
         // 5. Apply coupon
         session.ApplyCoupon("WELCOME10", 50000m);
-        session.GrandTotal.Should().Be(500000m);
+        session.GrandTotal.ShouldBe(500000m);
 
         // 6. Set tax
         session.SetTax(50000m);
-        session.GrandTotal.Should().Be(550000m);
+        session.GrandTotal.ShouldBe(550000m);
 
         // 7. Select payment method
         session.SelectPaymentMethod(PaymentMethod.CreditCard, Guid.NewGuid());
-        session.Status.Should().Be(CheckoutSessionStatus.PaymentPending);
+        session.Status.ShouldBe(CheckoutSessionStatus.PaymentPending);
 
         // 8. Set customer notes
         session.SetCustomerNotes("Leave at front door");
 
         // 9. Start payment processing
         session.MarkAsPaymentProcessing();
-        session.Status.Should().Be(CheckoutSessionStatus.PaymentProcessing);
+        session.Status.ShouldBe(CheckoutSessionStatus.PaymentProcessing);
 
         // 10. Complete checkout
         var orderId = Guid.NewGuid();
         session.Complete(orderId, "ORD-20260219-0001");
-        session.Status.Should().Be(CheckoutSessionStatus.Completed);
-        session.OrderId.Should().Be(orderId);
-        session.OrderNumber.Should().Be("ORD-20260219-0001");
+        session.Status.ShouldBe(CheckoutSessionStatus.Completed);
+        session.OrderId.ShouldBe(orderId);
+        session.OrderNumber.ShouldBe("ORD-20260219-0001");
     }
 
     [Fact]
@@ -1435,13 +1435,13 @@ public class CheckoutSessionTests
     {
         // Arrange
         var session = CreateSessionWithAddress();
-        session.Status.Should().Be(CheckoutSessionStatus.AddressComplete);
+        session.Status.ShouldBe(CheckoutSessionStatus.AddressComplete);
 
         // Act - User abandons during shipping selection
         session.MarkAsAbandoned();
 
         // Assert
-        session.Status.Should().Be(CheckoutSessionStatus.Abandoned);
+        session.Status.ShouldBe(CheckoutSessionStatus.Abandoned);
     }
 
     [Fact]
@@ -1449,13 +1449,13 @@ public class CheckoutSessionTests
     {
         // Arrange
         var session = CreateSessionWithPayment();
-        session.Status.Should().Be(CheckoutSessionStatus.PaymentPending);
+        session.Status.ShouldBe(CheckoutSessionStatus.PaymentPending);
 
         // Act - Session expires while waiting for payment
         session.MarkAsExpired();
 
         // Assert
-        session.Status.Should().Be(CheckoutSessionStatus.Expired);
+        session.Status.ShouldBe(CheckoutSessionStatus.Expired);
     }
 
     #endregion
@@ -1473,7 +1473,7 @@ public class CheckoutSessionTests
         session.SetShippingAddress(CreateTestAddress());
 
         // Assert
-        session.LastActivityAt.Should().BeOnOrAfter(beforeAction);
+        session.LastActivityAt.ShouldBeGreaterThanOrEqualTo(beforeAction);
     }
 
     [Fact]
@@ -1487,7 +1487,7 @@ public class CheckoutSessionTests
         session.SelectShippingMethod("Standard", 30000m);
 
         // Assert
-        session.LastActivityAt.Should().BeOnOrAfter(beforeAction);
+        session.LastActivityAt.ShouldBeGreaterThanOrEqualTo(beforeAction);
     }
 
     [Fact]
@@ -1501,7 +1501,7 @@ public class CheckoutSessionTests
         session.SelectPaymentMethod(PaymentMethod.COD, null);
 
         // Assert
-        session.LastActivityAt.Should().BeOnOrAfter(beforeAction);
+        session.LastActivityAt.ShouldBeGreaterThanOrEqualTo(beforeAction);
     }
 
     [Fact]
@@ -1515,7 +1515,7 @@ public class CheckoutSessionTests
         session.ApplyCoupon("CODE", 10000m);
 
         // Assert
-        session.LastActivityAt.Should().BeOnOrAfter(beforeAction);
+        session.LastActivityAt.ShouldBeGreaterThanOrEqualTo(beforeAction);
     }
 
     [Fact]
@@ -1529,7 +1529,7 @@ public class CheckoutSessionTests
         session.SetCustomerNotes("Notes");
 
         // Assert
-        session.LastActivityAt.Should().BeOnOrAfter(beforeAction);
+        session.LastActivityAt.ShouldBeGreaterThanOrEqualTo(beforeAction);
     }
 
     #endregion

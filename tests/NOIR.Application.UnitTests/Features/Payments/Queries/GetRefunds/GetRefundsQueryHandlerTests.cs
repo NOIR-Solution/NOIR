@@ -67,10 +67,10 @@ public class GetRefundsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
-        result.Value[0].RefundNumber.Should().Be("REF-001");
-        result.Value[1].RefundNumber.Should().Be("REF-002");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
+        result.Value[0].RefundNumber.ShouldBe("REF-001");
+        result.Value[1].RefundNumber.ShouldBe("REF-002");
     }
 
     [Fact]
@@ -94,20 +94,20 @@ public class GetRefundsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value[0];
-        dto.Id.Should().Be(refund.Id);
-        dto.RefundNumber.Should().Be("REF-001");
-        dto.PaymentTransactionId.Should().Be(transactionId);
-        dto.GatewayRefundId.Should().Be("gateway-refund-123");
-        dto.Amount.Should().Be(50000m);
-        dto.Currency.Should().Be("VND");
-        dto.Status.Should().Be(RefundStatus.Completed);
-        dto.Reason.Should().Be(RefundReason.CustomerRequest);
-        dto.ReasonDetail.Should().Be("Customer requested refund");
-        dto.RequestedBy.Should().Be("admin@example.com");
-        dto.ApprovedBy.Should().Be("manager@example.com");
-        dto.ProcessedAt.Should().NotBeNull();
+        dto.Id.ShouldBe(refund.Id);
+        dto.RefundNumber.ShouldBe("REF-001");
+        dto.PaymentTransactionId.ShouldBe(transactionId);
+        dto.GatewayRefundId.ShouldBe("gateway-refund-123");
+        dto.Amount.ShouldBe(50000m);
+        dto.Currency.ShouldBe("VND");
+        dto.Status.ShouldBe(RefundStatus.Completed);
+        dto.Reason.ShouldBe(RefundReason.CustomerRequest);
+        dto.ReasonDetail.ShouldBe("Customer requested refund");
+        dto.RequestedBy.ShouldBe("admin@example.com");
+        dto.ApprovedBy.ShouldBe("manager@example.com");
+        dto.ProcessedAt.ShouldNotBeNull();
     }
 
     [Fact]
@@ -129,8 +129,8 @@ public class GetRefundsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -152,10 +152,10 @@ public class GetRefundsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value[0].Status.Should().Be(RefundStatus.Pending);
-        result.Value[0].ApprovedBy.Should().BeNull();
-        result.Value[0].ProcessedAt.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value[0].Status.ShouldBe(RefundStatus.Pending);
+        result.Value[0].ApprovedBy.ShouldBeNull();
+        result.Value[0].ProcessedAt.ShouldBeNull();
     }
 
     [Fact]
@@ -182,10 +182,10 @@ public class GetRefundsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Contain(r => r.Reason == RefundReason.CustomerRequest);
-        result.Value.Should().Contain(r => r.Reason == RefundReason.Defective);
-        result.Value.Should().Contain(r => r.Reason == RefundReason.WrongItem);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldContain(r => r.Reason == RefundReason.CustomerRequest);
+        result.Value.ShouldContain(r => r.Reason == RefundReason.Defective);
+        result.Value.ShouldContain(r => r.Reason == RefundReason.WrongItem);
     }
 
     #endregion
@@ -210,8 +210,8 @@ public class GetRefundsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     #endregion

@@ -18,7 +18,7 @@ public class CacheKeysTests
         var result = CacheKeys.UserPermissions(userId);
 
         // Assert
-        result.Should().Be("perm:user:user-123");
+        result.ShouldBe("perm:user:user-123");
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public class CacheKeysTests
         var result = CacheKeys.RolePermissions(roleId);
 
         // Assert
-        result.Should().Be("perm:role:role-456");
+        result.ShouldBe("perm:role:role-456");
     }
 
     #endregion
@@ -48,7 +48,7 @@ public class CacheKeysTests
         var result = CacheKeys.UserProfile(userId);
 
         // Assert
-        result.Should().Be("user:profile:user-123");
+        result.ShouldBe("user:profile:user-123");
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class CacheKeysTests
         var result = CacheKeys.UserById(userId);
 
         // Assert
-        result.Should().Be("user:id:user-123");
+        result.ShouldBe("user:id:user-123");
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class CacheKeysTests
         var result = CacheKeys.UserByEmail(email);
 
         // Assert
-        result.Should().Be("user:email:test@example.com");
+        result.ShouldBe("user:email:test@example.com");
     }
 
     #endregion
@@ -91,7 +91,7 @@ public class CacheKeysTests
         var result = CacheKeys.RoleById(roleId);
 
         // Assert
-        result.Should().Be("role:id:role-456");
+        result.ShouldBe("role:id:role-456");
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class CacheKeysTests
         var result = CacheKeys.AllRoles();
 
         // Assert
-        result.Should().Be("role:all");
+        result.ShouldBe("role:all");
     }
 
     #endregion
@@ -118,7 +118,7 @@ public class CacheKeysTests
         var result = CacheKeys.TenantById(tenantId);
 
         // Assert
-        result.Should().Be("tenant:id:tenant-789");
+        result.ShouldBe("tenant:id:tenant-789");
     }
 
     [Fact]
@@ -131,7 +131,7 @@ public class CacheKeysTests
         var result = CacheKeys.TenantSettings(tenantId);
 
         // Assert
-        result.Should().Be("settings:tenant:tenant-789");
+        result.ShouldBe("settings:tenant:tenant-789");
     }
 
     #endregion
@@ -148,7 +148,7 @@ public class CacheKeysTests
         var result = CacheKeys.PostBySlug(slug);
 
         // Assert
-        result.Should().Be("blog:post:slug:my-awesome-post");
+        result.ShouldBe("blog:post:slug:my-awesome-post");
     }
 
     [Fact]
@@ -161,7 +161,7 @@ public class CacheKeysTests
         var result = CacheKeys.PostById(postId);
 
         // Assert
-        result.Should().Be("blog:post:id:12345678-1234-1234-1234-123456789abc");
+        result.ShouldBe("blog:post:id:12345678-1234-1234-1234-123456789abc");
     }
 
     [Fact]
@@ -175,7 +175,7 @@ public class CacheKeysTests
         var result = CacheKeys.PostsList(page, pageSize);
 
         // Assert
-        result.Should().Be("blog:posts:p1:s10");
+        result.ShouldBe("blog:posts:p1:s10");
     }
 
     [Fact]
@@ -190,7 +190,7 @@ public class CacheKeysTests
         var result = CacheKeys.PostsList(page, pageSize, categorySlug);
 
         // Assert
-        result.Should().Be("blog:posts:p2:s20:ctech");
+        result.ShouldBe("blog:posts:p2:s20:ctech");
     }
 
     [Fact]
@@ -200,7 +200,7 @@ public class CacheKeysTests
         var result = CacheKeys.BlogCategories();
 
         // Assert
-        result.Should().Be("blog:categories");
+        result.ShouldBe("blog:categories");
     }
 
     [Fact]
@@ -210,7 +210,7 @@ public class CacheKeysTests
         var result = CacheKeys.BlogTags();
 
         // Assert
-        result.Should().Be("blog:tags");
+        result.ShouldBe("blog:tags");
     }
 
     [Fact]
@@ -220,7 +220,7 @@ public class CacheKeysTests
         var result = CacheKeys.RssFeed();
 
         // Assert
-        result.Should().Be("blog:feed:rss");
+        result.ShouldBe("blog:feed:rss");
     }
 
     [Fact]
@@ -230,7 +230,7 @@ public class CacheKeysTests
         var result = CacheKeys.Sitemap();
 
         // Assert
-        result.Should().Be("blog:sitemap");
+        result.ShouldBe("blog:sitemap");
     }
 
     #endregion
@@ -247,8 +247,8 @@ public class CacheKeysTests
         var result = CacheKeys.UserTags(userId);
 
         // Assert
-        result.Should().HaveCount(1);
-        result.Should().Contain("user:user-123");
+        result.Count().ShouldBe(1);
+        result.ShouldContain("user:user-123");
     }
 
     [Fact]
@@ -261,9 +261,9 @@ public class CacheKeysTests
         var result = CacheKeys.PermissionTags(userId);
 
         // Assert
-        result.Should().HaveCount(2);
-        result.Should().Contain("permissions");
-        result.Should().Contain("user:user-123");
+        result.Count().ShouldBe(2);
+        result.ShouldContain("permissions");
+        result.ShouldContain("user:user-123");
     }
 
     [Fact]
@@ -276,9 +276,9 @@ public class CacheKeysTests
         var result = CacheKeys.RoleTags(roleId);
 
         // Assert
-        result.Should().HaveCount(2);
-        result.Should().Contain("role:role-456");
-        result.Should().Contain("roles");
+        result.Count().ShouldBe(2);
+        result.ShouldContain("role:role-456");
+        result.ShouldContain("roles");
     }
 
     [Fact]
@@ -291,9 +291,9 @@ public class CacheKeysTests
         var result = CacheKeys.PostTags(postId);
 
         // Assert
-        result.Should().HaveCount(2);
-        result.Should().Contain("blog");
-        result.Should().Contain("post:12345678-1234-1234-1234-123456789abc");
+        result.Count().ShouldBe(2);
+        result.ShouldContain("blog");
+        result.ShouldContain("post:12345678-1234-1234-1234-123456789abc");
     }
 
     [Fact]
@@ -303,9 +303,9 @@ public class CacheKeysTests
         var result = CacheKeys.BlogListTags();
 
         // Assert
-        result.Should().HaveCount(2);
-        result.Should().Contain("blog");
-        result.Should().Contain("posts-list");
+        result.Count().ShouldBe(2);
+        result.ShouldContain("blog");
+        result.ShouldContain("posts-list");
     }
 
     #endregion

@@ -88,8 +88,8 @@ public class UpdateShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.DisplayName.Should().Be("Updated Display Name");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.DisplayName.ShouldBe("Updated Display Name");
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -115,8 +115,8 @@ public class UpdateShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Environment.Should().Be(GatewayEnvironment.Production);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Environment.ShouldBe(GatewayEnvironment.Production);
     }
 
     [Fact]
@@ -150,8 +150,8 @@ public class UpdateShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.HasCredentials.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.HasCredentials.ShouldBe(true);
 
         _encryptionServiceMock.Verify(
             x => x.Encrypt(It.Is<string>(s => s.Contains("new-api-key"))),
@@ -179,8 +179,8 @@ public class UpdateShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(true);
     }
 
     [Fact]
@@ -204,8 +204,8 @@ public class UpdateShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(false);
     }
 
     [Fact]
@@ -229,8 +229,8 @@ public class UpdateShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SortOrder.Should().Be(10);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SortOrder.ShouldBe(10);
     }
 
     [Fact]
@@ -254,8 +254,8 @@ public class UpdateShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SupportsCod.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SupportsCod.ShouldBe(false);
     }
 
     [Fact]
@@ -279,8 +279,8 @@ public class UpdateShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SupportsInsurance.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SupportsInsurance.ShouldBe(true);
     }
 
     [Fact]
@@ -304,9 +304,9 @@ public class UpdateShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.MinWeightGrams.Should().Be(100);
-        result.Value.MaxWeightGrams.Should().Be(50000);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.MinWeightGrams.ShouldBe(100);
+        result.Value.MaxWeightGrams.ShouldBe(50000);
     }
 
     [Fact]
@@ -330,9 +330,9 @@ public class UpdateShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.MinCodAmount.Should().Be(10000m);
-        result.Value.MaxCodAmount.Should().Be(10000000m);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.MinCodAmount.ShouldBe(10000m);
+        result.Value.MaxCodAmount.ShouldBe(10000000m);
     }
 
     [Fact]
@@ -363,13 +363,13 @@ public class UpdateShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.DisplayName.Should().Be("New Name");
-        result.Value.Environment.Should().Be(GatewayEnvironment.Production);
-        result.Value.SortOrder.Should().Be(5);
-        result.Value.IsActive.Should().BeFalse();
-        result.Value.SupportsCod.Should().BeFalse();
-        result.Value.SupportsInsurance.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.DisplayName.ShouldBe("New Name");
+        result.Value.Environment.ShouldBe(GatewayEnvironment.Production);
+        result.Value.SortOrder.ShouldBe(5);
+        result.Value.IsActive.ShouldBe(false);
+        result.Value.SupportsCod.ShouldBe(false);
+        result.Value.SupportsInsurance.ShouldBe(true);
     }
 
     #endregion
@@ -392,9 +392,9 @@ public class UpdateShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain("not found");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -458,7 +458,7 @@ public class UpdateShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         // Empty credentials should not trigger encryption
         _encryptionServiceMock.Verify(
@@ -487,8 +487,8 @@ public class UpdateShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ApiBaseUrl.Should().Be("https://new-api.example.com");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ApiBaseUrl.ShouldBe("https://new-api.example.com");
     }
 
     [Fact]
@@ -514,8 +514,8 @@ public class UpdateShippingProviderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TrackingUrlTemplate.Should().Be("https://tracking.example.com/{trackingNumber}");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TrackingUrlTemplate.ShouldBe("https://tracking.example.com/{trackingNumber}");
     }
 
     #endregion

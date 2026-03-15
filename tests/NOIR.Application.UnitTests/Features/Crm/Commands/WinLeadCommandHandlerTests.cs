@@ -64,9 +64,9 @@ public class WinLeadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        lead.Status.Should().Be(LeadStatus.Won);
-        lead.WonAt.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        lead.Status.ShouldBe(LeadStatus.Won);
+        lead.WonAt.ShouldNotBeNull();
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -92,7 +92,7 @@ public class WinLeadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _customerRepoMock.Verify(
             x => x.AddAsync(It.IsAny<Customer>(), It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -122,7 +122,7 @@ public class WinLeadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _customerRepoMock.Verify(
             x => x.AddAsync(It.IsAny<Customer>(), It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -141,7 +141,7 @@ public class WinLeadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 
     [Fact]
@@ -161,8 +161,8 @@ public class WinLeadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Type.Should().Be(ErrorType.Validation);
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
     }
 
     [Fact]
@@ -185,8 +185,8 @@ public class WinLeadCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        lead.Status.Should().Be(LeadStatus.Won);
+        result.IsSuccess.ShouldBe(true);
+        lead.Status.ShouldBe(LeadStatus.Won);
         _customerRepoMock.Verify(
             x => x.AddAsync(It.IsAny<Customer>(), It.IsAny<CancellationToken>()), Times.Never);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);

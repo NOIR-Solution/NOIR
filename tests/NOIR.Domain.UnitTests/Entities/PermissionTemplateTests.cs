@@ -18,12 +18,12 @@ public class PermissionTemplateTests
         var template = PermissionTemplate.CreatePlatformDefault(name);
 
         // Assert
-        template.Should().NotBeNull();
-        template.Id.Should().NotBe(Guid.Empty);
-        template.Name.Should().Be(name);
-        template.IsSystem.Should().BeFalse();
-        template.SortOrder.Should().Be(0);
-        template.Items.Should().BeEmpty();
+        template.ShouldNotBeNull();
+        template.Id.ShouldNotBe(Guid.Empty);
+        template.Name.ShouldBe(name);
+        template.IsSystem.ShouldBeFalse();
+        template.SortOrder.ShouldBe(0);
+        template.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -43,13 +43,13 @@ public class PermissionTemplateTests
             tenantId, name, description, isSystem, iconName, color, sortOrder);
 
         // Assert
-        template.Name.Should().Be(name);
-        template.Description.Should().Be(description);
-        template.TenantId.Should().Be(tenantId);
-        template.IsSystem.Should().BeTrue();
-        template.IconName.Should().Be(iconName);
-        template.Color.Should().Be(color);
-        template.SortOrder.Should().Be(sortOrder);
+        template.Name.ShouldBe(name);
+        template.Description.ShouldBe(description);
+        template.TenantId.ShouldBe(tenantId);
+        template.IsSystem.ShouldBeTrue();
+        template.IconName.ShouldBe(iconName);
+        template.Color.ShouldBe(color);
+        template.SortOrder.ShouldBe(sortOrder);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class PermissionTemplateTests
         var template = PermissionTemplate.CreatePlatformDefault("Global Template");
 
         // Assert
-        template.TenantId.Should().BeNull();
+        template.TenantId.ShouldBeNull();
     }
 
     #endregion
@@ -81,11 +81,11 @@ public class PermissionTemplateTests
         template.Update(newName, newDescription, newIconName, newColor, newSortOrder);
 
         // Assert
-        template.Name.Should().Be(newName);
-        template.Description.Should().Be(newDescription);
-        template.IconName.Should().Be(newIconName);
-        template.Color.Should().Be(newColor);
-        template.SortOrder.Should().Be(newSortOrder);
+        template.Name.ShouldBe(newName);
+        template.Description.ShouldBe(newDescription);
+        template.IconName.ShouldBe(newIconName);
+        template.Color.ShouldBe(newColor);
+        template.SortOrder.ShouldBe(newSortOrder);
     }
 
     [Fact]
@@ -98,9 +98,9 @@ public class PermissionTemplateTests
         template.Update("Test", null, null, null, 0);
 
         // Assert
-        template.Description.Should().BeNull();
-        template.IconName.Should().BeNull();
-        template.Color.Should().BeNull();
+        template.Description.ShouldBeNull();
+        template.IconName.ShouldBeNull();
+        template.Color.ShouldBeNull();
     }
 
     #endregion
@@ -118,8 +118,8 @@ public class PermissionTemplateTests
         template.AddPermission(permissionId);
 
         // Assert
-        template.Items.Should().HaveCount(1);
-        template.Items.Should().Contain(i => i.PermissionId == permissionId);
+        template.Items.Count().ShouldBe(1);
+        template.Items.ShouldContain(i => i.PermissionId == permissionId);
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public class PermissionTemplateTests
         template.AddPermission(permissionId);
 
         // Assert
-        template.Items.Should().HaveCount(1);
+        template.Items.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public class PermissionTemplateTests
         template.AddPermission(permission3);
 
         // Assert
-        template.Items.Should().HaveCount(3);
+        template.Items.Count().ShouldBe(3);
     }
 
     #endregion
@@ -171,7 +171,7 @@ public class PermissionTemplateTests
         template.RemovePermission(permissionId);
 
         // Assert
-        template.Items.Should().BeEmpty();
+        template.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -185,8 +185,8 @@ public class PermissionTemplateTests
         var act = () => template.RemovePermission(permissionId);
 
         // Assert
-        act.Should().NotThrow();
-        template.Items.Should().BeEmpty();
+        act.ShouldNotThrow();
+        template.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -203,8 +203,8 @@ public class PermissionTemplateTests
         template.RemovePermission(permission1);
 
         // Assert
-        template.Items.Should().HaveCount(1);
-        template.Items.Should().Contain(i => i.PermissionId == permission2);
+        template.Items.Count().ShouldBe(1);
+        template.Items.ShouldContain(i => i.PermissionId == permission2);
     }
 
     #endregion
@@ -225,8 +225,8 @@ public class PermissionTemplateTests
         template.SetPermissions(newPermissions);
 
         // Assert
-        template.Items.Should().HaveCount(3);
-        template.Items.Select(i => i.PermissionId).Should().BeEquivalentTo(newPermissions);
+        template.Items.Count().ShouldBe(3);
+        template.Items.Select(i => i.PermissionId).ShouldBe(newPermissions);
     }
 
     [Fact]
@@ -241,7 +241,7 @@ public class PermissionTemplateTests
         template.SetPermissions(Array.Empty<Guid>());
 
         // Assert
-        template.Items.Should().BeEmpty();
+        template.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -255,7 +255,7 @@ public class PermissionTemplateTests
         template.SetPermissions(new[] { permissionId });
 
         // Assert
-        template.Items.Should().OnlyContain(i => i.TemplateId == template.Id);
+        template.Items.ShouldAllBe(i => i.TemplateId == template.Id);
     }
 
     #endregion
@@ -273,10 +273,10 @@ public class PermissionTemplateTests
         var item = PermissionTemplateItem.Create(templateId, permissionId);
 
         // Assert
-        item.Should().NotBeNull();
-        item.Id.Should().NotBe(Guid.Empty);
-        item.TemplateId.Should().Be(templateId);
-        item.PermissionId.Should().Be(permissionId);
+        item.ShouldNotBeNull();
+        item.Id.ShouldNotBe(Guid.Empty);
+        item.TemplateId.ShouldBe(templateId);
+        item.PermissionId.ShouldBe(permissionId);
     }
 
     [Fact]
@@ -291,7 +291,7 @@ public class PermissionTemplateTests
         var item2 = PermissionTemplateItem.Create(templateId, permissionId);
 
         // Assert
-        item1.Id.Should().NotBe(item2.Id);
+        item1.Id.ShouldNotBe(item2.Id);
     }
 
     #endregion
@@ -305,11 +305,11 @@ public class PermissionTemplateTests
         var template = PermissionTemplate.CreatePlatformDefault("Test");
 
         // Assert
-        template.IsDeleted.Should().BeFalse();
-        template.DeletedAt.Should().BeNull();
-        template.DeletedBy.Should().BeNull();
-        template.CreatedBy.Should().BeNull();
-        template.ModifiedBy.Should().BeNull();
+        template.IsDeleted.ShouldBeFalse();
+        template.DeletedAt.ShouldBeNull();
+        template.DeletedBy.ShouldBeNull();
+        template.CreatedBy.ShouldBeNull();
+        template.ModifiedBy.ShouldBeNull();
     }
 
     #endregion
@@ -323,7 +323,7 @@ public class PermissionTemplateTests
         var template = PermissionTemplate.CreatePlatformDefault("Admin", isSystem: true);
 
         // Assert
-        template.IsSystem.Should().BeTrue();
+        template.IsSystem.ShouldBeTrue();
     }
 
     [Fact]
@@ -333,7 +333,7 @@ public class PermissionTemplateTests
         var template = PermissionTemplate.CreatePlatformDefault("Custom", isSystem: false);
 
         // Assert
-        template.IsSystem.Should().BeFalse();
+        template.IsSystem.ShouldBeFalse();
     }
 
     #endregion

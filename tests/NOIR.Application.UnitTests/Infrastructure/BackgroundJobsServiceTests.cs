@@ -24,7 +24,7 @@ public class BackgroundJobsServiceTests
         var service = new BackgroundJobsService();
 
         // Assert
-        service.Should().NotBeNull();
+        service.ShouldNotBeNull();
     }
 
     #endregion
@@ -38,8 +38,8 @@ public class BackgroundJobsServiceTests
         var method = typeof(BackgroundJobsService)
             .GetMethod("Enqueue", [typeof(Expression<Action>)]);
 
-        method.Should().NotBeNull();
-        method!.ReturnType.Should().Be(typeof(string));
+        method.ShouldNotBeNull();
+        method!.ReturnType.ShouldBe(typeof(string));
     }
 
     [Fact]
@@ -49,8 +49,8 @@ public class BackgroundJobsServiceTests
         var method = typeof(BackgroundJobsService)
             .GetMethod("Enqueue", [typeof(Expression<Func<Task>>)]);
 
-        method.Should().NotBeNull();
-        method!.ReturnType.Should().Be(typeof(string));
+        method.ShouldNotBeNull();
+        method!.ReturnType.ShouldBe(typeof(string));
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class BackgroundJobsServiceTests
             .GetMethods()
             .Where(m => m.Name == "Enqueue" && m.IsGenericMethod);
 
-        methods.Should().HaveCountGreaterThanOrEqualTo(2);
+        methods.Count().ShouldBeGreaterThanOrEqualTo(2);
     }
 
     #endregion
@@ -78,8 +78,8 @@ public class BackgroundJobsServiceTests
                 typeof(TimeSpan)
             ]);
 
-        method.Should().NotBeNull();
-        method!.ReturnType.Should().Be(typeof(string));
+        method.ShouldNotBeNull();
+        method!.ReturnType.ShouldBe(typeof(string));
     }
 
     [Fact]
@@ -92,8 +92,8 @@ public class BackgroundJobsServiceTests
                 typeof(TimeSpan)
             ]);
 
-        method.Should().NotBeNull();
-        method!.ReturnType.Should().Be(typeof(string));
+        method.ShouldNotBeNull();
+        method!.ReturnType.ShouldBe(typeof(string));
     }
 
     [Fact]
@@ -106,8 +106,8 @@ public class BackgroundJobsServiceTests
                 typeof(DateTimeOffset)
             ]);
 
-        method.Should().NotBeNull();
-        method!.ReturnType.Should().Be(typeof(string));
+        method.ShouldNotBeNull();
+        method!.ReturnType.ShouldBe(typeof(string));
     }
 
     [Fact]
@@ -120,8 +120,8 @@ public class BackgroundJobsServiceTests
                 typeof(DateTimeOffset)
             ]);
 
-        method.Should().NotBeNull();
-        method!.ReturnType.Should().Be(typeof(string));
+        method.ShouldNotBeNull();
+        method!.ReturnType.ShouldBe(typeof(string));
     }
 
     #endregion
@@ -139,8 +139,8 @@ public class BackgroundJobsServiceTests
                 typeof(string)
             ]);
 
-        method.Should().NotBeNull();
-        method!.ReturnType.Should().Be(typeof(void));
+        method.ShouldNotBeNull();
+        method!.ReturnType.ShouldBe(typeof(void));
     }
 
     [Fact]
@@ -154,8 +154,8 @@ public class BackgroundJobsServiceTests
                 typeof(string)
             ]);
 
-        method.Should().NotBeNull();
-        method!.ReturnType.Should().Be(typeof(void));
+        method.ShouldNotBeNull();
+        method!.ReturnType.ShouldBe(typeof(void));
     }
 
     [Fact]
@@ -166,7 +166,7 @@ public class BackgroundJobsServiceTests
             .GetMethods()
             .Where(m => m.Name == "RecurringJob" && m.IsGenericMethod);
 
-        methods.Should().HaveCountGreaterThanOrEqualTo(2);
+        methods.Count().ShouldBeGreaterThanOrEqualTo(2);
     }
 
     #endregion
@@ -180,8 +180,8 @@ public class BackgroundJobsServiceTests
         var method = typeof(BackgroundJobsService)
             .GetMethod("RemoveRecurringJob", [typeof(string)]);
 
-        method.Should().NotBeNull();
-        method!.ReturnType.Should().Be(typeof(void));
+        method.ShouldNotBeNull();
+        method!.ReturnType.ShouldBe(typeof(void));
     }
 
     #endregion
@@ -198,8 +198,8 @@ public class BackgroundJobsServiceTests
                 typeof(Expression<Action>)
             ]);
 
-        method.Should().NotBeNull();
-        method!.ReturnType.Should().Be(typeof(string));
+        method.ShouldNotBeNull();
+        method!.ReturnType.ShouldBe(typeof(string));
     }
 
     [Fact]
@@ -212,8 +212,8 @@ public class BackgroundJobsServiceTests
                 typeof(Expression<Func<Task>>)
             ]);
 
-        method.Should().NotBeNull();
-        method!.ReturnType.Should().Be(typeof(string));
+        method.ShouldNotBeNull();
+        method!.ReturnType.ShouldBe(typeof(string));
     }
 
     #endregion
@@ -224,14 +224,14 @@ public class BackgroundJobsServiceTests
     public void Service_ShouldImplementIBackgroundJobs()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IBackgroundJobs>();
+        _sut.ShouldBeAssignableTo<IBackgroundJobs>();
     }
 
     [Fact]
     public void Service_ShouldImplementIScopedService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IScopedService>();
+        _sut.ShouldBeAssignableTo<IScopedService>();
     }
 
     #endregion
@@ -246,7 +246,7 @@ public class BackgroundJobsServiceTests
             .GetMethods()
             .Where(m => m.Name == "Enqueue");
 
-        methods.Should().HaveCount(4);
+        methods.Count().ShouldBe(4);
     }
 
     [Fact]
@@ -257,7 +257,7 @@ public class BackgroundJobsServiceTests
             .GetMethods()
             .Where(m => m.Name == "Schedule");
 
-        methods.Should().HaveCount(4);
+        methods.Count().ShouldBe(4);
     }
 
     [Fact]
@@ -268,7 +268,7 @@ public class BackgroundJobsServiceTests
             .GetMethods()
             .Where(m => m.Name == "RecurringJob");
 
-        methods.Should().HaveCount(4);
+        methods.Count().ShouldBe(4);
     }
 
     [Fact]
@@ -279,7 +279,7 @@ public class BackgroundJobsServiceTests
             .GetMethods()
             .Where(m => m.Name == "ContinueWith");
 
-        methods.Should().HaveCount(2);
+        methods.Count().ShouldBe(2);
     }
 
     #endregion

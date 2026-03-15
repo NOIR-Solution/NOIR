@@ -86,8 +86,8 @@ public class GetShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -104,8 +104,8 @@ public class GetShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     [Fact]
@@ -132,11 +132,11 @@ public class GetShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(3);
-        result.Value[0].DisplayName.Should().Be("GHN");
-        result.Value[1].DisplayName.Should().Be("J&T Express");
-        result.Value[2].DisplayName.Should().Be("GHTK");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(3);
+        result.Value[0].DisplayName.ShouldBe("GHN");
+        result.Value[1].DisplayName.ShouldBe("J&T Express");
+        result.Value[2].DisplayName.ShouldBe("GHTK");
     }
 
     [Fact]
@@ -159,10 +159,10 @@ public class GetShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(2);
-        result.Value.Should().Contain(p => p.IsActive);
-        result.Value.Should().Contain(p => !p.IsActive);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(2);
+        result.Value.ShouldContain(p => p.IsActive);
+        result.Value.ShouldContain(p => !p.IsActive);
     }
 
     [Fact]
@@ -195,27 +195,27 @@ public class GetShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
 
         var dto = result.Value[0];
-        dto.Id.Should().Be(providerId);
-        dto.ProviderCode.Should().Be(ShippingProviderCode.GHTK);
-        dto.DisplayName.Should().Be("Giao Hang Tiet Kiem");
-        dto.ProviderName.Should().Be("GHTK");
-        dto.IsActive.Should().BeTrue();
-        dto.SortOrder.Should().Be(1);
-        dto.Environment.Should().Be(GatewayEnvironment.Production);
-        dto.HasCredentials.Should().BeTrue();
-        dto.ApiBaseUrl.Should().Be("https://api.ghtk.vn");
-        dto.TrackingUrlTemplate.Should().Be("https://khachhang.ghtk.vn/tracking/{trackingNumber}");
-        dto.SupportedServices.Should().Contain("Standard");
-        dto.SupportsCod.Should().BeTrue();
-        dto.SupportsInsurance.Should().BeTrue();
-        dto.MinWeightGrams.Should().Be(50);
-        dto.MaxWeightGrams.Should().Be(30000);
-        dto.MinCodAmount.Should().Be(5000m);
-        dto.MaxCodAmount.Should().Be(20000000m);
+        dto.Id.ShouldBe(providerId);
+        dto.ProviderCode.ShouldBe(ShippingProviderCode.GHTK);
+        dto.DisplayName.ShouldBe("Giao Hang Tiet Kiem");
+        dto.ProviderName.ShouldBe("GHTK");
+        dto.IsActive.ShouldBe(true);
+        dto.SortOrder.ShouldBe(1);
+        dto.Environment.ShouldBe(GatewayEnvironment.Production);
+        dto.HasCredentials.ShouldBe(true);
+        dto.ApiBaseUrl.ShouldBe("https://api.ghtk.vn");
+        dto.TrackingUrlTemplate.ShouldBe("https://khachhang.ghtk.vn/tracking/{trackingNumber}");
+        dto.SupportedServices.ShouldContain("Standard");
+        dto.SupportsCod.ShouldBe(true);
+        dto.SupportsInsurance.ShouldBe(true);
+        dto.MinWeightGrams.ShouldBe(50);
+        dto.MaxWeightGrams.ShouldBe(30000);
+        dto.MinCodAmount.ShouldBe(5000m);
+        dto.MaxCodAmount.ShouldBe(20000000m);
     }
 
     [Fact]
@@ -234,8 +234,8 @@ public class GetShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -261,13 +261,13 @@ public class GetShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(5);
-        result.Value.Should().Contain(p => p.ProviderCode == ShippingProviderCode.GHTK);
-        result.Value.Should().Contain(p => p.ProviderCode == ShippingProviderCode.GHN);
-        result.Value.Should().Contain(p => p.ProviderCode == ShippingProviderCode.JTExpress);
-        result.Value.Should().Contain(p => p.ProviderCode == ShippingProviderCode.VNPost);
-        result.Value.Should().Contain(p => p.ProviderCode == ShippingProviderCode.ViettelPost);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(5);
+        result.Value.ShouldContain(p => p.ProviderCode == ShippingProviderCode.GHTK);
+        result.Value.ShouldContain(p => p.ProviderCode == ShippingProviderCode.GHN);
+        result.Value.ShouldContain(p => p.ProviderCode == ShippingProviderCode.JTExpress);
+        result.Value.ShouldContain(p => p.ProviderCode == ShippingProviderCode.VNPost);
+        result.Value.ShouldContain(p => p.ProviderCode == ShippingProviderCode.ViettelPost);
     }
 
     #endregion
@@ -316,9 +316,9 @@ public class GetShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Contain(p => p.Environment == GatewayEnvironment.Sandbox);
-        result.Value.Should().Contain(p => p.Environment == GatewayEnvironment.Production);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldContain(p => p.Environment == GatewayEnvironment.Sandbox);
+        result.Value.ShouldContain(p => p.Environment == GatewayEnvironment.Production);
     }
 
     [Fact]
@@ -335,8 +335,8 @@ public class GetShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
     }
 
     [Fact]
@@ -363,8 +363,8 @@ public class GetShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value[0].HasCredentials.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value[0].HasCredentials.ShouldBe(false);
     }
 
     [Fact]
@@ -384,9 +384,9 @@ public class GetShippingProvidersQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value[0].HealthStatus.Should().Be(ShippingProviderHealthStatus.Healthy);
-        result.Value[0].LastHealthCheck.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value[0].HealthStatus.ShouldBe(ShippingProviderHealthStatus.Healthy);
+        result.Value[0].LastHealthCheck.ShouldNotBeNull();
     }
 
     #endregion

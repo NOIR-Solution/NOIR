@@ -46,9 +46,9 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/auth/me/api-keys");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<List<ApiKeyDto>>();
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/auth/me/api-keys");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -72,9 +72,9 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/auth/me/api-keys");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var keys = await response.Content.ReadFromJsonAsync<List<ApiKeyDto>>();
-        keys.Should().Contain(k => k.Id == created.Id);
+        keys.ShouldContain(k => k.Id == created.Id);
     }
 
     #endregion
@@ -95,14 +95,14 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/auth/me/api-keys", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<ApiKeyCreatedDto>();
-        result.Should().NotBeNull();
-        result!.Name.Should().Be(command.Name);
-        result.KeyIdentifier.Should().StartWith("noir_key_");
-        result.Secret.Should().StartWith("noir_secret_");
-        result.Secret.Should().NotBeNullOrEmpty();
-        result.Permissions.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Name.ShouldBe(command.Name);
+        result.KeyIdentifier.ShouldStartWith("noir_key_");
+        result.Secret.ShouldStartWith("noir_secret_");
+        result.Secret.ShouldNotBeNullOrEmpty();
+        result.Permissions.ShouldNotBeNull();
     }
 
     [Fact]
@@ -121,9 +121,9 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/auth/me/api-keys", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<ApiKeyCreatedDto>();
-        result!.Permissions.Should().BeEquivalentTo(permissions);
+        result!.Permissions.ShouldBe(permissions);
     }
 
     [Fact]
@@ -142,10 +142,10 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/auth/me/api-keys", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<ApiKeyCreatedDto>();
-        result!.ExpiresAt.Should().NotBeNull();
-        result.ExpiresAt!.Value.Should().BeCloseTo(expiresAt, TimeSpan.FromSeconds(5));
+        result!.ExpiresAt.ShouldNotBeNull();
+        result.ExpiresAt!.Value.ShouldBe(expiresAt, TimeSpan.FromSeconds(5));
     }
 
     [Fact]
@@ -159,7 +159,7 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/auth/me/api-keys", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -172,7 +172,7 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/auth/me/api-keys", command);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -199,11 +199,11 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/auth/me/api-keys/{created.Id}", updateCommand);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<ApiKeyDto>();
-        result.Should().NotBeNull();
-        result!.Name.Should().Be("Updated Key Name");
-        result.Description.Should().Be("Updated description");
+        result.ShouldNotBeNull();
+        result!.Name.ShouldBe("Updated Key Name");
+        result.Description.ShouldBe("Updated description");
     }
 
     [Fact]
@@ -220,7 +220,7 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/auth/me/api-keys/{fakeId}", updateCommand);
 
         // Assert
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -232,7 +232,7 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             new UpdateApiKeyCommand(Guid.NewGuid(), "Name", null, new List<string>()));
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -255,13 +255,13 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/auth/me/api-keys/{created.Id}/rotate", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<ApiKeyRotatedDto>();
-        result.Should().NotBeNull();
-        result!.Secret.Should().NotBeNullOrEmpty();
-        result.Secret.Should().NotBe(originalSecret);
-        result.Secret.Should().StartWith("noir_secret_");
-        result.KeyIdentifier.Should().Be(created.KeyIdentifier);
+        result.ShouldNotBeNull();
+        result!.Secret.ShouldNotBeNullOrEmpty();
+        result.Secret.ShouldNotBe(originalSecret);
+        result.Secret.ShouldStartWith("noir_secret_");
+        result.KeyIdentifier.ShouldBe(created.KeyIdentifier);
     }
 
     [Fact]
@@ -275,7 +275,7 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             $"/api/auth/me/api-keys/{Guid.NewGuid()}/rotate", null);
 
         // Assert
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -298,13 +298,13 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             new RevokeApiKeyCommand(created.Id, "No longer needed"));
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<ApiKeyDto>();
-        result.Should().NotBeNull();
-        result!.IsRevoked.Should().BeTrue();
-        result.RevokedAt.Should().NotBeNull();
-        result.RevokedReason.Should().Be("No longer needed");
-        result.IsActive.Should().BeFalse();
+        result.ShouldNotBeNull();
+        result!.IsRevoked.ShouldBeTrue();
+        result.RevokedAt.ShouldNotBeNull();
+        result.RevokedReason.ShouldBe("No longer needed");
+        result.IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -320,9 +320,9 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             new RevokeApiKeyCommand(created.Id));
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<ApiKeyDto>();
-        result!.IsRevoked.Should().BeTrue();
+        result!.IsRevoked.ShouldBeTrue();
     }
 
     [Fact]
@@ -341,7 +341,7 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             new RevokeApiKeyCommand(created.Id));
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -362,10 +362,10 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/admin/api-keys");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var keys = await response.Content.ReadFromJsonAsync<List<ApiKeyDto>>();
-        keys.Should().NotBeNull();
-        keys.Should().Contain(k => k.Id == created.Id);
+        keys.ShouldNotBeNull();
+        keys.ShouldContain(k => k.Id == created.Id);
     }
 
     [Fact]
@@ -375,7 +375,7 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/admin/api-keys");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -398,10 +398,10 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             new RevokeApiKeyCommand(created.Id, "Admin revocation"));
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<ApiKeyDto>();
-        result!.IsRevoked.Should().BeTrue();
-        result.RevokedReason.Should().Be("Admin revocation");
+        result!.IsRevoked.ShouldBeTrue();
+        result.RevokedReason.ShouldBe("Admin revocation");
     }
 
     [Fact]
@@ -416,7 +416,7 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             new RevokeApiKeyCommand(Guid.NewGuid()));
 
         // Assert
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBeOneOf(HttpStatusCode.NotFound, HttpStatusCode.BadRequest);
     }
 
     #endregion
@@ -442,7 +442,7 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await apiKeyClient.GetAsync("/api/auth/me");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -461,7 +461,7 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await apiKeyClient.GetAsync("/api/auth/me");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -486,7 +486,7 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await apiKeyClient.GetAsync("/api/auth/me");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -500,7 +500,7 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // Rotate the secret
         var rotateResponse = await adminClient.PostAsync(
             $"/api/auth/me/api-keys/{created.Id}/rotate", null);
-        rotateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        rotateResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Act — try old secret
         var apiKeyClient = _factory.CreateTestClient();
@@ -511,7 +511,7 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await apiKeyClient.GetAsync("/api/auth/me");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -535,7 +535,7 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await apiKeyClient.GetAsync("/api/auth/me");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -545,7 +545,7 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/auth/me");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -562,7 +562,7 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await apiKeyClient.GetAsync("/api/auth/me");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -581,14 +581,14 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         // 1. CREATE
         var createCommand = CreateTestApiKeyCommand();
         var createResponse = await adminClient.PostAsJsonAsync("/api/auth/me/api-keys", createCommand);
-        createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        createResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var created = await createResponse.Content.ReadFromJsonAsync<ApiKeyCreatedDto>();
-        created!.KeyIdentifier.Should().StartWith("noir_key_");
+        created!.KeyIdentifier.ShouldStartWith("noir_key_");
 
         // 2. READ — verify in list
         var listResponse = await adminClient.GetAsync("/api/auth/me/api-keys");
         var keys = await listResponse.Content.ReadFromJsonAsync<List<ApiKeyDto>>();
-        keys.Should().Contain(k => k.Id == created.Id);
+        keys.ShouldContain(k => k.Id == created.Id);
 
         // 3. UPDATE — change name and permissions
         var updateCommand = new UpdateApiKeyCommand(
@@ -596,32 +596,32 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
             new List<string> { "products:read" });
         var updateResponse = await adminClient.PutAsJsonAsync(
             $"/api/auth/me/api-keys/{created.Id}", updateCommand);
-        updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        updateResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await updateResponse.Content.ReadFromJsonAsync<ApiKeyDto>();
-        updated!.Name.Should().Be("Lifecycle Updated");
+        updated!.Name.ShouldBe("Lifecycle Updated");
 
         // 4. ROTATE — new secret
         var rotateResponse = await adminClient.PostAsync(
             $"/api/auth/me/api-keys/{created.Id}/rotate", null);
-        rotateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        rotateResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var rotated = await rotateResponse.Content.ReadFromJsonAsync<ApiKeyRotatedDto>();
-        rotated!.Secret.Should().NotBe(created.Secret);
+        rotated!.Secret.ShouldNotBe(created.Secret);
 
         // 5. REVOKE
         var revokeResponse = await adminClient.PostAsJsonAsync(
             $"/api/auth/me/api-keys/{created.Id}/revoke",
             new RevokeApiKeyCommand(created.Id, "Lifecycle test complete"));
-        revokeResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        revokeResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
         var revoked = await revokeResponse.Content.ReadFromJsonAsync<ApiKeyDto>();
-        revoked!.IsRevoked.Should().BeTrue();
-        revoked.IsActive.Should().BeFalse();
+        revoked!.IsRevoked.ShouldBeTrue();
+        revoked.IsActive.ShouldBeFalse();
 
         // 6. VERIFY — revoked key appears in admin list as revoked
         var adminListResponse = await adminClient.GetAsync("/api/admin/api-keys");
         var adminKeys = await adminListResponse.Content.ReadFromJsonAsync<List<ApiKeyDto>>();
         var revokedKey = adminKeys!.FirstOrDefault(k => k.Id == created.Id);
-        revokedKey.Should().NotBeNull();
-        revokedKey!.IsRevoked.Should().BeTrue();
+        revokedKey.ShouldNotBeNull();
+        revokedKey!.IsRevoked.ShouldBeTrue();
     }
 
     #endregion
@@ -637,7 +637,7 @@ public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         await _factory.ExecuteWithTenantAsync(sp =>
         {
             var repository = sp.GetRequiredService<IRepository<ApiKey, Guid>>();
-            repository.Should().NotBeNull();
+            repository.ShouldNotBeNull();
             return Task.CompletedTask;
         });
     }

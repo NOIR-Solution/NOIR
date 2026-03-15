@@ -18,11 +18,11 @@ public class TenantModuleStateTests
         var state = TenantModuleState.Create(featureName);
 
         // Assert
-        state.Should().NotBeNull();
-        state.Id.Should().NotBe(Guid.Empty);
-        state.FeatureName.Should().Be(featureName);
-        state.IsAvailable.Should().BeTrue();
-        state.IsEnabled.Should().BeTrue();
+        state.ShouldNotBeNull();
+        state.Id.ShouldNotBe(Guid.Empty);
+        state.FeatureName.ShouldBe(featureName);
+        state.IsAvailable.ShouldBeTrue();
+        state.IsEnabled.ShouldBeTrue();
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class TenantModuleStateTests
         var state = TenantModuleState.Create(featureName);
 
         // Assert
-        state.FeatureName.Should().Be("Ecommerce.Reviews");
+        state.FeatureName.ShouldBe("Ecommerce.Reviews");
     }
 
     #endregion
@@ -53,7 +53,7 @@ public class TenantModuleStateTests
         state.SetAvailability(true);
 
         // Assert
-        state.IsAvailable.Should().BeTrue();
+        state.IsAvailable.ShouldBeTrue();
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public class TenantModuleStateTests
         state.SetAvailability(false);
 
         // Assert
-        state.IsAvailable.Should().BeFalse();
+        state.IsAvailable.ShouldBeFalse();
     }
 
     #endregion
@@ -84,7 +84,7 @@ public class TenantModuleStateTests
         state.SetEnabled(true);
 
         // Assert
-        state.IsEnabled.Should().BeTrue();
+        state.IsEnabled.ShouldBeTrue();
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class TenantModuleStateTests
         state.SetEnabled(false);
 
         // Assert
-        state.IsEnabled.Should().BeFalse();
+        state.IsEnabled.ShouldBeFalse();
     }
 
     #endregion
@@ -111,8 +111,8 @@ public class TenantModuleStateTests
         var state = TenantModuleState.Create("Ecommerce");
 
         // Assert
-        state.TenantId.Should().BeNull();
-        state.IsDeleted.Should().BeFalse();
+        state.TenantId.ShouldBeNull();
+        state.IsDeleted.ShouldBeFalse();
     }
 
     #endregion

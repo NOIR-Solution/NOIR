@@ -63,12 +63,12 @@ public class GetActiveGatewaysQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(3);
-        result.Value[0].Provider.Should().Be("vnpay");
-        result.Value[0].DisplayName.Should().Be("VNPay");
-        result.Value[1].Provider.Should().Be("momo");
-        result.Value[2].Provider.Should().Be("zalopay");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(3);
+        result.Value[0].Provider.ShouldBe("vnpay");
+        result.Value[0].DisplayName.ShouldBe("VNPay");
+        result.Value[1].Provider.ShouldBe("momo");
+        result.Value[2].Provider.ShouldBe("zalopay");
     }
 
     [Fact]
@@ -89,15 +89,15 @@ public class GetActiveGatewaysQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value[0];
-        dto.Id.Should().Be(gateway.Id);
-        dto.Provider.Should().Be("vnpay");
-        dto.DisplayName.Should().Be("VNPay");
-        dto.SortOrder.Should().Be(5);
-        dto.MinAmount.Should().Be(10000);
-        dto.MaxAmount.Should().Be(100000000);
-        dto.SupportedCurrencies.Should().Be("[\"VND\"]");
+        dto.Id.ShouldBe(gateway.Id);
+        dto.Provider.ShouldBe("vnpay");
+        dto.DisplayName.ShouldBe("VNPay");
+        dto.SortOrder.ShouldBe(5);
+        dto.MinAmount.ShouldBe(10000);
+        dto.MaxAmount.ShouldBe(100000000);
+        dto.SupportedCurrencies.ShouldBe("[\"VND\"]");
     }
 
     [Fact]
@@ -118,9 +118,9 @@ public class GetActiveGatewaysQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
-        result.Value[0].Provider.Should().Be("cod");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
+        result.Value[0].Provider.ShouldBe("cod");
     }
 
     #endregion
@@ -143,8 +143,8 @@ public class GetActiveGatewaysQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     #endregion

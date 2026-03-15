@@ -48,8 +48,8 @@ public class ArchiveProjectCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        project.Status.Should().Be(ProjectStatus.Archived);
+        result.IsSuccess.ShouldBe(true);
+        project.Status.ShouldBe(ProjectStatus.Archived);
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -68,7 +68,7 @@ public class ArchiveProjectCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }

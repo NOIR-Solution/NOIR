@@ -60,9 +60,9 @@ public class AddToCartCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.ItemCount.Should().Be(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.ItemCount.ShouldBe(2);
 
         _cartRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Domain.Entities.Cart.Cart>(), It.IsAny<CancellationToken>()), Times.Once);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -91,9 +91,9 @@ public class AddToCartCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.ItemCount.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.ItemCount.ShouldBe(1);
 
         _cartRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Domain.Entities.Cart.Cart>(), It.IsAny<CancellationToken>()), Times.Never);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -116,8 +116,8 @@ public class AddToCartCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Message.Should().Contain("Product");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Message.ShouldContain("Product");
     }
 
     [Fact]
@@ -138,8 +138,8 @@ public class AddToCartCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Message.Should().Contain("not available");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Message.ShouldContain("not available");
     }
 
     [Fact]
@@ -160,8 +160,8 @@ public class AddToCartCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Message.Should().Contain("Insufficient stock");
+        result.IsSuccess.ShouldBe(false);
+        result.Error.Message.ShouldContain("Insufficient stock");
     }
 
     [Fact]
@@ -190,9 +190,9 @@ public class AddToCartCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.IsGuest.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.IsGuest.ShouldBe(true);
 
         _cartRepositoryMock.Verify(x => x.AddAsync(
             It.Is<Domain.Entities.Cart.Cart>(c => c.SessionId == TestSessionId && c.UserId == null),

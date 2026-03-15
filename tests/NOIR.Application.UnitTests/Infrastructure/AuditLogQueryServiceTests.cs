@@ -18,8 +18,8 @@ public class AuditLogQueryServiceTests
     {
         // Assert
         var method = typeof(IAuditLogQueryService).GetMethod("GetEntityTypesAsync");
-        method.Should().NotBeNull();
-        method!.ReturnType.Should().Be(typeof(Task<IReadOnlyList<string>>));
+        method.ShouldNotBeNull();
+        method!.ReturnType.ShouldBe(typeof(Task<IReadOnlyList<string>>));
     }
 
     [Fact]
@@ -27,8 +27,8 @@ public class AuditLogQueryServiceTests
     {
         // Assert
         var method = typeof(IAuditLogQueryService).GetMethod("SearchEntitiesAsync");
-        method.Should().NotBeNull();
-        method!.GetParameters().Should().HaveCount(5);  // entityType, searchTerm, page, pageSize, ct
+        method.ShouldNotBeNull();
+        method!.GetParameters().Count().ShouldBe(5);  // entityType, searchTerm, page, pageSize, ct
     }
 
     [Fact]
@@ -36,8 +36,8 @@ public class AuditLogQueryServiceTests
     {
         // Assert
         var method = typeof(IAuditLogQueryService).GetMethod("GetEntityHistoryAsync");
-        method.Should().NotBeNull();
-        method!.GetParameters().Should().HaveCount(8);  // entityType, entityId, fromDate, toDate, userId, page, pageSize, ct
+        method.ShouldNotBeNull();
+        method!.GetParameters().Count().ShouldBe(8);  // entityType, entityId, fromDate, toDate, userId, page, pageSize, ct
     }
 
     [Fact]
@@ -45,8 +45,8 @@ public class AuditLogQueryServiceTests
     {
         // Assert
         var method = typeof(IAuditLogQueryService).GetMethod("GetEntityVersionsAsync");
-        method.Should().NotBeNull();
-        method!.GetParameters().Should().HaveCount(3);  // entityType, entityId, ct
+        method.ShouldNotBeNull();
+        method!.GetParameters().Count().ShouldBe(3);  // entityType, entityId, ct
     }
 
     [Fact]
@@ -54,8 +54,8 @@ public class AuditLogQueryServiceTests
     {
         // Assert
         var method = typeof(IAuditLogQueryService).GetMethod("SearchActivityTimelineAsync");
-        method.Should().NotBeNull();
-        method!.GetParameters().Should().HaveCount(12);  // Multiple parameters
+        method.ShouldNotBeNull();
+        method!.GetParameters().Count().ShouldBe(12);  // Multiple parameters
     }
 
     [Fact]
@@ -63,8 +63,8 @@ public class AuditLogQueryServiceTests
     {
         // Assert
         var method = typeof(IAuditLogQueryService).GetMethod("GetActivityDetailsAsync");
-        method.Should().NotBeNull();
-        method!.GetParameters().Should().HaveCount(2);  // handlerAuditLogId, ct
+        method.ShouldNotBeNull();
+        method!.GetParameters().Count().ShouldBe(2);  // handlerAuditLogId, ct
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class AuditLogQueryServiceTests
     {
         // Assert
         var method = typeof(IAuditLogQueryService).GetMethod("GetPageContextsAsync");
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
     }
 
     #endregion
@@ -83,14 +83,14 @@ public class AuditLogQueryServiceTests
     public void AuditLogQueryService_ShouldImplementIAuditLogQueryService()
     {
         // Assert
-        typeof(AuditLogQueryService).Should().Implement<IAuditLogQueryService>();
+        typeof(AuditLogQueryService).GetInterfaces().ShouldContain(typeof(IAuditLogQueryService));
     }
 
     [Fact]
     public void AuditLogQueryService_ShouldImplementIScopedService()
     {
         // Assert
-        typeof(AuditLogQueryService).Should().Implement<IScopedService>();
+        typeof(AuditLogQueryService).GetInterfaces().ShouldContain(typeof(IScopedService));
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public class AuditLogQueryServiceTests
         // Assert
         var constructor = typeof(AuditLogQueryService).GetConstructors()
             .FirstOrDefault(c => c.GetParameters().Any(p => p.ParameterType == typeof(ApplicationDbContext)));
-        constructor.Should().NotBeNull();
+        constructor.ShouldNotBeNull();
     }
 
     #endregion
@@ -120,11 +120,11 @@ public class AuditLogQueryServiceTests
             TotalChanges: 5);
 
         // Assert
-        dto.EntityType.Should().Be("Customer");
-        dto.EntityId.Should().Be("123");
-        dto.DisplayName.Should().Be("Customer (123)");
-        dto.Description.Should().Be("Test description");
-        dto.TotalChanges.Should().Be(5);
+        dto.EntityType.ShouldBe("Customer");
+        dto.EntityId.ShouldBe("123");
+        dto.DisplayName.ShouldBe("Customer (123)");
+        dto.Description.ShouldBe("Test description");
+        dto.TotalChanges.ShouldBe(5);
     }
 
     [Fact]
@@ -143,10 +143,10 @@ public class AuditLogQueryServiceTests
             Version: 2);
 
         // Assert
-        dto.Operation.Should().Be("Modified");
-        dto.UserId.Should().Be("user-123");
-        dto.UserEmail.Should().Be("user@example.com");
-        dto.Version.Should().Be(2);
+        dto.Operation.ShouldBe("Modified");
+        dto.UserId.ShouldBe("user-123");
+        dto.UserEmail.ShouldBe("user@example.com");
+        dto.Version.ShouldBe(2);
     }
 
     [Fact]
@@ -163,9 +163,9 @@ public class AuditLogQueryServiceTests
             State: state);
 
         // Assert
-        dto.Version.Should().Be(1);
-        dto.Operation.Should().Be("Added");
-        dto.State.Should().ContainKey("Name");
+        dto.Version.ShouldBe(1);
+        dto.Operation.ShouldBe("Added");
+        dto.State.ShouldContainKey("Name");
     }
 
     [Fact]
@@ -190,9 +190,9 @@ public class AuditLogQueryServiceTests
             HandlerName: "UpdateUserCommandHandler");
 
         // Assert
-        dto.DisplayContext.Should().Be("Users");
-        dto.IsSuccess.Should().BeTrue();
-        dto.EntityChangeCount.Should().Be(3);
+        dto.DisplayContext.ShouldBe("Users");
+        dto.IsSuccess.ShouldBe(true);
+        dto.EntityChangeCount.ShouldBe(3);
     }
 
     [Fact]
@@ -238,10 +238,10 @@ public class AuditLogQueryServiceTests
             EntityChanges: new List<EntityChangeDto>());
 
         // Assert
-        dto.Entry.Should().NotBeNull();
-        dto.HttpRequest.Should().NotBeNull();
-        dto.HttpRequest!.Method.Should().Be("PUT");
-        dto.InputParameters.Should().Contain("John");
+        dto.Entry.ShouldNotBeNull();
+        dto.HttpRequest.ShouldNotBeNull();
+        dto.HttpRequest!.Method.ShouldBe("PUT");
+        dto.InputParameters.ShouldContain("John");
     }
 
     [Fact]
@@ -260,9 +260,9 @@ public class AuditLogQueryServiceTests
             DurationMs: 250);
 
         // Assert
-        dto.Method.Should().Be("POST");
-        dto.StatusCode.Should().Be(201);
-        dto.QueryString.Should().Be("?active=true");
+        dto.Method.ShouldBe("POST");
+        dto.StatusCode.ShouldBe(201);
+        dto.QueryString.ShouldBe("?active=true");
     }
 
     [Fact]
@@ -285,9 +285,9 @@ public class AuditLogQueryServiceTests
             Changes: changes);
 
         // Assert
-        dto.EntityType.Should().Be("Customer");
-        dto.Version.Should().Be(2);
-        dto.Changes.Should().HaveCount(1);
+        dto.EntityType.ShouldBe("Customer");
+        dto.Version.ShouldBe(2);
+        dto.Changes.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -301,10 +301,10 @@ public class AuditLogQueryServiceTests
             Operation: ChangeOperation.Modified);
 
         // Assert
-        dto.FieldName.Should().Be("Email");
-        dto.OldValue.Should().Be("old@example.com");
-        dto.NewValue.Should().Be("new@example.com");
-        dto.Operation.Should().Be(ChangeOperation.Modified);
+        dto.FieldName.ShouldBe("Email");
+        dto.OldValue.ShouldBe("old@example.com");
+        dto.NewValue.ShouldBe("new@example.com");
+        dto.Operation.ShouldBe(ChangeOperation.Modified);
     }
 
     #endregion
@@ -315,21 +315,21 @@ public class AuditLogQueryServiceTests
     public void ChangeOperation_Added_ShouldBeDefined()
     {
         // Assert
-        ChangeOperation.Added.Should().BeDefined();
+        Enum.IsDefined(ChangeOperation.Added).ShouldBe(true);
     }
 
     [Fact]
     public void ChangeOperation_Modified_ShouldBeDefined()
     {
         // Assert
-        ChangeOperation.Modified.Should().BeDefined();
+        Enum.IsDefined(ChangeOperation.Modified).ShouldBe(true);
     }
 
     [Fact]
     public void ChangeOperation_Removed_ShouldBeDefined()
     {
         // Assert
-        ChangeOperation.Removed.Should().BeDefined();
+        Enum.IsDefined(ChangeOperation.Removed).ShouldBe(true);
     }
 
     [Fact]
@@ -337,7 +337,7 @@ public class AuditLogQueryServiceTests
     {
         // Assert
         var values = Enum.GetValues<ChangeOperation>();
-        values.Should().HaveCount(3);
+        values.Count().ShouldBe(3);
     }
 
     #endregion
@@ -354,7 +354,7 @@ public class AuditLogQueryServiceTests
         var result = ParseEntityDiffHelper(entityDiff);
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -367,7 +367,7 @@ public class AuditLogQueryServiceTests
         var result = ParseEntityDiffHelper(entityDiff);
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -380,11 +380,11 @@ public class AuditLogQueryServiceTests
         var result = ParseEntityDiffHelper(entityDiff);
 
         // Assert
-        result.Should().HaveCount(1);
-        result[0].FieldName.Should().Be("Name");
-        result[0].OldValue.Should().Be("Old");
-        result[0].NewValue.Should().Be("New");
-        result[0].Operation.Should().Be(ChangeOperation.Modified);
+        result.Count().ShouldBe(1);
+        result[0].FieldName.ShouldBe("Name");
+        result[0].OldValue.ShouldBe("Old");
+        result[0].NewValue.ShouldBe("New");
+        result[0].Operation.ShouldBe(ChangeOperation.Modified);
     }
 
     [Fact]
@@ -397,10 +397,10 @@ public class AuditLogQueryServiceTests
         var result = ParseEntityDiffHelper(entityDiff);
 
         // Assert
-        result.Should().HaveCount(1);
-        result[0].OldValue.Should().BeNull();
-        result[0].NewValue.Should().Be("new@example.com");
-        result[0].Operation.Should().Be(ChangeOperation.Added);
+        result.Count().ShouldBe(1);
+        result[0].OldValue.ShouldBeNull();
+        result[0].NewValue.ShouldBe("new@example.com");
+        result[0].Operation.ShouldBe(ChangeOperation.Added);
     }
 
     [Fact]
@@ -413,10 +413,10 @@ public class AuditLogQueryServiceTests
         var result = ParseEntityDiffHelper(entityDiff);
 
         // Assert
-        result.Should().HaveCount(1);
-        result[0].OldValue.Should().Be("old@example.com");
-        result[0].NewValue.Should().BeNull();
-        result[0].Operation.Should().Be(ChangeOperation.Removed);
+        result.Count().ShouldBe(1);
+        result[0].OldValue.ShouldBe("old@example.com");
+        result[0].NewValue.ShouldBeNull();
+        result[0].Operation.ShouldBe(ChangeOperation.Removed);
     }
 
     [Fact]
@@ -433,7 +433,7 @@ public class AuditLogQueryServiceTests
         var result = ParseEntityDiffHelper(entityDiff);
 
         // Assert
-        result.Should().HaveCount(3);
+        result.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -446,7 +446,7 @@ public class AuditLogQueryServiceTests
         var result = ParseEntityDiffHelper(entityDiff);
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -459,7 +459,7 @@ public class AuditLogQueryServiceTests
         var result = ParseEntityDiffHelper(entityDiff);
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -472,8 +472,8 @@ public class AuditLogQueryServiceTests
         var result = ParseEntityDiffHelper(entityDiff);
 
         // Assert
-        result.Should().HaveCount(1);
-        result[0].FieldName.Should().Be("Age");
+        result.Count().ShouldBe(1);
+        result[0].FieldName.ShouldBe("Age");
     }
 
     [Fact]
@@ -486,8 +486,8 @@ public class AuditLogQueryServiceTests
         var result = ParseEntityDiffHelper(entityDiff);
 
         // Assert
-        result.Should().HaveCount(1);
-        result[0].FieldName.Should().Be("IsActive");
+        result.Count().ShouldBe(1);
+        result[0].FieldName.ShouldBe("IsActive");
     }
 
     [Fact]
@@ -500,9 +500,9 @@ public class AuditLogQueryServiceTests
         var result = ParseEntityDiffHelper(entityDiff);
 
         // Assert
-        result.Should().HaveCount(1);
-        result[0].OldValue.Should().BeNull();
-        result[0].NewValue.Should().Be("John");
+        result.Count().ShouldBe(1);
+        result[0].OldValue.ShouldBeNull();
+        result[0].NewValue.ShouldBe("John");
     }
 
     #endregion
@@ -520,7 +520,7 @@ public class AuditLogQueryServiceTests
         var result = FormatDisplayNameHelper(entityType, entityId);
 
         // Assert
-        result.Should().Be("Customer (12345)");
+        result.ShouldBe("Customer (12345)");
     }
 
     [Fact]
@@ -534,8 +534,8 @@ public class AuditLogQueryServiceTests
         var result = FormatDisplayNameHelper(entityType, entityId);
 
         // Assert
-        result.Should().StartWith("User (");
-        result.Should().EndWith(")");
+        result.ShouldStartWith("User (");
+        result.ShouldEndWith(")");
     }
 
     #endregion
@@ -552,7 +552,7 @@ public class AuditLogQueryServiceTests
         var result = ExtractFieldNameHelper(path);
 
         // Assert
-        result.Should().Be("Name");
+        result.ShouldBe("Name");
     }
 
     [Fact]
@@ -565,7 +565,7 @@ public class AuditLogQueryServiceTests
         var result = ExtractFieldNameHelper(path);
 
         // Assert
-        result.Should().Be("Address.Street");
+        result.ShouldBe("Address.Street");
     }
 
     [Fact]
@@ -578,7 +578,7 @@ public class AuditLogQueryServiceTests
         var result = ExtractFieldNameHelper(path);
 
         // Assert
-        result.Should().Be("Customer.Address.City.Name");
+        result.ShouldBe("Customer.Address.City.Name");
     }
 
     #endregion
@@ -589,37 +589,37 @@ public class AuditLogQueryServiceTests
     public void MapOperation_Add_ShouldReturnAdded()
     {
         // Assert
-        MapOperationHelper("add").Should().Be(ChangeOperation.Added);
+        MapOperationHelper("add").ShouldBe(ChangeOperation.Added);
     }
 
     [Fact]
     public void MapOperation_Remove_ShouldReturnRemoved()
     {
         // Assert
-        MapOperationHelper("remove").Should().Be(ChangeOperation.Removed);
+        MapOperationHelper("remove").ShouldBe(ChangeOperation.Removed);
     }
 
     [Fact]
     public void MapOperation_Replace_ShouldReturnModified()
     {
         // Assert
-        MapOperationHelper("replace").Should().Be(ChangeOperation.Modified);
+        MapOperationHelper("replace").ShouldBe(ChangeOperation.Modified);
     }
 
     [Fact]
     public void MapOperation_Unknown_ShouldDefaultToModified()
     {
         // Assert
-        MapOperationHelper("unknown").Should().Be(ChangeOperation.Modified);
+        MapOperationHelper("unknown").ShouldBe(ChangeOperation.Modified);
     }
 
     [Fact]
     public void MapOperation_ShouldBeCaseInsensitive()
     {
         // Assert
-        MapOperationHelper("ADD").Should().Be(ChangeOperation.Added);
-        MapOperationHelper("Add").Should().Be(ChangeOperation.Added);
-        MapOperationHelper("REMOVE").Should().Be(ChangeOperation.Removed);
+        MapOperationHelper("ADD").ShouldBe(ChangeOperation.Added);
+        MapOperationHelper("Add").ShouldBe(ChangeOperation.Added);
+        MapOperationHelper("REMOVE").ShouldBe(ChangeOperation.Removed);
     }
 
     #endregion

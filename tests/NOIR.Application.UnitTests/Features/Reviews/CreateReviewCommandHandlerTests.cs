@@ -84,10 +84,10 @@ public class CreateReviewCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Rating.Should().Be(4);
-        result.Value.Title.Should().Be("Great product");
-        result.Value.Content.Should().Be("This product is really excellent and works well.");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Rating.ShouldBe(4);
+        result.Value.Title.ShouldBe("Great product");
+        result.Value.Content.ShouldBe("This product is really excellent and works well.");
 
         _reviewRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<ProductReview>(), It.IsAny<CancellationToken>()),
@@ -129,9 +129,9 @@ public class CreateReviewCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedReview.Should().NotBeNull();
-        capturedReview!.Media.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        capturedReview.ShouldNotBeNull();
+        capturedReview!.Media.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -156,9 +156,9 @@ public class CreateReviewCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedReview.Should().NotBeNull();
-        capturedReview!.UserId.Should().Be("user-123");
+        result.IsSuccess.ShouldBe(true);
+        capturedReview.ShouldNotBeNull();
+        capturedReview!.UserId.ShouldBe("user-123");
     }
 
     [Fact]
@@ -183,9 +183,9 @@ public class CreateReviewCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedReview.Should().NotBeNull();
-        capturedReview!.UserId.Should().Be("explicit-user");
+        result.IsSuccess.ShouldBe(true);
+        capturedReview.ShouldNotBeNull();
+        capturedReview!.UserId.ShouldBe("explicit-user");
     }
 
     [Fact]
@@ -210,9 +210,9 @@ public class CreateReviewCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedReview.Should().NotBeNull();
-        capturedReview!.Media.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        capturedReview.ShouldNotBeNull();
+        capturedReview!.Media.ShouldBeEmpty();
     }
 
     #endregion
@@ -230,7 +230,7 @@ public class CreateReviewCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
+        result.IsFailure.ShouldBe(true);
 
         _reviewRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<ProductReview>(), It.IsAny<CancellationToken>()),
@@ -261,8 +261,8 @@ public class CreateReviewCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-REVIEW-001");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-REVIEW-001");
 
         _reviewRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<ProductReview>(), It.IsAny<CancellationToken>()),
@@ -295,9 +295,9 @@ public class CreateReviewCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedReview.Should().NotBeNull();
-        capturedReview!.IsVerifiedPurchase.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        capturedReview.ShouldNotBeNull();
+        capturedReview!.IsVerifiedPurchase.ShouldBe(false);
     }
 
     [Fact]
@@ -329,9 +329,9 @@ public class CreateReviewCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedReview.Should().NotBeNull();
-        capturedReview!.IsVerifiedPurchase.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        capturedReview.ShouldNotBeNull();
+        capturedReview!.IsVerifiedPurchase.ShouldBe(false);
     }
 
     #endregion
@@ -364,9 +364,9 @@ public class CreateReviewCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedReview.Should().NotBeNull();
-        capturedReview!.TenantId.Should().Be(tenantId);
+        result.IsSuccess.ShouldBe(true);
+        capturedReview.ShouldNotBeNull();
+        capturedReview!.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]

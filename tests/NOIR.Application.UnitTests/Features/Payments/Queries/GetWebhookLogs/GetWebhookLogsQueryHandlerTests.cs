@@ -83,10 +83,10 @@ public class GetWebhookLogsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.TotalCount.Should().Be(5);
-        result.Value.PageNumber.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.TotalCount.ShouldBe(5);
+        result.Value.PageNumber.ShouldBe(1);
     }
 
     [Fact]
@@ -113,11 +113,11 @@ public class GetWebhookLogsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(10);
-        result.Value.TotalCount.Should().Be(25);
-        result.Value.PageNumber.Should().Be(2);
-        result.Value.TotalPages.Should().Be(3);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(10);
+        result.Value.TotalCount.ShouldBe(25);
+        result.Value.PageNumber.ShouldBe(2);
+        result.Value.TotalPages.ShouldBe(3);
     }
 
     [Fact]
@@ -144,18 +144,18 @@ public class GetWebhookLogsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value.Items[0];
-        dto.Id.Should().Be(log.Id);
-        dto.PaymentGatewayId.Should().NotBeEmpty();
-        dto.Provider.Should().Be("momo");
-        dto.EventType.Should().Be("payment.completed");
-        dto.GatewayEventId.Should().Be("event-123");
-        dto.SignatureValid.Should().BeTrue();
-        dto.ProcessingStatus.Should().Be(WebhookProcessingStatus.Processed);
-        dto.PaymentTransactionId.Should().NotBeNull();
-        dto.IpAddress.Should().Be("192.168.1.1");
-        dto.RetryCount.Should().Be(0);
+        dto.Id.ShouldBe(log.Id);
+        dto.PaymentGatewayId.ShouldNotBe(Guid.Empty);
+        dto.Provider.ShouldBe("momo");
+        dto.EventType.ShouldBe("payment.completed");
+        dto.GatewayEventId.ShouldBe("event-123");
+        dto.SignatureValid.ShouldBe(true);
+        dto.ProcessingStatus.ShouldBe(WebhookProcessingStatus.Processed);
+        dto.PaymentTransactionId.ShouldNotBeNull();
+        dto.IpAddress.ShouldBe("192.168.1.1");
+        dto.RetryCount.ShouldBe(0);
     }
 
     [Fact]
@@ -236,11 +236,11 @@ public class GetWebhookLogsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value.Items[0];
-        dto.ProcessingStatus.Should().Be(WebhookProcessingStatus.Failed);
-        dto.ProcessingError.Should().Be("Processing error");
-        dto.RetryCount.Should().Be(1);
+        dto.ProcessingStatus.ShouldBe(WebhookProcessingStatus.Failed);
+        dto.ProcessingError.ShouldBe("Processing error");
+        dto.RetryCount.ShouldBe(1);
     }
 
     [Fact]
@@ -267,10 +267,10 @@ public class GetWebhookLogsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(5);
-        result.Value.PageSize.Should().Be(5);
-        result.Value.TotalPages.Should().Be(10);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(5);
+        result.Value.PageSize.ShouldBe(5);
+        result.Value.TotalPages.ShouldBe(10);
     }
 
     #endregion
@@ -299,10 +299,10 @@ public class GetWebhookLogsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
-        result.Value.TotalPages.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
+        result.Value.TotalPages.ShouldBe(0);
     }
 
     #endregion

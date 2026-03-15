@@ -60,13 +60,13 @@ public class GetOrderByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.OrderNumber.Should().Be("ORD-20250126-0001");
-        result.Value.CustomerEmail.Should().Be("customer@example.com");
-        result.Value.SubTotal.Should().Be(100.00m);
-        result.Value.GrandTotal.Should().Be(110.00m);
-        result.Value.Currency.Should().Be("VND");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.OrderNumber.ShouldBe("ORD-20250126-0001");
+        result.Value.CustomerEmail.ShouldBe("customer@example.com");
+        result.Value.SubTotal.ShouldBe(100.00m);
+        result.Value.GrandTotal.ShouldBe(110.00m);
+        result.Value.Currency.ShouldBe("VND");
     }
 
     [Fact]
@@ -97,12 +97,12 @@ public class GetOrderByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(1);
-        result.Value.Items.First().ProductName.Should().Be("Test Product");
-        result.Value.Items.First().VariantName.Should().Be("Size: M");
-        result.Value.Items.First().UnitPrice.Should().Be(50.00m);
-        result.Value.Items.First().Quantity.Should().Be(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(1);
+        result.Value.Items.First().ProductName.ShouldBe("Test Product");
+        result.Value.Items.First().VariantName.ShouldBe("Size: M");
+        result.Value.Items.First().UnitPrice.ShouldBe(50.00m);
+        result.Value.Items.First().Quantity.ShouldBe(2);
     }
 
     [Fact]
@@ -124,9 +124,9 @@ public class GetOrderByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(OrderStatus.Confirmed);
-        result.Value.ConfirmedAt.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(OrderStatus.Confirmed);
+        result.Value.ConfirmedAt.ShouldNotBeNull();
     }
 
     #endregion
@@ -149,10 +149,10 @@ public class GetOrderByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be(ErrorCodes.Order.NotFound);
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.NotFound);
+        result.Error.Message.ShouldContain("not found");
     }
 
     #endregion
@@ -214,10 +214,10 @@ public class GetOrderByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ShippingAddress.Should().NotBeNull();
-        result.Value.ShippingAddress!.FullName.Should().Be("John Doe");
-        result.Value.BillingAddress.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShippingAddress.ShouldNotBeNull();
+        result.Value.ShippingAddress!.FullName.ShouldBe("John Doe");
+        result.Value.BillingAddress.ShouldNotBeNull();
     }
 
     [Fact]
@@ -239,10 +239,10 @@ public class GetOrderByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(OrderStatus.Cancelled);
-        result.Value.CancellationReason.Should().Be("Customer requested cancellation");
-        result.Value.CancelledAt.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(OrderStatus.Cancelled);
+        result.Value.CancellationReason.ShouldBe("Customer requested cancellation");
+        result.Value.CancelledAt.ShouldNotBeNull();
     }
 
     #endregion

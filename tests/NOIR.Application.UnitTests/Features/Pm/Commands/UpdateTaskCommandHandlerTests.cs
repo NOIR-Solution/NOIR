@@ -48,9 +48,9 @@ public class UpdateTaskCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        task.Title.Should().Be("Updated Title");
-        task.Priority.Should().Be(TaskPriority.High);
+        result.IsSuccess.ShouldBe(true);
+        task.Title.ShouldBe("Updated Title");
+        task.Priority.ShouldBe(TaskPriority.High);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -68,7 +68,7 @@ public class UpdateTaskCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -94,9 +94,9 @@ public class UpdateTaskCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        task.Title.Should().Be("Updated Title");
-        task.Description.Should().Be("Original description");
+        result.IsSuccess.ShouldBe(true);
+        task.Title.ShouldBe("Updated Title");
+        task.Description.ShouldBe("Original description");
     }
 
     [Fact]
@@ -129,14 +129,14 @@ public class UpdateTaskCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        task.Title.Should().Be("Full Updated Title");
-        task.Description.Should().Be("Full description");
-        task.Priority.Should().Be(TaskPriority.Urgent);
-        task.AssigneeId.Should().Be(assigneeId);
-        task.DueDate.Should().Be(dueDate);
-        task.EstimatedHours.Should().Be(16m);
-        task.ActualHours.Should().Be(4m);
+        result.IsSuccess.ShouldBe(true);
+        task.Title.ShouldBe("Full Updated Title");
+        task.Description.ShouldBe("Full description");
+        task.Priority.ShouldBe(TaskPriority.Urgent);
+        task.AssigneeId.ShouldBe(assigneeId);
+        task.DueDate.ShouldBe(dueDate);
+        task.EstimatedHours.ShouldBe(16m);
+        task.ActualHours.ShouldBe(4m);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

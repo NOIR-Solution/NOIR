@@ -48,10 +48,10 @@ public class GetContactSettingsQueryHandlerTests
         var result = await _handler.Handle(new GetContactSettingsQuery(), CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Email.Should().Be("contact@example.com");
-        result.Value.Phone.Should().Be("+1 555-123-4567");
-        result.Value.Address.Should().Be("123 Main St, City");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Email.ShouldBe("contact@example.com");
+        result.Value.Phone.ShouldBe("+1 555-123-4567");
+        result.Value.Address.ShouldBe("123 Main St, City");
     }
 
     [Fact]
@@ -68,10 +68,10 @@ public class GetContactSettingsQueryHandlerTests
         var result = await _handler.Handle(new GetContactSettingsQuery(), CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Email.Should().BeNull();
-        result.Value.Phone.Should().BeNull();
-        result.Value.Address.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Email.ShouldBeNull();
+        result.Value.Phone.ShouldBeNull();
+        result.Value.Address.ShouldBeNull();
     }
 
     [Fact]

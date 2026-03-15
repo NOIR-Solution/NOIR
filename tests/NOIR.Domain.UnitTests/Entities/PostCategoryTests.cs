@@ -19,12 +19,12 @@ public class PostCategoryTests
         var category = PostCategory.Create(name, slug);
 
         // Assert
-        category.Should().NotBeNull();
-        category.Id.Should().NotBe(Guid.Empty);
-        category.Name.Should().Be(name);
-        category.Slug.Should().Be(slug);
-        category.SortOrder.Should().Be(0);
-        category.PostCount.Should().Be(0);
+        category.ShouldNotBeNull();
+        category.Id.ShouldNotBe(Guid.Empty);
+        category.Name.ShouldBe(name);
+        category.Slug.ShouldBe(slug);
+        category.SortOrder.ShouldBe(0);
+        category.PostCount.ShouldBe(0);
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class PostCategoryTests
         var category = PostCategory.Create("Technology", "TECHNOLOGY");
 
         // Assert
-        category.Slug.Should().Be("technology");
+        category.Slug.ShouldBe("technology");
     }
 
     [Fact]
@@ -51,9 +51,9 @@ public class PostCategoryTests
         var category = PostCategory.Create(name, slug, description, parentId, tenantId);
 
         // Assert
-        category.Description.Should().Be(description);
-        category.ParentId.Should().Be(parentId);
-        category.TenantId.Should().Be(tenantId);
+        category.Description.ShouldBe(description);
+        category.ParentId.ShouldBe(parentId);
+        category.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class PostCategoryTests
         var category = PostCategory.Create("Top Level", "top-level");
 
         // Assert
-        category.ParentId.Should().BeNull();
+        category.ParentId.ShouldBeNull();
     }
 
     #endregion
@@ -83,9 +83,9 @@ public class PostCategoryTests
         category.Update(newName, newSlug, newDescription);
 
         // Assert
-        category.Name.Should().Be(newName);
-        category.Slug.Should().Be("updated-name");
-        category.Description.Should().Be(newDescription);
+        category.Name.ShouldBe(newName);
+        category.Slug.ShouldBe("updated-name");
+        category.Description.ShouldBe(newDescription);
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class PostCategoryTests
         category.Update("Updated", "UPDATED-SLUG");
 
         // Assert
-        category.Slug.Should().Be("updated-slug");
+        category.Slug.ShouldBe("updated-slug");
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class PostCategoryTests
         category.Update("Child", "child", null, newParentId);
 
         // Assert
-        category.ParentId.Should().Be(newParentId);
+        category.ParentId.ShouldBe(newParentId);
     }
 
     [Fact]
@@ -125,7 +125,7 @@ public class PostCategoryTests
         category.Update("Child", "child", null, null);
 
         // Assert
-        category.ParentId.Should().BeNull();
+        category.ParentId.ShouldBeNull();
     }
 
     #endregion
@@ -144,8 +144,8 @@ public class PostCategoryTests
         category.UpdateSeo(metaTitle, metaDescription);
 
         // Assert
-        category.MetaTitle.Should().Be(metaTitle);
-        category.MetaDescription.Should().Be(metaDescription);
+        category.MetaTitle.ShouldBe(metaTitle);
+        category.MetaDescription.ShouldBe(metaDescription);
     }
 
     [Fact]
@@ -159,8 +159,8 @@ public class PostCategoryTests
         category.UpdateSeo(null, null);
 
         // Assert
-        category.MetaTitle.Should().BeNull();
-        category.MetaDescription.Should().BeNull();
+        category.MetaTitle.ShouldBeNull();
+        category.MetaDescription.ShouldBeNull();
     }
 
     #endregion
@@ -178,7 +178,7 @@ public class PostCategoryTests
         category.UpdateImage(imageUrl);
 
         // Assert
-        category.ImageUrl.Should().Be(imageUrl);
+        category.ImageUrl.ShouldBe(imageUrl);
     }
 
     [Fact]
@@ -192,7 +192,7 @@ public class PostCategoryTests
         category.UpdateImage(null);
 
         // Assert
-        category.ImageUrl.Should().BeNull();
+        category.ImageUrl.ShouldBeNull();
     }
 
     #endregion
@@ -209,7 +209,7 @@ public class PostCategoryTests
         category.SetSortOrder(5);
 
         // Assert
-        category.SortOrder.Should().Be(5);
+        category.SortOrder.ShouldBe(5);
     }
 
     [Theory]
@@ -226,7 +226,7 @@ public class PostCategoryTests
         category.SetSortOrder(order);
 
         // Assert
-        category.SortOrder.Should().Be(order);
+        category.SortOrder.ShouldBe(order);
     }
 
     #endregion
@@ -244,7 +244,7 @@ public class PostCategoryTests
         category.IncrementPostCount();
 
         // Assert
-        category.PostCount.Should().Be(initialCount + 1);
+        category.PostCount.ShouldBe(initialCount + 1);
     }
 
     [Fact]
@@ -260,7 +260,7 @@ public class PostCategoryTests
         }
 
         // Assert
-        category.PostCount.Should().Be(10);
+        category.PostCount.ShouldBe(10);
     }
 
     [Fact]
@@ -275,7 +275,7 @@ public class PostCategoryTests
         category.DecrementPostCount();
 
         // Assert
-        category.PostCount.Should().Be(1);
+        category.PostCount.ShouldBe(1);
     }
 
     [Fact]
@@ -288,7 +288,7 @@ public class PostCategoryTests
         category.DecrementPostCount();
 
         // Assert
-        category.PostCount.Should().Be(0);
+        category.PostCount.ShouldBe(0);
     }
 
     [Fact]
@@ -304,7 +304,7 @@ public class PostCategoryTests
         category.DecrementPostCount();
 
         // Assert
-        category.PostCount.Should().Be(0);
+        category.PostCount.ShouldBe(0);
     }
 
     #endregion
@@ -318,8 +318,8 @@ public class PostCategoryTests
         var category = PostCategory.Create("Parent", "parent");
 
         // Assert
-        category.Children.Should().NotBeNull();
-        category.Children.Should().BeEmpty();
+        category.Children.ShouldNotBeNull();
+        category.Children.ShouldBeEmpty();
     }
 
     [Fact]
@@ -329,8 +329,8 @@ public class PostCategoryTests
         var category = PostCategory.Create("Category", "category");
 
         // Assert
-        category.Posts.Should().NotBeNull();
-        category.Posts.Should().BeEmpty();
+        category.Posts.ShouldNotBeNull();
+        category.Posts.ShouldBeEmpty();
     }
 
     #endregion
@@ -347,7 +347,7 @@ public class PostCategoryTests
         var category = PostCategory.Create("Tech", "tech", tenantId: tenantId);
 
         // Assert
-        category.TenantId.Should().Be(tenantId);
+        category.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -357,7 +357,7 @@ public class PostCategoryTests
         var category = PostCategory.Create("Tech", "tech");
 
         // Assert
-        category.TenantId.Should().BeNull();
+        category.TenantId.ShouldBeNull();
     }
 
     #endregion

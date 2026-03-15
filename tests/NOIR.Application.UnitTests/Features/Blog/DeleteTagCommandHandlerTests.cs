@@ -100,8 +100,8 @@ public class DeleteTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
 
         _tagRepositoryMock.Verify(
             x => x.Remove(existingTag),
@@ -155,11 +155,11 @@ public class DeleteTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         // Verify tag assignments were removed from posts
-        post1.TagAssignments.Should().BeEmpty();
-        post2.TagAssignments.Should().BeEmpty();
+        post1.TagAssignments.ShouldBeEmpty();
+        post2.TagAssignments.ShouldBeEmpty();
 
         _tagRepositoryMock.Verify(
             x => x.Remove(existingTag),
@@ -196,8 +196,8 @@ public class DeleteTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
     }
 
     #endregion
@@ -222,9 +222,9 @@ public class DeleteTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-BLOG-012");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-BLOG-012");
 
         _tagRepositoryMock.Verify(
             x => x.Remove(It.IsAny<PostTag>()),
@@ -252,8 +252,8 @@ public class DeleteTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Message.Should().Contain(nonExistentId.ToString());
+        result.IsFailure.ShouldBe(true);
+        result.Error.Message.ShouldContain(nonExistentId.ToString());
     }
 
     #endregion
@@ -344,11 +344,11 @@ public class DeleteTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         // Should only remove the specific tag assignment
-        post.TagAssignments.Should().HaveCount(1);
-        post.TagAssignments.First().TagId.Should().Be(otherTagId);
+        post.TagAssignments.Count().ShouldBe(1);
+        post.TagAssignments.First().TagId.ShouldBe(otherTagId);
     }
 
     [Fact]
@@ -380,7 +380,7 @@ public class DeleteTagCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         // Verify Remove was called (soft delete is handled by EF interceptor)
         _tagRepositoryMock.Verify(

@@ -36,10 +36,10 @@ public class GetCompanyByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(company.Id);
-        result.Value.Name.Should().Be("Acme Corp");
-        result.Value.Industry.Should().Be("Technology");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(company.Id);
+        result.Value.Name.ShouldBe("Acme Corp");
+        result.Value.Industry.ShouldBe("Technology");
     }
 
     [Fact]
@@ -56,6 +56,6 @@ public class GetCompanyByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 }

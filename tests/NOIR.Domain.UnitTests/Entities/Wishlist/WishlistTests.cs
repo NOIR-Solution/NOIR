@@ -33,12 +33,12 @@ public class WishlistTests
         var wishlist = CreateTestWishlist();
 
         // Assert
-        wishlist.Should().NotBeNull();
-        wishlist.Id.Should().NotBe(Guid.Empty);
-        wishlist.UserId.Should().Be(TestUserId);
-        wishlist.Name.Should().Be("My Wishlist");
-        wishlist.IsDefault.Should().BeTrue();
-        wishlist.TenantId.Should().Be(TestTenantId);
+        wishlist.ShouldNotBeNull();
+        wishlist.Id.ShouldNotBe(Guid.Empty);
+        wishlist.UserId.ShouldBe(TestUserId);
+        wishlist.Name.ShouldBe("My Wishlist");
+        wishlist.IsDefault.ShouldBeTrue();
+        wishlist.TenantId.ShouldBe(TestTenantId);
     }
 
     [Fact]
@@ -48,10 +48,10 @@ public class WishlistTests
         var wishlist = CreateTestWishlist();
 
         // Assert
-        wishlist.IsPublic.Should().BeFalse();
-        wishlist.ShareToken.Should().BeNull();
-        wishlist.Items.Should().BeEmpty();
-        wishlist.ItemCount.Should().Be(0);
+        wishlist.IsPublic.ShouldBeFalse();
+        wishlist.ShareToken.ShouldBeNull();
+        wishlist.Items.ShouldBeEmpty();
+        wishlist.ItemCount.ShouldBe(0);
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class WishlistTests
         var wishlist = CreateTestWishlist(isDefault: false);
 
         // Assert
-        wishlist.IsDefault.Should().BeFalse();
+        wishlist.IsDefault.ShouldBeFalse();
     }
 
     [Theory]
@@ -74,7 +74,7 @@ public class WishlistTests
         var act = () => CreateTestWishlist(userId: userId!);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -87,7 +87,7 @@ public class WishlistTests
         var act = () => CreateTestWishlist(name: name!);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class WishlistTests
         var wishlist = CreateTestWishlist(tenantId: null);
 
         // Assert
-        wishlist.TenantId.Should().BeNull();
+        wishlist.TenantId.ShouldBeNull();
     }
 
     #endregion
@@ -114,7 +114,7 @@ public class WishlistTests
         wishlist.UpdateName("Holiday Gift Ideas");
 
         // Assert
-        wishlist.Name.Should().Be("Holiday Gift Ideas");
+        wishlist.Name.ShouldBe("Holiday Gift Ideas");
     }
 
     [Theory]
@@ -130,7 +130,7 @@ public class WishlistTests
         var act = () => wishlist.UpdateName(name!);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -146,9 +146,9 @@ public class WishlistTests
         wishlist.UpdateName("New Name");
 
         // Assert
-        wishlist.UserId.Should().Be(originalUserId);
-        wishlist.IsDefault.Should().Be(originalIsDefault);
-        wishlist.IsPublic.Should().Be(originalIsPublic);
+        wishlist.UserId.ShouldBe(originalUserId);
+        wishlist.IsDefault.ShouldBe(originalIsDefault);
+        wishlist.IsPublic.ShouldBe(originalIsPublic);
     }
 
     #endregion
@@ -165,7 +165,7 @@ public class WishlistTests
         wishlist.SetPublic(true);
 
         // Assert
-        wishlist.IsPublic.Should().BeTrue();
+        wishlist.IsPublic.ShouldBeTrue();
     }
 
     [Fact]
@@ -179,7 +179,7 @@ public class WishlistTests
         wishlist.SetPublic(false);
 
         // Assert
-        wishlist.IsPublic.Should().BeFalse();
+        wishlist.IsPublic.ShouldBeFalse();
     }
 
     [Fact]
@@ -188,14 +188,14 @@ public class WishlistTests
         // Arrange
         var wishlist = CreateTestWishlist();
         wishlist.GenerateShareToken(); // Sets IsPublic = true and generates token
-        wishlist.ShareToken.Should().NotBeNullOrEmpty();
+        wishlist.ShareToken.ShouldNotBeNullOrEmpty();
 
         // Act
         wishlist.SetPublic(false);
 
         // Assert
-        wishlist.IsPublic.Should().BeFalse();
-        wishlist.ShareToken.Should().BeNull();
+        wishlist.IsPublic.ShouldBeFalse();
+        wishlist.ShareToken.ShouldBeNull();
     }
 
     [Fact]
@@ -208,8 +208,8 @@ public class WishlistTests
         wishlist.SetPublic(true);
 
         // Assert - Setting public alone does not generate a share token
-        wishlist.IsPublic.Should().BeTrue();
-        wishlist.ShareToken.Should().BeNull();
+        wishlist.IsPublic.ShouldBeTrue();
+        wishlist.ShareToken.ShouldBeNull();
     }
 
     #endregion
@@ -226,8 +226,8 @@ public class WishlistTests
         var token = wishlist.GenerateShareToken();
 
         // Assert
-        token.Should().NotBeNullOrEmpty();
-        wishlist.ShareToken.Should().Be(token);
+        token.ShouldNotBeNullOrEmpty();
+        wishlist.ShareToken.ShouldBe(token);
     }
 
     [Fact]
@@ -235,13 +235,13 @@ public class WishlistTests
     {
         // Arrange
         var wishlist = CreateTestWishlist();
-        wishlist.IsPublic.Should().BeFalse();
+        wishlist.IsPublic.ShouldBeFalse();
 
         // Act
         wishlist.GenerateShareToken();
 
         // Assert
-        wishlist.IsPublic.Should().BeTrue();
+        wishlist.IsPublic.ShouldBeTrue();
     }
 
     [Fact]
@@ -254,9 +254,9 @@ public class WishlistTests
         var token = wishlist.GenerateShareToken();
 
         // Assert - Token should not contain URL-unsafe characters
-        token.Should().NotContain("+");
-        token.Should().NotContain("/");
-        token.Should().NotContain("=");
+        token.ShouldNotContain("+");
+        token.ShouldNotContain("/");
+        token.ShouldNotContain("=");
     }
 
     [Fact]
@@ -270,7 +270,7 @@ public class WishlistTests
         var token2 = wishlist.GenerateShareToken();
 
         // Assert - Tokens should be different (using random bytes)
-        token1.Should().NotBe(token2);
+        token1.ShouldNotBe(token2);
     }
 
     [Fact]
@@ -284,8 +284,8 @@ public class WishlistTests
 
         // Assert - 32 bytes encoded as base64 with replacements
         // Base64 of 32 bytes = 44 chars, minus padding = ~43 chars
-        token.Length.Should().BeGreaterThan(20);
-        token.Length.Should().BeLessThan(50);
+        token.Length.ShouldBeGreaterThan(20);
+        token.Length.ShouldBeLessThan(50);
     }
 
     #endregion
@@ -303,13 +303,13 @@ public class WishlistTests
         var item = wishlist.AddItem(productId);
 
         // Assert
-        item.Should().NotBeNull();
-        wishlist.Items.Should().HaveCount(1);
-        item.WishlistId.Should().Be(wishlist.Id);
-        item.ProductId.Should().Be(productId);
-        item.ProductVariantId.Should().BeNull();
-        item.Note.Should().BeNull();
-        item.Priority.Should().Be(WishlistItemPriority.None);
+        item.ShouldNotBeNull();
+        wishlist.Items.Count().ShouldBe(1);
+        item.WishlistId.ShouldBe(wishlist.Id);
+        item.ProductId.ShouldBe(productId);
+        item.ProductVariantId.ShouldBeNull();
+        item.Note.ShouldBeNull();
+        item.Priority.ShouldBe(WishlistItemPriority.None);
     }
 
     [Fact]
@@ -324,8 +324,8 @@ public class WishlistTests
         var item = wishlist.AddItem(productId, variantId);
 
         // Assert
-        item.ProductId.Should().Be(productId);
-        item.ProductVariantId.Should().Be(variantId);
+        item.ProductId.ShouldBe(productId);
+        item.ProductVariantId.ShouldBe(variantId);
     }
 
     [Fact]
@@ -339,7 +339,7 @@ public class WishlistTests
         var item = wishlist.AddItem(productId, note: "Birthday gift idea");
 
         // Assert
-        item.Note.Should().Be("Birthday gift idea");
+        item.Note.ShouldBe("Birthday gift idea");
     }
 
     [Fact]
@@ -354,7 +354,7 @@ public class WishlistTests
         var item = wishlist.AddItem(productId);
 
         // Assert
-        item.AddedAt.Should().BeOnOrAfter(beforeAdd);
+        item.AddedAt.ShouldBeGreaterThanOrEqualTo(beforeAdd);
     }
 
     [Fact]
@@ -367,7 +367,7 @@ public class WishlistTests
         var item = wishlist.AddItem(Guid.NewGuid());
 
         // Assert
-        item.Priority.Should().Be(WishlistItemPriority.None);
+        item.Priority.ShouldBe(WishlistItemPriority.None);
     }
 
     [Fact]
@@ -382,8 +382,8 @@ public class WishlistTests
         var secondItem = wishlist.AddItem(productId);
 
         // Assert
-        secondItem.Should().BeSameAs(firstItem);
-        wishlist.Items.Should().HaveCount(1);
+        secondItem.ShouldBeSameAs(firstItem);
+        wishlist.Items.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -399,8 +399,8 @@ public class WishlistTests
         var secondItem = wishlist.AddItem(productId, variantId);
 
         // Assert
-        secondItem.Should().BeSameAs(firstItem);
-        wishlist.Items.Should().HaveCount(1);
+        secondItem.ShouldBeSameAs(firstItem);
+        wishlist.Items.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -417,7 +417,7 @@ public class WishlistTests
         wishlist.AddItem(productId, variant2);
 
         // Assert
-        wishlist.Items.Should().HaveCount(2);
+        wishlist.Items.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -433,7 +433,7 @@ public class WishlistTests
         wishlist.AddItem(productId, variantId); // With variant
 
         // Assert
-        wishlist.Items.Should().HaveCount(2);
+        wishlist.Items.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -448,7 +448,7 @@ public class WishlistTests
         wishlist.AddItem(Guid.NewGuid());
 
         // Assert
-        wishlist.Items.Should().HaveCount(3);
+        wishlist.Items.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -461,7 +461,7 @@ public class WishlistTests
         var item = wishlist.AddItem(Guid.NewGuid());
 
         // Assert
-        item.TenantId.Should().Be(TestTenantId);
+        item.TenantId.ShouldBe(TestTenantId);
     }
 
     #endregion
@@ -479,7 +479,7 @@ public class WishlistTests
         wishlist.RemoveItem(item.Id);
 
         // Assert
-        wishlist.Items.Should().BeEmpty();
+        wishlist.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -493,7 +493,7 @@ public class WishlistTests
         wishlist.RemoveItem(Guid.NewGuid()); // Random ID that doesn't exist
 
         // Assert
-        wishlist.Items.Should().HaveCount(1);
+        wishlist.Items.Count().ShouldBe(1);
     }
 
     [Fact]
@@ -509,10 +509,10 @@ public class WishlistTests
         wishlist.RemoveItem(item2.Id);
 
         // Assert
-        wishlist.Items.Should().HaveCount(2);
-        wishlist.Items.Should().Contain(item1);
-        wishlist.Items.Should().NotContain(item2);
-        wishlist.Items.Should().Contain(item3);
+        wishlist.Items.Count().ShouldBe(2);
+        wishlist.Items.ShouldContain(item1);
+        wishlist.Items.ShouldNotContain(item2);
+        wishlist.Items.ShouldContain(item3);
     }
 
     [Fact]
@@ -528,8 +528,8 @@ public class WishlistTests
         wishlist.RemoveItem(item2.Id);
 
         // Assert
-        wishlist.Items.Should().BeEmpty();
-        wishlist.ItemCount.Should().Be(0);
+        wishlist.Items.ShouldBeEmpty();
+        wishlist.ItemCount.ShouldBe(0);
     }
 
     #endregion
@@ -543,7 +543,7 @@ public class WishlistTests
         var wishlist = CreateTestWishlist();
 
         // Assert
-        wishlist.ItemCount.Should().Be(0);
+        wishlist.ItemCount.ShouldBe(0);
     }
 
     [Fact]
@@ -556,7 +556,7 @@ public class WishlistTests
         wishlist.AddItem(Guid.NewGuid());
 
         // Assert
-        wishlist.ItemCount.Should().Be(3);
+        wishlist.ItemCount.ShouldBe(3);
     }
 
     [Fact]
@@ -571,7 +571,7 @@ public class WishlistTests
         wishlist.RemoveItem(item.Id);
 
         // Assert
-        wishlist.ItemCount.Should().Be(1);
+        wishlist.ItemCount.ShouldBe(1);
     }
 
     [Fact]
@@ -586,7 +586,7 @@ public class WishlistTests
         wishlist.AddItem(productId); // Duplicate
 
         // Assert
-        wishlist.ItemCount.Should().Be(1);
+        wishlist.ItemCount.ShouldBe(1);
     }
 
     #endregion
@@ -604,7 +604,7 @@ public class WishlistTests
         item.UpdateNote("Updated note");
 
         // Assert
-        item.Note.Should().Be("Updated note");
+        item.Note.ShouldBe("Updated note");
     }
 
     [Fact]
@@ -618,7 +618,7 @@ public class WishlistTests
         item.UpdateNote(null);
 
         // Assert
-        item.Note.Should().BeNull();
+        item.Note.ShouldBeNull();
     }
 
     [Theory]
@@ -636,7 +636,7 @@ public class WishlistTests
         item.UpdatePriority(priority);
 
         // Assert
-        item.Priority.Should().Be(priority);
+        item.Priority.ShouldBe(priority);
     }
 
     [Fact]
@@ -652,7 +652,7 @@ public class WishlistTests
         item.UpdatePriority(WishlistItemPriority.Medium);
 
         // Assert
-        item.Priority.Should().Be(WishlistItemPriority.Medium);
+        item.Priority.ShouldBe(WishlistItemPriority.Medium);
     }
 
     #endregion
@@ -669,15 +669,15 @@ public class WishlistTests
         var token = wishlist.GenerateShareToken();
 
         // Assert
-        wishlist.IsPublic.Should().BeTrue();
-        wishlist.ShareToken.Should().Be(token);
+        wishlist.IsPublic.ShouldBeTrue();
+        wishlist.ShareToken.ShouldBe(token);
 
         // Act - Unshare (makes private, clears token)
         wishlist.SetPublic(false);
 
         // Assert
-        wishlist.IsPublic.Should().BeFalse();
-        wishlist.ShareToken.Should().BeNull();
+        wishlist.IsPublic.ShouldBeFalse();
+        wishlist.ShareToken.ShouldBeNull();
     }
 
     [Fact]
@@ -688,15 +688,15 @@ public class WishlistTests
 
         // Act - Set public without token
         wishlist.SetPublic(true);
-        wishlist.IsPublic.Should().BeTrue();
-        wishlist.ShareToken.Should().BeNull();
+        wishlist.IsPublic.ShouldBeTrue();
+        wishlist.ShareToken.ShouldBeNull();
 
         // Act - Generate token
         var token = wishlist.GenerateShareToken();
 
         // Assert
-        wishlist.IsPublic.Should().BeTrue();
-        wishlist.ShareToken.Should().Be(token);
+        wishlist.IsPublic.ShouldBeTrue();
+        wishlist.ShareToken.ShouldBe(token);
     }
 
     [Fact]
@@ -710,8 +710,8 @@ public class WishlistTests
         var newToken = wishlist.GenerateShareToken();
 
         // Assert
-        newToken.Should().NotBe(oldToken);
-        wishlist.ShareToken.Should().Be(newToken);
+        newToken.ShouldNotBe(oldToken);
+        wishlist.ShareToken.ShouldBe(newToken);
     }
 
     #endregion
@@ -722,8 +722,8 @@ public class WishlistTests
     public void WishlistItemPriority_ShouldHaveCorrectOrdinalValues()
     {
         // Assert - Verify ordering makes sense for sorting
-        ((int)WishlistItemPriority.None).Should().BeLessThan((int)WishlistItemPriority.Low);
-        ((int)WishlistItemPriority.Low).Should().BeLessThan((int)WishlistItemPriority.Medium);
-        ((int)WishlistItemPriority.Medium).Should().BeLessThan((int)WishlistItemPriority.High);
+        ((int)WishlistItemPriority.None).ShouldBeLessThan((int)WishlistItemPriority.Low);
+        ((int)WishlistItemPriority.Low).ShouldBeLessThan((int)WishlistItemPriority.Medium);
+        ((int)WishlistItemPriority.Medium).ShouldBeLessThan((int)WishlistItemPriority.High);
     }
 }

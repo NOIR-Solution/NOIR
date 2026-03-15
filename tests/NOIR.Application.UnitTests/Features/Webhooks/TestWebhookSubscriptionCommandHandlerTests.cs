@@ -71,10 +71,10 @@ public class TestWebhookSubscriptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.EventType.Should().Be("webhook.test");
-        result.Value.WebhookSubscriptionId.Should().Be(subscription.Id);
-        result.Value.RequestUrl.Should().Be(subscription.Url);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.EventType.ShouldBe("webhook.test");
+        result.Value.WebhookSubscriptionId.ShouldBe(subscription.Id);
+        result.Value.RequestUrl.ShouldBe(subscription.Url);
     }
 
     [Fact]
@@ -141,8 +141,8 @@ public class TestWebhookSubscriptionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-WEBHOOK-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-WEBHOOK-002");
     }
 
     #endregion

@@ -65,9 +65,9 @@ public class AddAdminResponseCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.AdminResponse.Should().Be("Thank you for your feedback!");
-        result.Value.AdminRespondedAt.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.AdminResponse.ShouldBe("Thank you for your feedback!");
+        result.Value.AdminRespondedAt.ShouldNotBeNull();
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -96,8 +96,8 @@ public class AddAdminResponseCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.AdminResponse.Should().Be("Thank you!");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.AdminResponse.ShouldBe("Thank you!");
     }
 
     #endregion
@@ -122,8 +122,8 @@ public class AddAdminResponseCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-REVIEW-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-REVIEW-002");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),

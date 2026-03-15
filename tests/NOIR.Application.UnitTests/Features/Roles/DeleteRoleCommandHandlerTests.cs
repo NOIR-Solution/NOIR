@@ -67,8 +67,8 @@ public class DeleteRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
         _roleIdentityServiceMock.Verify(
             x => x.DeleteRoleAsync(roleId, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -94,8 +94,8 @@ public class DeleteRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Auth.RoleNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Auth.RoleNotFound);
         _roleIdentityServiceMock.Verify(
             x => x.DeleteRoleAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -122,8 +122,8 @@ public class DeleteRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Business.CannotDelete);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Business.CannotDelete);
         _roleIdentityServiceMock.Verify(
             x => x.DeleteRoleAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -146,8 +146,8 @@ public class DeleteRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Business.CannotDelete);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Business.CannotDelete);
     }
 
     [Theory]
@@ -172,8 +172,8 @@ public class DeleteRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Business.CannotDelete);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Business.CannotDelete);
     }
 
     #endregion
@@ -202,8 +202,8 @@ public class DeleteRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Business.CannotDelete);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Business.CannotDelete);
         _roleIdentityServiceMock.Verify(
             x => x.DeleteRoleAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -230,8 +230,8 @@ public class DeleteRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Business.CannotDelete);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Business.CannotDelete);
     }
 
     #endregion
@@ -263,8 +263,8 @@ public class DeleteRoleCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Validation.General);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Validation.General);
     }
 
     #endregion

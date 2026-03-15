@@ -119,10 +119,10 @@ public class GetCheckoutSessionQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(sessionId);
-        result.Value.CartId.Should().Be(cartId);
-        result.Value.CustomerEmail.Should().Be(TestCustomerEmail);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(sessionId);
+        result.Value.CartId.ShouldBe(cartId);
+        result.Value.CustomerEmail.ShouldBe(TestCustomerEmail);
     }
 
     [Fact]
@@ -144,9 +144,9 @@ public class GetCheckoutSessionQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CustomerName.Should().Be("Nguyen Van A");
-        result.Value.CustomerPhone.Should().Be("0901234567");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CustomerName.ShouldBe("Nguyen Van A");
+        result.Value.CustomerPhone.ShouldBe("0901234567");
     }
 
     [Fact]
@@ -168,11 +168,11 @@ public class GetCheckoutSessionQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ShippingAddress.Should().NotBeNull();
-        result.Value.ShippingAddress!.FullName.Should().Be("Nguyen Van A");
-        result.Value.ShippingAddress.Province.Should().Be("Ho Chi Minh City");
-        result.Value.Status.Should().Be(CheckoutSessionStatus.AddressComplete);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShippingAddress.ShouldNotBeNull();
+        result.Value.ShippingAddress!.FullName.ShouldBe("Nguyen Van A");
+        result.Value.ShippingAddress.Province.ShouldBe("Ho Chi Minh City");
+        result.Value.Status.ShouldBe(CheckoutSessionStatus.AddressComplete);
     }
 
     [Fact]
@@ -194,11 +194,11 @@ public class GetCheckoutSessionQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ShippingMethod.Should().Be("Standard Delivery");
-        result.Value.ShippingCost.Should().Be(30000m);
-        result.Value.EstimatedDeliveryAt.Should().NotBeNull();
-        result.Value.Status.Should().Be(CheckoutSessionStatus.ShippingSelected);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShippingMethod.ShouldBe("Standard Delivery");
+        result.Value.ShippingCost.ShouldBe(30000m);
+        result.Value.EstimatedDeliveryAt.ShouldNotBeNull();
+        result.Value.Status.ShouldBe(CheckoutSessionStatus.ShippingSelected);
     }
 
     [Fact]
@@ -224,9 +224,9 @@ public class GetCheckoutSessionQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PaymentMethod.Should().Be(PaymentMethod.COD);
-        result.Value.Status.Should().Be(CheckoutSessionStatus.PaymentPending);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PaymentMethod.ShouldBe(PaymentMethod.COD);
+        result.Value.Status.ShouldBe(CheckoutSessionStatus.PaymentPending);
     }
 
     [Fact]
@@ -267,10 +267,10 @@ public class GetCheckoutSessionQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(CheckoutSessionStatus.Completed);
-        result.Value.OrderId.Should().Be(orderId);
-        result.Value.OrderNumber.Should().Be(orderNumber);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(CheckoutSessionStatus.Completed);
+        result.Value.OrderId.ShouldBe(orderId);
+        result.Value.OrderNumber.ShouldBe(orderNumber);
     }
 
     [Theory]
@@ -304,8 +304,8 @@ public class GetCheckoutSessionQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(status);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(status);
     }
 
     #endregion
@@ -330,9 +330,9 @@ public class GetCheckoutSessionQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CHECKOUT-021");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CHECKOUT-021");
+        result.Error.Message.ShouldContain("not found");
     }
 
     [Fact]
@@ -353,8 +353,8 @@ public class GetCheckoutSessionQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Message.Should().Contain(nonExistentId.ToString());
+        result.IsFailure.ShouldBe(true);
+        result.Error.Message.ShouldContain(nonExistentId.ToString());
     }
 
     #endregion
@@ -417,16 +417,16 @@ public class GetCheckoutSessionQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.UserId.Should().BeNull();
-        result.Value.CustomerName.Should().BeNull();
-        result.Value.CustomerPhone.Should().BeNull();
-        result.Value.ShippingAddress.Should().BeNull();
-        result.Value.BillingAddress.Should().BeNull();
-        result.Value.ShippingMethod.Should().BeNull();
-        result.Value.PaymentMethod.Should().BeNull();
-        result.Value.OrderId.Should().BeNull();
-        result.Value.OrderNumber.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.UserId.ShouldBeNull();
+        result.Value.CustomerName.ShouldBeNull();
+        result.Value.CustomerPhone.ShouldBeNull();
+        result.Value.ShippingAddress.ShouldBeNull();
+        result.Value.BillingAddress.ShouldBeNull();
+        result.Value.ShippingMethod.ShouldBeNull();
+        result.Value.PaymentMethod.ShouldBeNull();
+        result.Value.OrderId.ShouldBeNull();
+        result.Value.OrderNumber.ShouldBeNull();
     }
 
     [Fact]
@@ -454,17 +454,17 @@ public class GetCheckoutSessionQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
 
         // Verify all DTO fields are populated correctly
-        dto.Id.Should().Be(sessionId);
-        dto.CartId.Should().Be(cartId);
-        dto.CustomerEmail.Should().Be(TestCustomerEmail);
-        dto.Currency.Should().Be("VND");
-        dto.SubTotal.Should().Be(200000m);
-        dto.BillingSameAsShipping.Should().BeTrue();
-        dto.ExpiresAt.Should().BeAfter(DateTimeOffset.UtcNow);
+        dto.Id.ShouldBe(sessionId);
+        dto.CartId.ShouldBe(cartId);
+        dto.CustomerEmail.ShouldBe(TestCustomerEmail);
+        dto.Currency.ShouldBe("VND");
+        dto.SubTotal.ShouldBe(200000m);
+        dto.BillingSameAsShipping.ShouldBe(true);
+        dto.ExpiresAt.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
     }
 
     [Fact]
@@ -490,10 +490,10 @@ public class GetCheckoutSessionQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SubTotal.Should().Be(200000m);
-        result.Value.ShippingCost.Should().Be(30000m);
-        result.Value.GrandTotal.Should().Be(230000m);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SubTotal.ShouldBe(200000m);
+        result.Value.ShippingCost.ShouldBe(30000m);
+        result.Value.GrandTotal.ShouldBe(230000m);
     }
 
     #endregion

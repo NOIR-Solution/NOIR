@@ -15,8 +15,8 @@ public class RequiresFeatureAttributeTests
         var attribute = new RequiresFeatureAttribute("Ecommerce.Products");
 
         // Assert
-        attribute.Features.Should().HaveCount(1);
-        attribute.Features.Should().Contain("Ecommerce.Products");
+        attribute.Features.Count().ShouldBe(1);
+        attribute.Features.ShouldContain("Ecommerce.Products");
     }
 
     [Fact]
@@ -26,8 +26,8 @@ public class RequiresFeatureAttributeTests
         var attribute = new RequiresFeatureAttribute("Ecommerce.Products", "Ecommerce.Reviews", "Ecommerce.Cart");
 
         // Assert
-        attribute.Features.Should().HaveCount(3);
-        attribute.Features.Should().ContainInOrder("Ecommerce.Products", "Ecommerce.Reviews", "Ecommerce.Cart");
+        attribute.Features.Count().ShouldBe(3);
+        attribute.Features.ShouldBe(new[] { "Ecommerce.Products", "Ecommerce.Reviews", "Ecommerce.Cart" });
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class RequiresFeatureAttributeTests
         var attribute = new RequiresFeatureAttribute();
 
         // Assert
-        attribute.Features.Should().BeEmpty();
+        attribute.Features.ShouldBeEmpty();
     }
 
     #endregion
@@ -54,7 +54,7 @@ public class RequiresFeatureAttributeTests
             .Single();
 
         // Assert
-        attributeUsage.ValidOn.Should().HaveFlag(AttributeTargets.Class);
+        attributeUsage.ValidOn.ShouldBe(AttributeTargets.Class);
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class RequiresFeatureAttributeTests
             .Single();
 
         // Assert
-        attributeUsage.AllowMultiple.Should().BeFalse();
+        attributeUsage.AllowMultiple.ShouldBeFalse();
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class RequiresFeatureAttributeTests
             .Single();
 
         // Assert
-        attributeUsage.Inherited.Should().BeTrue();
+        attributeUsage.Inherited.ShouldBeTrue();
     }
 
     #endregion

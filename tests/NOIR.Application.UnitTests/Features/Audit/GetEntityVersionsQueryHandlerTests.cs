@@ -64,9 +64,9 @@ public class GetEntityVersionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(3);
-        result.Value.Select(v => v.Version).Should().BeEquivalentTo(new[] { 1, 2, 3 });
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(3);
+        result.Value.Select(v => v.Version).ShouldBe(new[] { 1, 2, 3 });
     }
 
     [Fact]
@@ -89,15 +89,15 @@ public class GetEntityVersionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var version = result.Value[0];
-        version.Version.Should().Be(1);
-        version.Operation.Should().Be("Create");
-        version.UserId.Should().Be(userId);
-        version.UserEmail.Should().Be("admin@noir.local");
-        version.State.Should().ContainKey("Name");
-        version.State.Should().ContainKey("Email");
-        version.State.Should().ContainKey("IsActive");
+        version.Version.ShouldBe(1);
+        version.Operation.ShouldBe("Create");
+        version.UserId.ShouldBe(userId);
+        version.UserEmail.ShouldBe("admin@noir.local");
+        version.State.ShouldContainKey("Name");
+        version.State.ShouldContainKey("Email");
+        version.State.ShouldContainKey("IsActive");
     }
 
     [Fact]
@@ -123,9 +123,9 @@ public class GetEntityVersionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(5);
-        result.Value.Select(v => v.Version).Should().BeInAscendingOrder();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(5);
+        result.Value.Select(v => v.Version).ShouldBeInOrder(SortDirection.Ascending);
     }
 
     [Fact]
@@ -147,10 +147,10 @@ public class GetEntityVersionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(1);
-        result.Value[0].Version.Should().Be(1);
-        result.Value[0].Operation.Should().Be("Create");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(1);
+        result.Value[0].Version.ShouldBe(1);
+        result.Value[0].Operation.ShouldBe("Create");
     }
 
     [Fact]
@@ -171,8 +171,8 @@ public class GetEntityVersionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(50);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(50);
     }
 
     [Fact]
@@ -203,11 +203,11 @@ public class GetEntityVersionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().HaveCount(4);
-        result.Value.Select(v => v.Operation).Should().Contain("Create");
-        result.Value.Select(v => v.Operation).Should().Contain("Update");
-        result.Value.Select(v => v.Operation).Should().Contain("Delete");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Count().ShouldBe(4);
+        result.Value.Select(v => v.Operation).ShouldContain("Create");
+        result.Value.Select(v => v.Operation).ShouldContain("Update");
+        result.Value.Select(v => v.Operation).ShouldContain("Delete");
     }
 
     #endregion
@@ -228,8 +228,8 @@ public class GetEntityVersionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     [Fact]
@@ -246,8 +246,8 @@ public class GetEntityVersionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeEmpty();
     }
 
     #endregion
@@ -395,16 +395,16 @@ public class GetEntityVersionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var versionState = result.Value[0].State;
-        versionState.Should().ContainKey("Id");
-        versionState.Should().ContainKey("Name");
-        versionState.Should().ContainKey("Email");
-        versionState.Should().ContainKey("IsActive");
-        versionState.Should().ContainKey("CreatedAt");
-        versionState.Should().ContainKey("Roles");
-        versionState["Name"].Should().Be("Test User");
-        versionState["IsActive"].Should().Be(true);
+        versionState.ShouldContainKey("Id");
+        versionState.ShouldContainKey("Name");
+        versionState.ShouldContainKey("Email");
+        versionState.ShouldContainKey("IsActive");
+        versionState.ShouldContainKey("CreatedAt");
+        versionState.ShouldContainKey("Roles");
+        versionState["Name"].ShouldBe("Test User");
+        versionState["IsActive"].ShouldBe(true);
     }
 
     [Fact]
@@ -439,10 +439,10 @@ public class GetEntityVersionsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var versionState = result.Value[0].State;
-        versionState["MiddleName"].Should().BeNull();
-        versionState["DeletedAt"].Should().BeNull();
+        versionState["MiddleName"].ShouldBeNull();
+        versionState["DeletedAt"].ShouldBeNull();
     }
 
     #endregion

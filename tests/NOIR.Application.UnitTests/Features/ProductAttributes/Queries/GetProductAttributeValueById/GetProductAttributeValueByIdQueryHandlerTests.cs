@@ -77,8 +77,8 @@ public class GetProductAttributeValueByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
     }
 
     [Fact]
@@ -101,14 +101,14 @@ public class GetProductAttributeValueByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Id.Should().Be(attrValue.Id);
-        dto.Value.Should().Be("blue");
-        dto.DisplayValue.Should().Be("Blue");
-        dto.ColorCode.Should().Be("#0000FF");
-        dto.SortOrder.Should().Be(3);
-        dto.IsActive.Should().BeTrue();
+        dto.Id.ShouldBe(attrValue.Id);
+        dto.Value.ShouldBe("blue");
+        dto.DisplayValue.ShouldBe("Blue");
+        dto.ColorCode.ShouldBe("#0000FF");
+        dto.SortOrder.ShouldBe(3);
+        dto.IsActive.ShouldBe(true);
     }
 
     [Fact]
@@ -128,8 +128,8 @@ public class GetProductAttributeValueByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SwatchUrl.Should().Be("https://example.com/swatch.png");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SwatchUrl.ShouldBe("https://example.com/swatch.png");
     }
 
     [Fact]
@@ -149,8 +149,8 @@ public class GetProductAttributeValueByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IconUrl.Should().Be("https://example.com/icon.svg");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IconUrl.ShouldBe("https://example.com/icon.svg");
     }
 
     [Fact]
@@ -168,8 +168,8 @@ public class GetProductAttributeValueByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(target.Id);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(target.Id);
     }
 
     [Fact]
@@ -190,10 +190,10 @@ public class GetProductAttributeValueByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ColorCode.Should().BeNull();
-        result.Value.SwatchUrl.Should().BeNull();
-        result.Value.IconUrl.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ColorCode.ShouldBeNull();
+        result.Value.SwatchUrl.ShouldBeNull();
+        result.Value.IconUrl.ShouldBeNull();
     }
 
     #endregion
@@ -213,10 +213,10 @@ public class GetProductAttributeValueByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-ATTR-VALUE-001");
-        result.Error.Message.Should().Contain(nonExistentId.ToString());
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-ATTR-VALUE-001");
+        result.Error.Message.ShouldContain(nonExistentId.ToString());
     }
 
     [Fact]
@@ -231,8 +231,8 @@ public class GetProductAttributeValueByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-ATTR-VALUE-001");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-ATTR-VALUE-001");
     }
 
     [Fact]
@@ -249,9 +249,9 @@ public class GetProductAttributeValueByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Message.Should().Contain(differentId.ToString());
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Message.ShouldContain(differentId.ToString());
+        result.Error.Message.ShouldContain("not found");
     }
 
     #endregion
@@ -274,7 +274,7 @@ public class GetProductAttributeValueByIdQueryHandlerTests
         var result = await _handler.Handle(query, token);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
     }
 
     [Fact]
@@ -290,8 +290,8 @@ public class GetProductAttributeValueByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProductCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProductCount.ShouldBe(0);
     }
 
     #endregion

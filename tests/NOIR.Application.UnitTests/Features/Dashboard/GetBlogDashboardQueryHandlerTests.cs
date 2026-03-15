@@ -65,11 +65,11 @@ public class GetBlogDashboardQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(expected);
-        result.Value.TotalPosts.Should().Be(100);
-        result.Value.PublishedPosts.Should().Be(75);
-        result.Value.DraftPosts.Should().Be(20);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(expected);
+        result.Value.TotalPosts.ShouldBe(100);
+        result.Value.PublishedPosts.ShouldBe(75);
+        result.Value.DraftPosts.ShouldBe(20);
     }
 
     [Fact]
@@ -87,10 +87,10 @@ public class GetBlogDashboardQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TopPosts.Should().HaveCount(2);
-        result.Value.TopPosts[0].Title.Should().Be("Getting Started Guide");
-        result.Value.TopPosts[0].ViewCount.Should().Be(1500);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TopPosts.Count().ShouldBe(2);
+        result.Value.TopPosts[0].Title.ShouldBe("Getting Started Guide");
+        result.Value.TopPosts[0].ViewCount.ShouldBe(1500);
     }
 
     [Fact]
@@ -108,9 +108,9 @@ public class GetBlogDashboardQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PublishingTrend.Should().HaveCount(7);
-        result.Value.PublishingTrend.Should().AllSatisfy(t => t.PostCount.Should().BeGreaterThan(0));
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PublishingTrend.Count().ShouldBe(7);
+        result.Value.PublishingTrend.ShouldAllBe(t => t.PostCount > 0);
     }
 
     #endregion

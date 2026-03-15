@@ -41,15 +41,15 @@ public class GetSmtpSettingsQueryHandlerTests
         var result = await _handler.Handle(new GetSmtpSettingsQuery(), CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Host.Should().Be("smtp.example.com");
-        result.Value.Port.Should().Be(587);
-        result.Value.Username.Should().Be("user@example.com");
-        result.Value.HasPassword.Should().BeTrue();
-        result.Value.FromEmail.Should().Be("noreply@example.com");
-        result.Value.FromName.Should().Be("NOIR System");
-        result.Value.UseSsl.Should().BeTrue();
-        result.Value.IsConfigured.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Host.ShouldBe("smtp.example.com");
+        result.Value.Port.ShouldBe(587);
+        result.Value.Username.ShouldBe("user@example.com");
+        result.Value.HasPassword.ShouldBe(true);
+        result.Value.FromEmail.ShouldBe("noreply@example.com");
+        result.Value.FromName.ShouldBe("NOIR System");
+        result.Value.UseSsl.ShouldBe(true);
+        result.Value.IsConfigured.ShouldBe(true);
     }
 
     [Fact]
@@ -66,15 +66,15 @@ public class GetSmtpSettingsQueryHandlerTests
         var result = await _handler.Handle(new GetSmtpSettingsQuery(), CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Host.Should().BeEmpty();
-        result.Value.Port.Should().Be(25); // Default port
-        result.Value.Username.Should().BeNull();
-        result.Value.HasPassword.Should().BeFalse();
-        result.Value.FromEmail.Should().BeEmpty();
-        result.Value.FromName.Should().BeEmpty();
-        result.Value.UseSsl.Should().BeFalse();
-        result.Value.IsConfigured.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Host.ShouldBeEmpty();
+        result.Value.Port.ShouldBe(25); // Default port
+        result.Value.Username.ShouldBeNull();
+        result.Value.HasPassword.ShouldBe(false);
+        result.Value.FromEmail.ShouldBeEmpty();
+        result.Value.FromName.ShouldBeEmpty();
+        result.Value.UseSsl.ShouldBe(false);
+        result.Value.IsConfigured.ShouldBe(false);
     }
 
     [Fact]
@@ -95,8 +95,8 @@ public class GetSmtpSettingsQueryHandlerTests
         var result = await _handler.Handle(new GetSmtpSettingsQuery(), CancellationToken.None);
 
         // Assert
-        result.Value.HasPassword.Should().BeFalse();
-        result.Value.IsConfigured.Should().BeTrue(); // Has at least one setting
+        result.Value.HasPassword.ShouldBe(false);
+        result.Value.IsConfigured.ShouldBe(true); // Has at least one setting
     }
 
     [Theory]
@@ -118,7 +118,7 @@ public class GetSmtpSettingsQueryHandlerTests
         var result = await _handler.Handle(new GetSmtpSettingsQuery(), CancellationToken.None);
 
         // Assert
-        result.Value.Port.Should().Be(expected);
+        result.Value.Port.ShouldBe(expected);
     }
 
     [Theory]
@@ -140,7 +140,7 @@ public class GetSmtpSettingsQueryHandlerTests
         var result = await _handler.Handle(new GetSmtpSettingsQuery(), CancellationToken.None);
 
         // Assert
-        result.Value.UseSsl.Should().Be(expected);
+        result.Value.UseSsl.ShouldBe(expected);
     }
 
     [Fact]

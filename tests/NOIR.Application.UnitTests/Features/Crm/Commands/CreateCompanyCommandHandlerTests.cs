@@ -47,8 +47,8 @@ public class CreateCompanyCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Acme Corp");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Acme Corp");
 
         _companyRepoMock.Verify(
             x => x.AddAsync(It.IsAny<CrmCompany>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -72,7 +72,7 @@ public class CreateCompanyCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
         _companyRepoMock.Verify(
             x => x.AddAsync(It.IsAny<CrmCompany>(), It.IsAny<CancellationToken>()), Times.Never);
     }

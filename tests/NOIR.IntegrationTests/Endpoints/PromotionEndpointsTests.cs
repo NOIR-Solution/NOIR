@@ -42,10 +42,10 @@ public class PromotionEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.GetAsync("/api/promotions");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<PromotionDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeNull();
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class PromotionEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await _client.GetAsync("/api/promotions");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -68,11 +68,11 @@ public class PromotionEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.GetAsync("/api/promotions?page=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<PromotionDto>>();
-        result.Should().NotBeNull();
-        result!.PageNumber.Should().Be(1);
-        result.Items.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.PageNumber.ShouldBe(1);
+        result.Items.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     #endregion
@@ -93,11 +93,11 @@ public class PromotionEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.GetAsync($"/api/promotions/{created!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var promotion = await response.Content.ReadFromJsonWithEnumsAsync<PromotionDto>();
-        promotion.Should().NotBeNull();
-        promotion!.Id.Should().Be(created.Id);
-        promotion.Name.Should().Be(createRequest.Name);
+        promotion.ShouldNotBeNull();
+        promotion!.Id.ShouldBe(created.Id);
+        promotion.Name.ShouldBe(createRequest.Name);
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public class PromotionEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.GetAsync($"/api/promotions/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -128,12 +128,12 @@ public class PromotionEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.PostAsJsonAsync("/api/promotions", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var promotion = await response.Content.ReadFromJsonWithEnumsAsync<PromotionDto>();
-        promotion.Should().NotBeNull();
-        promotion!.Name.Should().Be(request.Name);
-        promotion.Code.Should().Be(request.Code);
-        promotion.DiscountValue.Should().Be(request.DiscountValue);
+        promotion.ShouldNotBeNull();
+        promotion!.Name.ShouldBe(request.Name);
+        promotion.Code.ShouldBe(request.Code);
+        promotion.DiscountValue.ShouldBe(request.DiscountValue);
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class PromotionEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.PostAsJsonAsync("/api/promotions", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -169,7 +169,7 @@ public class PromotionEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await _client.PostAsJsonAsync("/api/promotions", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -203,11 +203,11 @@ public class PromotionEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.PutAsJsonAsync($"/api/promotions/{created.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updated = await response.Content.ReadFromJsonWithEnumsAsync<PromotionDto>();
-        updated.Should().NotBeNull();
-        updated!.Name.Should().Be("Updated Promotion Name");
-        updated.DiscountValue.Should().Be(15m);
+        updated.ShouldNotBeNull();
+        updated!.Name.ShouldBe("Updated Promotion Name");
+        updated.DiscountValue.ShouldBe(15m);
     }
 
     [Fact]
@@ -232,7 +232,7 @@ public class PromotionEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.PutAsJsonAsync($"/api/promotions/{nonExistentId}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -252,11 +252,11 @@ public class PromotionEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.DeleteAsync($"/api/promotions/{created!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Verify it's deleted (soft)
         var getResponse = await adminClient.GetAsync($"/api/promotions/{created.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -269,7 +269,7 @@ public class PromotionEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.DeleteAsync($"/api/promotions/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -289,10 +289,10 @@ public class PromotionEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.PostAsync($"/api/promotions/{created!.Id}/activate", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var activated = await response.Content.ReadFromJsonWithEnumsAsync<PromotionDto>();
-        activated.Should().NotBeNull();
-        activated!.IsActive.Should().BeTrue();
+        activated.ShouldNotBeNull();
+        activated!.IsActive.ShouldBeTrue();
     }
 
     [Fact]
@@ -305,7 +305,7 @@ public class PromotionEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.PostAsync($"/api/promotions/{Guid.NewGuid()}/activate", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -324,10 +324,10 @@ public class PromotionEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await adminClient.PostAsync($"/api/promotions/{created.Id}/deactivate", null);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var deactivated = await response.Content.ReadFromJsonWithEnumsAsync<PromotionDto>();
-        deactivated.Should().NotBeNull();
-        deactivated!.IsActive.Should().BeFalse();
+        deactivated.ShouldNotBeNull();
+        deactivated!.IsActive.ShouldBeFalse();
     }
 
     #endregion
@@ -345,10 +345,10 @@ public class PromotionEndpointsTests : IClassFixture<CustomWebApplicationFactory
 
         // Assert
         // The validate endpoint returns 200 with IsValid=false rather than 404
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PromoCodeValidationDto>();
-        result.Should().NotBeNull();
-        result!.IsValid.Should().BeFalse();
+        result.ShouldNotBeNull();
+        result!.IsValid.ShouldBeFalse();
     }
 
     #endregion
@@ -382,7 +382,7 @@ public class PromotionEndpointsTests : IClassFixture<CustomWebApplicationFactory
         var response = await userClient.GetAsync("/api/promotions");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     #endregion

@@ -148,11 +148,11 @@ public class CreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.CustomerEmail.Should().Be(command.CustomerEmail);
-        result.Value.CustomerName.Should().Be(command.CustomerName);
-        result.Value.Status.Should().Be(OrderStatus.Pending);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.CustomerEmail.ShouldBe(command.CustomerEmail);
+        result.Value.CustomerName.ShouldBe(command.CustomerName);
+        result.Value.Status.ShouldBe(OrderStatus.Pending);
 
         _orderRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()),
@@ -189,9 +189,9 @@ public class CreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.Items.Should().HaveCount(3);
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.Items.Count().ShouldBe(3);
     }
 
     [Fact]
@@ -223,11 +223,11 @@ public class CreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.ShippingAddress.Should().NotBeNull();
-        capturedOrder.ShippingAddress!.FullName.Should().Be("Jane Doe");
-        capturedOrder.ShippingAddress.Province.Should().Be("Hanoi");
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.ShippingAddress.ShouldNotBeNull();
+        capturedOrder.ShippingAddress!.FullName.ShouldBe("Jane Doe");
+        capturedOrder.ShippingAddress.Province.ShouldBe("Hanoi");
     }
 
     [Fact]
@@ -256,10 +256,10 @@ public class CreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.BillingAddress.Should().NotBeNull();
-        capturedOrder.BillingAddress!.FullName.Should().Be("Billing Person");
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.BillingAddress.ShouldNotBeNull();
+        capturedOrder.BillingAddress!.FullName.ShouldBe("Billing Person");
     }
 
     [Fact]
@@ -284,10 +284,10 @@ public class CreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.BillingAddress.Should().NotBeNull();
-        capturedOrder.BillingAddress!.FullName.Should().Be("Shipping Person");
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.BillingAddress.ShouldNotBeNull();
+        capturedOrder.BillingAddress!.FullName.ShouldBe("Shipping Person");
     }
 
     [Fact]
@@ -313,10 +313,10 @@ public class CreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.DiscountAmount.Should().Be(20.00m);
-        capturedOrder.CouponCode.Should().Be("SAVE20");
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.DiscountAmount.ShouldBe(20.00m);
+        capturedOrder.CouponCode.ShouldBe("SAVE20");
     }
 
     [Fact]
@@ -341,9 +341,9 @@ public class CreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.CheckoutSessionId.Should().Be(checkoutSessionId);
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.CheckoutSessionId.ShouldBe(checkoutSessionId);
     }
 
     [Fact]
@@ -367,9 +367,9 @@ public class CreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.CustomerNotes.Should().Be("Please deliver after 5 PM");
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.CustomerNotes.ShouldBe("Please deliver after 5 PM");
     }
 
     [Fact]
@@ -395,8 +395,8 @@ public class CreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.OrderNumber.Should().EndWith("0006");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.OrderNumber.ShouldEndWith("0006");
         _orderNumberGeneratorMock.Verify(
             x => x.GenerateNextAsync(TestTenantId, It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -428,10 +428,10 @@ public class CreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Order.MustHaveItems);
-        result.Error.Message.Should().Contain("at least one item");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.MustHaveItems);
+        result.Error.Message.ShouldContain("at least one item");
 
         _orderRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()),
@@ -448,10 +448,10 @@ public class CreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be(ErrorCodes.Order.MustHaveItems);
-        result.Error.Message.Should().Contain("at least one item");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe(ErrorCodes.Order.MustHaveItems);
+        result.Error.Message.ShouldContain("at least one item");
 
         _orderRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()),
@@ -516,9 +516,9 @@ public class CreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SubTotal.Should().Be(350m); // 200 + 150
-        result.Value.GrandTotal.Should().Be(360m); // 350 + 10 (shipping)
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SubTotal.ShouldBe(350m); // 200 + 150
+        result.Value.GrandTotal.ShouldBe(360m); // 350 + 10 (shipping)
     }
 
     [Fact]
@@ -546,11 +546,11 @@ public class CreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SubTotal.Should().Be(200m);
-        result.Value.DiscountAmount.Should().Be(30m);
-        result.Value.ShippingAmount.Should().Be(20m);
-        result.Value.GrandTotal.Should().Be(190m); // 200 - 30 + 20
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SubTotal.ShouldBe(200m);
+        result.Value.DiscountAmount.ShouldBe(30m);
+        result.Value.ShippingAmount.ShouldBe(20m);
+        result.Value.GrandTotal.ShouldBe(190m); // 200 - 30 + 20
     }
 
     [Fact]
@@ -574,9 +574,9 @@ public class CreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.CustomerId.Should().Be(Guid.Parse(TestUserId));
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.CustomerId.ShouldBe(Guid.Parse(TestUserId));
     }
 
     [Fact]
@@ -602,9 +602,9 @@ public class CreateOrderCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedOrder.Should().NotBeNull();
-        capturedOrder!.CustomerId.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        capturedOrder.ShouldNotBeNull();
+        capturedOrder!.CustomerId.ShouldBeNull();
     }
 
     #endregion

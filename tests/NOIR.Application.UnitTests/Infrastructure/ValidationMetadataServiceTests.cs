@@ -60,7 +60,7 @@ public class ValidationMetadataServiceTests
         var result = _sut.GetAllValidatorMetadata();
 
         // Assert
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class ValidationMetadataServiceTests
         var result = _sut.GetAllValidatorMetadata();
 
         // Assert
-        result.Should().Contain(m => m.CommandName == "CreateTenantCommand");
+        result.ShouldContain(m => m.CommandName == "CreateTenantCommand");
     }
 
     [Fact]
@@ -81,10 +81,10 @@ public class ValidationMetadataServiceTests
         var tenantMetadata = result.FirstOrDefault(m => m.CommandName == "CreateTenantCommand");
 
         // Assert
-        tenantMetadata.Should().NotBeNull();
-        tenantMetadata!.Fields.Should().NotBeEmpty();
-        tenantMetadata.Fields.Should().Contain(f => f.FieldName == "Identifier");
-        tenantMetadata.Fields.Should().Contain(f => f.FieldName == "Name");
+        tenantMetadata.ShouldNotBeNull();
+        tenantMetadata!.Fields.ShouldNotBeEmpty();
+        tenantMetadata.Fields.ShouldContain(f => f.FieldName == "Identifier");
+        tenantMetadata.Fields.ShouldContain(f => f.FieldName == "Name");
     }
 
     #endregion
@@ -98,8 +98,8 @@ public class ValidationMetadataServiceTests
         var result = _sut.GetValidatorMetadata("CreateTenantCommand");
 
         // Assert
-        result.Should().NotBeNull();
-        result!.CommandName.Should().Be("CreateTenantCommand");
+        result.ShouldNotBeNull();
+        result!.CommandName.ShouldBe("CreateTenantCommand");
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class ValidationMetadataServiceTests
         var result = _sut.GetValidatorMetadata("NonExistentCommand");
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -120,9 +120,9 @@ public class ValidationMetadataServiceTests
         var result2 = _sut.GetValidatorMetadata("createtenantcommand");
 
         // Assert
-        result1.Should().NotBeNull();
-        result2.Should().NotBeNull();
-        result1!.CommandName.Should().Be(result2!.CommandName);
+        result1.ShouldNotBeNull();
+        result2.ShouldNotBeNull();
+        result1!.CommandName.ShouldBe(result2!.CommandName);
     }
 
     #endregion
@@ -136,8 +136,8 @@ public class ValidationMetadataServiceTests
         var result = _sut.GetValidatorMetadata(name => name.Contains("Tenant"));
 
         // Assert
-        result.Should().NotBeEmpty();
-        result.Should().OnlyContain(m => m.CommandName.Contains("Tenant"));
+        result.ShouldNotBeEmpty();
+        result.ShouldAllBe(m => m.CommandName.Contains("Tenant"));
     }
 
     [Fact]
@@ -147,7 +147,7 @@ public class ValidationMetadataServiceTests
         var result = _sut.GetValidatorMetadata(name => name.Contains("Xyz123NonExistent"));
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     #endregion
@@ -162,8 +162,8 @@ public class ValidationMetadataServiceTests
         var identifierField = result?.Fields.FirstOrDefault(f => f.FieldName == "Identifier");
 
         // Assert
-        identifierField.Should().NotBeNull();
-        identifierField!.IsRequired.Should().BeTrue();
+        identifierField.ShouldNotBeNull();
+        identifierField!.IsRequired.ShouldBe(true);
     }
 
     [Fact]
@@ -174,12 +174,12 @@ public class ValidationMetadataServiceTests
         var identifierField = result?.Fields.FirstOrDefault(f => f.FieldName == "Identifier");
 
         // Assert
-        identifierField.Should().NotBeNull();
-        identifierField!.Rules.Should().Contain(r => r.RuleType == "minLength");
+        identifierField.ShouldNotBeNull();
+        identifierField!.Rules.ShouldContain(r => r.RuleType == "minLength");
 
         var minLengthRule = identifierField.Rules.First(r => r.RuleType == "minLength");
-        minLengthRule.Parameters.Should().ContainKey("min");
-        minLengthRule.Parameters!["min"].Should().Be(2);
+        minLengthRule.Parameters.ShouldContainKey("min");
+        minLengthRule.Parameters!["min"].ShouldBe(2);
     }
 
     [Fact]
@@ -190,12 +190,12 @@ public class ValidationMetadataServiceTests
         var identifierField = result?.Fields.FirstOrDefault(f => f.FieldName == "Identifier");
 
         // Assert
-        identifierField.Should().NotBeNull();
-        identifierField!.Rules.Should().Contain(r => r.RuleType == "maxLength");
+        identifierField.ShouldNotBeNull();
+        identifierField!.Rules.ShouldContain(r => r.RuleType == "maxLength");
 
         var maxLengthRule = identifierField.Rules.First(r => r.RuleType == "maxLength");
-        maxLengthRule.Parameters.Should().ContainKey("max");
-        maxLengthRule.Parameters!["max"].Should().Be(100);
+        maxLengthRule.Parameters.ShouldContainKey("max");
+        maxLengthRule.Parameters!["max"].ShouldBe(100);
     }
 
     [Fact]
@@ -206,12 +206,12 @@ public class ValidationMetadataServiceTests
         var identifierField = result?.Fields.FirstOrDefault(f => f.FieldName == "Identifier");
 
         // Assert
-        identifierField.Should().NotBeNull();
-        identifierField!.Rules.Should().Contain(r => r.RuleType == "pattern");
+        identifierField.ShouldNotBeNull();
+        identifierField!.Rules.ShouldContain(r => r.RuleType == "pattern");
 
         var patternRule = identifierField.Rules.First(r => r.RuleType == "pattern");
-        patternRule.Parameters.Should().ContainKey("pattern");
-        patternRule.Parameters!["pattern"].Should().Be("^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$");
+        patternRule.Parameters.ShouldContainKey("pattern");
+        patternRule.Parameters!["pattern"].ShouldBe("^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$");
     }
 
     [Fact]
@@ -222,8 +222,8 @@ public class ValidationMetadataServiceTests
         var nameField = result?.Fields.FirstOrDefault(f => f.FieldName == "Name");
 
         // Assert
-        nameField.Should().NotBeNull();
-        nameField!.IsRequired.Should().BeTrue();
+        nameField.ShouldNotBeNull();
+        nameField!.IsRequired.ShouldBe(true);
     }
 
     #endregion
@@ -238,8 +238,8 @@ public class ValidationMetadataServiceTests
         var identifierField = result?.Fields.FirstOrDefault(f => f.FieldName == "Identifier");
 
         // Assert
-        identifierField.Should().NotBeNull();
-        identifierField!.FieldType.Should().Be("string");
+        identifierField.ShouldNotBeNull();
+        identifierField!.FieldType.ShouldBe("string");
     }
 
     #endregion
@@ -253,8 +253,8 @@ public class ValidationMetadataServiceTests
         var result = _sut.GetValidatorMetadataForType(typeof(CreateTenantCommand));
 
         // Assert
-        result.Should().NotBeNull();
-        result!.CommandName.Should().Be("CreateTenantCommand");
+        result.ShouldNotBeNull();
+        result!.CommandName.ShouldBe("CreateTenantCommand");
     }
 
     [Fact]
@@ -264,7 +264,7 @@ public class ValidationMetadataServiceTests
         var result = _sut.GetValidatorMetadataForType(typeof(string));
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     #endregion
@@ -278,7 +278,7 @@ public class ValidationMetadataServiceTests
         var result = _sut.GetValidatorMetadata("");
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -289,7 +289,7 @@ public class ValidationMetadataServiceTests
         var result = _sut.GetValidatorMetadata(nullName!);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     #endregion

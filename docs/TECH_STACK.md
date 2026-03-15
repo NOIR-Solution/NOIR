@@ -611,7 +611,7 @@ const form = useForm<FormData>({
 | Technology | Version | Purpose | Docs |
 |------------|---------|---------|------|
 | **xUnit** | 2.9 | Test framework | [xUnit](https://xunit.net/) |
-| **FluentAssertions** | 7.0 | Assertions | [FluentAssertions](https://fluentassertions.com/) |
+| **Shouldly** | 4.3.0 | Assertions | [Shouldly](https://github.com/shouldly/shouldly) |
 | **NSubstitute** | 5.0 | Mocking | [NSubstitute](https://nsubstitute.github.io/) |
 
 **Test Projects:**

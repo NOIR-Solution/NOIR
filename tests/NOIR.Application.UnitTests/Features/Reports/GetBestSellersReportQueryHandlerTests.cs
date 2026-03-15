@@ -67,9 +67,9 @@ public class GetBestSellersReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Products.Should().HaveCount(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Products.Count().ShouldBe(5);
     }
 
     #endregion
@@ -98,7 +98,7 @@ public class GetBestSellersReportQueryHandlerTests
         var afterExecution = DateTimeOffset.UtcNow;
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _reportServiceMock.Verify(
             x => x.GetBestSellersAsync(
                 It.Is<DateTimeOffset>(d => d >= beforeExecution.AddDays(-30).AddSeconds(-1) && d <= afterExecution.AddDays(-30).AddSeconds(1)),
@@ -131,7 +131,7 @@ public class GetBestSellersReportQueryHandlerTests
         var afterExecution = DateTimeOffset.UtcNow;
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _reportServiceMock.Verify(
             x => x.GetBestSellersAsync(
                 startDate,
@@ -164,7 +164,7 @@ public class GetBestSellersReportQueryHandlerTests
         var afterExecution = DateTimeOffset.UtcNow;
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _reportServiceMock.Verify(
             x => x.GetBestSellersAsync(
                 It.Is<DateTimeOffset>(d => d >= beforeExecution.AddDays(-30).AddSeconds(-1) && d <= afterExecution.AddDays(-30).AddSeconds(1)),
@@ -205,7 +205,7 @@ public class GetBestSellersReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _reportServiceMock.Verify(
             x => x.GetBestSellersAsync(
                 It.IsAny<DateTimeOffset>(),
@@ -249,11 +249,11 @@ public class GetBestSellersReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeSameAs(expectedReport);
-        result.Value.Products.Should().HaveCount(2);
-        result.Value.Products[0].ProductName.Should().Be("Widget A");
-        result.Value.Products[1].ImageUrl.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBeSameAs(expectedReport);
+        result.Value.Products.Count().ShouldBe(2);
+        result.Value.Products[0].ProductName.ShouldBe("Widget A");
+        result.Value.Products[1].ImageUrl.ShouldBeNull();
     }
 
     #endregion
@@ -319,8 +319,8 @@ public class GetBestSellersReportQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Products.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Products.ShouldBeEmpty();
     }
 
     #endregion
@@ -347,8 +347,8 @@ public class GetBestSellersReportQueryHandlerTests
         var act = () => _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("Database connection failed");
+        (await Should.ThrowAsync<InvalidOperationException>(act))
+            .Message.ShouldBe("Database connection failed");
     }
 
     #endregion

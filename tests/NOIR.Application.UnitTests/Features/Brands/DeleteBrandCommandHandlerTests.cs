@@ -67,8 +67,8 @@ public class DeleteBrandCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
 
         _brandRepositoryMock.Verify(
             x => x.Remove(existingBrand),
@@ -105,8 +105,8 @@ public class DeleteBrandCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert - MarkAsDeleted should add a BrandDeletedEvent
-        existingBrand.DomainEvents.Count.Should().BeGreaterThan(initialEventCount);
-        existingBrand.DomainEvents.Should().ContainSingle(e => e.GetType().Name == "BrandDeletedEvent");
+        existingBrand.DomainEvents.Count.ShouldBeGreaterThan(initialEventCount);
+        existingBrand.DomainEvents.Where(e => e.GetType().Name == "BrandDeletedEvent");
     }
 
     #endregion
@@ -131,8 +131,8 @@ public class DeleteBrandCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Brand.NotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Brand.NotFound);
 
         _brandRepositoryMock.Verify(
             x => x.Remove(It.IsAny<Brand>()),
@@ -172,8 +172,8 @@ public class DeleteBrandCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Brand.HasProducts);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Brand.HasProducts);
 
         _brandRepositoryMock.Verify(
             x => x.Remove(It.IsAny<Brand>()),

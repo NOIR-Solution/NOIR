@@ -38,7 +38,7 @@ public class FileStorageServiceTests
         var result = await _sut.UploadAsync("test.txt", content);
 
         // Assert
-        result.Should().Be("test.txt");
+        result.ShouldBe("test.txt");
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class FileStorageServiceTests
         var result = await _sut.UploadAsync("test.txt", content, "uploads");
 
         // Assert
-        result.Should().Be("uploads/test.txt");
+        result.ShouldBe("uploads/test.txt");
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class FileStorageServiceTests
         var action = () => _sut.UploadAsync("test.txt", content);
 
         // Assert
-        await action.Should().ThrowAsync<IOException>();
+        await Should.ThrowAsync<IOException>(action);
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class FileStorageServiceTests
         var result = await _sut.UploadAsync("test.txt", content, "");
 
         // Assert
-        result.Should().Be("test.txt");
+        result.ShouldBe("test.txt");
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public class FileStorageServiceTests
         var result = await _sut.UploadAsync("test.txt", content, null);
 
         // Assert
-        result.Should().Be("test.txt");
+        result.ShouldBe("test.txt");
     }
 
     #endregion
@@ -136,8 +136,8 @@ public class FileStorageServiceTests
         var result = await _sut.DownloadAsync("test.txt");
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().BeSameAs(expectedStream);
+        result.ShouldNotBeNull();
+        result.ShouldBeSameAs(expectedStream);
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public class FileStorageServiceTests
         var result = await _sut.DownloadAsync("missing.txt");
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
         _storageMock.Verify(x => x.OpenReadAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -167,7 +167,7 @@ public class FileStorageServiceTests
         var action = () => _sut.DownloadAsync("test.txt");
 
         // Assert
-        await action.Should().ThrowAsync<IOException>();
+        await Should.ThrowAsync<IOException>(action);
     }
 
     [Fact]
@@ -184,7 +184,7 @@ public class FileStorageServiceTests
         var action = () => _sut.DownloadAsync("test.txt");
 
         // Assert
-        await action.Should().ThrowAsync<IOException>();
+        await Should.ThrowAsync<IOException>(action);
     }
 
     #endregion
@@ -205,7 +205,7 @@ public class FileStorageServiceTests
         var result = await _sut.DeleteAsync("test.txt");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
         _storageMock.Verify(x => x.DeleteAsync(It.IsAny<string[]>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -221,7 +221,7 @@ public class FileStorageServiceTests
         var result = await _sut.DeleteAsync("missing.txt");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
         _storageMock.Verify(x => x.DeleteAsync(It.IsAny<string[]>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -236,7 +236,7 @@ public class FileStorageServiceTests
         var result = await _sut.DeleteAsync("test.txt");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -253,7 +253,7 @@ public class FileStorageServiceTests
         var result = await _sut.DeleteAsync("test.txt");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     #endregion
@@ -276,9 +276,9 @@ public class FileStorageServiceTests
         var result = await _sut.ListAsync();
 
         // Assert
-        result.Should().HaveCount(2);
-        result.Should().Contain(p => p.Contains("file1.txt"));
-        result.Should().Contain(p => p.Contains("file2.txt"));
+        result.Count().ShouldBe(2);
+        result.ShouldContain(p => p.Contains("file1.txt"));
+        result.ShouldContain(p => p.Contains("file2.txt"));
     }
 
     [Fact]
@@ -294,8 +294,8 @@ public class FileStorageServiceTests
         await _sut.ListAsync("uploads");
 
         // Assert
-        capturedOptions.Should().NotBeNull();
-        capturedOptions!.FolderPath.Should().Contain("uploads");
+        capturedOptions.ShouldNotBeNull();
+        capturedOptions!.FolderPath.ShouldContain("uploads");
     }
 
     [Fact]
@@ -309,7 +309,7 @@ public class FileStorageServiceTests
         var result = await _sut.ListAsync();
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -323,7 +323,7 @@ public class FileStorageServiceTests
         var result = await _sut.ListAsync();
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -339,7 +339,7 @@ public class FileStorageServiceTests
         await _sut.ListAsync(null);
 
         // Assert
-        capturedOptions.Should().NotBeNull();
+        capturedOptions.ShouldNotBeNull();
     }
 
     #endregion
@@ -358,7 +358,7 @@ public class FileStorageServiceTests
         var result = await _sut.ExistsAsync("test.txt");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -373,7 +373,7 @@ public class FileStorageServiceTests
         var result = await _sut.ExistsAsync("missing.txt");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -387,7 +387,7 @@ public class FileStorageServiceTests
         var result = await _sut.ExistsAsync("test.txt");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     #endregion
@@ -401,7 +401,7 @@ public class FileStorageServiceTests
         var result = _sut.GetPublicUrl("test.txt");
 
         // Assert
-        result.Should().Be("/media/test.txt");
+        result.ShouldBe("/media/test.txt");
     }
 
     [Fact]
@@ -411,7 +411,7 @@ public class FileStorageServiceTests
         var result = _sut.GetPublicUrl("folder/subfolder/file.txt");
 
         // Assert
-        result.Should().Be("/media/folder/subfolder/file.txt");
+        result.ShouldBe("/media/folder/subfolder/file.txt");
     }
 
     [Fact]
@@ -421,7 +421,7 @@ public class FileStorageServiceTests
         var result = _sut.GetPublicUrl("");
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -431,7 +431,7 @@ public class FileStorageServiceTests
         var result = _sut.GetPublicUrl(null!);
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -451,7 +451,7 @@ public class FileStorageServiceTests
         var result = sut.GetPublicUrl("products/product-123/hero-banner-thumb.webp");
 
         // Assert
-        result.Should().Be("https://mybucket.s3.amazonaws.com/products/product-123/hero-banner-thumb.webp");
+        result.ShouldBe("https://mybucket.s3.amazonaws.com/products/product-123/hero-banner-thumb.webp");
     }
 
     [Fact]
@@ -471,7 +471,7 @@ public class FileStorageServiceTests
         var result = sut.GetPublicUrl("test.txt");
 
         // Assert
-        result.Should().Be("https://mybucket.s3.amazonaws.com/test.txt");
+        result.ShouldBe("https://mybucket.s3.amazonaws.com/test.txt");
     }
 
     [Fact]
@@ -481,7 +481,7 @@ public class FileStorageServiceTests
         var result = _sut.GetPublicUrl("products/product-123/hero.webp");
 
         // Assert
-        result.Should().Be("/media/products/product-123/hero.webp");
+        result.ShouldBe("/media/products/product-123/hero.webp");
     }
 
     #endregion
@@ -505,7 +505,7 @@ public class FileStorageServiceTests
         var result = sut.GetStoragePath("https://mybucket.s3.amazonaws.com/products/hero.webp");
 
         // Assert
-        result.Should().Be("products/hero.webp");
+        result.ShouldBe("products/hero.webp");
     }
 
     [Fact]
@@ -525,7 +525,7 @@ public class FileStorageServiceTests
         var result = sut.GetStoragePath("https://other-bucket.s3.amazonaws.com/test.webp");
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     #endregion
@@ -539,21 +539,21 @@ public class FileStorageServiceTests
         var service = new FileStorageService(_storageMock.Object, _settingsMock.Object, _loggerMock.Object);
 
         // Assert
-        service.Should().NotBeNull();
+        service.ShouldNotBeNull();
     }
 
     [Fact]
     public void Service_ShouldImplementIFileStorage()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IFileStorage>();
+        _sut.ShouldBeAssignableTo<IFileStorage>();
     }
 
     [Fact]
     public void Service_ShouldImplementIScopedService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IScopedService>();
+        _sut.ShouldBeAssignableTo<IScopedService>();
     }
 
     #endregion

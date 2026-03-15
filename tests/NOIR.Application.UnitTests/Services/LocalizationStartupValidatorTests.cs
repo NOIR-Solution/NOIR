@@ -341,7 +341,7 @@ public class LocalizationStartupValidatorTests : IDisposable
         var task = validator.StopAsync(CancellationToken.None);
 
         // Assert
-        task.IsCompleted.Should().BeTrue();
+        task.IsCompleted.ShouldBe(true);
         await task;
     }
 

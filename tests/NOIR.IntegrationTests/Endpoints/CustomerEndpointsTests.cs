@@ -40,10 +40,10 @@ public class CustomerEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/customers");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<CustomerSummaryDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.Items.ShouldNotBeNull();
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class CustomerEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/customers");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -66,10 +66,10 @@ public class CustomerEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/customers?page=1&pageSize=5");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedResult<CustomerSummaryDto>>();
-        result.Should().NotBeNull();
-        result!.Items.Count.Should().BeLessThanOrEqualTo(5);
+        result.ShouldNotBeNull();
+        result!.Items.Count.ShouldBeLessThanOrEqualTo(5);
     }
 
     #endregion
@@ -92,13 +92,13 @@ public class CustomerEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/customers/{createdCustomer!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var customer = await response.Content.ReadFromJsonWithEnumsAsync<CustomerDto>();
-        customer.Should().NotBeNull();
-        customer!.Id.Should().Be(createdCustomer.Id);
-        customer.Email.Should().Be(createRequest.Email);
-        customer.FirstName.Should().Be(createRequest.FirstName);
-        customer.LastName.Should().Be(createRequest.LastName);
+        customer.ShouldNotBeNull();
+        customer!.Id.ShouldBe(createdCustomer.Id);
+        customer.Email.ShouldBe(createRequest.Email);
+        customer.FirstName.ShouldBe(createRequest.FirstName);
+        customer.LastName.ShouldBe(createRequest.LastName);
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class CustomerEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync($"/api/customers/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -128,11 +128,11 @@ public class CustomerEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.GetAsync("/api/customers/stats");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonWithEnumsAsync<CustomerStatsDto>();
-        result.Should().NotBeNull();
-        result!.SegmentDistribution.Should().NotBeNull();
-        result.TierDistribution.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result!.SegmentDistribution.ShouldNotBeNull();
+        result.TierDistribution.ShouldNotBeNull();
     }
 
     [Fact]
@@ -142,7 +142,7 @@ public class CustomerEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.GetAsync("/api/customers/stats");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -160,12 +160,12 @@ public class CustomerEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/customers", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var customer = await response.Content.ReadFromJsonWithEnumsAsync<CustomerDto>();
-        customer.Should().NotBeNull();
-        customer!.Email.Should().Be(request.Email);
-        customer.FirstName.Should().Be(request.FirstName);
-        customer.LastName.Should().Be(request.LastName);
+        customer.ShouldNotBeNull();
+        customer!.Email.ShouldBe(request.Email);
+        customer.FirstName.ShouldBe(request.FirstName);
+        customer.LastName.ShouldBe(request.LastName);
     }
 
     [Fact]
@@ -183,7 +183,7 @@ public class CustomerEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/customers", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 
     [Fact]
@@ -200,7 +200,7 @@ public class CustomerEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PostAsJsonAsync("/api/customers", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -213,7 +213,7 @@ public class CustomerEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await _client.PostAsJsonAsync("/api/customers", request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion
@@ -246,11 +246,11 @@ public class CustomerEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/customers/{createdCustomer.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var updatedCustomer = await response.Content.ReadFromJsonWithEnumsAsync<CustomerDto>();
-        updatedCustomer.Should().NotBeNull();
-        updatedCustomer!.FirstName.Should().Be("Updated");
-        updatedCustomer.LastName.Should().Be("Name");
+        updatedCustomer.ShouldNotBeNull();
+        updatedCustomer!.FirstName.ShouldBe("Updated");
+        updatedCustomer.LastName.ShouldBe("Name");
     }
 
     [Fact]
@@ -268,7 +268,7 @@ public class CustomerEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.PutAsJsonAsync($"/api/customers/{updateRequest.Id}", updateRequest);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion
@@ -291,11 +291,11 @@ public class CustomerEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/customers/{createdCustomer!.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // Verify it's deleted (soft delete - should return not found)
         var getResponse = await adminClient.GetAsync($"/api/customers/{createdCustomer.Id}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -308,7 +308,7 @@ public class CustomerEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var response = await adminClient.DeleteAsync($"/api/customers/{Guid.NewGuid()}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     #endregion

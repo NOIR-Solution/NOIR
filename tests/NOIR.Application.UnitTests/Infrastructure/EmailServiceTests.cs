@@ -88,7 +88,7 @@ public class EmailServiceTests
         var result = await sut.SendAsync("test@example.com", "Subject", "Body");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class EmailServiceTests
         var result = await sut.SendAsync("test@example.com", "Subject", "<p>Body</p>", isHtml: true);
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
         _fluentEmailMock.Verify(x => x.Body(It.IsAny<string>(), true), Times.Once);
     }
 
@@ -129,7 +129,7 @@ public class EmailServiceTests
         var result = await sut.SendAsync("test@example.com", "Subject", "Plain text body", isHtml: false);
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
         _fluentEmailMock.Verify(x => x.Body(It.IsAny<string>()), Times.Once);
     }
 
@@ -151,7 +151,7 @@ public class EmailServiceTests
         var result = await sut.SendAsync("test@example.com", "Subject", "Body");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -166,7 +166,7 @@ public class EmailServiceTests
         var result = await sut.SendAsync("test@example.com", "Subject", "Body");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -214,7 +214,7 @@ public class EmailServiceTests
         var result = await sut.SendAsync(recipients, "Subject", "Body");
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -237,7 +237,7 @@ public class EmailServiceTests
         var result = await sut.SendAsync(recipients, "Subject", "Body");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -255,7 +255,7 @@ public class EmailServiceTests
         var result = await sut.SendAsync(recipients, "Subject", "Body");
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     #endregion
@@ -288,7 +288,7 @@ public class EmailServiceTests
         var result = await sut.SendTemplateAsync("test@example.com", "Subject", "TestTemplate", new { Name = "Test" });
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     [Fact]
@@ -301,7 +301,7 @@ public class EmailServiceTests
         var result = await sut.SendTemplateAsync("test@example.com", "Subject", "NonExistentTemplate", new { Name = "Test" });
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -324,7 +324,7 @@ public class EmailServiceTests
         var result = await sut.SendTemplateAsync("test@example.com", "Subject", "TestTemplate", new { Name = "Test" });
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -354,7 +354,7 @@ public class EmailServiceTests
         var result = await sut.SendTemplateAsync("test@example.com", "Subject", "TestTemplate", new { Name = "Test" });
 
         // Assert
-        result.Should().BeFalse();
+        result.ShouldBe(false);
     }
 
     [Fact]
@@ -386,8 +386,8 @@ public class EmailServiceTests
         await sut.SendTemplateAsync("test@example.com", "", "TestTemplate", new { Name = "John", Email = "john@test.com" });
 
         // Assert
-        capturedBody.Should().Contain("Hello John");
-        capturedBody.Should().Contain("john@test.com");
+        capturedBody.ShouldContain("Hello John");
+        capturedBody.ShouldContain("john@test.com");
     }
 
     [Fact]
@@ -414,7 +414,7 @@ public class EmailServiceTests
         var result = await sut.SendTemplateAsync("test@example.com", "Welcome", "WelcomeEmail", new { Name = "Test" });
 
         // Assert
-        result.Should().BeTrue();
+        result.ShouldBe(true);
     }
 
     #endregion

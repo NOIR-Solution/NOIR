@@ -71,12 +71,12 @@ public class GetTagByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Id.Should().Be(tagId);
-        result.Value.Name.Should().Be("JavaScript");
-        result.Value.Slug.Should().Be("javascript");
-        result.Value.Description.Should().Be("JavaScript programming language");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Id.ShouldBe(tagId);
+        result.Value.Name.ShouldBe("JavaScript");
+        result.Value.Slug.ShouldBe("javascript");
+        result.Value.Description.ShouldBe("JavaScript programming language");
     }
 
     [Fact]
@@ -103,13 +103,13 @@ public class GetTagByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var dto = result.Value;
-        dto.Id.Should().Be(tagId);
-        dto.Name.Should().Be("TypeScript");
-        dto.Slug.Should().Be("typescript");
-        dto.Description.Should().Be("TypeScript programming language");
-        dto.Color.Should().Be("#3178C6");
+        dto.Id.ShouldBe(tagId);
+        dto.Name.ShouldBe("TypeScript");
+        dto.Slug.ShouldBe("typescript");
+        dto.Description.ShouldBe("TypeScript programming language");
+        dto.Color.ShouldBe("#3178C6");
     }
 
     [Fact]
@@ -137,8 +137,8 @@ public class GetTagByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PostCount.Should().Be(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PostCount.ShouldBe(5);
     }
 
     [Fact]
@@ -162,8 +162,8 @@ public class GetTagByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Color.Should().Be("#61DAFB");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Color.ShouldBe("#61DAFB");
     }
 
     #endregion
@@ -188,8 +188,8 @@ public class GetTagByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-BLOG-021");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-BLOG-021");
     }
 
     #endregion
@@ -217,8 +217,8 @@ public class GetTagByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Description.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Description.ShouldBeNull();
     }
 
     [Fact]
@@ -242,8 +242,8 @@ public class GetTagByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Color.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Color.ShouldBeNull();
     }
 
     [Fact]
@@ -264,8 +264,8 @@ public class GetTagByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.PostCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.PostCount.ShouldBe(0);
     }
 
     [Fact]
@@ -314,8 +314,8 @@ public class GetTagByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CreatedAt.Should().NotBe(default);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CreatedAt.ShouldNotBe(default);
     }
 
     [Fact]
@@ -345,14 +345,14 @@ public class GetTagByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(tagId);
-        result.Value.Name.Should().Be("Complete Tag");
-        result.Value.Slug.Should().Be("complete-tag");
-        result.Value.Description.Should().Be("A tag with all fields set");
-        result.Value.Color.Should().Be("#FF5733");
-        result.Value.PostCount.Should().Be(2);
-        result.Value.CreatedAt.Should().NotBe(default);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(tagId);
+        result.Value.Name.ShouldBe("Complete Tag");
+        result.Value.Slug.ShouldBe("complete-tag");
+        result.Value.Description.ShouldBe("A tag with all fields set");
+        result.Value.Color.ShouldBe("#FF5733");
+        result.Value.PostCount.ShouldBe(2);
+        result.Value.CreatedAt.ShouldNotBe(default);
     }
 
     #endregion

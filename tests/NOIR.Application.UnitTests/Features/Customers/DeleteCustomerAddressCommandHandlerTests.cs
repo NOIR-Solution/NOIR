@@ -69,12 +69,12 @@ public class DeleteCustomerAddressCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.FullName.Should().Be("John Doe");
-        result.Value.Phone.Should().Be("0901234567");
-        result.Value.AddressLine1.Should().Be("123 Main St");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.FullName.ShouldBe("John Doe");
+        result.Value.Phone.ShouldBe("0901234567");
+        result.Value.AddressLine1.ShouldBe("123 Main St");
 
-        existingCustomer.Addresses.Should().BeEmpty();
+        existingCustomer.Addresses.ShouldBeEmpty();
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -110,9 +110,9 @@ public class DeleteCustomerAddressCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        customer.Addresses.Should().HaveCount(1);
-        customer.Addresses.First().Id.Should().Be(address2.Id);
+        result.IsSuccess.ShouldBe(true);
+        customer.Addresses.Count().ShouldBe(1);
+        customer.Addresses.First().Id.ShouldBe(address2.Id);
     }
 
     #endregion
@@ -135,8 +135,8 @@ public class DeleteCustomerAddressCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CUSTOMER-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CUSTOMER-002");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -161,8 +161,8 @@ public class DeleteCustomerAddressCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-CUSTOMER-005");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-CUSTOMER-005");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),

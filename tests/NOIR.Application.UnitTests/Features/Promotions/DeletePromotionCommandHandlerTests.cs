@@ -66,8 +66,8 @@ public class DeletePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldBe(true);
 
         _promotionRepositoryMock.Verify(
             x => x.Remove(existingPromotion),
@@ -100,8 +100,8 @@ public class DeletePromotionCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-PROMO-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-PROMO-002");
 
         _promotionRepositoryMock.Verify(
             x => x.Remove(It.IsAny<Promotion>()),

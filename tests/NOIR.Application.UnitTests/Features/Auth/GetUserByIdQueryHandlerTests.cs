@@ -89,14 +89,14 @@ public class GetUserByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Id.Should().Be(TestUserId);
-        result.Value.Email.Should().Be("test@example.com");
-        result.Value.FirstName.Should().Be("Test");
-        result.Value.LastName.Should().Be("User");
-        result.Value.Roles.Should().Contain("Admin");
-        result.Value.Roles.Should().Contain("User");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Id.ShouldBe(TestUserId);
+        result.Value.Email.ShouldBe("test@example.com");
+        result.Value.FirstName.ShouldBe("Test");
+        result.Value.LastName.ShouldBe("User");
+        result.Value.Roles.ShouldContain("Admin");
+        result.Value.Roles.ShouldContain("User");
     }
 
     [Fact]
@@ -128,20 +128,20 @@ public class GetUserByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var profile = result.Value;
-        profile.Id.Should().Be(TestUserId);
-        profile.Email.Should().Be("full@example.com");
-        profile.FirstName.Should().Be("Full");
-        profile.LastName.Should().Be("Name");
-        profile.DisplayName.Should().Be("Display Name");
-        profile.FullName.Should().Be(user.FullName);
-        profile.PhoneNumber.Should().Be("+1234567890");
-        profile.AvatarUrl.Should().Be("https://example.com/avatar.jpg");
-        profile.IsActive.Should().BeTrue();
-        profile.TenantId.Should().Be("default"); // Handler returns user.TenantId from database, not _currentUser.TenantId
-        profile.CreatedAt.Should().BeCloseTo(user.CreatedAt, TimeSpan.FromSeconds(1));
-        profile.ModifiedAt.Should().BeCloseTo(user.ModifiedAt!.Value, TimeSpan.FromSeconds(1));
+        profile.Id.ShouldBe(TestUserId);
+        profile.Email.ShouldBe("full@example.com");
+        profile.FirstName.ShouldBe("Full");
+        profile.LastName.ShouldBe("Name");
+        profile.DisplayName.ShouldBe("Display Name");
+        profile.FullName.ShouldBe(user.FullName);
+        profile.PhoneNumber.ShouldBe("+1234567890");
+        profile.AvatarUrl.ShouldBe("https://example.com/avatar.jpg");
+        profile.IsActive.ShouldBe(true);
+        profile.TenantId.ShouldBe("default"); // Handler returns user.TenantId from database, not _currentUser.TenantId
+        profile.CreatedAt.ShouldBe(user.CreatedAt, TimeSpan.FromSeconds(1));
+        profile.ModifiedAt!.Value.ShouldBe(user.ModifiedAt!.Value, TimeSpan.FromSeconds(1));
     }
 
     [Fact]
@@ -163,8 +163,8 @@ public class GetUserByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Roles.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Roles.ShouldBeEmpty();
     }
 
     [Fact]
@@ -192,12 +192,12 @@ public class GetUserByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.FirstName.Should().BeNull();
-        result.Value.LastName.Should().BeNull();
-        result.Value.DisplayName.Should().BeNull();
-        result.Value.PhoneNumber.Should().BeNull();
-        result.Value.AvatarUrl.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.FirstName.ShouldBeNull();
+        result.Value.LastName.ShouldBeNull();
+        result.Value.DisplayName.ShouldBeNull();
+        result.Value.PhoneNumber.ShouldBeNull();
+        result.Value.AvatarUrl.ShouldBeNull();
     }
 
     [Fact]
@@ -219,8 +219,8 @@ public class GetUserByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(false);
     }
 
     #endregion
@@ -237,9 +237,9 @@ public class GetUserByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Message.Should().Contain("validation.userId.required");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Message.ShouldContain("validation.userId.required");
     }
 
     [Fact]
@@ -252,8 +252,8 @@ public class GetUserByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
     }
 
     [Fact]
@@ -266,8 +266,8 @@ public class GetUserByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
     }
 
     #endregion
@@ -288,9 +288,9 @@ public class GetUserByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain("auth.user.notFound");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Message.ShouldContain("auth.user.notFound");
     }
 
     [Fact]
@@ -433,8 +433,8 @@ public class GetUserByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert - Handler should return user.TenantId from database, not _currentUser.TenantId
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TenantId.Should().Be(customTenantId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TenantId.ShouldBe(customTenantId);
     }
 
     [Fact]
@@ -472,8 +472,8 @@ public class GetUserByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert - Handler should return user.TenantId (null) from database, not _currentUser.TenantId
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TenantId.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TenantId.ShouldBeNull();
     }
 
     #endregion

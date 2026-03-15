@@ -20,11 +20,11 @@ public class HandlerAuditLogTests
         var log = HandlerAuditLog.Create(correlationId, handlerName, operationType, null);
 
         // Assert
-        log.Should().NotBeNull();
-        log.Id.Should().NotBe(Guid.Empty);
-        log.CorrelationId.Should().Be(correlationId);
-        log.HandlerName.Should().Be(handlerName);
-        log.OperationType.Should().Be("Create");
+        log.ShouldNotBeNull();
+        log.Id.ShouldNotBe(Guid.Empty);
+        log.CorrelationId.ShouldBe(correlationId);
+        log.HandlerName.ShouldBe(handlerName);
+        log.OperationType.ShouldBe("Create");
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class HandlerAuditLogTests
         var log2 = HandlerAuditLog.Create("corr-2", "Handler2", AuditOperationType.Create, null);
 
         // Assert
-        log1.Id.Should().NotBe(log2.Id);
+        log1.Id.ShouldNotBe(log2.Id);
     }
 
     [Fact]
@@ -49,7 +49,9 @@ public class HandlerAuditLogTests
 
         // Assert
         var afterCreate = DateTimeOffset.UtcNow;
-        log.StartTime.Should().BeOnOrAfter(beforeCreate).And.BeOnOrBefore(afterCreate);
+        log.StartTime.ShouldBeGreaterThanOrEqualTo(beforeCreate);
+
+        log.StartTime.ShouldBeLessThanOrEqualTo(afterCreate);
     }
 
     [Fact]
@@ -62,7 +64,7 @@ public class HandlerAuditLogTests
         var log = HandlerAuditLog.Create("corr-123", "CreateCustomerCommand", AuditOperationType.Create, tenantId);
 
         // Assert
-        log.TenantId.Should().Be(tenantId);
+        log.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
@@ -75,7 +77,7 @@ public class HandlerAuditLogTests
         var log = HandlerAuditLog.Create("corr-123", "CreateCustomerCommand", AuditOperationType.Create, null, httpRequestLogId);
 
         // Assert
-        log.HttpRequestAuditLogId.Should().Be(httpRequestLogId);
+        log.HttpRequestAuditLogId.ShouldBe(httpRequestLogId);
     }
 
     [Fact]
@@ -85,7 +87,7 @@ public class HandlerAuditLogTests
         var log = HandlerAuditLog.Create("corr-123", "CreateCustomerCommand", AuditOperationType.Create, null);
 
         // Assert
-        log.IsSuccess.Should().BeTrue();
+        log.IsSuccess.ShouldBeTrue();
     }
 
     [Fact]
@@ -95,8 +97,8 @@ public class HandlerAuditLogTests
         var log = HandlerAuditLog.Create("corr-123", "CreateCustomerCommand", AuditOperationType.Create, null);
 
         // Assert
-        log.IsArchived.Should().BeFalse();
-        log.ArchivedAt.Should().BeNull();
+        log.IsArchived.ShouldBeFalse();
+        log.ArchivedAt.ShouldBeNull();
     }
 
     [Fact]
@@ -106,8 +108,8 @@ public class HandlerAuditLogTests
         var log = HandlerAuditLog.Create("corr-123", "CreateCustomerCommand", AuditOperationType.Create, null);
 
         // Assert
-        log.EndTime.Should().BeNull();
-        log.DurationMs.Should().BeNull();
+        log.EndTime.ShouldBeNull();
+        log.DurationMs.ShouldBeNull();
     }
 
     [Fact]
@@ -117,8 +119,8 @@ public class HandlerAuditLogTests
         var log = HandlerAuditLog.Create("corr-123", "CreateCustomerCommand", AuditOperationType.Create, null);
 
         // Assert
-        log.EntityAuditLogs.Should().NotBeNull();
-        log.EntityAuditLogs.Should().BeEmpty();
+        log.EntityAuditLogs.ShouldNotBeNull();
+        log.EntityAuditLogs.ShouldBeEmpty();
     }
 
     #endregion
@@ -135,7 +137,7 @@ public class HandlerAuditLogTests
         var log = HandlerAuditLog.Create("corr-123", "TestHandler", operationType, null);
 
         // Assert
-        log.OperationType.Should().Be(expected);
+        log.OperationType.ShouldBe(expected);
     }
 
     #endregion
@@ -153,11 +155,11 @@ public class HandlerAuditLogTests
         log.Complete(isSuccess: true, outputResult: "{\"id\":\"123\"}");
 
         // Assert
-        log.IsSuccess.Should().BeTrue();
-        log.OutputResult.Should().Be("{\"id\":\"123\"}");
-        log.EndTime.Should().NotBeNull();
-        log.DurationMs.Should().BeGreaterThan(0);
-        log.ErrorMessage.Should().BeNull();
+        log.IsSuccess.ShouldBeTrue();
+        log.OutputResult.ShouldBe("{\"id\":\"123\"}");
+        log.EndTime.ShouldNotBeNull();
+        log.DurationMs!.Value.ShouldBeGreaterThan(0);
+        log.ErrorMessage.ShouldBeNull();
     }
 
     [Fact]
@@ -171,9 +173,9 @@ public class HandlerAuditLogTests
         log.Complete(isSuccess: false, errorMessage: errorMessage);
 
         // Assert
-        log.IsSuccess.Should().BeFalse();
-        log.ErrorMessage.Should().Be(errorMessage);
-        log.EndTime.Should().NotBeNull();
+        log.IsSuccess.ShouldBeFalse();
+        log.ErrorMessage.ShouldBe(errorMessage);
+        log.EndTime.ShouldNotBeNull();
     }
 
     [Fact]
@@ -187,7 +189,7 @@ public class HandlerAuditLogTests
         log.Complete(isSuccess: true, dtoDiff: dtoDiff);
 
         // Assert
-        log.DtoDiff.Should().Be(dtoDiff);
+        log.DtoDiff.ShouldBe(dtoDiff);
     }
 
     [Fact]
@@ -201,9 +203,9 @@ public class HandlerAuditLogTests
         log.Complete(isSuccess: true);
 
         // Assert
-        log.DurationMs.Should().NotBeNull();
-        log.DurationMs!.Value.Should().BeGreaterThanOrEqualTo(40); // Allow some tolerance
-        log.DurationMs.Should().BeLessThan(500); // Should not be too long
+        log.DurationMs.ShouldNotBeNull();
+        log.DurationMs!.Value.ShouldBeGreaterThanOrEqualTo(40); // Allow some tolerance
+        log.DurationMs!.Value.ShouldBeLessThan(500); // Should not be too long
     }
 
     [Fact]
@@ -220,9 +222,9 @@ public class HandlerAuditLogTests
         log.Complete(isSuccess: false, errorMessage: "second attempt failed");
 
         // Assert
-        log.IsSuccess.Should().BeFalse();
-        log.ErrorMessage.Should().Be("second attempt failed");
-        log.EndTime.Should().BeOnOrAfter(firstEndTime!.Value);
+        log.IsSuccess.ShouldBeFalse();
+        log.ErrorMessage.ShouldBe("second attempt failed");
+        log.EndTime!.Value.ShouldBeGreaterThanOrEqualTo(firstEndTime!.Value);
     }
 
     #endregion
@@ -239,8 +241,8 @@ public class HandlerAuditLogTests
         log.SetTargetDto("CustomerDto", "cust-123");
 
         // Assert
-        log.TargetDtoType.Should().Be("CustomerDto");
-        log.TargetDtoId.Should().Be("cust-123");
+        log.TargetDtoType.ShouldBe("CustomerDto");
+        log.TargetDtoId.ShouldBe("cust-123");
     }
 
     [Fact]
@@ -253,8 +255,8 @@ public class HandlerAuditLogTests
         log.SetTargetDto("CustomerDto", null);
 
         // Assert
-        log.TargetDtoType.Should().Be("CustomerDto");
-        log.TargetDtoId.Should().BeNull();
+        log.TargetDtoType.ShouldBe("CustomerDto");
+        log.TargetDtoId.ShouldBeNull();
     }
 
     [Fact]
@@ -268,8 +270,8 @@ public class HandlerAuditLogTests
         log.SetTargetDto("OrderDto", "order-1");
 
         // Assert
-        log.TargetDtoType.Should().Be("OrderDto");
-        log.TargetDtoId.Should().Be("order-1");
+        log.TargetDtoType.ShouldBe("OrderDto");
+        log.TargetDtoId.ShouldBe("order-1");
     }
 
     #endregion
@@ -286,7 +288,7 @@ public class HandlerAuditLogTests
         var act = () => HandlerAuditLog.Create(correlationId!, "Handler", AuditOperationType.Create, null);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Theory]
@@ -299,7 +301,7 @@ public class HandlerAuditLogTests
         var act = () => HandlerAuditLog.Create("corr-123", handlerName!, AuditOperationType.Create, null);
 
         // Assert
-        act.Should().Throw<ArgumentException>();
+        Should.Throw<ArgumentException>(act);
     }
 
     [Fact]
@@ -312,8 +314,8 @@ public class HandlerAuditLogTests
         var act = () => HandlerAuditLog.Create("corr-123", "Handler", invalidOperation, null);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("*Invalid operation type*");
+        Should.Throw<ArgumentException>(act)
+            .Message.ShouldContain("Invalid operation type");
     }
 
     #endregion
@@ -327,7 +329,7 @@ public class HandlerAuditLogTests
         var log = HandlerAuditLog.Create("corr-123", "CreateCustomerCommand", AuditOperationType.Create, null);
 
         // Assert
-        log.HttpRequestAuditLog.Should().BeNull();
+        log.HttpRequestAuditLog.ShouldBeNull();
     }
 
     #endregion
@@ -346,7 +348,7 @@ public class HandlerAuditLogTests
         var log = HandlerAuditLog.Create("corr-123", handlerName, AuditOperationType.Create, null);
 
         // Assert
-        log.HandlerName.Should().Be(handlerName);
+        log.HandlerName.ShouldBe(handlerName);
     }
 
     #endregion

@@ -64,10 +64,10 @@ public class GetInventoryReceiptsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(2);
-        result.Value.TotalCount.Should().Be(2);
-        result.Value.PageNumber.Should().Be(1);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.Count().ShouldBe(2);
+        result.Value.TotalCount.ShouldBe(2);
+        result.Value.PageNumber.ShouldBe(1);
     }
 
     [Fact]
@@ -92,9 +92,9 @@ public class GetInventoryReceiptsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.TotalCount.Should().Be(0);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.TotalCount.ShouldBe(0);
     }
 
     [Fact]
@@ -120,14 +120,14 @@ public class GetInventoryReceiptsQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var item = result.Value.Items.First();
-        item.ReceiptNumber.Should().Be("RCV-20260218-0042");
-        item.Type.Should().Be(InventoryReceiptType.StockIn);
-        item.Status.Should().Be(InventoryReceiptStatus.Draft);
-        item.TotalQuantity.Should().Be(10);
-        item.TotalCost.Should().Be(250.00m);
-        item.ItemCount.Should().Be(1);
+        item.ReceiptNumber.ShouldBe("RCV-20260218-0042");
+        item.Type.ShouldBe(InventoryReceiptType.StockIn);
+        item.Status.ShouldBe(InventoryReceiptStatus.Draft);
+        item.TotalQuantity.ShouldBe(10);
+        item.TotalCost.ShouldBe(250.00m);
+        item.ItemCount.ShouldBe(1);
     }
 
     #endregion

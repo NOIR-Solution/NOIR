@@ -35,9 +35,9 @@ public class PermissionTemplateQueryServiceTests
         var result = await _sut.GetAllAsync(null, CancellationToken.None);
 
         // Assert
-        result.Should().HaveCount(1);
-        result.Should().Contain(t => t.Name == "System Admin");
-        result.Should().NotContain(t => t.Name == "Tenant Admin");
+        result.Count().ShouldBe(1);
+        result.ShouldContain(t => t.Name == "System Admin");
+        result.ShouldNotContain(t => t.Name == "Tenant Admin");
     }
 
     [Fact]
@@ -58,9 +58,9 @@ public class PermissionTemplateQueryServiceTests
         var result = await _sut.GetAllAsync(tenantId, CancellationToken.None);
 
         // Assert
-        result.Should().HaveCount(2);
-        result.Should().Contain(t => t.Name == "System Template");
-        result.Should().Contain(t => t.Name == "Tenant Template");
+        result.Count().ShouldBe(2);
+        result.ShouldContain(t => t.Name == "System Template");
+        result.ShouldContain(t => t.Name == "Tenant Template");
     }
 
     [Fact]
@@ -79,8 +79,8 @@ public class PermissionTemplateQueryServiceTests
         var result = await _sut.GetAllAsync(null, CancellationToken.None);
 
         // Assert
-        result.Should().HaveCount(1);
-        result.Should().Contain(t => t.Name == "Active Template");
+        result.Count().ShouldBe(1);
+        result.ShouldContain(t => t.Name == "Active Template");
     }
 
     [Fact]
@@ -100,10 +100,10 @@ public class PermissionTemplateQueryServiceTests
         var result = await _sut.GetAllAsync(null, CancellationToken.None);
 
         // Assert
-        result.Should().HaveCount(3);
-        result[0].Name.Should().Be("Beta");    // SortOrder 0
-        result[1].Name.Should().Be("Alpha");   // SortOrder 1, first alphabetically
-        result[2].Name.Should().Be("Zebra");   // SortOrder 1, last alphabetically
+        result.Count().ShouldBe(3);
+        result[0].Name.ShouldBe("Beta");    // SortOrder 0
+        result[1].Name.ShouldBe("Alpha");   // SortOrder 1, first alphabetically
+        result[2].Name.ShouldBe("Zebra");   // SortOrder 1, last alphabetically
     }
 
     [Fact]
@@ -130,17 +130,17 @@ public class PermissionTemplateQueryServiceTests
         var result = await _sut.GetAllAsync(tenantId, CancellationToken.None);
 
         // Assert
-        result.Should().HaveCount(1);
+        result.Count().ShouldBe(1);
         var dto = result.First();
-        dto.Id.Should().Be(templateId);
-        dto.Name.Should().Be("Test Template");
-        dto.Description.Should().Be("A test template");
-        dto.TenantId.Should().Be(tenantId);
-        dto.IsSystem.Should().BeFalse();
-        dto.IconName.Should().Be("shield");
-        dto.Color.Should().Be("#ff0000");
-        dto.SortOrder.Should().Be(5);
-        dto.Permissions.Should().BeEquivalentTo(new[] { "users:read", "users:write" });
+        dto.Id.ShouldBe(templateId);
+        dto.Name.ShouldBe("Test Template");
+        dto.Description.ShouldBe("A test template");
+        dto.TenantId.ShouldBe(tenantId);
+        dto.IsSystem.ShouldBe(false);
+        dto.IconName.ShouldBe("shield");
+        dto.Color.ShouldBe("#ff0000");
+        dto.SortOrder.ShouldBe(5);
+        dto.Permissions.ShouldBe(new[] { "users:read", "users:write" });
     }
 
     [Fact]
@@ -154,7 +154,7 @@ public class PermissionTemplateQueryServiceTests
         var result = await _sut.GetAllAsync(null, CancellationToken.None);
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -184,14 +184,14 @@ public class PermissionTemplateQueryServiceTests
     public void Service_ShouldImplementIPermissionTemplateQueryService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IPermissionTemplateQueryService>();
+        _sut.ShouldBeAssignableTo<IPermissionTemplateQueryService>();
     }
 
     [Fact]
     public void Service_ShouldImplementIScopedService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IScopedService>();
+        _sut.ShouldBeAssignableTo<IScopedService>();
     }
 
     [Fact]
@@ -201,7 +201,7 @@ public class PermissionTemplateQueryServiceTests
         var service = new PermissionTemplateQueryService(_contextMock.Object);
 
         // Assert
-        service.Should().NotBeNull();
+        service.ShouldNotBeNull();
     }
 
     #endregion

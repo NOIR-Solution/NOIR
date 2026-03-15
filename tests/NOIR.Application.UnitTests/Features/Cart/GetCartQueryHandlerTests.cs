@@ -38,10 +38,10 @@ public class GetCartQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.UserId.Should().Be(TestUserId);
-        result.Value.Status.Should().Be(CartStatus.Active);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.UserId.ShouldBe(TestUserId);
+        result.Value.Status.ShouldBe(CartStatus.Active);
     }
 
     [Fact]
@@ -58,10 +58,10 @@ public class GetCartQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Id.Should().Be(Guid.Empty);
-        result.Value.Items.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Id.ShouldBe(Guid.Empty);
+        result.Value.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -80,10 +80,10 @@ public class GetCartQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.SessionId.Should().Be(TestSessionId);
-        result.Value.IsGuest.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.SessionId.ShouldBe(TestSessionId);
+        result.Value.IsGuest.ShouldBe(true);
     }
 
     [Fact]
@@ -102,9 +102,9 @@ public class GetCartQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.UserId.Should().Be(TestUserId);
-        result.Value.IsGuest.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.UserId.ShouldBe(TestUserId);
+        result.Value.IsGuest.ShouldBe(false);
 
         // Session lookup should not have been called since user cart was found
         _cartRepositoryMock.Verify(

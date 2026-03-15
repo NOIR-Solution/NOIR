@@ -48,10 +48,10 @@ public class GetRegionalSettingsQueryHandlerTests
         var result = await _handler.Handle(new GetRegionalSettingsQuery(), CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Timezone.Should().Be("America/New_York");
-        result.Value.Language.Should().Be("en-US");
-        result.Value.DateFormat.Should().Be("MM/DD/YYYY");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Timezone.ShouldBe("America/New_York");
+        result.Value.Language.ShouldBe("en-US");
+        result.Value.DateFormat.ShouldBe("MM/DD/YYYY");
     }
 
     [Fact]
@@ -68,11 +68,11 @@ public class GetRegionalSettingsQueryHandlerTests
         var result = await _handler.Handle(new GetRegionalSettingsQuery(), CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Default values are defined in the handler
-        result.Value.Timezone.Should().Be("UTC");
-        result.Value.Language.Should().Be("en");
-        result.Value.DateFormat.Should().Be("YYYY-MM-DD");
+        result.Value.Timezone.ShouldBe("UTC");
+        result.Value.Language.ShouldBe("en");
+        result.Value.DateFormat.ShouldBe("YYYY-MM-DD");
     }
 
     [Fact]
@@ -92,10 +92,10 @@ public class GetRegionalSettingsQueryHandlerTests
         var result = await _handler.Handle(new GetRegionalSettingsQuery(), CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Timezone.Should().Be("Europe/London");
-        result.Value.Language.Should().Be("en"); // Default
-        result.Value.DateFormat.Should().Be("YYYY-MM-DD"); // Default
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Timezone.ShouldBe("Europe/London");
+        result.Value.Language.ShouldBe("en"); // Default
+        result.Value.DateFormat.ShouldBe("YYYY-MM-DD"); // Default
     }
 
     [Fact]

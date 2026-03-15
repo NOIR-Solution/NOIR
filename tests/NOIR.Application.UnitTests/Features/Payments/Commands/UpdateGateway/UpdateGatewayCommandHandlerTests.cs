@@ -100,10 +100,10 @@ public class UpdateGatewayCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.DisplayName.Should().Be("Updated VNPay Display");
-        result.Value.Provider.Should().Be("vnpay");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.DisplayName.ShouldBe("Updated VNPay Display");
+        result.Value.Provider.ShouldBe("vnpay");
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -127,8 +127,8 @@ public class UpdateGatewayCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Environment.Should().Be(GatewayEnvironment.Production);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Environment.ShouldBe(GatewayEnvironment.Production);
     }
 
     [Fact]
@@ -155,8 +155,8 @@ public class UpdateGatewayCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.HasCredentials.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.HasCredentials.ShouldBe(true);
 
         _encryptionServiceMock.Verify(x => x.Encrypt(It.IsAny<string>()), Times.Once);
     }
@@ -180,8 +180,8 @@ public class UpdateGatewayCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(true);
     }
 
     [Fact]
@@ -203,8 +203,8 @@ public class UpdateGatewayCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsActive.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsActive.ShouldBe(false);
     }
 
     #endregion
@@ -225,9 +225,9 @@ public class UpdateGatewayCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be(ErrorCodes.Payment.GatewayNotFound);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe(ErrorCodes.Payment.GatewayNotFound);
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -255,8 +255,8 @@ public class UpdateGatewayCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.SortOrder.Should().Be(5);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.SortOrder.ShouldBe(5);
     }
 
     [Fact]
@@ -285,8 +285,8 @@ public class UpdateGatewayCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.DisplayName.Should().Be("VNPay Original");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.DisplayName.ShouldBe("VNPay Original");
 
         _encryptionServiceMock.Verify(x => x.Encrypt(It.IsAny<string>()), Times.Never);
     }

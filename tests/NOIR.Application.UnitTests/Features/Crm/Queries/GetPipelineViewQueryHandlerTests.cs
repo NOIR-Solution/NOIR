@@ -50,13 +50,13 @@ public class GetPipelineViewQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(pipeline.Id);
-        result.Value.Stages.Should().HaveCount(2);
-        result.Value.Stages[0].Name.Should().Be("New");
-        result.Value.Stages[0].Leads.Should().HaveCount(1);
-        result.Value.Stages[1].Name.Should().Be("Qualified");
-        result.Value.Stages[1].Leads.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Id.ShouldBe(pipeline.Id);
+        result.Value.Stages.Count().ShouldBe(2);
+        result.Value.Stages[0].Name.ShouldBe("New");
+        result.Value.Stages[0].Leads.Count().ShouldBe(1);
+        result.Value.Stages[1].Name.ShouldBe("Qualified");
+        result.Value.Stages[1].Leads.ShouldBeEmpty();
     }
 
     [Fact]
@@ -87,8 +87,8 @@ public class GetPipelineViewQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Stages[0].Leads.Should().HaveCount(2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Stages[0].Leads.Count().ShouldBe(2);
     }
 
     [Fact]
@@ -105,6 +105,6 @@ public class GetPipelineViewQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.ShouldBe(false);
     }
 }

@@ -355,8 +355,8 @@ public class CreateOrderCommandValidatorTests
         var badItem = CreateValidItem() with { ProductId = Guid.Empty };
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Product ID is required.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Product ID is required.");
     }
 
     [Fact]
@@ -365,8 +365,8 @@ public class CreateOrderCommandValidatorTests
         var badItem = CreateValidItem() with { ProductVariantId = Guid.Empty };
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Product variant ID is required.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Product variant ID is required.");
     }
 
     [Fact]
@@ -375,8 +375,8 @@ public class CreateOrderCommandValidatorTests
         var badItem = CreateValidItem() with { ProductName = "" };
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Product name is required.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Product name is required.");
     }
 
     [Fact]
@@ -385,8 +385,8 @@ public class CreateOrderCommandValidatorTests
         var badItem = CreateValidItem() with { ProductName = new string('A', 201) };
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Product name cannot exceed 200 characters.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Product name cannot exceed 200 characters.");
     }
 
     [Fact]
@@ -395,8 +395,8 @@ public class CreateOrderCommandValidatorTests
         var badItem = CreateValidItem() with { VariantName = "" };
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Variant name is required.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Variant name is required.");
     }
 
     [Fact]
@@ -405,8 +405,8 @@ public class CreateOrderCommandValidatorTests
         var badItem = CreateValidItem() with { VariantName = new string('A', 101) };
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Variant name cannot exceed 100 characters.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Variant name cannot exceed 100 characters.");
     }
 
     [Fact]
@@ -415,8 +415,8 @@ public class CreateOrderCommandValidatorTests
         var badItem = CreateValidItem() with { UnitPrice = -1m };
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Unit price must be non-negative.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Unit price must be non-negative.");
     }
 
     [Fact]
@@ -434,8 +434,8 @@ public class CreateOrderCommandValidatorTests
         var badItem = CreateValidItem() with { Quantity = 0 };
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Quantity must be greater than zero.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Quantity must be greater than zero.");
     }
 
     [Fact]
@@ -444,8 +444,8 @@ public class CreateOrderCommandValidatorTests
         var badItem = CreateValidItem() with { Quantity = -1 };
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Quantity must be greater than zero.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Quantity must be greater than zero.");
     }
 
     [Fact]
@@ -454,8 +454,8 @@ public class CreateOrderCommandValidatorTests
         var badItem = CreateValidItem() with { Quantity = 1001 };
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Quantity cannot exceed 1000.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Quantity cannot exceed 1000.");
     }
 
     [Fact]
@@ -473,8 +473,8 @@ public class CreateOrderCommandValidatorTests
         var badItem = CreateValidItem() with { Sku = new string('A', 51) };
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="SKU cannot exceed 50 characters.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="SKU cannot exceed 50 characters.");
     }
 
     [Fact]
@@ -483,8 +483,8 @@ public class CreateOrderCommandValidatorTests
         var badItem = CreateValidItem() with { ImageUrl = new string('A', 501) };
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Image URL cannot exceed 500 characters.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Image URL cannot exceed 500 characters.");
     }
 
     [Fact]
@@ -493,8 +493,8 @@ public class CreateOrderCommandValidatorTests
         var badItem = CreateValidItem() with { OptionsSnapshot = new string('A', 501) };
         var command = CreateValidCommand() with { Items = [badItem] };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Options snapshot cannot exceed 500 characters.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Options snapshot cannot exceed 500 characters.");
     }
 
     // --- Shipping Address Validation (AddressValidator via SetValidator) ---
@@ -505,8 +505,8 @@ public class CreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { FullName = "" };
         var command = CreateValidCommand() with { ShippingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Full name is required.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Full name is required.");
     }
 
     [Fact]
@@ -515,8 +515,8 @@ public class CreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { FullName = new string('A', 101) };
         var command = CreateValidCommand() with { ShippingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Full name cannot exceed 100 characters.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Full name cannot exceed 100 characters.");
     }
 
     [Fact]
@@ -525,8 +525,8 @@ public class CreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { Phone = "" };
         var command = CreateValidCommand() with { ShippingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Phone number is required.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Phone number is required.");
     }
 
     [Fact]
@@ -535,8 +535,8 @@ public class CreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { Phone = new string('1', 21) };
         var command = CreateValidCommand() with { ShippingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Phone number cannot exceed 20 characters.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Phone number cannot exceed 20 characters.");
     }
 
     [Fact]
@@ -545,8 +545,8 @@ public class CreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { AddressLine1 = "" };
         var command = CreateValidCommand() with { ShippingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Address line 1 is required.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Address line 1 is required.");
     }
 
     [Fact]
@@ -555,8 +555,8 @@ public class CreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { AddressLine1 = new string('A', 201) };
         var command = CreateValidCommand() with { ShippingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Address line 1 cannot exceed 200 characters.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Address line 1 cannot exceed 200 characters.");
     }
 
     [Fact]
@@ -565,8 +565,8 @@ public class CreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { AddressLine2 = new string('A', 201) };
         var command = CreateValidCommand() with { ShippingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Address line 2 cannot exceed 200 characters.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Address line 2 cannot exceed 200 characters.");
     }
 
     [Fact]
@@ -575,8 +575,8 @@ public class CreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { Ward = "" };
         var command = CreateValidCommand() with { ShippingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Ward is required.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Ward is required.");
     }
 
     [Fact]
@@ -585,8 +585,8 @@ public class CreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { Ward = new string('A', 101) };
         var command = CreateValidCommand() with { ShippingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Ward cannot exceed 100 characters.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Ward cannot exceed 100 characters.");
     }
 
     [Fact]
@@ -595,8 +595,8 @@ public class CreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { District = "" };
         var command = CreateValidCommand() with { ShippingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="District is required.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="District is required.");
     }
 
     [Fact]
@@ -605,8 +605,8 @@ public class CreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { District = new string('A', 101) };
         var command = CreateValidCommand() with { ShippingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="District cannot exceed 100 characters.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="District cannot exceed 100 characters.");
     }
 
     [Fact]
@@ -615,8 +615,8 @@ public class CreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { Province = "" };
         var command = CreateValidCommand() with { ShippingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Province is required.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Province is required.");
     }
 
     [Fact]
@@ -625,8 +625,8 @@ public class CreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { Province = new string('A', 101) };
         var command = CreateValidCommand() with { ShippingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Province cannot exceed 100 characters.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Province cannot exceed 100 characters.");
     }
 
     [Fact]
@@ -635,8 +635,8 @@ public class CreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { Country = "" };
         var command = CreateValidCommand() with { ShippingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Country is required.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Country is required.");
     }
 
     [Fact]
@@ -645,8 +645,8 @@ public class CreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { Country = new string('A', 101) };
         var command = CreateValidCommand() with { ShippingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Country cannot exceed 100 characters.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Country cannot exceed 100 characters.");
     }
 
     [Fact]
@@ -655,8 +655,8 @@ public class CreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { PostalCode = new string('1', 21) };
         var command = CreateValidCommand() with { ShippingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Postal code cannot exceed 20 characters.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Postal code cannot exceed 20 characters.");
     }
 
     [Fact]
@@ -676,8 +676,8 @@ public class CreateOrderCommandValidatorTests
         var badAddress = CreateValidAddress() with { FullName = "" };
         var command = CreateValidCommand() with { BillingAddress = badAddress };
         var result = _validator.TestValidate(command);
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.ErrorMessage =="Full name is required.");
+        result.IsValid.ShouldBe(false);
+        result.Errors.ShouldContain(e => e.ErrorMessage =="Full name is required.");
     }
 
     [Fact]

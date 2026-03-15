@@ -32,9 +32,9 @@ public class GetGatewaySchemasQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Schemas.Should().NotBeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Schemas.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -47,13 +47,13 @@ public class GetGatewaySchemasQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Schemas.Should().ContainKey("vnpay");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Schemas.ShouldContainKey("vnpay");
         var vnpaySchema = result.Value.Schemas["vnpay"];
-        vnpaySchema.Provider.Should().Be("vnpay");
-        vnpaySchema.DisplayName.Should().Be("VNPay");
-        vnpaySchema.Fields.Should().NotBeEmpty();
-        vnpaySchema.SupportsCod.Should().BeFalse();
+        vnpaySchema.Provider.ShouldBe("vnpay");
+        vnpaySchema.DisplayName.ShouldBe("VNPay");
+        vnpaySchema.Fields.ShouldNotBeEmpty();
+        vnpaySchema.SupportsCod.ShouldBe(false);
     }
 
     [Fact]
@@ -66,13 +66,13 @@ public class GetGatewaySchemasQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Schemas.Should().ContainKey("momo");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Schemas.ShouldContainKey("momo");
         var momoSchema = result.Value.Schemas["momo"];
-        momoSchema.Provider.Should().Be("momo");
-        momoSchema.DisplayName.Should().Be("MoMo");
-        momoSchema.Fields.Should().NotBeEmpty();
-        momoSchema.SupportsCod.Should().BeFalse();
+        momoSchema.Provider.ShouldBe("momo");
+        momoSchema.DisplayName.ShouldBe("MoMo");
+        momoSchema.Fields.ShouldNotBeEmpty();
+        momoSchema.SupportsCod.ShouldBe(false);
     }
 
     [Fact]
@@ -85,13 +85,13 @@ public class GetGatewaySchemasQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Schemas.Should().ContainKey("zalopay");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Schemas.ShouldContainKey("zalopay");
         var zaloPaySchema = result.Value.Schemas["zalopay"];
-        zaloPaySchema.Provider.Should().Be("zalopay");
-        zaloPaySchema.DisplayName.Should().Be("ZaloPay");
-        zaloPaySchema.Fields.Should().NotBeEmpty();
-        zaloPaySchema.SupportsCod.Should().BeFalse();
+        zaloPaySchema.Provider.ShouldBe("zalopay");
+        zaloPaySchema.DisplayName.ShouldBe("ZaloPay");
+        zaloPaySchema.Fields.ShouldNotBeEmpty();
+        zaloPaySchema.SupportsCod.ShouldBe(false);
     }
 
     [Fact]
@@ -104,13 +104,13 @@ public class GetGatewaySchemasQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Schemas.Should().ContainKey("sepay");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Schemas.ShouldContainKey("sepay");
         var sepaySchema = result.Value.Schemas["sepay"];
-        sepaySchema.Provider.Should().Be("sepay");
-        sepaySchema.DisplayName.Should().Be("SePay");
-        sepaySchema.Fields.Should().NotBeEmpty();
-        sepaySchema.SupportsCod.Should().BeFalse();
+        sepaySchema.Provider.ShouldBe("sepay");
+        sepaySchema.DisplayName.ShouldBe("SePay");
+        sepaySchema.Fields.ShouldNotBeEmpty();
+        sepaySchema.SupportsCod.ShouldBe(false);
     }
 
     [Fact]
@@ -123,12 +123,12 @@ public class GetGatewaySchemasQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Schemas.Should().ContainKey("cod");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Schemas.ShouldContainKey("cod");
         var codSchema = result.Value.Schemas["cod"];
-        codSchema.Provider.Should().Be("cod");
-        codSchema.DisplayName.Should().Be("Cash on Delivery");
-        codSchema.SupportsCod.Should().BeTrue();
+        codSchema.Provider.ShouldBe("cod");
+        codSchema.DisplayName.ShouldBe("Cash on Delivery");
+        codSchema.SupportsCod.ShouldBe(true);
     }
 
     [Fact]
@@ -141,10 +141,10 @@ public class GetGatewaySchemasQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var vnpaySchema = result.Value.Schemas["vnpay"];
-        vnpaySchema.Fields.Should().Contain(f => f.Key == "TmnCode" && f.Required);
-        vnpaySchema.Fields.Should().Contain(f => f.Key == "HashSecret" && f.Required);
+        vnpaySchema.Fields.ShouldContain(f => f.Key == "TmnCode" && f.Required);
+        vnpaySchema.Fields.ShouldContain(f => f.Key == "HashSecret" && f.Required);
     }
 
     [Fact]
@@ -157,11 +157,11 @@ public class GetGatewaySchemasQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var vnpaySchema = result.Value.Schemas["vnpay"];
-        vnpaySchema.Environments.Should().NotBeNull();
-        vnpaySchema.Environments.Sandbox.Should().NotBeEmpty();
-        vnpaySchema.Environments.Production.Should().NotBeEmpty();
+        vnpaySchema.Environments.ShouldNotBeNull();
+        vnpaySchema.Environments.Sandbox.ShouldNotBeEmpty();
+        vnpaySchema.Environments.Production.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -174,14 +174,14 @@ public class GetGatewaySchemasQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var sepaySchema = result.Value.Schemas["sepay"];
         var bankField = sepaySchema.Fields.FirstOrDefault(f => f.Key == "BankCode");
-        bankField.Should().NotBeNull();
-        bankField!.Type.Should().Be("select");
-        bankField.Options.Should().NotBeNullOrEmpty();
-        bankField.Options.Should().Contain(o => o.Value == "MB");
-        bankField.Options.Should().Contain(o => o.Value == "VCB");
+        bankField.ShouldNotBeNull();
+        bankField!.Type.ShouldBe("select");
+        bankField.Options.ShouldNotBeEmpty();
+        bankField.Options.ShouldContain(o => o.Value == "MB");
+        bankField.Options.ShouldContain(o => o.Value == "VCB");
     }
 
     #endregion
@@ -199,9 +199,9 @@ public class GetGatewaySchemasQueryHandlerTests
         var result2 = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result1.IsSuccess.Should().BeTrue();
-        result2.IsSuccess.Should().BeTrue();
-        result1.Value.Schemas.Count.Should().Be(result2.Value.Schemas.Count);
+        result1.IsSuccess.ShouldBe(true);
+        result2.IsSuccess.ShouldBe(true);
+        result1.Value.Schemas.Count.ShouldBe(result2.Value.Schemas.Count);
     }
 
     [Fact]
@@ -214,12 +214,12 @@ public class GetGatewaySchemasQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         var schemasWithDocs = result.Value.Schemas.Values
             .Where(s => !string.IsNullOrEmpty(s.DocumentationUrl))
             .ToList();
         // VNPay, MoMo, ZaloPay, SePay should have docs - COD doesn't
-        schemasWithDocs.Should().HaveCountGreaterThanOrEqualTo(4);
+        schemasWithDocs.Count().ShouldBeGreaterThanOrEqualTo(4);
     }
 
     #endregion

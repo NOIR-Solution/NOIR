@@ -122,11 +122,11 @@ public class CreatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Title.Should().Be(command.Title);
-        result.Value.Slug.Should().Be(command.Slug.ToLowerInvariant());
-        result.Value.Status.Should().Be(PostStatus.Draft);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ShouldNotBeNull();
+        result.Value.Title.ShouldBe(command.Title);
+        result.Value.Slug.ShouldBe(command.Slug.ToLowerInvariant());
+        result.Value.Status.ShouldBe(PostStatus.Draft);
 
         _postRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Post>(), It.IsAny<CancellationToken>()),
@@ -166,13 +166,13 @@ public class CreatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedPost.Should().NotBeNull();
-        capturedPost!.Title.Should().Be("My Blog Post");
-        capturedPost.Slug.Should().Be("my-blog-post");
-        capturedPost.Excerpt.Should().Be("This is my excerpt");
-        capturedPost.ContentJson.Should().Be("{\"type\":\"doc\",\"content\":[]}");
-        capturedPost.ContentHtml.Should().Be("<p>Hello World</p>");
+        result.IsSuccess.ShouldBe(true);
+        capturedPost.ShouldNotBeNull();
+        capturedPost!.Title.ShouldBe("My Blog Post");
+        capturedPost.Slug.ShouldBe("my-blog-post");
+        capturedPost.Excerpt.ShouldBe("This is my excerpt");
+        capturedPost.ContentJson.ShouldBe("{\"type\":\"doc\",\"content\":[]}");
+        capturedPost.ContentHtml.ShouldBe("<p>Hello World</p>");
     }
 
     [Fact]
@@ -203,10 +203,10 @@ public class CreatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedPost.Should().NotBeNull();
-        capturedPost!.FeaturedImageId.Should().Be(imageId);
-        capturedPost.FeaturedImageAlt.Should().Be("Alt text for image");
+        result.IsSuccess.ShouldBe(true);
+        capturedPost.ShouldNotBeNull();
+        capturedPost!.FeaturedImageId.ShouldBe(imageId);
+        capturedPost.FeaturedImageAlt.ShouldBe("Alt text for image");
     }
 
     [Fact]
@@ -236,10 +236,10 @@ public class CreatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedPost.Should().NotBeNull();
-        capturedPost!.FeaturedImageUrl.Should().Be("https://example.com/image.jpg");
-        capturedPost.FeaturedImageAlt.Should().Be("Alt text");
+        result.IsSuccess.ShouldBe(true);
+        capturedPost.ShouldNotBeNull();
+        capturedPost!.FeaturedImageUrl.ShouldBe("https://example.com/image.jpg");
+        capturedPost.FeaturedImageAlt.ShouldBe("Alt text");
     }
 
     [Fact]
@@ -271,12 +271,12 @@ public class CreatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedPost.Should().NotBeNull();
-        capturedPost!.MetaTitle.Should().Be("SEO Title");
-        capturedPost.MetaDescription.Should().Be("SEO Description");
-        capturedPost.CanonicalUrl.Should().Be("https://example.com/canonical");
-        capturedPost.AllowIndexing.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        capturedPost.ShouldNotBeNull();
+        capturedPost!.MetaTitle.ShouldBe("SEO Title");
+        capturedPost.MetaDescription.ShouldBe("SEO Description");
+        capturedPost.CanonicalUrl.ShouldBe("https://example.com/canonical");
+        capturedPost.AllowIndexing.ShouldBe(false);
     }
 
     [Fact]
@@ -305,9 +305,9 @@ public class CreatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedPost.Should().NotBeNull();
-        capturedPost!.CategoryId.Should().Be(categoryId);
+        result.IsSuccess.ShouldBe(true);
+        capturedPost.ShouldNotBeNull();
+        capturedPost!.CategoryId.ShouldBe(categoryId);
     }
 
     [Fact]
@@ -346,15 +346,15 @@ public class CreatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedPost.Should().NotBeNull();
-        capturedPost!.TagAssignments.Should().HaveCount(2);
-        capturedPost.TagAssignments.Select(ta => ta.TagId).Should().Contain(tag1Id);
-        capturedPost.TagAssignments.Select(ta => ta.TagId).Should().Contain(tag2Id);
+        result.IsSuccess.ShouldBe(true);
+        capturedPost.ShouldNotBeNull();
+        capturedPost!.TagAssignments.Count().ShouldBe(2);
+        capturedPost.TagAssignments.Select(ta => ta.TagId).ShouldContain(tag1Id);
+        capturedPost.TagAssignments.Select(ta => ta.TagId).ShouldContain(tag2Id);
 
         // Verify tag counts were incremented
-        tag1.PostCount.Should().Be(1);
-        tag2.PostCount.Should().Be(1);
+        tag1.PostCount.ShouldBe(1);
+        tag2.PostCount.ShouldBe(1);
     }
 
     [Fact]
@@ -379,7 +379,7 @@ public class CreatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _tagRepositoryMock.Verify(
             x => x.ListAsync(It.IsAny<TagsByIdsSpec>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -407,7 +407,7 @@ public class CreatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _tagRepositoryMock.Verify(
             x => x.ListAsync(It.IsAny<TagsByIdsSpec>(), It.IsAny<CancellationToken>()),
             Times.Never);
@@ -432,10 +432,10 @@ public class CreatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Conflict);
-        result.Error.Code.Should().Be("NOIR-BLOG-001");
-        result.Error.Message.Should().Contain("test-post-title");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Conflict);
+        result.Error.Code.ShouldBe("NOIR-BLOG-001");
+        result.Error.Message.ShouldContain("test-post-title");
 
         _postRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Post>(), It.IsAny<CancellationToken>()),
@@ -463,10 +463,10 @@ public class CreatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-BLOG-002");
-        result.Error.Message.Should().Contain("Invalid author ID");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-BLOG-002");
+        result.Error.Message.ShouldContain("Invalid author ID");
     }
 
     [Fact]
@@ -483,9 +483,9 @@ public class CreatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-BLOG-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-BLOG-002");
     }
 
     [Fact]
@@ -502,9 +502,9 @@ public class CreatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-BLOG-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-BLOG-002");
     }
 
     #endregion
@@ -571,9 +571,9 @@ public class CreatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedPost.Should().NotBeNull();
-        capturedPost!.Slug.Should().Be("my-uppercase-slug");
+        result.IsSuccess.ShouldBe(true);
+        capturedPost.ShouldNotBeNull();
+        capturedPost!.Slug.ShouldBe("my-uppercase-slug");
     }
 
     [Fact]
@@ -602,9 +602,9 @@ public class CreatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedPost.Should().NotBeNull();
-        capturedPost!.AuthorId.Should().Be(authorGuid);
+        result.IsSuccess.ShouldBe(true);
+        capturedPost.ShouldNotBeNull();
+        capturedPost!.AuthorId.ShouldBe(authorGuid);
     }
 
     [Fact]
@@ -636,11 +636,11 @@ public class CreatePostCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedPost.Should().NotBeNull();
-        capturedPost!.FeaturedImageId.Should().Be(imageId);
+        result.IsSuccess.ShouldBe(true);
+        capturedPost.ShouldNotBeNull();
+        capturedPost!.FeaturedImageId.ShouldBe(imageId);
         // When using SetFeaturedImage with ID, URL is cleared
-        capturedPost.FeaturedImageUrl.Should().BeNull();
+        capturedPost.FeaturedImageUrl.ShouldBeNull();
     }
 
     #endregion

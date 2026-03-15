@@ -50,8 +50,8 @@ public class LinkEmployeeToUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        employee.UserId.Should().Be("user-456");
+        result.IsSuccess.ShouldBe(true);
+        employee.UserId.ShouldBe("user-456");
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -69,8 +69,8 @@ public class LinkEmployeeToUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-HR-010");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-HR-010");
     }
 
     [Fact]
@@ -97,8 +97,8 @@ public class LinkEmployeeToUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-HR-004");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-HR-004");
     }
 
     [Fact]
@@ -123,8 +123,8 @@ public class LinkEmployeeToUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        employee.UserId.Should().Be("new-user-789");
+        result.IsSuccess.ShouldBe(true);
+        employee.UserId.ShouldBe("new-user-789");
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -149,8 +149,8 @@ public class LinkEmployeeToUserCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.HasUserAccount.Should().BeTrue();
-        result.Value.UserId.Should().Be("user-456");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.HasUserAccount.ShouldBe(true);
+        result.Value.UserId.ShouldBe("user-456");
     }
 }

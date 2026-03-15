@@ -98,10 +98,10 @@ public class UpdateProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be(command.Name);
-        result.Value.Slug.Should().Be(command.Slug.ToLowerInvariant());
-        result.Value.Description.Should().Be(command.Description);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe(command.Name);
+        result.Value.Slug.ShouldBe(command.Slug.ToLowerInvariant());
+        result.Value.Description.ShouldBe(command.Description);
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -144,9 +144,9 @@ public class UpdateProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ParentId.Should().Be(parentId);
-        result.Value.ParentName.Should().Be(parentCategory.Name);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ParentId.ShouldBe(parentId);
+        result.Value.ParentName.ShouldBe(parentCategory.Name);
     }
 
     [Fact]
@@ -171,7 +171,7 @@ public class UpdateProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
 
         // Should not check for slug conflict when slug hasn't changed
         _categoryRepositoryMock.Verify(
@@ -210,9 +210,9 @@ public class UpdateProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.MetaTitle.Should().Be("Updated SEO Title");
-        result.Value.MetaDescription.Should().Be("Updated SEO Description");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.MetaTitle.ShouldBe("Updated SEO Title");
+        result.Value.MetaDescription.ShouldBe("Updated SEO Description");
     }
 
     #endregion
@@ -235,10 +235,10 @@ public class UpdateProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-003");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-003");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -276,10 +276,10 @@ public class UpdateProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-002");
-        result.Error.Message.Should().Contain("not found");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-002");
+        result.Error.Message.ShouldContain("not found");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -315,10 +315,10 @@ public class UpdateProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Conflict);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-001");
-        result.Error.Message.Should().Contain("already exists");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Conflict);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-001");
+        result.Error.Message.ShouldContain("already exists");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -349,10 +349,10 @@ public class UpdateProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.Validation);
-        result.Error.Code.Should().Be("NOIR-PRODUCT-004");
-        result.Error.Message.Should().Contain("own parent");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.Validation);
+        result.Error.Code.ShouldBe("NOIR-PRODUCT-004");
+        result.Error.Message.ShouldContain("own parent");
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -429,9 +429,9 @@ public class UpdateProductCategoryCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ParentId.Should().BeNull();
-        result.Value.ParentName.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ParentId.ShouldBeNull();
+        result.Value.ParentName.ShouldBeNull();
 
         _categoryRepositoryMock.Verify(
             x => x.FirstOrDefaultAsync(It.IsAny<ProductCategoryByIdSpec>(), It.IsAny<CancellationToken>()),

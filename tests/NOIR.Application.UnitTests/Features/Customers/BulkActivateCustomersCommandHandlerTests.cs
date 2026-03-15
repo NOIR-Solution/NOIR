@@ -85,10 +85,10 @@ public class BulkActivateCustomersCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(2);
-        result.Value.Failed.Should().Be(0);
-        result.Value.Errors.Should().BeEmpty();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(2);
+        result.Value.Failed.ShouldBe(0);
+        result.Value.Errors.ShouldBeEmpty();
 
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -126,12 +126,12 @@ public class BulkActivateCustomersCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Success.Should().Be(1);
-        result.Value.Failed.Should().Be(1);
-        result.Value.Errors.Should().HaveCount(1);
-        result.Value.Errors[0].EntityId.Should().Be(activeId);
-        result.Value.Errors[0].Message.Should().Contain("already active");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Success.ShouldBe(1);
+        result.Value.Failed.ShouldBe(1);
+        result.Value.Errors.Count().ShouldBe(1);
+        result.Value.Errors[0].EntityId.ShouldBe(activeId);
+        result.Value.Errors[0].Message.ShouldContain("already active");
     }
 
     #endregion

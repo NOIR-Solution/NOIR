@@ -59,14 +59,14 @@ public class GetPromotionByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Test Promo");
-        result.Value.Code.Should().Be("TESTCODE");
-        result.Value.PromotionType.Should().Be(PromotionType.VoucherCode);
-        result.Value.DiscountType.Should().Be(DiscountType.Percentage);
-        result.Value.DiscountValue.Should().Be(20m);
-        result.Value.Status.Should().Be(PromotionStatus.Draft);
-        result.Value.IsActive.Should().BeFalse();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Test Promo");
+        result.Value.Code.ShouldBe("TESTCODE");
+        result.Value.PromotionType.ShouldBe(PromotionType.VoucherCode);
+        result.Value.DiscountType.ShouldBe(DiscountType.Percentage);
+        result.Value.DiscountValue.ShouldBe(20m);
+        result.Value.Status.ShouldBe(PromotionStatus.Draft);
+        result.Value.IsActive.ShouldBe(false);
     }
 
     [Fact]
@@ -89,9 +89,9 @@ public class GetPromotionByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(PromotionStatus.Active);
-        result.Value.IsActive.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Status.ShouldBe(PromotionStatus.Active);
+        result.Value.IsActive.ShouldBe(true);
     }
 
     [Fact]
@@ -117,10 +117,10 @@ public class GetPromotionByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProductIds.Should().HaveCount(2);
-        result.Value.ProductIds.Should().Contain(productId1);
-        result.Value.ProductIds.Should().Contain(productId2);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProductIds.Count().ShouldBe(2);
+        result.Value.ProductIds.ShouldContain(productId1);
+        result.Value.ProductIds.ShouldContain(productId2);
     }
 
     [Fact]
@@ -144,9 +144,9 @@ public class GetPromotionByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CategoryIds.Should().HaveCount(1);
-        result.Value.CategoryIds.Should().Contain(categoryId);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CategoryIds.Count().ShouldBe(1);
+        result.Value.CategoryIds.ShouldContain(categoryId);
     }
 
     [Fact]
@@ -170,9 +170,9 @@ public class GetPromotionByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.DiscountType.Should().Be(DiscountType.FixedAmount);
-        result.Value.DiscountValue.Should().Be(50000m);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.DiscountType.ShouldBe(DiscountType.FixedAmount);
+        result.Value.DiscountValue.ShouldBe(50000m);
     }
 
     #endregion
@@ -197,8 +197,8 @@ public class GetPromotionByIdQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-PROMO-002");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-PROMO-002");
     }
 
     #endregion

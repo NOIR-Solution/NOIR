@@ -80,9 +80,9 @@ public class CreateBrandCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Name.Should().Be("Test Brand");
-        result.Value.Slug.Should().Be("test-brand");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Name.ShouldBe("Test Brand");
+        result.Value.Slug.ShouldBe("test-brand");
 
         _brandRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Brand>(), It.IsAny<CancellationToken>()),
@@ -115,9 +115,9 @@ public class CreateBrandCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Description.Should().Be("A test brand description");
-        result.Value.Website.Should().Be("https://testbrand.com");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.Description.ShouldBe("A test brand description");
+        result.Value.Website.ShouldBe("https://testbrand.com");
     }
 
     [Fact]
@@ -142,9 +142,9 @@ public class CreateBrandCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.LogoUrl.Should().Be("https://cdn.test.com/logo.png");
-        result.Value.BannerUrl.Should().Be("https://cdn.test.com/banner.png");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.LogoUrl.ShouldBe("https://cdn.test.com/logo.png");
+        result.Value.BannerUrl.ShouldBe("https://cdn.test.com/banner.png");
     }
 
     [Fact]
@@ -169,9 +169,9 @@ public class CreateBrandCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.MetaTitle.Should().Be("Test Brand | Shop");
-        result.Value.MetaDescription.Should().Be("Shop the best products from Test Brand");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.MetaTitle.ShouldBe("Test Brand | Shop");
+        result.Value.MetaDescription.ShouldBe("Shop the best products from Test Brand");
     }
 
     [Fact]
@@ -194,8 +194,8 @@ public class CreateBrandCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.IsFeatured.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
+        result.Value.IsFeatured.ShouldBe(true);
     }
 
     #endregion
@@ -220,8 +220,8 @@ public class CreateBrandCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(ErrorCodes.Brand.DuplicateSlug);
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe(ErrorCodes.Brand.DuplicateSlug);
 
         _brandRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<Brand>(), It.IsAny<CancellationToken>()),
@@ -258,9 +258,9 @@ public class CreateBrandCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        capturedBrand.Should().NotBeNull();
-        capturedBrand!.TenantId.Should().Be(tenantId);
+        result.IsSuccess.ShouldBe(true);
+        capturedBrand.ShouldNotBeNull();
+        capturedBrand!.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]

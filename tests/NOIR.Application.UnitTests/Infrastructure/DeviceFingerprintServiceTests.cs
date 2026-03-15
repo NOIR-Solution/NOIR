@@ -24,21 +24,21 @@ public class DeviceFingerprintServiceTests
         var service = new DeviceFingerprintService(_httpContextAccessorMock.Object);
 
         // Assert
-        service.Should().NotBeNull();
+        service.ShouldNotBeNull();
     }
 
     [Fact]
     public void Service_ShouldImplementIDeviceFingerprintService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IDeviceFingerprintService>();
+        _sut.ShouldBeAssignableTo<IDeviceFingerprintService>();
     }
 
     [Fact]
     public void Service_ShouldImplementIScopedService()
     {
         // Assert
-        _sut.Should().BeAssignableTo<IScopedService>();
+        _sut.ShouldBeAssignableTo<IScopedService>();
     }
 
     #endregion
@@ -55,7 +55,7 @@ public class DeviceFingerprintServiceTests
         var result = _sut.GenerateFingerprint();
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -68,8 +68,8 @@ public class DeviceFingerprintServiceTests
         var result = _sut.GenerateFingerprint();
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().NotBeEmpty();
+        result.ShouldNotBeNull();
+        result.ShouldNotBeEmpty();
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class DeviceFingerprintServiceTests
 
         // Assert - Valid Base64 can be decoded
         var act = () => Convert.FromBase64String(result!);
-        act.Should().NotThrow();
+        act.ShouldNotThrow();
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class DeviceFingerprintServiceTests
         var result2 = _sut.GenerateFingerprint();
 
         // Assert
-        result1.Should().Be(result2);
+        result1.ShouldBe(result2);
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class DeviceFingerprintServiceTests
         var result2 = _sut.GenerateFingerprint();
 
         // Assert
-        result1.Should().NotBe(result2);
+        result1.ShouldNotBe(result2);
     }
 
     #endregion
@@ -128,7 +128,7 @@ public class DeviceFingerprintServiceTests
         var result = _sut.GetClientIpAddress();
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -141,7 +141,7 @@ public class DeviceFingerprintServiceTests
         var result = _sut.GetClientIpAddress();
 
         // Assert
-        result.Should().Be("10.0.0.1");
+        result.ShouldBe("10.0.0.1");
     }
 
     [Fact]
@@ -154,7 +154,7 @@ public class DeviceFingerprintServiceTests
         var result = _sut.GetClientIpAddress();
 
         // Assert
-        result.Should().Be("172.16.0.50");
+        result.ShouldBe("172.16.0.50");
     }
 
     [Fact]
@@ -167,7 +167,7 @@ public class DeviceFingerprintServiceTests
         var result = _sut.GetClientIpAddress();
 
         // Assert
-        result.Should().NotBeNull();
+        result.ShouldNotBeNull();
     }
 
     [Fact]
@@ -183,7 +183,7 @@ public class DeviceFingerprintServiceTests
         var result = _sut.GetClientIpAddress();
 
         // Assert
-        result.Should().Be("10.0.0.1");
+        result.ShouldBe("10.0.0.1");
     }
 
     #endregion
@@ -200,7 +200,7 @@ public class DeviceFingerprintServiceTests
         var result = _sut.GetUserAgent();
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -214,7 +214,7 @@ public class DeviceFingerprintServiceTests
         var result = _sut.GetUserAgent();
 
         // Assert
-        result.Should().Be(expectedUserAgent);
+        result.ShouldBe(expectedUserAgent);
     }
 
     #endregion
@@ -231,7 +231,7 @@ public class DeviceFingerprintServiceTests
         var result = _sut.GetDeviceName();
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -244,7 +244,7 @@ public class DeviceFingerprintServiceTests
         var result = _sut.GetDeviceName();
 
         // Assert
-        result.Should().BeNull();
+        result.ShouldBeNull();
     }
 
     [Theory]
@@ -263,7 +263,7 @@ public class DeviceFingerprintServiceTests
         var result = _sut.GetDeviceName();
 
         // Assert
-        result.Should().Be(expectedDevice);
+        result.ShouldBe(expectedDevice);
     }
 
     [Fact]
@@ -276,7 +276,7 @@ public class DeviceFingerprintServiceTests
         var result = _sut.GetDeviceName();
 
         // Assert
-        result.Should().Be("Unknown Device");
+        result.ShouldBe("Unknown Device");
     }
 
     #endregion
@@ -288,7 +288,7 @@ public class DeviceFingerprintServiceTests
     {
         // Assert
         var method = typeof(DeviceFingerprintService).GetMethod("GenerateFingerprint");
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
     }
 
     [Fact]
@@ -296,7 +296,7 @@ public class DeviceFingerprintServiceTests
     {
         // Assert
         var method = typeof(DeviceFingerprintService).GetMethod("GetClientIpAddress");
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
     }
 
     [Fact]
@@ -304,7 +304,7 @@ public class DeviceFingerprintServiceTests
     {
         // Assert
         var method = typeof(DeviceFingerprintService).GetMethod("GetUserAgent");
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
     }
 
     [Fact]
@@ -312,7 +312,7 @@ public class DeviceFingerprintServiceTests
     {
         // Assert
         var method = typeof(DeviceFingerprintService).GetMethod("GetDeviceName");
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
     }
 
     #endregion

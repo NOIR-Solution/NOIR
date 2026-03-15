@@ -39,10 +39,10 @@ public class ResourceShareLocalDbTests : IAsyncLifetime
 
             // Assert
             var retrieved = await context.ResourceShares.FindAsync(share.Id);
-            retrieved.Should().NotBeNull();
-            retrieved!.ResourceType.Should().Be("document");
-            retrieved.SharedWithUserId.Should().Be("user-123");
-            retrieved.Permission.Should().Be(SharePermission.Edit);
+            retrieved.ShouldNotBeNull();
+            retrieved!.ResourceType.ShouldBe("document");
+            retrieved.SharedWithUserId.ShouldBe("user-123");
+            retrieved.Permission.ShouldBe(SharePermission.Edit);
         });
     }
 
@@ -64,8 +64,8 @@ public class ResourceShareLocalDbTests : IAsyncLifetime
 
             // Assert
             var retrieved = await context.ResourceShares.FindAsync(share.Id);
-            retrieved.Should().NotBeNull();
-            retrieved!.TenantId.Should().Be("default");
+            retrieved.ShouldNotBeNull();
+            retrieved!.TenantId.ShouldBe("default");
         }, "default");
     }
 
@@ -91,7 +91,7 @@ public class ResourceShareLocalDbTests : IAsyncLifetime
 
             // Assert
             var retrieved = await context.ResourceShares.FindAsync(share.Id);
-            retrieved!.Permission.Should().Be(SharePermission.Admin);
+            retrieved!.Permission.ShouldBe(SharePermission.Admin);
         });
     }
 
@@ -120,14 +120,14 @@ public class ResourceShareLocalDbTests : IAsyncLifetime
 
             // Assert - Query with filter should not find it
             var notFound = await context.ResourceShares.FindAsync(share.Id);
-            notFound.Should().BeNull();
+            notFound.ShouldBeNull();
 
             // But it should still exist without filter
             var stillExists = await context.ResourceShares
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(rs => rs.Id == share.Id);
-            stillExists.Should().NotBeNull();
-            stillExists!.IsDeleted.Should().BeTrue();
+            stillExists.ShouldNotBeNull();
+            stillExists!.IsDeleted.ShouldBeTrue();
         });
     }
 
@@ -159,8 +159,8 @@ public class ResourceShareLocalDbTests : IAsyncLifetime
                 .FirstOrDefaultAsync();
 
             // Assert
-            result.Should().NotBeNull();
-            result!.Permission.Should().Be(SharePermission.Edit);
+            result.ShouldNotBeNull();
+            result!.Permission.ShouldBe(SharePermission.Edit);
         });
     }
 
@@ -189,7 +189,7 @@ public class ResourceShareLocalDbTests : IAsyncLifetime
                 .FirstOrDefaultAsync();
 
             // Assert - Should not find expired share
-            result.Should().BeNull();
+            result.ShouldBeNull();
         });
     }
 
@@ -216,8 +216,8 @@ public class ResourceShareLocalDbTests : IAsyncLifetime
                 .ToListAsync();
 
             // Assert
-            results.Should().HaveCount(3);
-            results.Select(r => r.ResourceType).Should().BeEquivalentTo(["document", "folder", "report"]);
+            results.Count().ShouldBe(3);
+            results.Select(r => r.ResourceType).ShouldBe(["document", "folder", "report"]);
         });
     }
 
@@ -244,8 +244,8 @@ public class ResourceShareLocalDbTests : IAsyncLifetime
                 .ToListAsync();
 
             // Assert
-            results.Should().HaveCount(2);
-            results.Should().OnlyContain(r => r.ResourceType == "document");
+            results.Count().ShouldBe(2);
+            results.ShouldAllBe(r => r.ResourceType == "document");
         });
     }
 
@@ -271,7 +271,7 @@ public class ResourceShareLocalDbTests : IAsyncLifetime
 
             // Assert
             var act = async () => await context.SaveChangesAsync();
-            await act.Should().ThrowAsync<DbUpdateException>();
+            await Should.ThrowAsync<DbUpdateException>(act);
         });
     }
 
@@ -298,8 +298,8 @@ public class ResourceShareLocalDbTests : IAsyncLifetime
 
             // Assert
             var retrieved = await context.ResourceShares.FindAsync(share.Id);
-            retrieved!.CreatedAt.Should().BeAfter(beforeCreate.AddSeconds(-1));
-            retrieved.CreatedAt.Should().BeBefore(DateTimeOffset.UtcNow.AddSeconds(1));
+            retrieved!.CreatedAt.ShouldBeGreaterThan(beforeCreate.AddSeconds(-1));
+            retrieved.CreatedAt.ShouldBeLessThan(DateTimeOffset.UtcNow.AddSeconds(1));
         });
     }
 

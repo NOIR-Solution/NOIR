@@ -35,8 +35,8 @@ public class BulkOperationValidationTests
 
         // Assert - Verify conflicting state is detectable
         // Repository.ValidateBulkOperationConfig() will throw InvalidOperationException
-        config.PropertiesToInclude.Should().NotBeEmpty("include list was set");
-        config.PropertiesToExclude.Should().NotBeEmpty("exclude list was set");
+        config.PropertiesToInclude.ShouldNotBeEmpty("include list was set");
+        config.PropertiesToExclude.ShouldNotBeEmpty("exclude list was set");
         // This combination will cause Repository to throw:
         // "Cannot specify both PropertiesToInclude and PropertiesToExclude"
     }
@@ -50,8 +50,8 @@ public class BulkOperationValidationTests
 
         // Assert - Verify invalid states are detectable
         // Repository.ValidateBulkOperationConfig() will throw ArgumentOutOfRangeException
-        zeroConfig.BatchSize.Should().Be(0, "zero batch size will be rejected by Repository");
-        negativeConfig.BatchSize.Should().BeNegative("negative batch size will be rejected by Repository");
+        zeroConfig.BatchSize.ShouldBe(0);
+        negativeConfig.BatchSize.ShouldBeLessThan(0);
         // These values will cause Repository to throw:
         // "BatchSize must be greater than zero"
     }
@@ -63,7 +63,7 @@ public class BulkOperationValidationTests
         var config = new BulkOperationConfig { BatchSize = 1000 };
 
         // Assert
-        config.BatchSize.Should().BeGreaterThan(0);
+        config.BatchSize.ShouldBeGreaterThan(0);
     }
 
     #endregion
@@ -77,7 +77,7 @@ public class BulkOperationValidationTests
         var config = new BulkOperationConfig();
 
         // Assert - Default is no confirmation
-        config.ConfirmSyncWillDeleteMissingRecords.Should().BeFalse();
+        config.ConfirmSyncWillDeleteMissingRecords.ShouldBe(false);
     }
 
     [Fact]
@@ -88,9 +88,9 @@ public class BulkOperationValidationTests
             .ConfirmSyncDeletion();
 
         // Assert
-        config.ConfirmSyncWillDeleteMissingRecords.Should().BeTrue();
+        config.ConfirmSyncWillDeleteMissingRecords.ShouldBe(true);
         // ConfirmSyncWithEmptyCollection must be set separately
-        config.ConfirmSyncWithEmptyCollection.Should().BeFalse();
+        config.ConfirmSyncWithEmptyCollection.ShouldBe(false);
     }
 
     [Fact]
@@ -104,8 +104,8 @@ public class BulkOperationValidationTests
         };
 
         // Assert
-        config.ConfirmSyncWillDeleteMissingRecords.Should().BeTrue();
-        config.ConfirmSyncWithEmptyCollection.Should().BeTrue();
+        config.ConfirmSyncWillDeleteMissingRecords.ShouldBe(true);
+        config.ConfirmSyncWithEmptyCollection.ShouldBe(true);
     }
 
     [Fact]
@@ -119,8 +119,8 @@ public class BulkOperationValidationTests
         };
 
         // Assert
-        config.ConfirmSyncWillDeleteMissingRecords.Should().BeTrue();
-        config.ConfirmSyncWithEmptyCollection.Should().BeFalse();
+        config.ConfirmSyncWillDeleteMissingRecords.ShouldBe(true);
+        config.ConfirmSyncWithEmptyCollection.ShouldBe(false);
     }
 
     #endregion
@@ -142,9 +142,9 @@ public class BulkOperationValidationTests
         };
 
         // Assert
-        config.Stats.Should().NotBeNull();
-        config.Stats!.RowsInserted.Should().Be(1000);
-        config.Stats.TotalRowsAffected.Should().Be(1600);
+        config.Stats.ShouldNotBeNull();
+        config.Stats!.RowsInserted.ShouldBe(1000);
+        config.Stats.TotalRowsAffected.ShouldBe(1600);
     }
 
     [Fact]
@@ -159,7 +159,7 @@ public class BulkOperationValidationTests
         };
 
         // Assert - TotalRowsAffected is calculated property
-        stats.TotalRowsAffected.Should().Be(850, "it sums insert + update + delete");
+        stats.TotalRowsAffected.ShouldBe(850, "it sums insert + update + delete");
     }
 
     [Fact]
@@ -172,7 +172,7 @@ public class BulkOperationValidationTests
         };
 
         // Assert - Duration captures actual execution time
-        stats.Duration.TotalMilliseconds.Should().Be(250);
+        stats.Duration.TotalMilliseconds.ShouldBe(250);
     }
 
     #endregion
@@ -183,7 +183,7 @@ public class BulkOperationValidationTests
     public void ITenantEntity_ShouldHaveTenantId()
     {
         // This test verifies the interface contract
-        typeof(ITenantEntity).GetProperty("TenantId").Should().NotBeNull();
+        typeof(ITenantEntity).GetProperty("TenantId").ShouldNotBeNull();
     }
 
     #endregion
@@ -198,11 +198,11 @@ public class BulkOperationValidationTests
         var default2 = BulkOperationConfig.Default;
 
         // They should be different instances (factory pattern)
-        default1.Should().NotBeSameAs(default2);
+        default1.ShouldNotBeSameAs(default2);
 
         // Modifying one should not affect the other
         default1.BatchSize = 999;
-        default2.BatchSize.Should().Be(2000);
+        default2.BatchSize.ShouldBe(2000);
     }
 
     [Fact]
@@ -211,7 +211,7 @@ public class BulkOperationValidationTests
         // Large batch should have a longer timeout
         var config = BulkOperationConfig.LargeBatch;
 
-        config.BulkCopyTimeout.Should().BeGreaterThan(60);
+        config.BulkCopyTimeout!.Value.ShouldBeGreaterThan(60);
     }
 
     #endregion

@@ -111,11 +111,11 @@ public class GetShippingTrackingQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TrackingNumber.Should().Be(TestTrackingNumber);
-        result.Value.ProviderCode.Should().Be(ShippingProviderCode.GHTK);
-        result.Value.CurrentStatus.Should().Be(ShippingStatus.InTransit);
-        result.Value.ProviderName.Should().Be("GHTK Official");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TrackingNumber.ShouldBe(TestTrackingNumber);
+        result.Value.ProviderCode.ShouldBe(ShippingProviderCode.GHTK);
+        result.Value.CurrentStatus.ShouldBe(ShippingStatus.InTransit);
+        result.Value.ProviderName.ShouldBe("GHTK Official");
     }
 
     [Fact]
@@ -163,10 +163,10 @@ public class GetShippingTrackingQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TrackingNumber.Should().Be(TestTrackingNumber);
-        result.Value.CurrentStatus.Should().Be(ShippingStatus.OutForDelivery); // From provider
-        result.Value.CurrentLocation.Should().Be("Quận 1, TP.HCM");
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TrackingNumber.ShouldBe(TestTrackingNumber);
+        result.Value.CurrentStatus.ShouldBe(ShippingStatus.OutForDelivery); // From provider
+        result.Value.CurrentLocation.ShouldBe("Quận 1, TP.HCM");
     }
 
     [Fact]
@@ -197,9 +197,9 @@ public class GetShippingTrackingQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TrackingNumber.Should().Be(TestTrackingNumber);
-        result.Value.CurrentStatus.Should().Be(ShippingStatus.InTransit); // Local status
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TrackingNumber.ShouldBe(TestTrackingNumber);
+        result.Value.CurrentStatus.ShouldBe(ShippingStatus.InTransit); // Local status
     }
 
     [Fact]
@@ -226,8 +226,8 @@ public class GetShippingTrackingQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.CurrentStatus.Should().Be(ShippingStatus.Draft);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.CurrentStatus.ShouldBe(ShippingStatus.Draft);
 
         // Provider should not be called for Draft orders
         _shippingProviderMock.Verify(
@@ -253,9 +253,9 @@ public class GetShippingTrackingQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Type.Should().Be(ErrorType.NotFound);
-        result.Error.Message.Should().Contain("NONEXISTENT123");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Type.ShouldBe(ErrorType.NotFound);
+        result.Error.Message.ShouldContain("NONEXISTENT123");
     }
 
     #endregion
@@ -285,8 +285,8 @@ public class GetShippingTrackingQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ProviderName.Should().Be("GHTK"); // Falls back to enum name
+        result.IsSuccess.ShouldBe(true);
+        result.Value.ProviderName.ShouldBe("GHTK"); // Falls back to enum name
     }
 
     [Fact]
@@ -317,9 +317,9 @@ public class GetShippingTrackingQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert - Should still succeed with local data
-        result.IsSuccess.Should().BeTrue();
-        result.Value.TrackingNumber.Should().Be(TestTrackingNumber);
-        result.Value.CurrentStatus.Should().Be(ShippingStatus.InTransit);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.TrackingNumber.ShouldBe(TestTrackingNumber);
+        result.Value.CurrentStatus.ShouldBe(ShippingStatus.InTransit);
     }
 
     [Theory]
@@ -352,8 +352,8 @@ public class GetShippingTrackingQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.StatusDescription.Should().Be(expectedDescription);
+        result.IsSuccess.ShouldBe(true);
+        result.Value.StatusDescription.ShouldBe(expectedDescription);
     }
 
     #endregion

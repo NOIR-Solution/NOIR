@@ -43,8 +43,8 @@ public class ProductReviewDomainEventTests
         var review = CreateTestReview();
 
         // Assert
-        review.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ReviewCreatedEvent>();
+        review.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ReviewCreatedEvent>();
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class ProductReviewDomainEventTests
 
         // Assert
         var domainEvent = review.DomainEvents.OfType<ReviewCreatedEvent>().Single();
-        domainEvent.ReviewId.Should().Be(review.Id);
+        domainEvent.ReviewId.ShouldBe(review.Id);
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class ProductReviewDomainEventTests
 
         // Assert
         var domainEvent = review.DomainEvents.OfType<ReviewCreatedEvent>().Single();
-        domainEvent.ProductId.Should().Be(productId);
+        domainEvent.ProductId.ShouldBe(productId);
     }
 
     [Fact]
@@ -80,8 +80,8 @@ public class ProductReviewDomainEventTests
 
         // Assert
         var domainEvent = review.DomainEvents.OfType<ReviewCreatedEvent>().Single();
-        domainEvent.UserId.Should().Be("user-789");
-        domainEvent.Rating.Should().Be(5);
+        domainEvent.UserId.ShouldBe("user-789");
+        domainEvent.Rating.ShouldBe(5);
     }
 
     #endregion
@@ -99,8 +99,8 @@ public class ProductReviewDomainEventTests
         review.Approve();
 
         // Assert
-        review.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ReviewApprovedEvent>();
+        review.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ReviewApprovedEvent>();
     }
 
     [Fact]
@@ -116,8 +116,8 @@ public class ProductReviewDomainEventTests
 
         // Assert
         var domainEvent = review.DomainEvents.OfType<ReviewApprovedEvent>().Single();
-        domainEvent.ReviewId.Should().Be(review.Id);
-        domainEvent.ProductId.Should().Be(productId);
+        domainEvent.ReviewId.ShouldBe(review.Id);
+        domainEvent.ProductId.ShouldBe(productId);
     }
 
     [Fact]
@@ -132,7 +132,7 @@ public class ProductReviewDomainEventTests
         review.Approve();
 
         // Assert - Approve is not guarded, so each call raises an event
-        review.DomainEvents.OfType<ReviewApprovedEvent>().Should().HaveCount(2);
+        review.DomainEvents.OfType<ReviewApprovedEvent>().Count().ShouldBe(2);
     }
 
     #endregion
@@ -150,8 +150,8 @@ public class ProductReviewDomainEventTests
         review.Reject();
 
         // Assert
-        review.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ReviewRejectedEvent>();
+        review.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ReviewRejectedEvent>();
     }
 
     [Fact]
@@ -167,8 +167,8 @@ public class ProductReviewDomainEventTests
 
         // Assert
         var domainEvent = review.DomainEvents.OfType<ReviewRejectedEvent>().Single();
-        domainEvent.ReviewId.Should().Be(review.Id);
-        domainEvent.ProductId.Should().Be(productId);
+        domainEvent.ReviewId.ShouldBe(review.Id);
+        domainEvent.ProductId.ShouldBe(productId);
     }
 
     #endregion
@@ -186,8 +186,8 @@ public class ProductReviewDomainEventTests
         review.AddAdminResponse("Thank you for your feedback!");
 
         // Assert
-        review.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<ReviewAdminRespondedEvent>();
+        review.DomainEvents.ShouldHaveSingleItem()
+            .ShouldBeOfType<ReviewAdminRespondedEvent>();
     }
 
     [Fact]
@@ -203,8 +203,8 @@ public class ProductReviewDomainEventTests
 
         // Assert
         var domainEvent = review.DomainEvents.OfType<ReviewAdminRespondedEvent>().Single();
-        domainEvent.ReviewId.Should().Be(review.Id);
-        domainEvent.ProductId.Should().Be(productId);
+        domainEvent.ReviewId.ShouldBe(review.Id);
+        domainEvent.ProductId.ShouldBe(productId);
     }
 
     [Fact]
@@ -219,7 +219,7 @@ public class ProductReviewDomainEventTests
         review.AddAdminResponse("Updated response");
 
         // Assert
-        review.DomainEvents.OfType<ReviewAdminRespondedEvent>().Should().HaveCount(2);
+        review.DomainEvents.OfType<ReviewAdminRespondedEvent>().Count().ShouldBe(2);
     }
 
     #endregion

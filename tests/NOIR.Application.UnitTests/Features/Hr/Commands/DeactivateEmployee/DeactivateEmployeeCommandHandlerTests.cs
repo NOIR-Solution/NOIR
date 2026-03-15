@@ -62,7 +62,7 @@ public class DeactivateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -80,8 +80,8 @@ public class DeactivateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be("NOIR-HR-010");
+        result.IsFailure.ShouldBe(true);
+        result.Error.Code.ShouldBe("NOIR-HR-010");
     }
 
     [Fact]
@@ -109,9 +109,9 @@ public class DeactivateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Direct report's manager should have been set to null via UpdateManager
-        directReport.ManagerId.Should().BeNull();
+        directReport.ManagerId.ShouldBeNull();
     }
 
     [Fact]
@@ -139,9 +139,9 @@ public class DeactivateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
+        result.IsSuccess.ShouldBe(true);
         // Department manager should have been nulled via Update
-        managedDept.ManagerId.Should().BeNull();
+        managedDept.ManagerId.ShouldBeNull();
     }
 
     [Fact]
@@ -174,10 +174,10 @@ public class DeactivateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        report1.ManagerId.Should().BeNull();
-        report2.ManagerId.Should().BeNull();
-        report3.ManagerId.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        report1.ManagerId.ShouldBeNull();
+        report2.ManagerId.ShouldBeNull();
+        report3.ManagerId.ShouldBeNull();
     }
 
     [Fact]
@@ -207,9 +207,9 @@ public class DeactivateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        directReport.ManagerId.Should().BeNull();
-        managedDept.ManagerId.Should().BeNull();
+        result.IsSuccess.ShouldBe(true);
+        directReport.ManagerId.ShouldBeNull();
+        managedDept.ManagerId.ShouldBeNull();
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -237,8 +237,8 @@ public class DeactivateEmployeeCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        employee.Status.Should().Be(EmployeeStatus.Terminated);
-        employee.EndDate.Should().NotBeNull();
+        result.IsSuccess.ShouldBe(true);
+        employee.Status.ShouldBe(EmployeeStatus.Terminated);
+        employee.EndDate.ShouldNotBeNull();
     }
 }
