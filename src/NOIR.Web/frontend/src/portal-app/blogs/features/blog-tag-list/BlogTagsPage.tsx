@@ -10,6 +10,7 @@ import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { useTableParams } from '@/hooks/useTableParams'
 import { useEnterpriseTable } from '@/hooks/useEnterpriseTable'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { createActionsColumn } from '@/lib/table/columnHelpers'
 import {
   Badge,
@@ -39,6 +40,8 @@ export const BlogTagsPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Blog Tags')
 
+  const { getRowAnimationClass, fadeOutRow } = useRowHighlight()
+
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-tag' })
   const [tagToDelete, setTagToDelete] = useState<PostTagListItem | null>(null)
 
@@ -55,6 +58,7 @@ export const BlogTagsPage = () => {
 
   const handleDelete = async (id: string): Promise<{ success: boolean; error?: string }> => {
     try {
+      await fadeOutRow(id)
       await deleteMutation.mutateAsync(id)
       return { success: true }
     } catch (err) {
@@ -174,6 +178,7 @@ export const BlogTagsPage = () => {
             density={settings.density}
             isLoading={isLoading}
             isStale={isSearchStale}
+            getRowAnimationClass={getRowAnimationClass}
             onRowClick={openEditTag}
             emptyState={
               <EmptyState

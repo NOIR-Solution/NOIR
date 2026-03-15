@@ -185,6 +185,21 @@ interface DataTableProps<TData extends RowData> {
    * Use with `useRowHighlight` hook.
    */
   getRowAnimationClass?: (rowId: string) => string
+  /**
+   * Enable keyboard navigation (Arrow keys, Enter, Space, Home/End, Escape).
+   * Defaults to true.
+   */
+  enableKeyboardNav?: boolean
+  /**
+   * Index of the currently focused row (from useKeyboardNavigation).
+   * When provided, the focused row gets a ring highlight.
+   */
+  focusedRowIndex?: number | null
+  /**
+   * Props to spread on the table body wrapper for keyboard navigation.
+   * From useKeyboardNavigation().tableBodyProps.
+   */
+  keyboardNavProps?: Record<string, unknown>
 }
 
 /**
@@ -212,6 +227,8 @@ export const DataTable = <TData extends RowData>({
   className,
   density = 'normal',
   getRowAnimationClass,
+  focusedRowIndex = null,
+  keyboardNavProps,
 }: DataTableProps<TData>) => {
   const visibleColumns = table.getVisibleLeafColumns()
   const visibleColumnCount = visibleColumns.length
@@ -285,6 +302,7 @@ export const DataTable = <TData extends RowData>({
           className,
         )}
         data-density={density}
+        {...(keyboardNavProps as React.HTMLAttributes<HTMLDivElement>)}
       >
         <UITable style={{ ...columnSizeVars, minWidth: `${minTableWidth}px` }}>
           {/* Colgroup — fixed cols get exact px, flex cols use cqi to fill remaining space */}
@@ -329,13 +347,16 @@ export const DataTable = <TData extends RowData>({
                   items={canDragReorder ? columnOrder : []}
                   strategy={horizontalListSortingStrategy}
                 >
-                  {headerGroup.headers.map((header) => (
-                    <DraggableTableHead
-                      key={header.id}
-                      header={header}
-                      canDragReorder={canDragReorder}
-                    />
-                  ))}
+                  {headerGroup.headers.map((header) =>
+                    // Skip headers absorbed by colSpan (TanStack sets colSpan=0 when grouping)
+                    header.colSpan === 0 ? null : (
+                      <DraggableTableHead
+                        key={header.id}
+                        header={header}
+                        canDragReorder={canDragReorder}
+                      />
+                    ),
+                  )}
                 </SortableContext>
               </TableRow>
             ))}
@@ -367,65 +388,70 @@ export const DataTable = <TData extends RowData>({
             </TableRow>
           ) : (
             // Data rows — includes group rows and aggregate rows when grouping is active
-            table.getRowModel().rows.map((row) => {
+            table.getRowModel().rows.map((row, rowIndex) => {
               // ── Group header row ──────────────────────────────────────────
               if (row.getIsGrouped()) {
+                // colSpan approach: label spans from col 0 to the first aggregated column,
+                // then remaining cells render individually so aggregated values align with headers.
+                const allCells = row.getVisibleCells()
+                const firstAggIdx = allCells.findIndex((c) => c.getIsAggregated())
+                // If no aggregated cells, span entire row; otherwise span up to first aggregated
+                const labelSpan = firstAggIdx === -1 ? allCells.length : firstAggIdx
+
                 return (
                   <TableRow key={row.id} className="bg-muted/40 hover:bg-muted/60">
-                    {row.getVisibleCells().map((cell) => {
-                      if (cell.getIsGrouped()) {
-                        // Grouping column — show expand toggle + group value
-                        return (
-                          <TableCell key={cell.id} className="py-2 pl-3">
-                            <button
-                              type="button"
-                              onClick={row.getToggleExpandedHandler()}
-                              className="flex cursor-pointer items-center gap-2 text-sm font-medium"
-                              aria-expanded={row.getIsExpanded()}
-                            >
-                              {row.getIsExpanded() ? (
-                                <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
-                              ) : (
-                                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-                              )}
-                              <span>{String(row.groupingValue ?? '')}</span>
-                              <span className="ml-1 text-xs font-normal text-muted-foreground">
-                                ({row.subRows.length})
-                              </span>
-                            </button>
-                          </TableCell>
-                        )
-                      } else if (cell.getIsAggregated()) {
-                        // Columns with aggregationFn — show aggregated value
-                        return (
-                          <TableCell
-                            key={cell.id}
-                            className={cn(
-                              'py-2 text-sm text-muted-foreground',
-                              cell.column.columnDef.meta?.align === 'right' && 'text-right',
-                              cell.column.columnDef.meta?.align === 'center' && 'text-center',
-                            )}
-                          >
-                            {flexRender(
-                              cell.column.columnDef.aggregatedCell ?? cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
-                          </TableCell>
-                        )
-                      } else {
-                        // Placeholder — empty cell
-                        return <TableCell key={cell.id} />
-                      }
-                    })}
+                    {/* Group label — spans from start to first aggregated column */}
+                    <TableCell colSpan={labelSpan} className="py-2 pl-3">
+                      <button
+                        type="button"
+                        onClick={row.getToggleExpandedHandler()}
+                        className="flex cursor-pointer items-center gap-2 text-sm font-medium"
+                        aria-expanded={row.getIsExpanded()}
+                      >
+                        {row.getIsExpanded() ? (
+                          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        )}
+                        <span>{String(row.groupingValue ?? '')}</span>
+                        <span className="ml-1 text-xs font-normal text-muted-foreground">
+                          ({row.subRows.length})
+                        </span>
+                      </button>
+                    </TableCell>
+                    {/* Remaining cells after colSpan — aggregated get content, others empty */}
+                    {firstAggIdx !== -1 && allCells.slice(firstAggIdx).map((cell) =>
+                      cell.getIsAggregated() ? (
+                        <TableCell
+                          key={cell.id}
+                          className={cn(
+                            'py-2 text-sm text-muted-foreground',
+                            cell.column.columnDef.meta?.align === 'right' && 'text-right',
+                            cell.column.columnDef.meta?.align === 'center' && 'text-center',
+                          )}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.aggregatedCell ?? cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      ) : (
+                        <TableCell key={cell.id} />
+                      ),
+                    )}
                   </TableRow>
                 )
               }
 
               // ── Regular data row ──────────────────────────────────────────
+              const isFocused = focusedRowIndex === rowIndex
               return (
                 <TableRow
                   key={row.id}
+                  id={`table-row-${rowIndex}`}
+                  data-row-index={rowIndex}
                   data-state={row.getIsSelected() ? 'selected' : undefined}
+                  data-focused={isFocused || undefined}
                   onClick={
                     onRowClick
                       ? (e) => {
@@ -444,6 +470,7 @@ export const DataTable = <TData extends RowData>({
                   className={cn(
                     onRowClick && 'cursor-pointer',
                     getRowAnimationClass?.(row.id),
+                    isFocused && 'ring-2 ring-primary/40 ring-inset',
                   )}
                 >
                   {row.getVisibleCells().map((cell) => {

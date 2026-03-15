@@ -10,6 +10,7 @@ import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { useTableParams } from '@/hooks/useTableParams'
 import { useEnterpriseTable } from '@/hooks/useEnterpriseTable'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { createActionsColumn } from '@/lib/table/columnHelpers'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
@@ -73,6 +74,8 @@ export const PromotionsPage = () => {
 
   const canWrite = hasPermission(Permissions.PromotionsWrite)
   const canDelete = hasPermission(Permissions.PromotionsDelete)
+
+  const { getRowAnimationClass } = useRowHighlight()
 
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-promotion' })
   const [promotionToDelete, setPromotionToDelete] = useState<PromotionDto | null>(null)
@@ -185,6 +188,9 @@ export const PromotionsPage = () => {
     ch.accessor('promotionType', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('promotions.type.label', 'Type')} />,
       meta: { label: t('promotions.type.label', 'Type') },
+      enableGrouping: true,
+      aggregationFn: 'count',
+      aggregatedCell: ({ getValue }) => <span className="text-xs font-medium text-muted-foreground">{String(getValue() ?? 0)} items</span>,
       cell: ({ getValue }) => (
         <Badge variant="outline">{t(`promotions.type.${getValue().toLowerCase()}`, getValue())}</Badge>
       ),
@@ -201,6 +207,9 @@ export const PromotionsPage = () => {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.status', 'Status')} />,
       meta: { label: t('labels.status', 'Status') },
       size: 120,
+      enableGrouping: true,
+      aggregationFn: 'count',
+      aggregatedCell: ({ getValue }) => <span className="text-xs font-medium text-muted-foreground">{String(getValue() ?? 0)} items</span>,
       cell: ({ getValue }) => (
         <Badge variant="outline" className={getStatusBadgeClasses(statusBadgeColors[getValue()])}>
           {t(`promotions.status.${getValue().toLowerCase()}`, getValue())}
@@ -254,6 +263,7 @@ export const PromotionsPage = () => {
     },
     onSortingChange: setSorting,
     getRowId: (row) => row.id,
+    enableGrouping: true,
   })
 
   if (queryError) {
@@ -338,6 +348,7 @@ export const PromotionsPage = () => {
             isLoading={isLoading}
             isStale={isSearchStale || isFilterPending}
             onRowClick={openEditPromotion}
+            getRowAnimationClass={getRowAnimationClass}
             emptyState={
               <EmptyState
                 icon={Percent}

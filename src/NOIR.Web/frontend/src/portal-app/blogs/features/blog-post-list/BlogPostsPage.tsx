@@ -1,4 +1,5 @@
 import { useState, useMemo, useTransition, useCallback } from 'react'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { useTranslation } from 'react-i18next'
 import { FileText, Plus, Pencil, Trash2, Send, EyeOff, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -64,6 +65,7 @@ export const BlogPostsPage = () => {
   const { hasPermission } = usePermissions()
   usePageContext('Blog Posts')
   const navigate = useNavigate()
+  const { getRowAnimationClass, fadeOutRow } = useRowHighlight()
 
   const canPublish = hasPermission(Permissions.BlogPostsPublish)
   const canDelete = hasPermission(Permissions.BlogPostsDelete)
@@ -117,6 +119,7 @@ export const BlogPostsPage = () => {
 
   const handleDelete = async (id: string): Promise<{ success: boolean; error?: string }> => {
     try {
+      await fadeOutRow(id)
       await deleteMutation.mutateAsync(id)
       return { success: true }
     } catch (err) {
@@ -220,6 +223,9 @@ export const BlogPostsPage = () => {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.status')} />,
       meta: { label: t('labels.status') },
       size: 110,
+      enableGrouping: true,
+      aggregationFn: 'count',
+      aggregatedCell: ({ getValue }) => <span className="text-xs font-medium text-muted-foreground">{String(getValue() ?? 0)} items</span>,
       cell: ({ getValue }) => (
         <Badge variant="outline" className={getStatusBadgeClasses(statusColors[getValue()])}>
           {t(`blog.status.${getValue().toLowerCase()}`)}
@@ -229,6 +235,9 @@ export const BlogPostsPage = () => {
     ch.accessor('categoryName', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.category')} />,
       meta: { label: t('labels.category') },
+      enableGrouping: true,
+      aggregationFn: 'count',
+      aggregatedCell: ({ getValue }) => <span className="text-xs font-medium text-muted-foreground">{String(getValue() ?? 0)} items</span>,
       cell: ({ getValue }) => getValue() || '-',
     }) as ColumnDef<PostListItem, unknown>,
     ch.accessor('viewCount', {
@@ -252,6 +261,7 @@ export const BlogPostsPage = () => {
     rowCount: data?.totalCount ?? 0,
     enableRowSelection: true,
     tableKey: 'blog-posts',
+    enableGrouping: true,
     state: {
       pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
       sorting: params.sorting as SortingState,
@@ -427,6 +437,7 @@ export const BlogPostsPage = () => {
             isLoading={isLoading}
             isStale={isSearchStale || isFilterPending}
             onRowClick={selectedCount === 0 ? (post) => navigate(`/portal/blog/posts/${post.id}/edit`) : undefined}
+            getRowAnimationClass={getRowAnimationClass}
             emptyState={
               <EmptyState
                 icon={FileText}

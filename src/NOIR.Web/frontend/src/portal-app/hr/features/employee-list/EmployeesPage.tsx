@@ -18,12 +18,14 @@ import type { ColumnDef, SortingState } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { useTableParams } from '@/hooks/useTableParams'
 import { useEnterpriseTable, useSelectedIds } from '@/hooks/useEnterpriseTable'
 import { createSelectColumn, createActionsColumn } from '@/lib/table/columnHelpers'
+import { aggregatedCells } from '@/lib/table/aggregationHelpers'
 import {
   Badge,
   Button,
@@ -98,6 +100,8 @@ export const EmployeesPage = () => {
   const { t } = useTranslation('common')
   const navigate = useNavigate()
   usePageContext('Employees')
+
+  const { getRowAnimationClass } = useRowHighlight()
 
   const [employeeToDeactivate, setEmployeeToDeactivate] = useState<EmployeeListDto | null>(null)
   const [bulkTagDialogOpen, setBulkTagDialogOpen] = useState(false)
@@ -311,6 +315,9 @@ export const EmployeesPage = () => {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('hr.department')} />,
       meta: { label: t('hr.department') },
       cell: ({ getValue }) => <span className="text-sm">{getValue()}</span>,
+      enableGrouping: true,
+      aggregationFn: 'count',
+      aggregatedCell: aggregatedCells.count(),
     }) as ColumnDef<EmployeeListDto, unknown>,
     ch.accessor('position', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('hr.position')} />,
@@ -332,6 +339,9 @@ export const EmployeesPage = () => {
           {t(`hr.statuses.${row.original.status.toLowerCase()}`)}
         </Badge>
       ),
+      enableGrouping: true,
+      aggregationFn: 'count',
+      aggregatedCell: aggregatedCells.count(),
     }) as ColumnDef<EmployeeListDto, unknown>,
     ch.accessor('employmentType', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('hr.employmentType')} />,
@@ -341,11 +351,14 @@ export const EmployeesPage = () => {
           {t(`hr.employmentTypes.${row.original.employmentType.charAt(0).toLowerCase() + row.original.employmentType.slice(1).replace(/([A-Z])/g, (m) => m.toLowerCase())}`)}
         </Badge>
       ),
+      enableGrouping: true,
+      aggregationFn: 'count',
+      aggregatedCell: aggregatedCells.count(),
     }) as ColumnDef<EmployeeListDto, unknown>,
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault, setDensity, setGrouping } = useEnterpriseTable({
     data: employees,
     columns,
     tableKey: 'employees',
@@ -363,6 +376,7 @@ export const EmployeesPage = () => {
     },
     onSortingChange: setSorting,
     enableRowSelection: true,
+    enableGrouping: true,
     getRowId: (row) => row.id,
   })
 
@@ -415,6 +429,9 @@ export const EmployeesPage = () => {
               onResetSettings={resetToDefault}
               density={settings.density}
               onDensityChange={setDensity}
+              groupableColumnIds={['department', 'status', 'employmentType']}
+              grouping={settings.grouping}
+              onGroupingChange={setGrouping}
               filterSlot={
                 <>
                   <Select value={params.filters.departmentId ?? 'all'} onValueChange={setDepartmentFilter}>
@@ -485,6 +502,7 @@ export const EmployeesPage = () => {
             isLoading={isLoading}
             isStale={isSearchStale || isFilterPending}
             onRowClick={handleViewEmployee}
+            getRowAnimationClass={getRowAnimationClass}
             emptyState={
               <EmptyState
                 icon={Users}

@@ -1,4 +1,5 @@
 import { useState, useMemo, useTransition, useCallback } from 'react'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { useNavigate } from 'react-router-dom'
 import { createColumnHelper } from '@tanstack/react-table'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
@@ -88,6 +89,7 @@ import type { ProductListItem, ProductStatus } from '@/types/product'
 import { formatDistanceToNow } from 'date-fns'
 import { toast } from 'sonner'
 import { formatCurrency } from '@/lib/utils/currency'
+import { aggregatedCells } from '@/lib/table/aggregationHelpers'
 import { PRODUCT_STATUS_CONFIG, DEFAULT_PRODUCT_PAGE_SIZE, LOW_STOCK_THRESHOLD } from '@/lib/constants/product'
 
 type ProductFilters = {
@@ -106,6 +108,7 @@ export const ProductsPage = () => {
   const { hasPermission } = usePermissions()
   usePageContext('Products')
   const navigate = useNavigate()
+  const { getRowAnimationClass, fadeOutRow } = useRowHighlight()
 
   // Permission checks
   const canCreateProducts = hasPermission(Permissions.ProductsCreate)
@@ -157,6 +160,7 @@ export const ProductsPage = () => {
   // Delete handler for DeleteProductDialog (expects { success, error } return)
   const handleDelete = async (id: string): Promise<{ success: boolean; error?: string }> => {
     try {
+      await fadeOutRow(id)
       await deleteProductMutation.mutateAsync(id)
       return { success: true }
     } catch (err) {
@@ -400,6 +404,7 @@ export const ProductsPage = () => {
     ch.accessor('status', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.status', 'Status')} />,
       meta: { label: t('labels.status', 'Status') },
+      enableGrouping: true,
       cell: ({ getValue }) => {
         const status = PRODUCT_STATUS_CONFIG[getValue()]
         const StatusIcon = status.icon
@@ -415,18 +420,22 @@ export const ProductsPage = () => {
       id: 'category',
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.category', 'Category')} />,
       meta: { label: t('labels.category', 'Category') },
+      enableGrouping: true,
       cell: ({ getValue }) => <span className="text-sm">{getValue() || '—'}</span>,
     }) as ColumnDef<ProductListItem, unknown>,
     ch.accessor((r) => r.brandName || r.brand, {
       id: 'brand',
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.brand', 'Brand')} />,
       meta: { label: t('labels.brand', 'Brand') },
+      enableGrouping: true,
       cell: ({ getValue }) => <span className="text-sm">{getValue() || '—'}</span>,
     }) as ColumnDef<ProductListItem, unknown>,
     ch.accessor('basePrice', {
       id: 'price',
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('products.price', 'Price')} />,
       meta: { align: 'right' as const, label: t('products.price', 'Price') },
+      aggregationFn: 'mean',
+      aggregatedCell: aggregatedCells.average(),
       cell: ({ row }) => (
         <span className="font-semibold text-foreground">
           {formatCurrency(row.original.basePrice, row.original.currency)}
@@ -437,6 +446,8 @@ export const ProductsPage = () => {
       id: 'stock',
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.stock', 'Stock')} />,
       meta: { align: 'right' as const, label: t('labels.stock', 'Stock') },
+      aggregationFn: 'sum',
+      aggregatedCell: aggregatedCells.sum(),
       cell: ({ getValue, row }) => (
         <Badge variant={row.original.inStock ? 'default' : 'destructive'}>
           {getValue()}
@@ -475,6 +486,7 @@ export const ProductsPage = () => {
     },
     onSortingChange: setSorting,
     enableRowSelection: true,
+    enableGrouping: true,
     getRowId: (row) => row.id,
   })
 
@@ -569,6 +581,9 @@ export const ProductsPage = () => {
                 onResetSettings={resetToDefault}
                 density={settings.density}
                 onDensityChange={setDensity}
+                groupableColumnIds={['status', 'category', 'brand']}
+                grouping={settings.grouping}
+                onGroupingChange={(ids) => table.setGrouping(ids)}
                 filterSlot={
                   <>
                     <Select value={params.filters.status || 'all'} onValueChange={handleStatusChange}>
@@ -813,6 +828,7 @@ export const ProductsPage = () => {
                 isLoading={loading}
                 isStale={isSearchStale || isFilterPending || isPlaceholderData}
                 onRowClick={selectedIds.length === 0 ? (product) => navigate(`/portal/ecommerce/products/${product.id}`) : undefined}
+                getRowAnimationClass={getRowAnimationClass}
                 emptyState={
                   <EmptyState
                     icon={Package}

@@ -1,4 +1,5 @@
 import { useState, useDeferredValue, useMemo, useTransition, useCallback } from 'react'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { createColumnHelper } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useTranslation } from 'react-i18next'
@@ -49,6 +50,7 @@ const ch = createColumnHelper<MediaFileListItem>()
 export const MediaLibraryPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Media')
+  const { getRowAnimationClass, fadeOutRow } = useRowHighlight()
 
   // Search
   const [searchInput, setSearchInput] = useState('')
@@ -139,8 +141,9 @@ export const MediaLibraryPage = () => {
   }
 
   // Delete handlers
-  const handleSingleDelete = () => {
+  const handleSingleDelete = async () => {
     if (!fileToDelete) return
+    await fadeOutRow(fileToDelete.id)
     deleteMutation.mutate(fileToDelete.id, {
       onSuccess: () => {
         setFileToDelete(null)
@@ -466,6 +469,7 @@ export const MediaLibraryPage = () => {
                 isLoading={isLoading}
                 isStale={isSearchStale || isFilterPending || isPlaceholderData}
                 onRowClick={(item) => setDetailFile(item)}
+                getRowAnimationClass={getRowAnimationClass}
                 emptyState={
                   <EmptyState
                     icon={ImageIcon}

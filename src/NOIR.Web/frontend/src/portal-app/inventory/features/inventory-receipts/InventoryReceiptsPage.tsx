@@ -17,6 +17,7 @@ import { useTableParams } from '@/hooks/useTableParams'
 import { useEnterpriseTable } from '@/hooks/useEnterpriseTable'
 import { createActionsColumn } from '@/lib/table/columnHelpers'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import {
   Badge,
   Button,
@@ -67,6 +68,8 @@ export const InventoryReceiptsPage = () => {
   const { hasPermission } = usePermissions()
   const { formatDateTime } = useRegionalSettings()
   usePageContext('Inventory')
+
+  const { getRowAnimationClass } = useRowHighlight()
 
   const canWriteInventory = hasPermission(Permissions.InventoryWrite)
   const canManageInventory = hasPermission(Permissions.InventoryManage)
@@ -326,6 +329,7 @@ export const InventoryReceiptsPage = () => {
             isLoading={isLoading}
             isStale={isSearchStale || isFilterPending}
             onRowClick={(receipt) => setSelectedReceiptId(receipt.id)}
+            getRowAnimationClass={getRowAnimationClass}
             emptyState={
               <EmptyState
                 icon={Warehouse}

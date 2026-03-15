@@ -10,6 +10,7 @@ import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { useTableParams } from '@/hooks/useTableParams'
 import { useEnterpriseTable } from '@/hooks/useEnterpriseTable'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { createActionsColumn } from '@/lib/table/columnHelpers'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
@@ -51,6 +52,8 @@ export const BrandsPage = () => {
   const { hasPermission } = usePermissions()
   usePageContext('Brands')
 
+  const { getRowAnimationClass, fadeOutRow } = useRowHighlight()
+
   const canCreateBrands = hasPermission(Permissions.BrandsCreate)
   const canUpdateBrands = hasPermission(Permissions.BrandsUpdate)
   const canDeleteBrands = hasPermission(Permissions.BrandsDelete)
@@ -84,6 +87,7 @@ export const BrandsPage = () => {
   const handleDelete = async () => {
     if (!brandToDelete) return
     try {
+      await fadeOutRow(brandToDelete.id)
       await deleteMutation.mutateAsync(brandToDelete.id)
       toast.success(t('brands.deleteSuccess', 'Brand deleted successfully'))
       setBrandToDelete(null)
@@ -277,6 +281,7 @@ export const BrandsPage = () => {
             density={settings.density}
             isLoading={isLoading}
             isStale={isSearchStale || isFilterPending}
+            getRowAnimationClass={getRowAnimationClass}
             onRowClick={openEditBrand}
             emptyState={
               <EmptyState

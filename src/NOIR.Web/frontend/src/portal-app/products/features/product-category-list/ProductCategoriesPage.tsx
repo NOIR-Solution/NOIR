@@ -10,6 +10,7 @@ import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { useTableParams } from '@/hooks/useTableParams'
 import { useEnterpriseTable } from '@/hooks/useEnterpriseTable'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { createActionsColumn } from '@/lib/table/columnHelpers'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
@@ -52,6 +53,8 @@ export const ProductCategoriesPage = () => {
   const { hasPermission } = usePermissions()
   usePageContext('Product Categories')
 
+  const { getRowAnimationClass, fadeOutRow } = useRowHighlight()
+
   const canCreateCategories = hasPermission(Permissions.ProductCategoriesCreate)
   const canUpdateCategories = hasPermission(Permissions.ProductCategoriesUpdate)
   const canDeleteCategories = hasPermission(Permissions.ProductCategoriesDelete)
@@ -84,6 +87,7 @@ export const ProductCategoriesPage = () => {
 
   const handleDelete = async (id: string): Promise<{ success: boolean; error?: string }> => {
     try {
+      await fadeOutRow(id)
       await deleteMutation.mutateAsync(id)
       return { success: true }
     } catch (err) {
@@ -280,6 +284,7 @@ export const ProductCategoriesPage = () => {
                 density={settings.density}
                 isLoading={isLoading}
                 isStale={isSearchStale}
+                getRowAnimationClass={getRowAnimationClass}
                 onRowClick={canUpdateCategories ? openEditCategory : undefined}
                 emptyState={
                   <EmptyState

@@ -151,6 +151,14 @@ Columns with `meta: { align: 'center' }` (actions, select) get special handling 
 
 **Load-all pages** (BlogTags, BlogCategories, ProductCategories): Do NOT pass `defaultPageSize` — they fetch all items client-side and don't need page size selection.
 
+## Grouping
+
+`useEnterpriseTable` supports `enableGrouping: true` (opt-in per page). Add `enableGrouping: true` + `aggregationFn` + `aggregatedCell` to column definitions that should be groupable.
+
+**CRITICAL**: `groupedColumnMode` MUST be `false` (set in `useEnterpriseTable`). The default `'reorder'` causes `getVisibleLeafColumns()` to reorder columns but NOT `getHeaderGroups()` when `columnOrder` is set — colgroup widths mismatch with headers → column overlap. Never change this setting.
+
+**`expandAllGroups`**: Sets `expanded: true` (TanStack sentinel). Type is `true | Record<string, boolean>`. Do NOT use `{}` — that means "all collapsed".
+
 ## Bug Prevention
 
 - **`useTransition`-wrapped filter callbacks**: If a filter button shows active count, track count locally (not from deferred prop). The prop updates are delayed by `startFilterTransition`.
@@ -161,4 +169,5 @@ Columns with `meta: { align: 'center' }` (actions, select) get special handling 
 - **Gold standard**: `UsersPage.tsx`, `CustomersPage.tsx`, `OrdersPage.tsx`
 - **With filters**: `PromotionsPage.tsx`, `UsersPage.tsx`
 - **With row selection**: `ReviewsPage.tsx`, `BlogPostsPage.tsx`, `CustomersPage.tsx`
+- **With grouping**: `OrdersPage.tsx` (status), `CustomersPage.tsx` (segment, tier), `EmployeesPage.tsx` (department, status, position)
 - **Storybook**: `Storybook > DataTable` — full example with actions, select, toolbar, pagination

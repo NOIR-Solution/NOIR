@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { CreditCard, Eye, Plus } from 'lucide-react'
@@ -10,6 +11,7 @@ import { OfflineBanner } from '@/components/OfflineBanner'
 import { useTableParams } from '@/hooks/useTableParams'
 import { useEnterpriseTable } from '@/hooks/useEnterpriseTable'
 import { createActionsColumn } from '@/lib/table/columnHelpers'
+import { aggregatedCells } from '@/lib/table/aggregationHelpers'
 import {
   Badge,
   Button,
@@ -56,6 +58,7 @@ export const PaymentsPage = () => {
   const navigate = useNavigate()
   const { formatDateTime } = useRegionalSettings()
   usePageContext('Payments')
+  const { getRowAnimationClass } = useRowHighlight()
 
   const [recordDialogOpen, setRecordDialogOpen] = useState(false)
 
@@ -109,6 +112,8 @@ export const PaymentsPage = () => {
           {formatCurrency(row.original.amount, row.original.currency)}
         </span>
       ),
+      aggregationFn: 'sum',
+      aggregatedCell: aggregatedCells.currency(),
     }) as ColumnDef<PaymentTransactionListDto, unknown>,
     ch.accessor('status', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('payments.status')} />,
@@ -118,6 +123,7 @@ export const PaymentsPage = () => {
           {t(`payments.statuses.${row.original.status}`, row.original.status)}
         </Badge>
       ),
+      enableGrouping: true,
     }) as ColumnDef<PaymentTransactionListDto, unknown>,
     ch.accessor('provider', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('payments.provider')} />,
@@ -133,6 +139,7 @@ export const PaymentsPage = () => {
           {t(`payments.methods.${row.original.paymentMethod}`, row.original.paymentMethod)}
         </span>
       ),
+      enableGrouping: true,
     }) as ColumnDef<PaymentTransactionListDto, unknown>,
     ch.accessor('createdAt', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('payments.createdAt')} />,
@@ -155,11 +162,12 @@ export const PaymentsPage = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault, setDensity, setGrouping } = useEnterpriseTable({
     data: payments,
     columns,
     tableKey: 'payments',
     rowCount: paymentsResponse?.totalCount ?? 0,
+    enableGrouping: true,
     state: {
       pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
       sorting: params.sorting as SortingState,
@@ -215,6 +223,9 @@ export const PaymentsPage = () => {
               onResetSettings={resetToDefault}
               density={settings.density}
               onDensityChange={setDensity}
+              groupableColumnIds={['status', 'method']}
+              grouping={settings.grouping}
+              onGroupingChange={setGrouping}
               filterSlot={
                 <>
                   <Select value={params.filters.status ?? 'all'} onValueChange={handleStatusFilter}>
@@ -261,6 +272,7 @@ export const PaymentsPage = () => {
             isLoading={isLoading}
             isStale={isSearchStale || isFilterPending}
             onRowClick={handleViewPayment}
+            getRowAnimationClass={getRowAnimationClass}
             emptyState={
               <EmptyState
                 icon={CreditCard}

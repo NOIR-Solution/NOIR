@@ -10,6 +10,7 @@ import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { useTableParams } from '@/hooks/useTableParams'
 import { useEnterpriseTable } from '@/hooks/useEnterpriseTable'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { createActionsColumn } from '@/lib/table/columnHelpers'
 import {
   Badge,
@@ -49,6 +50,8 @@ export const BlogCategoriesPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Blog Categories')
 
+  const { getRowAnimationClass, fadeOutRow } = useRowHighlight()
+
   const { params, searchInput, setSearchInput, isSearchStale } = useTableParams({ defaultPageSize: 1000 })
   const queryParams = useMemo(() => ({ search: params.search }), [params.search])
   const { data = [], isLoading, error: queryError, refetch: refresh } = useBlogCategoriesQuery(queryParams)
@@ -84,6 +87,7 @@ export const BlogCategoriesPage = () => {
 
   const handleDelete = async (id: string): Promise<{ success: boolean; error?: string }> => {
     try {
+      await fadeOutRow(id)
       await deleteMutation.mutateAsync(id)
       return { success: true }
     } catch (err) {
@@ -237,6 +241,7 @@ export const BlogCategoriesPage = () => {
                 density={settings.density}
                 isLoading={isLoading}
                 isStale={isSearchStale}
+                getRowAnimationClass={getRowAnimationClass}
                 onRowClick={openEditCategory}
                 emptyState={
                   <EmptyState

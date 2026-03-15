@@ -23,7 +23,9 @@ import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { useTableParams } from '@/hooks/useTableParams'
 import { useEnterpriseTable, useSelectedIds } from '@/hooks/useEnterpriseTable'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { createSelectColumn, createActionsColumn } from '@/lib/table/columnHelpers'
+import { aggregatedCells } from '@/lib/table/aggregationHelpers'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { BulkActionToolbar } from '@/components/BulkActionToolbar'
 import {
@@ -78,6 +80,8 @@ export const CustomersPage = () => {
   const canUpdate = hasPermission(Permissions.CustomersUpdate)
   const canDelete = hasPermission(Permissions.CustomersDelete)
   const canManage = hasPermission(Permissions.CustomersManage)
+
+  const { getRowAnimationClass } = useRowHighlight()
 
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-customer' })
   const [customerToDelete, setCustomerToDelete] = useState<CustomerSummaryDto | null>(null)
@@ -178,6 +182,7 @@ export const CustomersPage = () => {
     ch.accessor('segment', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('customers.segmentLabel', 'Segment')} />,
       meta: { label: t('customers.segmentLabel', 'Segment') },
+      enableGrouping: true,
       cell: ({ getValue }) => (
         <Badge variant="outline" className={getSegmentBadgeClass(getValue())}>
           {t(`customers.segment.${getValue().toLowerCase()}`, getValue())}
@@ -187,6 +192,7 @@ export const CustomersPage = () => {
     ch.accessor('tier', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('customers.tierLabel', 'Tier')} />,
       meta: { label: t('customers.tierLabel', 'Tier') },
+      enableGrouping: true,
       cell: ({ getValue }) => (
         <Badge variant="outline" className={getTierBadgeClass(getValue())}>
           {t(`customers.tier.${getValue().toLowerCase()}`, getValue())}
@@ -197,17 +203,23 @@ export const CustomersPage = () => {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('customers.ordersLabel', 'Orders')} />,
       meta: { align: 'center', label: t('customers.ordersLabel', 'Orders') },
       size: 90,
+      aggregationFn: 'sum',
+      aggregatedCell: aggregatedCells.sum(),
       cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>,
     }) as ColumnDef<CustomerSummaryDto, unknown>,
     ch.accessor('totalSpent', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('customers.totalSpent', 'Total Spent')} />,
       meta: { align: 'right', label: t('customers.totalSpent', 'Total Spent') },
+      aggregationFn: 'sum',
+      aggregatedCell: aggregatedCells.currency('VND'),
       cell: ({ getValue }) => <span className="font-medium text-sm">{formatCurrency(getValue(), 'VND')}</span>,
     }) as ColumnDef<CustomerSummaryDto, unknown>,
     ch.accessor('loyaltyPoints', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('customers.loyaltyPoints', 'Points')} />,
       meta: { align: 'center', label: t('customers.loyaltyPoints', 'Points') },
       size: 80,
+      aggregationFn: 'sum',
+      aggregatedCell: aggregatedCells.sum(),
       cell: ({ getValue }) => <Badge variant="secondary">{getValue().toLocaleString()}</Badge>,
     }) as ColumnDef<CustomerSummaryDto, unknown>,
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -233,6 +245,7 @@ export const CustomersPage = () => {
     },
     onSortingChange: setSorting,
     enableRowSelection: true,
+    enableGrouping: true,
     getRowId: (row) => row.id,
   })
 
@@ -421,6 +434,9 @@ export const CustomersPage = () => {
               onResetSettings={resetToDefault}
               density={settings.density}
               onDensityChange={setDensity}
+              groupableColumnIds={['segment', 'tier']}
+              grouping={settings.grouping}
+              onGroupingChange={(ids) => table.setGrouping(ids)}
               filterSlot={
                 <>
                   <Select value={segmentFilter} onValueChange={handleSegmentFilter}>
@@ -500,6 +516,7 @@ export const CustomersPage = () => {
             isLoading={isLoading}
             isStale={isSearchStale || isFilterPending}
             onRowClick={selectedCount === 0 ? (customer) => navigate(`/portal/ecommerce/customers/${customer.id}`) : undefined}
+            getRowAnimationClass={getRowAnimationClass}
             emptyState={
               <EmptyState
                 icon={Users}

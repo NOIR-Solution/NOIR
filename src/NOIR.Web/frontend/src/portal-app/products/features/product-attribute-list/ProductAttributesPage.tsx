@@ -10,6 +10,7 @@ import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { useTableParams } from '@/hooks/useTableParams'
 import { useEnterpriseTable } from '@/hooks/useEnterpriseTable'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { createActionsColumn } from '@/lib/table/columnHelpers'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
@@ -51,6 +52,8 @@ export const ProductAttributesPage = () => {
   const { hasPermission } = usePermissions()
   usePageContext('ProductAttributes')
 
+  const { getRowAnimationClass, fadeOutRow } = useRowHighlight()
+
   const canCreateAttributes = hasPermission(Permissions.AttributesCreate)
   const canUpdateAttributes = hasPermission(Permissions.AttributesUpdate)
   const canDeleteAttributes = hasPermission(Permissions.AttributesDelete)
@@ -75,6 +78,7 @@ export const ProductAttributesPage = () => {
   const handleDelete = async () => {
     if (!attributeToDelete) return
     try {
+      await fadeOutRow(attributeToDelete.id)
       await deleteMutation.mutateAsync(attributeToDelete.id)
       toast.success(t('productAttributes.deleteSuccess', 'Product attribute deleted successfully'))
       setAttributeToDelete(null)
@@ -234,6 +238,7 @@ export const ProductAttributesPage = () => {
             density={settings.density}
             isLoading={isLoading}
             isStale={isSearchStale}
+            getRowAnimationClass={getRowAnimationClass}
             onRowClick={canUpdateAttributes ? openEditAttribute : undefined}
             emptyState={
               <EmptyState

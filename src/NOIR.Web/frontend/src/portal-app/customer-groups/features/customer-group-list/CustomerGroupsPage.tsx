@@ -5,6 +5,7 @@ import { createColumnHelper } from '@tanstack/react-table'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
@@ -50,6 +51,8 @@ export const CustomerGroupsPage = () => {
   const { hasPermission } = usePermissions()
   usePageContext('CustomerGroups')
 
+  const { getRowAnimationClass, fadeOutRow } = useRowHighlight()
+
   const canCreateGroups = hasPermission(Permissions.CustomerGroupsCreate)
   const canUpdateGroups = hasPermission(Permissions.CustomerGroupsUpdate)
   const canDeleteGroups = hasPermission(Permissions.CustomerGroupsDelete)
@@ -74,6 +77,7 @@ export const CustomerGroupsPage = () => {
   const handleDelete = async () => {
     if (!groupToDelete) return
     try {
+      await fadeOutRow(groupToDelete.id)
       await deleteMutation.mutateAsync(groupToDelete.id)
       toast.success(t('customerGroups.deleteSuccess', 'Customer group deleted successfully'))
       setGroupToDelete(null)
@@ -214,6 +218,7 @@ export const CustomerGroupsPage = () => {
             isLoading={isLoading}
             isStale={isSearchStale || isFilterPending}
             onRowClick={openEditGroup}
+            getRowAnimationClass={getRowAnimationClass}
             emptyState={
               <EmptyState
                 icon={UsersRound}

@@ -14,6 +14,7 @@ import type { ColumnDef, SortingState } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
@@ -58,6 +59,8 @@ export const CompaniesPage = () => {
   const { formatDateTime } = useRegionalSettings()
   usePageContext('CRM Companies')
 
+  const { getRowAnimationClass, fadeOutRow } = useRowHighlight()
+
   const canCreate = hasPermission(Permissions.CrmCompaniesCreate)
   const canUpdate = hasPermission(Permissions.CrmCompaniesUpdate)
   const canDelete = hasPermission(Permissions.CrmCompaniesDelete)
@@ -88,6 +91,7 @@ export const CompaniesPage = () => {
   const handleDelete = async () => {
     if (!companyToDelete) return
     try {
+      await fadeOutRow(companyToDelete.id)
       await deleteMutation.mutateAsync(companyToDelete.id)
       toast.success(t('labels.deletedSuccessfully'))
       setCompanyToDelete(null)
@@ -231,6 +235,7 @@ export const CompaniesPage = () => {
             isLoading={isLoading}
             isStale={isSearchStale || isFilterPending}
             onRowClick={handleViewCompany}
+            getRowAnimationClass={getRowAnimationClass}
             emptyState={
               <EmptyState
                 icon={Building2}

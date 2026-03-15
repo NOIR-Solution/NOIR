@@ -1,4 +1,5 @@
 import { useState, useMemo, useTransition } from 'react'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -18,6 +19,7 @@ import { OfflineBanner } from '@/components/OfflineBanner'
 import { useTableParams } from '@/hooks/useTableParams'
 import { useEnterpriseTable, useSelectedIds } from '@/hooks/useEnterpriseTable'
 import { createSelectColumn, createActionsColumn } from '@/lib/table/columnHelpers'
+import { aggregatedCells } from '@/lib/table/aggregationHelpers'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import { BulkActionToolbar } from '@/components/BulkActionToolbar'
 import {
@@ -68,6 +70,7 @@ export const OrdersPage = () => {
   const { hasPermission } = usePermissions()
   const canManageOrders = hasPermission(Permissions.OrdersManage)
   usePageContext('Orders')
+  const { getRowAnimationClass } = useRowHighlight()
 
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [showBulkCancelConfirm, setShowBulkCancelConfirm] = useState(false)
@@ -136,6 +139,9 @@ export const OrdersPage = () => {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.status', 'Status')} />,
       meta: { label: t('labels.status', 'Status') },
       size: 130,
+      enableGrouping: true,
+      aggregationFn: 'count',
+      aggregatedCell: aggregatedCells.count(),
       cell: ({ getValue }) => (
         <Badge variant="outline" className={getOrderStatusColor(getValue())}>
           {t(`orders.status.${getValue().toLowerCase()}`, getValue())}
@@ -146,11 +152,15 @@ export const OrdersPage = () => {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('orders.items', 'Items')} />,
       meta: { align: 'center', label: t('orders.items', 'Items') },
       size: 80,
+      aggregationFn: 'sum',
+      aggregatedCell: aggregatedCells.sum(),
       cell: ({ getValue }) => <Badge variant="secondary">{getValue()}</Badge>,
     }) as ColumnDef<OrderSummaryDto, unknown>,
     ch.accessor('grandTotal', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('orders.total', 'Total')} />,
       meta: { align: 'right', label: t('orders.total', 'Total') },
+      aggregationFn: 'sum',
+      aggregatedCell: aggregatedCells.currency(),
       cell: ({ row }) => (
         <span className="font-medium">{formatCurrency(row.original.grandTotal, row.original.currency)}</span>
       ),
@@ -184,6 +194,7 @@ export const OrdersPage = () => {
     },
     onSortingChange: setSorting,
     enableRowSelection: canManageOrders,
+    enableGrouping: true,
     getRowId: (row) => row.id,
   })
 
@@ -299,6 +310,9 @@ export const OrdersPage = () => {
               onResetSettings={resetToDefault}
               density={settings.density}
               onDensityChange={setDensity}
+              groupableColumnIds={['status']}
+              grouping={settings.grouping}
+              onGroupingChange={(ids) => table.setGrouping(ids)}
               filterSlot={
                 <Select value={statusFilter} onValueChange={handleStatusFilter}>
                   <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('orders.filterByStatus', 'Filter by status')}>
@@ -353,6 +367,7 @@ export const OrdersPage = () => {
             isLoading={isLoading}
             isStale={isSearchStale || isFilterPending}
             onRowClick={selectedCount === 0 ? (order) => navigate(`/portal/ecommerce/orders/${order.id}`) : undefined}
+            getRowAnimationClass={getRowAnimationClass}
             emptyState={
               <EmptyState
                 icon={ShoppingCart}

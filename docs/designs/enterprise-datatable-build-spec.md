@@ -2,7 +2,7 @@
 
 > **Goal**: Match or exceed AG Grid Enterprise features
 > **Research Date**: 2026-03-13
-> **Status**: Phase 1 Complete — Phases 2-5 Future
+> **Status**: Phases 1-3, 5 Complete. Phase 4 removed. Enterprise DataTable feature-complete.
 
 ---
 
@@ -662,42 +662,46 @@ const useDebouncedSettings = (key: string, settings: Settings) => {
 
 **Testing:** Verified via Playwright audit — all dropdown features functional
 
-### Phase 3: Grouping & Aggregation (Week 2)
+### Phase 3A: Row Animation
+**Deliverables:**
+- [ ] CSS keyframes for highlight flash and fade-out
+- [ ] DataTable `getRowClassName` prop
+- [ ] `useRowHighlight` hook wired into all pages with create/delete mutations
+- [ ] Smooth add/remove row UX
+
+**Testing:**
+- Create entity → row flashes briefly
+- Delete entity → row fades out, then disappears
+
+### Phase 3B: Grouping & Aggregation
 **Deliverables:**
 - [ ] Row grouping with `getGroupedRowModel`
 - [ ] Expandable group headers
+- [ ] "Group by" dropdown in DataTableToolbar
 - [ ] Aggregation functions (sum, count, avg, min, max)
-- [ ] Server-side grouping support
+- [ ] Grouping state persistence in localStorage
+- [ ] Server-side grouping support (deferred if not needed)
 
 **Testing:**
 - Groups collapse/expand
 - Aggregations calculate correctly
 - Works with 1000+ rows
+- Grouping state persists across page reload
 
-### Phase 4: Advanced Features (Week 3)
+### ~~Phase 4: Advanced Features~~ — REMOVED
+> Range selection, clipboard, undo/redo, Excel/CSV export removed. Low ROI for current use cases. Specs preserved in Part 3 of this document for future reference.
+
+### Phase 5: Polish & Performance
 **Deliverables:**
-- [ ] Range selection (Excel-like)
-- [ ] Clipboard operations
-- [ ] Undo/Redo system
-- [ ] Excel export
-- [ ] CSV export
+- [ ] Virtual scrolling (optional, for pages with 100+ rows)
+- [ ] Keyboard navigation (arrow keys, Enter, Space, Home/End)
+- [ ] Mobile touch improvements
+- [ ] Storybook documentation updates
+- [ ] E2E test suite for DataTable features
 
 **Testing:**
-- Shift+click selects range
-- Copy/paste works with Excel
-- Undo/redo stacks work
-
-### Phase 5: Polish & Performance (Week 4)
-**Deliverables:**
-- [ ] Virtualization support (optional)
-- [ ] Keyboard navigation
-- [ ] Mobile touch support
-- [ ] Storybook documentation
-- [ ] Full E2E test suite
-
-**Testing:**
-- 10k rows with virtualization
-- All keyboard shortcuts
+- 500 rows with virtualization
+- All keyboard shortcuts functional
 - Mobile responsive
 
 ---
@@ -830,4 +834,4 @@ This specification provides a **complete roadmap** to build an enterprise data t
 3. **Integrates seamlessly** with existing NOIR architecture
 4. **Scales** from simple to complex use cases
 
-**Current Status**: Phases 1-2 complete. Phase 3+ are future enhancements — implement when needed.
+**Current Status**: Phases 1-2 complete. Phase 3 (Row Animation + Grouping) and Phase 5 (Polish) planned. Phase 4 removed. See `docs/designs/workflow-datatable-phase3-5.md` for implementation plan.

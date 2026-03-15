@@ -167,14 +167,14 @@ export const useEnterpriseTable = <TData>({
   }, [updateSettings])
 
   const toggleGroupExpansion = useCallback((groupId: string) => {
-    updateSettings(prev => ({
-      ...prev,
-      expanded: { ...prev.expanded, [groupId]: !prev.expanded[groupId] },
-    }))
+    updateSettings(prev => {
+      const current = prev.expanded === true ? {} : prev.expanded
+      return { ...prev, expanded: { ...current, [groupId]: !current[groupId] } }
+    })
   }, [updateSettings])
 
   const expandAllGroups = useCallback(() => {
-    updateSettings(prev => ({ ...prev, expanded: {} }))
+    updateSettings(prev => ({ ...prev, expanded: true }))
   }, [updateSettings])
 
   const collapseAllGroups = useCallback(() => {
@@ -218,6 +218,9 @@ export const useEnterpriseTable = <TData>({
     enableGrouping,
     enableRowSelection,
     enableSortingRemoval,
+    // Prevent grouping from reordering columns — our colgroup uses getVisibleLeafColumns()
+    // which would mismatch with headers that follow the user's columnOrder state
+    groupedColumnMode: false,
 
     // Server-side mode
     manualPagination,
@@ -295,9 +298,7 @@ export const useEnterpriseTable = <TData>({
     onExpandedChange: (updater) => {
       updateSettings(prev => {
         const next = functionalUpdate(updater, prev.expanded)
-        const expanded: Record<string, boolean> =
-          typeof next === 'boolean' ? {} : (next as Record<string, boolean>)
-        return { ...prev, expanded }
+        return { ...prev, expanded: next as true | Record<string, boolean> }
       })
     },
 

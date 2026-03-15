@@ -12,6 +12,7 @@ import { createColumnHelper } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { useTableParams } from '@/hooks/useTableParams'
@@ -82,6 +83,8 @@ const ch = createColumnHelper<DepartmentFlatItem>()
 export const DepartmentsPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Departments')
+
+  const { getRowAnimationClass } = useRowHighlight()
 
   const { params, searchInput, setSearchInput, isSearchStale, setPage, setPageSize, defaultPageSize } = useTableParams({ defaultPageSize: 20, tableKey: 'departments' })
 
@@ -315,6 +318,7 @@ export const DepartmentsPage = () => {
                 isLoading={loading}
                 isStale={isSearchStale}
                 onRowClick={openEditDepartment}
+                getRowAnimationClass={getRowAnimationClass}
                 emptyState={
                   <EmptyState
                     icon={Building2}

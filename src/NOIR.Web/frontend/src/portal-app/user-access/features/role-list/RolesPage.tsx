@@ -10,6 +10,7 @@ import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { useTableParams } from '@/hooks/useTableParams'
 import { useEnterpriseTable } from '@/hooks/useEnterpriseTable'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { createActionsColumn } from '@/lib/table/columnHelpers'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
@@ -54,6 +55,8 @@ export const RolesPage = () => {
   const canDelete = hasPermission(Permissions.RolesDelete)
   const canManagePermissions = hasPermission(Permissions.RolesManagePermissions)
 
+  const { getRowAnimationClass, fadeOutRow } = useRowHighlight()
+
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-role' })
   const [roleToDelete, setRoleToDelete] = useState<RoleListItem | null>(null)
   const [roleForPermissions, setRoleForPermissions] = useState<RoleListItem | null>(null)
@@ -87,6 +90,7 @@ export const RolesPage = () => {
 
   const handleDelete = async (id: string): Promise<{ success: boolean; error?: string }> => {
     try {
+      await fadeOutRow(id)
       await deleteMutation.mutateAsync(id)
       return { success: true }
     } catch (err) {
@@ -274,6 +278,7 @@ export const RolesPage = () => {
             isLoading={isLoading}
             isStale={isSearchStale || isFilterPending || isFilterPendingTransition}
             onRowClick={canUpdate ? openEditRole : undefined}
+            getRowAnimationClass={getRowAnimationClass}
             emptyState={
               <EmptyState
                 icon={Shield}

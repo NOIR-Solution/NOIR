@@ -14,6 +14,7 @@ import type { ColumnDef, SortingState } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
@@ -64,6 +65,8 @@ export const ContactsPage = () => {
   const { hasPermission } = usePermissions()
   usePageContext('CRM Contacts')
 
+  const { getRowAnimationClass, fadeOutRow } = useRowHighlight()
+
   const canCreate = hasPermission(Permissions.CrmContactsCreate)
   const canUpdate = hasPermission(Permissions.CrmContactsUpdate)
   const canDelete = hasPermission(Permissions.CrmContactsDelete)
@@ -107,6 +110,7 @@ export const ContactsPage = () => {
   const handleDelete = async () => {
     if (!contactToDelete) return
     try {
+      await fadeOutRow(contactToDelete.id)
       await deleteMutation.mutateAsync(contactToDelete.id)
       toast.success(t('labels.deletedSuccessfully'))
       setContactToDelete(null)
@@ -282,6 +286,7 @@ export const ContactsPage = () => {
             isLoading={isLoading}
             isStale={isSearchStale || isFilterPending}
             onRowClick={handleViewContact}
+            getRowAnimationClass={getRowAnimationClass}
             emptyState={
               <EmptyState
                 icon={Contact}

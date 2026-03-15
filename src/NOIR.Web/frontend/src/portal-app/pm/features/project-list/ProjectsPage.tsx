@@ -27,6 +27,7 @@ import { useTableParams } from '@/hooks/useTableParams'
 import { useEnterpriseTable } from '@/hooks/useEnterpriseTable'
 import { createActionsColumn } from '@/lib/table/columnHelpers'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import {
   Badge,
   Button,
@@ -186,6 +187,8 @@ export const ProjectsPage = () => {
   const navigate = useNavigate()
   const { hasPermission } = usePermissions()
   usePageContext('ProjectsPage')
+
+  const { getRowAnimationClass } = useRowHighlight()
 
   const canCreate = hasPermission(Permissions.PmProjectsCreate)
 
@@ -489,6 +492,7 @@ export const ProjectsPage = () => {
                 isLoading={false}
                 isStale={isSearchStale || isFilterPending}
                 onRowClick={handleProjectClick}
+                getRowAnimationClass={getRowAnimationClass}
                 emptyState={
                   <EmptyState
                     icon={FolderKanban}

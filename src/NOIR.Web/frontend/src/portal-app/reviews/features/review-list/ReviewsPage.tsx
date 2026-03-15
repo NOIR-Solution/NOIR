@@ -11,6 +11,7 @@ import { useUrlTab } from '@/hooks/useUrlTab'
 import { useTableParams } from '@/hooks/useTableParams'
 import { useEnterpriseTable, useSelectedIds } from '@/hooks/useEnterpriseTable'
 import { createSelectColumn, createActionsColumn } from '@/lib/table/columnHelpers'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { BulkActionToolbar } from '@/components/BulkActionToolbar'
 import {
   Badge,
@@ -64,6 +65,8 @@ export const ReviewsPage = () => {
   const { t } = useTranslation('common')
   const { formatDateTime } = useRegionalSettings()
   usePageContext('Reviews')
+
+  const { getRowAnimationClass } = useRowHighlight()
 
   // Tab (status) state
   const { activeTab, handleTabChange: setUrlTab, isPending: isTabPending } = useUrlTab({ defaultTab: 'all' })
@@ -162,6 +165,9 @@ export const ReviewsPage = () => {
     )),
     createSelectColumn<ReviewDto>(),
     ch.accessor('productName', {
+      enableGrouping: true,
+      aggregationFn: 'count',
+      aggregatedCell: ({ getValue }) => <span className="text-xs font-medium text-muted-foreground">{String(getValue() ?? 0)} reviews</span>,
       header: t('reviews.product', 'Product'),
       meta: { label: t('reviews.product', 'Product') },
       enableSorting: false,
@@ -184,6 +190,9 @@ export const ReviewsPage = () => {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('reviews.rating', 'Rating')} />,
       meta: { label: t('reviews.rating', 'Rating') },
       size: 110,
+      enableGrouping: true,
+      aggregationFn: 'mean',
+      aggregatedCell: ({ getValue }) => <span className="text-xs text-muted-foreground tabular-nums">avg: {Number(getValue() ?? 0).toFixed(1)}</span>,
       cell: ({ getValue }) => <StarRating rating={getValue()} />,
     }) as ColumnDef<ReviewDto, unknown>,
     ch.accessor('title', {
@@ -195,6 +204,9 @@ export const ReviewsPage = () => {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.status', 'Status')} />,
       meta: { label: t('labels.status', 'Status') },
       size: 110,
+      enableGrouping: true,
+      aggregationFn: 'count',
+      aggregatedCell: ({ getValue }) => <span className="text-xs font-medium text-muted-foreground">{String(getValue() ?? 0)} items</span>,
       cell: ({ getValue }) => (
         <Badge variant="outline" className={getReviewStatusColor(getValue())}>
           {t(`reviews.status.${getValue().toLowerCase()}`, getValue())}
@@ -217,6 +229,7 @@ export const ReviewsPage = () => {
     tableKey: 'reviews',
     rowCount: data?.totalCount ?? 0,
     enableRowSelection: true,
+    enableGrouping: true,
     state: {
       pagination: { pageIndex: params.page - 1, pageSize: params.pageSize },
       sorting: params.sorting as SortingState,
@@ -377,6 +390,7 @@ export const ReviewsPage = () => {
             isLoading={isLoading}
             isStale={isSearchStale || isFilterPending || isTabPending}
             onRowClick={selectedCount === 0 ? (review) => setDetailReviewId(review.id) : undefined}
+            getRowAnimationClass={getRowAnimationClass}
             emptyState={
               <EmptyState
                 icon={Star}

@@ -34,8 +34,8 @@ export interface EnterpriseTableSettings {
   /** Grouping configuration (array of column IDs to group by) */
   grouping: string[]
 
-  /** Expanded groups (group ID -> boolean) */
-  expanded: Record<string, boolean>
+  /** Expanded groups — `true` means all expanded (TanStack sentinel), object for individual */
+  expanded: true | Record<string, boolean>
 
   /** UI density */
   density: 'compact' | 'normal' | 'comfortable'

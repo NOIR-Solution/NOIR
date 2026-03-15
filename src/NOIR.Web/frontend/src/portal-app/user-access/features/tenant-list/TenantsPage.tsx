@@ -10,6 +10,7 @@ import { OfflineBanner } from '@/components/OfflineBanner'
 import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useTableParams } from '@/hooks/useTableParams'
 import { useEnterpriseTable } from '@/hooks/useEnterpriseTable'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { createActionsColumn } from '@/lib/table/columnHelpers'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import {
@@ -43,6 +44,8 @@ export const TenantsPage = () => {
   const { t } = useTranslation('common')
   usePageContext('Tenants')
   const { formatDate } = useRegionalSettings()
+
+  const { getRowAnimationClass, fadeOutRow } = useRowHighlight()
 
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-tenant' })
   const [tenantToDelete, setTenantToDelete] = useState<TenantListItem | null>(null)
@@ -115,6 +118,7 @@ export const TenantsPage = () => {
 
   const handleDelete = async (id: string): Promise<{ success: boolean; error?: string }> => {
     try {
+      await fadeOutRow(id)
       await deleteMutation.mutateAsync(id)
       return { success: true }
     } catch (err) {
@@ -255,6 +259,7 @@ export const TenantsPage = () => {
             isLoading={isLoading}
             isStale={isSearchStale || isFilterPending}
             onRowClick={(tenant) => handleEdit(tenant, 'details')}
+            getRowAnimationClass={getRowAnimationClass}
             emptyState={
               <EmptyState
                 icon={Building}

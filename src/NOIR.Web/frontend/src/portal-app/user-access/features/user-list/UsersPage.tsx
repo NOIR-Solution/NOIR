@@ -11,6 +11,7 @@ import { useUrlDialog } from '@/hooks/useUrlDialog'
 import { useUrlEditDialog } from '@/hooks/useUrlEditDialog'
 import { useTableParams } from '@/hooks/useTableParams'
 import { useEnterpriseTable } from '@/hooks/useEnterpriseTable'
+import { useRowHighlight } from '@/hooks/useRowHighlight'
 import { createActionsColumn } from '@/lib/table/columnHelpers'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
@@ -61,6 +62,8 @@ export const UsersPage = () => {
   const canDeleteUsers = hasPermission(Permissions.UsersDelete)
   const canAssignRoles = hasPermission(Permissions.UsersManageRoles)
   const showActions = canEditUsers || canDeleteUsers || canAssignRoles
+
+  const { getRowAnimationClass } = useRowHighlight()
 
   const { isOpen: isCreateOpen, open: openCreate, onOpenChange: onCreateOpenChange } = useUrlDialog({ paramValue: 'create-user' })
   const [userToDelete, setUserToDelete] = useState<UserListItem | null>(null)
@@ -345,6 +348,7 @@ export const UsersPage = () => {
             isLoading={isLoading}
             isStale={isSearchStale || isFilterPending}
             onRowClick={canEditUsers ? openEditUser : undefined}
+            getRowAnimationClass={getRowAnimationClass}
             emptyState={
               <EmptyState
                 icon={Users}
