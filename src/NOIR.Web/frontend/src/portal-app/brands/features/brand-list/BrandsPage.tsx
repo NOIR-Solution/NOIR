@@ -120,15 +120,22 @@ export const BrandsPage = () => {
       meta: { label: t('labels.logo', 'Logo') },
       enableSorting: false,
       size: 64,
-      cell: ({ row }) => row.original.logoUrl ? (
-        <FilePreviewTrigger
-          file={{ url: row.original.logoUrl, name: row.original.name }}
-          thumbnailWidth={40}
-          thumbnailHeight={40}
-        />
-      ) : (
-        <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
-          <Award className="h-5 w-5 text-muted-foreground" />
+      cell: ({ row }) => (
+        <div
+          className="flex items-center justify-center"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {row.original.logoUrl ? (
+            <FilePreviewTrigger
+              file={{ url: row.original.logoUrl, name: row.original.name }}
+              thumbnailWidth={40}
+              thumbnailHeight={40}
+            />
+          ) : (
+            <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
+              <Award className="h-5 w-5 text-muted-foreground" />
+            </div>
+          )}
         </div>
       ),
     }) as ColumnDef<BrandListItem, unknown>,
