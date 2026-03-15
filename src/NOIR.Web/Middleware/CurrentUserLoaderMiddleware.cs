@@ -1,6 +1,7 @@
 namespace NOIR.Web.Middleware;
 
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 using NOIR.Infrastructure.Services;
 
 /// <summary>
@@ -19,7 +20,8 @@ public class CurrentUserLoaderMiddleware
 
     public async Task InvokeAsync(
         HttpContext context,
-        IUserIdentityService userIdentityService)
+        IUserIdentityService userIdentityService,
+        Infrastructure.Persistence.ApplicationDbContext dbContext)
     {
         // Only load for authenticated users
         if (context.User.Identity?.IsAuthenticated == true)
@@ -33,7 +35,7 @@ public class CurrentUserLoaderMiddleware
                     var user = await userIdentityService.FindByIdAsync(userId, context.RequestAborted);
                     if (user != null)
                     {
-                        // Load roles
+                        // Load roles (this also loads the user via UserManager, tracking it again)
                         var roles = await userIdentityService.GetRolesAsync(userId, context.RequestAborted);
 
                         // Store complete user data for request lifetime
@@ -51,6 +53,18 @@ public class CurrentUserLoaderMiddleware
                             user.IsActive);
 
                         context.Items[CurrentUserData.CacheKey] = userData;
+
+                        // CRITICAL: Detach the ApplicationUser from the DbContext to prevent
+                        // DbUpdateConcurrencyException when handlers call SaveChangesAsync.
+                        // Must detach AFTER GetRolesAsync because that method loads the user again.
+                        // The UserManager.FindByIdAsync returns a tracked entity with ConcurrencyStamp.
+                        var trackedUsers = dbContext.ChangeTracker.Entries<Infrastructure.Identity.ApplicationUser>()
+                            .Where(e => e.Entity.Id == userId)
+                            .ToList();
+                        foreach (var trackedUser in trackedUsers)
+                        {
+                            trackedUser.State = EntityState.Detached;
+                        }
                     }
                 }
                 catch (Exception ex)

@@ -26,8 +26,8 @@ public class AddProductImageCommandHandler
         AddProductImageCommand command,
         CancellationToken cancellationToken)
     {
-        // Get product with tracking and images loaded
-        var productSpec = new ProductByIdForUpdateSpec(command.ProductId);
+        // Get product with tracking and images loaded (NOT variants to avoid concurrency token issues)
+        var productSpec = new ProductByIdForImageUpdateSpec(command.ProductId);
         var product = await _productRepository.FirstOrDefaultAsync(productSpec, cancellationToken);
 
         if (product is null)
@@ -36,11 +36,22 @@ public class AddProductImageCommandHandler
                 Error.NotFound($"Product with ID '{command.ProductId}' not found.", "NOIR-PRODUCT-026"));
         }
 
-        // Add image to product
-        var image = product.AddImage(command.Url, command.AltText, command.IsPrimary);
+        // TWO-SAVE PATTERN: Add image without isPrimary first to avoid ClearPrimary() causing
+        // DbUpdateConcurrencyException when Variants are loaded (they have StockQuantity as concurrency token)
+        var isPrimaryRequested = command.IsPrimary;
+        var image = product.AddImage(command.Url, command.AltText, isPrimary: false);
         image.SetSortOrder(command.SortOrder);
+        _unitOfWork.TrackAsAdded(image);
 
+        // First save: adds the new image only (no modifications to existing entities)
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Second save: if primary was requested, set it now (entities are in clean state)
+        if (isPrimaryRequested)
+        {
+            product.SetPrimaryImage(image.Id);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
 
         await _entityUpdateHub.PublishEntityUpdatedAsync(
             entityType: "Product",

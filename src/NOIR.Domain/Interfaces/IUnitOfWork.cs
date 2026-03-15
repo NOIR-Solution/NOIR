@@ -12,6 +12,13 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
     /// </summary>
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Explicitly marks an entity as Added in the change tracker.
+    /// Required when child entities with client-generated keys are added to tracked
+    /// navigation collections, as EF Core may treat non-sentinel keys as existing entities.
+    /// </summary>
+    void TrackAsAdded<T>(T entity) where T : class;
+
     #region Transaction Management
 
     /// <summary>

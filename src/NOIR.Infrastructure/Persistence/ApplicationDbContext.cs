@@ -240,6 +240,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
         }
     }
 
+    /// <inheritdoc />
+    public void TrackAsAdded<T>(T entity) where T : class
+    {
+        Entry(entity).State = EntityState.Added;
+    }
+
     #region IUnitOfWork Transaction Support
 
     private IDbContextTransaction? _currentTransaction;

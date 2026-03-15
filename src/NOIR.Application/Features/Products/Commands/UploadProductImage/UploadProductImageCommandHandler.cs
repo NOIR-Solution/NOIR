@@ -32,8 +32,8 @@ public class UploadProductImageCommandHandler : IScopedService
         UploadProductImageCommand command,
         CancellationToken cancellationToken)
     {
-        // Get product with tracking and images loaded
-        var productSpec = new ProductByIdForUpdateSpec(command.ProductId);
+        // Get product with tracking and images loaded (NOT variants to avoid concurrency token issues)
+        var productSpec = new ProductByIdForImageUpdateSpec(command.ProductId);
         var product = await _productRepository.FirstOrDefaultAsync(productSpec, cancellationToken);
 
         if (product is null)
@@ -112,18 +112,23 @@ public class UploadProductImageCommandHandler : IScopedService
         var largeUrl = result.Variants
             .FirstOrDefault(v => v.Variant == ImageVariant.Large && v.Format == OutputFormat.WebP)?.Url;
 
-        // Add image to product
-        var image = product.AddImage(primaryUrl, command.AltText, command.IsPrimary);
-
-        // Set sort order (default to end of list)
-        var sortOrder = product.Images.Count > 1
-            ? product.Images.Where(i => i.Id != image.Id).Max(i => i.SortOrder) + 1
-            : 0;
-        image.SetSortOrder(sortOrder);
+        // TWO-SAVE PATTERN: Add image without isPrimary first to avoid ClearPrimary() causing
+        // DbUpdateConcurrencyException when Variants are loaded (they have StockQuantity as concurrency token)
+        var isPrimaryRequested = command.IsPrimary;
+        var image = product.AddImage(primaryUrl, command.AltText, isPrimary: false);
+        _unitOfWork.TrackAsAdded(image);
 
         try
         {
+            // First save: adds the new image only (no modifications to existing entities)
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            // Second save: if primary was requested, set it now (entities are in clean state)
+            if (isPrimaryRequested)
+            {
+                product.SetPrimaryImage(image.Id);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+            }
         }
         catch (Exception ex)
         {
@@ -144,8 +149,8 @@ public class UploadProductImageCommandHandler : IScopedService
             image.Id,
             primaryUrl,
             command.AltText,
-            sortOrder,
-            command.IsPrimary,
+            image.SortOrder,
+            isPrimaryRequested,
             thumbUrl,
             mediumUrl,
             largeUrl,

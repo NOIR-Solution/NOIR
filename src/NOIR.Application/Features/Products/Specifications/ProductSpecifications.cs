@@ -303,6 +303,21 @@ public sealed class ProductByIdForOptionUpdateSpec : Specification<Product>
 }
 
 /// <summary>
+/// Specification to find a product by ID for image updates (with tracking).
+/// Only loads images, not variants to avoid concurrency token issues.
+/// </summary>
+public sealed class ProductByIdForImageUpdateSpec : Specification<Product>
+{
+    public ProductByIdForImageUpdateSpec(Guid id)
+    {
+        Query.Where(p => p.Id == id)
+             .Include(p => p.Images)
+             .AsTracking()
+             .TagWith("GetProductByIdForImageUpdate");
+    }
+}
+
+/// <summary>
 /// Specification to find a product by slug.
 /// </summary>
 public sealed class ProductBySlugSpec : Specification<Product>

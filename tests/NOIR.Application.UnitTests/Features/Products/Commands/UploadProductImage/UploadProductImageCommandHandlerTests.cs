@@ -138,7 +138,7 @@ public class UploadProductImageCommandHandlerTests
 
         _productRepositoryMock
             .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<ProductByIdForUpdateSpec>(),
+                It.IsAny<ProductByIdForImageUpdateSpec>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingProduct);
 
@@ -186,7 +186,7 @@ public class UploadProductImageCommandHandlerTests
 
         _productRepositoryMock
             .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<ProductByIdForUpdateSpec>(),
+                It.IsAny<ProductByIdForImageUpdateSpec>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingProduct);
 
@@ -212,6 +212,11 @@ public class UploadProductImageCommandHandlerTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Value.IsPrimary.Should().BeTrue();
+
+        // Two-save pattern: expect 2 calls when isPrimary=true
+        _unitOfWorkMock.Verify(
+            x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
+            Times.Exactly(2));
     }
 
     [Fact]
@@ -225,7 +230,7 @@ public class UploadProductImageCommandHandlerTests
 
         _productRepositoryMock
             .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<ProductByIdForUpdateSpec>(),
+                It.IsAny<ProductByIdForImageUpdateSpec>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingProduct);
 
@@ -264,7 +269,7 @@ public class UploadProductImageCommandHandlerTests
 
         _productRepositoryMock
             .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<ProductByIdForUpdateSpec>(),
+                It.IsAny<ProductByIdForImageUpdateSpec>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingProduct);
 
@@ -305,7 +310,7 @@ public class UploadProductImageCommandHandlerTests
 
         _productRepositoryMock
             .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<ProductByIdForUpdateSpec>(),
+                It.IsAny<ProductByIdForImageUpdateSpec>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingProduct);
 
@@ -346,7 +351,7 @@ public class UploadProductImageCommandHandlerTests
 
         _productRepositoryMock
             .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<ProductByIdForUpdateSpec>(),
+                It.IsAny<ProductByIdForImageUpdateSpec>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync((Product?)null);
 
@@ -380,7 +385,7 @@ public class UploadProductImageCommandHandlerTests
 
         _productRepositoryMock
             .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<ProductByIdForUpdateSpec>(),
+                It.IsAny<ProductByIdForImageUpdateSpec>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingProduct);
 
@@ -417,7 +422,7 @@ public class UploadProductImageCommandHandlerTests
 
         _productRepositoryMock
             .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<ProductByIdForUpdateSpec>(),
+                It.IsAny<ProductByIdForImageUpdateSpec>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingProduct);
 
@@ -457,7 +462,7 @@ public class UploadProductImageCommandHandlerTests
 
         _productRepositoryMock
             .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<ProductByIdForUpdateSpec>(),
+                It.IsAny<ProductByIdForImageUpdateSpec>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingProduct);
 
@@ -502,7 +507,7 @@ public class UploadProductImageCommandHandlerTests
 
         _productRepositoryMock
             .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<ProductByIdForUpdateSpec>(),
+                It.IsAny<ProductByIdForImageUpdateSpec>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingProduct);
 
@@ -548,7 +553,7 @@ public class UploadProductImageCommandHandlerTests
 
         _productRepositoryMock
             .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<ProductByIdForUpdateSpec>(),
+                It.IsAny<ProductByIdForImageUpdateSpec>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingProduct);
 
@@ -573,7 +578,7 @@ public class UploadProductImageCommandHandlerTests
 
         // Assert
         _productRepositoryMock.Verify(
-            x => x.FirstOrDefaultAsync(It.IsAny<ProductByIdForUpdateSpec>(), token),
+            x => x.FirstOrDefaultAsync(It.IsAny<ProductByIdForImageUpdateSpec>(), token),
             Times.Once);
         _imageProcessorMock.Verify(
             x => x.ProcessAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<ImageProcessingOptions>(), token),
@@ -596,7 +601,7 @@ public class UploadProductImageCommandHandlerTests
 
         _productRepositoryMock
             .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<ProductByIdForUpdateSpec>(),
+                It.IsAny<ProductByIdForImageUpdateSpec>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingProduct);
 
@@ -635,7 +640,7 @@ public class UploadProductImageCommandHandlerTests
 
         _productRepositoryMock
             .Setup(x => x.FirstOrDefaultAsync(
-                It.IsAny<ProductByIdForUpdateSpec>(),
+                It.IsAny<ProductByIdForImageUpdateSpec>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingProduct);
 
