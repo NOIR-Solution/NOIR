@@ -1,5 +1,6 @@
 import { useState, useMemo, useTransition, useCallback } from 'react'
 import { useRowHighlight } from '@/hooks/useRowHighlight'
+import { useDelayedLoading } from '@/hooks/useDelayedLoading'
 import { useNavigate } from 'react-router-dom'
 import { createColumnHelper } from '@tanstack/react-table'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
@@ -142,6 +143,7 @@ export const ProductsPage = () => {
   }), [params])
 
   const { data, isLoading: loading, isPlaceholderData, error: queryError, refetch } = useProductsQuery(queryParams)
+  const isContentStale = useDelayedLoading(isSearchStale || isFilterPending || isPlaceholderData)
   const { data: stats = { total: 0, active: 0, draft: 0, archived: 0, outOfStock: 0, lowStock: 0 } } = useProductStatsQuery()
   const { data: categories = [] } = useProductCategoriesQuery()
   const { data: brands = [] } = useActiveBrandsQuery()
@@ -706,7 +708,7 @@ export const ProductsPage = () => {
           </div>
         </CardHeader>
 
-        <CardContent className={(isFilterPending || isSearchStale || isPlaceholderData) ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
+        <CardContent className={isContentStale ? 'opacity-70 transition-opacity duration-200' : 'transition-opacity duration-200'}>
           {error && (
             <div className="mb-4 p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive animate-in fade-in-0 slide-in-from-top-2 duration-300">
               <p className="text-sm font-medium">{error}</p>
@@ -826,7 +828,7 @@ export const ProductsPage = () => {
                 table={table}
                 density={settings.density}
                 isLoading={loading}
-                isStale={isSearchStale || isFilterPending || isPlaceholderData}
+                isStale={isContentStale}
                 onRowClick={selectedIds.length === 0 ? (product) => navigate(`/portal/ecommerce/products/${product.id}`) : undefined}
                 getRowAnimationClass={getRowAnimationClass}
                 emptyState={
