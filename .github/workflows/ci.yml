@@ -97,7 +97,7 @@ jobs:
         env:
           ACCEPT_EULA: Y
           SA_PASSWORD: Test@12345!
-          MSSQL_MEMORY_LIMIT_MB: 512
+          MSSQL_MEMORY_LIMIT_MB: 256
         ports:
           - 1433:1433
         options: >-
@@ -122,10 +122,14 @@ jobs:
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
           restore-keys: nuget-${{ runner.os }}-
 
+      - name: Build Integration Tests
+        run: dotnet build tests/NOIR.IntegrationTests --configuration Release --verbosity minimal
+
       - name: Run Integration Tests
         run: >
           dotnet test tests/NOIR.IntegrationTests
           --configuration Release
+          --no-build
           --verbosity normal
           --logger "trx;LogFileName=Integration.trx"
           --blame-hang-timeout 3min
