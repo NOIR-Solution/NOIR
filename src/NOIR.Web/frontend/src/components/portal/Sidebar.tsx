@@ -569,8 +569,8 @@ const NotificationSidebarItem = ({ isExpanded, t, onItemClick }: { isExpanded: b
       className={cn(
         'group/nav w-full justify-start relative overflow-hidden transition-all duration-200',
         isExpanded ? 'px-3' : 'px-0 justify-center',
-        isActive && 'bg-sidebar-primary/5 text-sidebar-primary font-medium hover:bg-accent hover:text-highlight',
-        !isActive && 'text-sidebar-foreground/70 hover:bg-accent hover:text-highlight'
+        isActive && 'bg-sidebar-primary/5 text-sidebar-primary font-medium hover:bg-accent hover:text-foreground',
+        !isActive && 'text-sidebar-foreground/70 hover:bg-accent hover:text-foreground'
       )}
     >
       <div className={cn(
@@ -804,8 +804,8 @@ const SidebarContent = ({
         className={cn(
           'group/nav w-full justify-start relative overflow-hidden transition-all duration-200',
           isExpanded ? 'px-3' : 'px-0 justify-center',
-          active && 'bg-sidebar-primary/5 text-sidebar-primary font-medium hover:bg-accent hover:text-highlight',
-          !active && 'text-sidebar-foreground/70 hover:bg-accent hover:text-highlight'
+          active && 'bg-sidebar-primary/5 text-sidebar-primary font-medium hover:bg-accent hover:text-foreground',
+          !active && 'text-sidebar-foreground/70 hover:bg-accent hover:text-foreground'
         )}
       >
         <ViewTransitionLink to={item.path} onClick={() => onItemClick?.(item.path)}>
@@ -1047,8 +1047,8 @@ export const MobileSidebarTrigger = ({
         data-active={active}
         className={cn(
           'group/nav w-full justify-start relative overflow-hidden transition-all duration-200 px-3',
-          active && 'bg-sidebar-primary/5 text-sidebar-primary font-medium hover:bg-accent hover:text-highlight',
-          !active && 'text-sidebar-foreground/70 hover:bg-accent hover:text-highlight'
+          active && 'bg-sidebar-primary/5 text-sidebar-primary font-medium hover:bg-accent hover:text-foreground',
+          !active && 'text-sidebar-foreground/70 hover:bg-accent hover:text-foreground'
         )}
       >
         <ViewTransitionLink to={item.path} onClick={() => onOpenChange(false)}>
@@ -1129,8 +1129,8 @@ export const MobileSidebarTrigger = ({
                   asChild
                   className={cn(
                     'group/nav w-full justify-start relative overflow-hidden transition-all duration-200 px-3',
-                    notificationActive && 'bg-sidebar-primary/5 text-sidebar-primary font-medium hover:bg-accent hover:text-highlight',
-                    !notificationActive && 'text-sidebar-foreground/70 hover:bg-accent hover:text-highlight'
+                    notificationActive && 'bg-sidebar-primary/5 text-sidebar-primary font-medium hover:bg-accent hover:text-foreground',
+                    !notificationActive && 'text-sidebar-foreground/70 hover:bg-accent hover:text-foreground'
                   )}
                 >
                   <ViewTransitionLink to="/portal/notifications" onClick={() => onOpenChange(false)}>
