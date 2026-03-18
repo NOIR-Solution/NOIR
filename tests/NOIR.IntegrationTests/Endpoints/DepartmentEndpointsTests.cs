@@ -331,7 +331,7 @@ public class DepartmentEndpointsTests : IClassFixture<CustomWebApplicationFactor
 
     private static CreateDepartmentRequest CreateTestDepartmentRequest()
     {
-        var uniqueId = Guid.NewGuid().ToString("N")[..8];
+        var uniqueId = Guid.NewGuid().ToString("N")[..8].ToUpperInvariant();
         return new CreateDepartmentRequest(
             $"Test Dept {uniqueId}",
             $"DEPT-{uniqueId}",
