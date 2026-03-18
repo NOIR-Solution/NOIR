@@ -408,7 +408,7 @@ public class ResourceAuthorizationServiceTests : IAsyncLifetime
 
             // Assert
             results.Count().ShouldBe(3);
-            results.Select(r => r.Permission).ShouldBe([
+            results.Select(r => r.Permission).OrderBy(x => x).ShouldBe([
                 SharePermission.View,
                 SharePermission.Edit,
                 SharePermission.Admin

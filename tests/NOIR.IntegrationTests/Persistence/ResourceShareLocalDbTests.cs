@@ -217,7 +217,7 @@ public class ResourceShareLocalDbTests : IAsyncLifetime
 
             // Assert
             results.Count().ShouldBe(3);
-            results.Select(r => r.ResourceType).ShouldBe(["document", "folder", "report"]);
+            results.Select(r => r.ResourceType).OrderBy(x => x).ShouldBe(["document", "folder", "report"]);
         });
     }
 
