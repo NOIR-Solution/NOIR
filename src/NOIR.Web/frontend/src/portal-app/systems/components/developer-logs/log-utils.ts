@@ -10,7 +10,7 @@ import {
   Skull,
   MessageSquare,
 } from 'lucide-react'
-import { format, parseISO } from 'date-fns'
+import { parseISO } from 'date-fns'
 import type { LogEntryDto, DevLogLevel } from '@/services/developerLogs'
 
 // Configuration constants
@@ -85,8 +85,8 @@ export const getLevelConfig = (level: DevLogLevel): LogLevelConfig => {
   return LOG_LEVELS.find(l => l.value === level) || LOG_LEVELS[2] // Default to Information
 }
 
-// Format timestamp for display
-export const formatTimestamp = (timestamp: string): string => {
+// Format timestamp for display (en-US locale for technical log format, tenant timezone)
+export const formatTimestamp = (timestamp: string, timezone?: string): string => {
   const date = new Date(timestamp)
   return date.toLocaleTimeString('en-US', {
     hour12: false,
@@ -94,11 +94,12 @@ export const formatTimestamp = (timestamp: string): string => {
     minute: '2-digit',
     second: '2-digit',
     fractionalSecondDigits: 3,
+    ...(timezone && { timeZone: timezone }),
   })
 }
 
-// Format full timestamp with date
-export const formatFullTimestamp = (timestamp: string): string => {
+// Format full timestamp with date (en-US locale for technical log format, tenant timezone)
+export const formatFullTimestamp = (timestamp: string, timezone?: string): string => {
   const date = new Date(timestamp)
   return date.toLocaleString('en-US', {
     year: 'numeric',
@@ -108,6 +109,7 @@ export const formatFullTimestamp = (timestamp: string): string => {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
+    ...(timezone && { timeZone: timezone }),
   })
 }
 
@@ -136,11 +138,16 @@ export const formatBytes = (bytes: number): string => {
   return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`
 }
 
-// Format date string for display
-export const formatDateDisplay = (dateStr: string): string => {
+// Format date string for display (en-US locale, tenant timezone)
+export const formatDateDisplay = (dateStr: string, timezone?: string): string => {
   try {
     const date = parseISO(dateStr)
-    return format(date, 'MMM d, yyyy')
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      ...(timezone && { timeZone: timezone }),
+    })
   } catch {
     return dateStr
   }

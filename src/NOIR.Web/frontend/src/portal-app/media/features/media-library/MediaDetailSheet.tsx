@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Copy, Pencil, Trash2, Check, X, Loader2, FileImage } from 'lucide-react'
-import { formatDistanceToNow } from 'date-fns'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import {
   Button,
   Input,
@@ -36,6 +36,7 @@ export const MediaDetailSheet = ({
   isRenaming,
 }: MediaDetailSheetProps) => {
   const { t } = useTranslation('common')
+  const { formatRelativeTime } = useRegionalSettings()
   const [isEditingName, setIsEditingName] = useState(false)
   const [editName, setEditName] = useState('')
 
@@ -154,7 +155,7 @@ export const MediaDetailSheet = ({
               <MetadataItem label={t('media.dimensions', 'Dimensions')} value={file.width > 0 ? `${file.width} x ${file.height}` : '\u2014'} />
               <MetadataItem label={t('media.size', 'Size')} value={formatFileSize(file.sizeBytes)} />
               <MetadataItem label={t('media.mimeType', 'MIME Type')} value={file.mimeType} />
-              <MetadataItem label={t('labels.uploaded', 'Uploaded')} value={formatDistanceToNow(new Date(file.createdAt), { addSuffix: true })} />
+              <MetadataItem label={t('labels.uploaded', 'Uploaded')} value={formatRelativeTime(file.createdAt)} />
               <MetadataItem label={t('media.shortId', 'Short ID')} value={file.shortId} />
               <MetadataItem label={t('media.slug', 'Slug')} value={file.slug} />
             </div>

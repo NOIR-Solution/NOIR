@@ -39,6 +39,7 @@ import {
   TableRow,
 } from '@uikit'
 import { getStatusBadgeClasses } from '@/utils/statusBadge'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { useKanbanBoardQuery } from '@/portal-app/pm/queries'
 import type { ProjectTaskStatus, TaskCardDto, TaskPriority, TaskLabelBriefDto, ProjectMemberDto } from '@/types/pm'
 import { TaskFilterPopover, matchDueDate, matchCompletion, type DueDateFilter, type CompletionFilter } from '@/portal-app/pm/components/TaskFilterPopover'
@@ -135,9 +136,10 @@ interface TaskRowProps {
   onClick: (id: string) => void
   t: ReturnType<typeof useTranslation>['t']
   columnColor?: string | null
+  formatDate: (date: Date | string) => string
 }
 
-const TaskRow = ({ task, onClick, t, columnColor }: TaskRowProps) => {
+const TaskRow = ({ task, onClick, t, columnColor, formatDate }: TaskRowProps) => {
   const PriorityIcon = PRIORITY_ICONS[task.priority]
 
   const dueDateNode = task.dueDate
@@ -153,7 +155,7 @@ const TaskRow = ({ task, onClick, t, columnColor }: TaskRowProps) => {
               : 'text-muted-foreground'
         return (
           <span className={`text-sm ${cls}`}>
-            {new Date(task.dueDate).toLocaleDateString()}
+            {formatDate(task.dueDate)}
           </span>
         )
       })()
@@ -234,9 +236,10 @@ interface TaskTableProps {
   onRowClick: (id: string) => void
   t: ReturnType<typeof useTranslation>['t']
   columnColorMap?: Record<string, string | null>
+  formatDate: (date: Date | string) => string
 }
 
-const TaskTable = ({ tasks, sortField, sortDir, onSort, onRowClick, t, columnColorMap = {} }: TaskTableProps) => (
+const TaskTable = ({ tasks, sortField, sortDir, onSort, onRowClick, t, columnColorMap = {}, formatDate }: TaskTableProps) => (
   <div className="rounded-md border">
     <Table>
       <TableHeader>
@@ -264,7 +267,7 @@ const TaskTable = ({ tasks, sortField, sortDir, onSort, onRowClick, t, columnCol
       </TableHeader>
       <TableBody>
         {tasks.map((task) => (
-          <TaskRow key={task.id} task={task} onClick={onRowClick} t={t} columnColor={columnColorMap[task.status]} />
+          <TaskRow key={task.id} task={task} onClick={onRowClick} t={t} columnColor={columnColorMap[task.status]} formatDate={formatDate} />
         ))}
       </TableBody>
     </Table>
@@ -283,6 +286,7 @@ export const TaskListView = ({ projectId, members = [], onTaskClick }: TaskListV
   const { t } = useTranslation('common')
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
+  const { formatDate } = useRegionalSettings()
   const { data: board, isLoading } = useKanbanBoardQuery(projectId)
 
   // ── Raw tasks ──
@@ -774,6 +778,7 @@ export const TaskListView = ({ projectId, members = [], onTaskClick }: TaskListV
                 onRowClick={handleRowClick}
                 t={t}
                 columnColorMap={columnColorMap}
+                formatDate={formatDate}
               />
             </div>
           ))}

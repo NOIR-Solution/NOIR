@@ -3,6 +3,7 @@ import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { ShieldCheck, ArrowLeft } from 'lucide-react'
 import { Button, Skeleton } from '@uikit'
 import { usePublicLegalPageQuery } from '@/hooks/queries/usePublicQueries'
+import { useRegionalSettingsOptional } from '@/contexts/RegionalSettingsContext'
 
 /**
  * Public Privacy Policy page.
@@ -10,6 +11,7 @@ import { usePublicLegalPageQuery } from '@/hooks/queries/usePublicQueries'
  */
 export const PrivacyPage = () => {
   const { t } = useTranslation('common')
+  const regional = useRegionalSettingsOptional()
   const { data: page, isLoading: loading, isError } = usePublicLegalPageQuery('privacy-policy')
   const error = isError ? t('welcome.privacy.loadError') : null
 
@@ -70,7 +72,7 @@ export const PrivacyPage = () => {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-3xl font-bold text-foreground mb-2">{page.title}</h1>
         <p className="text-sm text-muted-foreground mb-8">
-          Last updated: {new Date(page.lastModified).toLocaleDateString()}
+          Last updated: {regional?.formatDate(page.lastModified) ?? new Date(page.lastModified).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
         <div
           className="prose prose-neutral dark:prose-invert max-w-none"

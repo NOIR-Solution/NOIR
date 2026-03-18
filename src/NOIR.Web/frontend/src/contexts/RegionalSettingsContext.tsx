@@ -53,9 +53,10 @@ interface RegionalSettingsContextType {
 const RegionalSettingsContext = createContext<RegionalSettingsContextType | undefined>(undefined)
 
 // Default values when not authenticated or settings not loaded
-const DEFAULT_TIMEZONE = 'UTC'
-const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD'
-const DEFAULT_LANGUAGE = 'en'
+// Match Vietnamese locale: seeder + backend handler use same defaults
+const DEFAULT_TIMEZONE = 'Asia/Ho_Chi_Minh'
+const DEFAULT_DATE_FORMAT = 'DD/MM/YYYY'
+const DEFAULT_LANGUAGE = 'vi'
 
 /**
  * Convert date format pattern to Intl.DateTimeFormat options
@@ -197,20 +198,21 @@ export const RegionalSettingsProvider = ({ children }: RegionalSettingsProviderP
 
   const formatTime = useCallback((date: Date | string): string => {
     const d = typeof date === 'string' ? new Date(date) : date
+    const locale = getLocaleForFormat(dateFormat)
 
     try {
-      return d.toLocaleTimeString('en-US', {
+      return d.toLocaleTimeString(locale, {
         hour: '2-digit',
         minute: '2-digit',
         timeZone: timezone,
       })
     } catch {
-      return d.toLocaleTimeString('en-US', {
+      return d.toLocaleTimeString(locale, {
         hour: '2-digit',
         minute: '2-digit',
       })
     }
-  }, [timezone])
+  }, [timezone, dateFormat])
 
   const formatRelativeTime = useCallback((date: Date | string): string => {
     const d = typeof date === 'string' ? new Date(date) : date

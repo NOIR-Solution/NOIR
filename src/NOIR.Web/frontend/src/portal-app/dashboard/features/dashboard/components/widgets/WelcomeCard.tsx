@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { UserCircle } from 'lucide-react'
 import { Card, CardContent } from '@uikit'
-import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
+import { useRegionalSettings, getLocaleForFormat } from '@/contexts/RegionalSettingsContext'
 import type { CurrentUser } from '@/types'
 
 interface WelcomeCardProps {
@@ -10,10 +10,11 @@ interface WelcomeCardProps {
 
 export const WelcomeCard = ({ user }: WelcomeCardProps) => {
   const { t } = useTranslation('common')
-  const { timezone } = useRegionalSettings()
+  const { timezone, dateFormat } = useRegionalSettings()
+  const locale = getLocaleForFormat(dateFormat)
 
   const now = new Date()
-  const formattedDate = now.toLocaleDateString(undefined, {
+  const formattedDate = now.toLocaleDateString(locale, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',

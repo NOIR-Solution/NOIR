@@ -4,7 +4,7 @@ import { createColumnHelper } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useTranslation } from 'react-i18next'
 import { ImageIcon, Plus, Trash2, Loader2, LayoutGrid, List as ListIcon, Pencil, Copy } from 'lucide-react'
-import { formatDistanceToNow } from 'date-fns'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { toast } from 'sonner'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
@@ -50,6 +50,7 @@ const ch = createColumnHelper<MediaFileListItem>()
 
 export const MediaLibraryPage = () => {
   const { t } = useTranslation('common')
+  const { formatRelativeTime } = useRegionalSettings()
   usePageContext('Media')
   const { getRowAnimationClass, fadeOutRow } = useRowHighlight()
 
@@ -260,7 +261,7 @@ export const MediaLibraryPage = () => {
       enableSorting: false,
       cell: ({ getValue }) => (
         <span className="text-sm text-muted-foreground">
-          {formatDistanceToNow(new Date(getValue()), { addSuffix: true })}
+          {formatRelativeTime(getValue())}
         </span>
       ),
     }) as ColumnDef<MediaFileListItem, unknown>,

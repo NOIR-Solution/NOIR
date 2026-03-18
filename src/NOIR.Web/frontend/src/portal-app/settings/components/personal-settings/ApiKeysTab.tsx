@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { toast } from 'sonner'
 import {
   Key,
@@ -37,6 +38,7 @@ import type { ApiKeyDto, ApiKeyRotatedDto } from '@/types/apiKey'
 
 export const ApiKeysTab = () => {
   const { t } = useTranslation('common')
+  const { formatDate } = useRegionalSettings()
   const { data: apiKeys, isLoading } = useMyApiKeys()
   const rotateMutation = useRotateApiKey()
   const revokeMutation = useRevokeApiKey()
@@ -160,7 +162,7 @@ export const ApiKeysTab = () => {
                       {apiKey.lastUsedAt ? (
                         <span className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          {t('apiKeys.lastUsed')}: {new Date(apiKey.lastUsedAt).toLocaleDateString()}
+                          {t('apiKeys.lastUsed')}: {formatDate(apiKey.lastUsedAt)}
                         </span>
                       ) : (
                         <span className="flex items-center gap-1">
@@ -176,7 +178,7 @@ export const ApiKeysTab = () => {
                       )}
                       {apiKey.expiresAt && (
                         <span>
-                          {t('apiKeys.expires')}: {new Date(apiKey.expiresAt).toLocaleDateString()}
+                          {t('apiKeys.expires')}: {formatDate(apiKey.expiresAt)}
                         </span>
                       )}
                     </div>

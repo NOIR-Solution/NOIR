@@ -68,10 +68,10 @@ const operationConfig = {
 }
 
 // Format time only (used for inline display)
-const formatTimeOnly = (timestamp: string, timezone: string): string => {
+const formatTimeOnly = (timestamp: string, timezone: string, locale: string): string => {
   const date = new Date(timestamp)
   try {
-    return date.toLocaleTimeString('en-US', {
+    return date.toLocaleTimeString(locale, {
       hour12: false,
       hour: '2-digit',
       minute: '2-digit',
@@ -79,7 +79,7 @@ const formatTimeOnly = (timestamp: string, timezone: string): string => {
       timeZone: timezone,
     })
   } catch {
-    return date.toLocaleTimeString('en-US', {
+    return date.toLocaleTimeString(locale, {
       hour12: false,
       hour: '2-digit',
       minute: '2-digit',
@@ -131,6 +131,7 @@ const TimelineEntry = ({
   const config = operationConfig[entry.operationType as keyof typeof operationConfig] || operationConfig.Update
   const Icon = config.icon
   const { formatRelativeTime, timezone, dateFormat } = useRegionalSettings()
+  const locale = getLocaleForFormat(dateFormat)
 
   return (
     <div className="relative flex gap-4">
@@ -211,7 +212,7 @@ const TimelineEntry = ({
                       {formatRelativeTime(entry.timestamp)}
                     </span>
                     <span>·</span>
-                    {formatTimeOnly(entry.timestamp, timezone)}
+                    {formatTimeOnly(entry.timestamp, timezone, locale)}
                   </span>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="font-mono text-xs">
@@ -249,6 +250,7 @@ const TimelineEntry = ({
 
 export const ActivityTimelinePage = () => {
   const { t } = useTranslation('common')
+  const { formatDate } = useRegionalSettings()
   const [searchParams, setSearchParams] = useSearchParams()
   usePageContext('Activity Timeline')
 
@@ -393,6 +395,7 @@ export const ActivityTimelinePage = () => {
                   placeholder={t('activityTimeline.dateRange')}
                   className="h-9 w-[220px]"
                   numberOfMonths={2}
+                  formatDate={formatDate}
                 />
 
                 {/* Context dropdown */}

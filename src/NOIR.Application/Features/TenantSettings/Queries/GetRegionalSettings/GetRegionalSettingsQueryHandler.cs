@@ -27,9 +27,9 @@ public class GetRegionalSettingsQueryHandler
         var settings = await _settingsService.GetSettingsAsync(tenantId, "regional:", cancellationToken);
 
         var dto = new RegionalSettingsDto(
-            Timezone: settings.GetValueOrDefault("regional:timezone") ?? "UTC",
-            Language: settings.GetValueOrDefault("regional:language") ?? "en",
-            DateFormat: settings.GetValueOrDefault("regional:date_format") ?? "YYYY-MM-DD");
+            Timezone: settings.GetValueOrDefault("regional:timezone") ?? "Asia/Ho_Chi_Minh",
+            Language: settings.GetValueOrDefault("regional:language") ?? "vi",
+            DateFormat: settings.GetValueOrDefault("regional:date_format") ?? "DD/MM/YYYY");
 
         return Result.Success(dto);
     }

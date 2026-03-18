@@ -62,7 +62,7 @@ const CompactTimelineEntry = ({
   onViewDetails: () => void
 }) => {
   const { t } = useTranslation('common')
-  const { formatRelativeTime } = useRegionalSettings()
+  const { formatRelativeTime, formatDateTime } = useRegionalSettings()
   const config = operationConfig[entry.operationType as keyof typeof operationConfig] || operationConfig.Update
   const Icon = config.icon
 
@@ -102,7 +102,7 @@ const CompactTimelineEntry = ({
               </span>
             </TooltipTrigger>
             <TooltipContent side="top" className="text-xs">
-              {new Date(entry.timestamp).toLocaleString()}
+              {formatDateTime(entry.timestamp)}
             </TooltipContent>
           </Tooltip>
         </div>

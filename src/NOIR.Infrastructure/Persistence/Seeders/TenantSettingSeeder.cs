@@ -141,7 +141,7 @@ public class TenantSettingSeeder : ISeeder
             TenantSetting.CreatePlatformDefault("regional:timezone", "Asia/Ho_Chi_Minh", "string", "Default timezone (IANA)", "regional"),
             TenantSetting.CreatePlatformDefault("regional:currency", "VND", "string", "Default currency code (ISO 4217)", "regional"),
             TenantSetting.CreatePlatformDefault("regional:language", "vi", "string", "Default language code (ISO 639-1)", "regional"),
-            TenantSetting.CreatePlatformDefault("regional:date_format", "dd/MM/yyyy", "string", "Default date display format", "regional"),
+            TenantSetting.CreatePlatformDefault("regional:date_format", "DD/MM/YYYY", "string", "Default date display format", "regional"),
             TenantSetting.CreatePlatformDefault("regional:country", "VN", "string", "Default country code (ISO 3166-1)", "regional"),
         };
 

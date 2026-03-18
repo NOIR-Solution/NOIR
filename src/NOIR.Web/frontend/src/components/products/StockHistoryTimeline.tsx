@@ -6,7 +6,7 @@
  */
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { formatDistanceToNow } from 'date-fns'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import {
   Package,
   TrendingUp,
@@ -107,6 +107,7 @@ export const StockHistoryTimeline = ({
   maxHeight = '400px',
 }: StockHistoryTimelineProps) => {
   const { t } = useTranslation()
+  const { formatRelativeTime } = useRegionalSettings()
 
   // Sort movements by date (newest first)
   const sortedMovements = useMemo(() => {
@@ -204,7 +205,7 @@ export const StockHistoryTimeline = ({
                     </div>
                     <div className="flex items-center justify-between mt-2 pt-2 border-t text-xs text-muted-foreground">
                       <span>
-                        {formatDistanceToNow(new Date(movement.createdAt), { addSuffix: true })}
+                        {formatRelativeTime(movement.createdAt)}
                       </span>
                       {movement.createdBy && <span>{movement.createdBy}</span>}
                     </div>

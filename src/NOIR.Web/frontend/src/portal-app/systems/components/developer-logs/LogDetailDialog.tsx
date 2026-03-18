@@ -21,6 +21,7 @@ import {
 } from '@uikit'
 
 import { cn } from '@/lib/utils'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import type { LogEntryDto } from '@/services/developerLogs'
 import { getLevelConfig, formatFullTimestamp, getDisplayMessage } from './log-utils'
 
@@ -36,6 +37,7 @@ export const LogDetailDialog = ({
   onOpenChange,
 }: LogDetailDialogProps) => {
   const { t } = useTranslation('common')
+  const { timezone } = useRegionalSettings()
   const [copied, setCopied] = useState(false)
 
   if (!entry) return null
@@ -64,7 +66,7 @@ export const LogDetailDialog = ({
               {config.label}
             </Badge>
             <span className="text-sm font-mono text-muted-foreground">
-              {formatFullTimestamp(entry.timestamp)}
+              {formatFullTimestamp(entry.timestamp, timezone)}
             </span>
           </CredenzaTitle>
         </CredenzaHeader>

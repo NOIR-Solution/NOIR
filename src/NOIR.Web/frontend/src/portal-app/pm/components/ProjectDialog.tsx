@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -72,6 +73,7 @@ interface ProjectDialogProps {
 
 export const ProjectDialog = ({ open, onOpenChange, project }: ProjectDialogProps) => {
   const { t } = useTranslation('common')
+  const { formatDate } = useRegionalSettings()
   const isEdit = !!project
   const createMutation = useCreateProject()
   const updateMutation = useUpdateProject()
@@ -245,6 +247,7 @@ export const ProjectDialog = ({ open, onOpenChange, project }: ProjectDialogProp
                           value={field.value ? new Date(field.value) : undefined}
                           onChange={(date) => field.onChange(date ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}` : '')}
                           placeholder={t('pm.startDate')}
+                          formatDate={formatDate}
                         />
                       </FormControl>
                       <FormMessage />
@@ -262,6 +265,7 @@ export const ProjectDialog = ({ open, onOpenChange, project }: ProjectDialogProp
                           value={field.value ? new Date(field.value) : undefined}
                           onChange={(date) => field.onChange(date ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}` : '')}
                           placeholder={t('pm.dueDate')}
+                          formatDate={formatDate}
                         />
                       </FormControl>
                       <FormMessage />

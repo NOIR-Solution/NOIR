@@ -23,7 +23,7 @@ import {
   TooltipTrigger,
 } from '@uikit'
 import { cn } from '@/lib/utils'
-import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
+import { useRegionalSettings, getLocaleForFormat } from '@/contexts/RegionalSettingsContext'
 import type { ActivityFeedItemDto } from '@/services/dashboard'
 
 interface ActivityFeedProps {
@@ -38,17 +38,17 @@ const OPERATION_CONFIG: Record<string, { icon: LucideIcon; textColor: string; bg
 
 const DEFAULT_CONFIG = { icon: Activity, textColor: 'text-gray-700 dark:text-gray-400', bgColor: 'bg-gray-100 dark:bg-gray-900/30' }
 
-const formatTimeOnly = (timestamp: string, timezone: string): string => {
+const formatTimeOnly = (timestamp: string, timezone: string, locale: string): string => {
   const date = new Date(timestamp)
   try {
-    return date.toLocaleTimeString('en-US', {
+    return date.toLocaleTimeString(locale, {
       hour12: false,
       hour: '2-digit',
       minute: '2-digit',
       timeZone: timezone,
     })
   } catch {
-    return date.toLocaleTimeString('en-US', {
+    return date.toLocaleTimeString(locale, {
       hour12: false,
       hour: '2-digit',
       minute: '2-digit',
@@ -59,7 +59,8 @@ const formatTimeOnly = (timestamp: string, timezone: string): string => {
 export const ActivityFeed = ({ items }: ActivityFeedProps) => {
   const { t } = useTranslation('common')
   const navigate = useNavigate()
-  const { formatRelativeTime, timezone } = useRegionalSettings()
+  const { formatRelativeTime, formatDateTime, timezone, dateFormat } = useRegionalSettings()
+  const locale = getLocaleForFormat(dateFormat)
 
   return (
     <Card className="gap-0 shadow-sm hover:shadow-lg transition-all duration-300">
@@ -155,11 +156,11 @@ export const ActivityFeed = ({ items }: ActivityFeedProps) => {
                                   {formatRelativeTime(item.timestamp)}
                                 </span>
                                 <span>·</span>
-                                {formatTimeOnly(item.timestamp, timezone)}
+                                {formatTimeOnly(item.timestamp, timezone, locale)}
                               </span>
                             </TooltipTrigger>
                             <TooltipContent side="top" className="font-mono text-xs">
-                              {new Date(item.timestamp).toLocaleString()}
+                              {formatDateTime(item.timestamp)}
                             </TooltipContent>
                           </Tooltip>
                         </div>

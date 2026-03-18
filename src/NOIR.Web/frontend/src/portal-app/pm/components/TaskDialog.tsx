@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -67,6 +68,7 @@ export const TaskDialog = ({
   parentTaskId,
 }: TaskDialogProps) => {
   const { t } = useTranslation('common')
+  const { formatDate } = useRegionalSettings()
   const createMutation = useCreateTask()
   const addLabelMutation = useAddLabelToTask()
   const { data: labelsData } = useProjectLabelsQuery(projectId)
@@ -260,6 +262,7 @@ export const TaskDialog = ({
                           value={field.value ? new Date(field.value) : undefined}
                           onChange={(date) => field.onChange(date ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}` : '')}
                           placeholder={t('pm.dueDate')}
+                          formatDate={formatDate}
                         />
                       </FormControl>
                       <FormMessage />

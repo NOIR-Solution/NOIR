@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import {
   AreaChart,
   Area,
@@ -28,14 +29,15 @@ const CHART_TOOLTIP_STYLE = {
 
 export const RevenueChart = ({ data, isLoading }: RevenueChartProps) => {
   const { t } = useTranslation('common')
+  const { timezone } = useRegionalSettings()
 
   const chartData = useMemo(
     () =>
       data.map((d) => ({
         ...d,
-        dateLabel: new Date(d.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+        dateLabel: new Date(d.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: timezone }),
       })),
-    [data]
+    [data, timezone]
   )
 
   return (

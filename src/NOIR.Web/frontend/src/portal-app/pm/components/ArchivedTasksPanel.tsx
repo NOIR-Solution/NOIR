@@ -132,7 +132,7 @@ const ArchivedTaskRow = ({
 
   const dueDateNode = task.dueDate ? (
     <span className="text-sm text-muted-foreground/70 line-through">
-      {new Date(task.dueDate).toLocaleDateString()}
+      {formatDate(task.dueDate)}
     </span>
   ) : (
     <span className="text-sm text-muted-foreground">-</span>

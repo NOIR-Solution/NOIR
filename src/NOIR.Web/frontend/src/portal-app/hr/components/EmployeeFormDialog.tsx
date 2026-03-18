@@ -1,5 +1,6 @@
 import { useEffect, useState, useDeferredValue } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -65,6 +66,7 @@ interface EmployeeFormDialogProps {
 
 export const EmployeeFormDialog = ({ open, onOpenChange, employee, onSuccess }: EmployeeFormDialogProps) => {
   const { t } = useTranslation('common')
+  const { formatDate } = useRegionalSettings()
   const isEditing = !!employee
   const createMutation = useCreateEmployee()
   const updateMutation = useUpdateEmployee()
@@ -364,6 +366,7 @@ export const EmployeeFormDialog = ({ open, onOpenChange, employee, onSuccess }: 
                             onChange={(date) => field.onChange(date ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}` : '')}
                             placeholder={t('hr.joinDate')}
                             disabled={isEditing}
+                            formatDate={formatDate}
                           />
                         </FormControl>
                         <FormMessage />

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Save } from 'lucide-react'
@@ -9,6 +9,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Combobox,
   Label,
   Skeleton,
   Select,
@@ -24,22 +25,7 @@ import {
   useRegionalSettingsQuery,
   useUpdateRegionalSettings,
 } from '@/portal-app/settings/queries'
-
-const TIMEZONE_OPTIONS = [
-  { value: 'UTC', label: 'UTC' },
-  { value: 'America/New_York', label: 'Eastern Time (US)' },
-  { value: 'America/Chicago', label: 'Central Time (US)' },
-  { value: 'America/Denver', label: 'Mountain Time (US)' },
-  { value: 'America/Los_Angeles', label: 'Pacific Time (US)' },
-  { value: 'Europe/London', label: 'London (GMT)' },
-  { value: 'Europe/Paris', label: 'Paris (CET)' },
-  { value: 'Europe/Berlin', label: 'Berlin (CET)' },
-  { value: 'Asia/Tokyo', label: 'Tokyo (JST)' },
-  { value: 'Asia/Shanghai', label: 'Shanghai (CST)' },
-  { value: 'Asia/Seoul', label: 'Seoul (KST)' },
-  { value: 'Asia/Ho_Chi_Minh', label: 'Ho Chi Minh (ICT)' },
-  { value: 'Australia/Sydney', label: 'Sydney (AEST)' },
-]
+import { getTimezoneOptions } from '@/lib/timezones'
 
 // Only languages with actual translation files
 const LANGUAGE_OPTIONS = [
@@ -63,11 +49,12 @@ export const RegionalSettingsTab = ({ canEdit }: RegionalSettingsTabProps) => {
   const { reloadRegional } = useRegionalSettings()
   const { data, isLoading } = useRegionalSettingsQuery()
   const updateMutation = useUpdateRegionalSettings()
+  const timezoneOptions = useMemo(() => getTimezoneOptions(), [])
 
   // Form state
-  const [timezone, setTimezone] = useState('UTC')
-  const [language, setLanguage] = useState('en')
-  const [dateFormat, setDateFormat] = useState('YYYY-MM-DD')
+  const [timezone, setTimezone] = useState('Asia/Ho_Chi_Minh')
+  const [language, setLanguage] = useState('vi')
+  const [dateFormat, setDateFormat] = useState('DD/MM/YYYY')
 
   useEffect(() => {
     if (data) {
@@ -133,18 +120,15 @@ export const RegionalSettingsTab = ({ canEdit }: RegionalSettingsTabProps) => {
           <p className="text-sm text-muted-foreground">
             {t('tenantSettings.regional.timezoneDescription')}
           </p>
-          <Select value={timezone} onValueChange={setTimezone} disabled={!canEdit}>
-            <SelectTrigger className="cursor-pointer" aria-label={t('tenantSettings.regional.timezone', 'Timezone')}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {TIMEZONE_OPTIONS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value} className="cursor-pointer">
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Combobox
+            options={timezoneOptions}
+            value={timezone}
+            onValueChange={setTimezone}
+            placeholder={t('tenantSettings.regional.selectTimezone', 'Select timezone...')}
+            searchPlaceholder={t('tenantSettings.regional.searchTimezones', 'Search timezones...')}
+            countLabel={t('tenantSettings.regional.timezones', 'timezones')}
+            disabled={!canEdit}
+          />
         </div>
         <div className="space-y-2">
           <Label htmlFor="language">{t('tenantSettings.regional.language')}</Label>

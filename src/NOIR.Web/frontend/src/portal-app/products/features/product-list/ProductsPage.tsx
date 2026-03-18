@@ -87,7 +87,7 @@ import { AttributeFilterDialog } from '../../components/products/AttributeFilter
 import { LowStockAlert } from '../../components/products/LowStockAlert'
 import { ProductImportExport } from '../../components/products/ProductImportExport'
 import type { ProductListItem, ProductStatus } from '@/types/product'
-import { formatDistanceToNow } from 'date-fns'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { toast } from 'sonner'
 import { formatCurrency } from '@/lib/utils/currency'
 import { aggregatedCells } from '@/lib/table/aggregationHelpers'
@@ -106,6 +106,7 @@ const ch = createColumnHelper<ProductListItem>()
 
 export const ProductsPage = () => {
   const { t } = useTranslation('common')
+  const { formatRelativeTime } = useRegionalSettings()
   const { hasPermission } = usePermissions()
   usePageContext('Products')
   const navigate = useNavigate()
@@ -462,7 +463,7 @@ export const ProductsPage = () => {
       meta: { label: t('labels.created', 'Created') },
       cell: ({ getValue }) => (
         <span className="text-sm text-muted-foreground">
-          {formatDistanceToNow(new Date(getValue()), { addSuffix: true })}
+          {formatRelativeTime(getValue())}
         </span>
       ),
     }) as ColumnDef<ProductListItem, unknown>,

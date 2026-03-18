@@ -47,7 +47,7 @@ import {
 import { useBlogPostsQuery, useBlogCategoriesQuery, useDeleteBlogPostMutation, useBulkPublishPosts, useBulkUnpublishPosts, useBulkDeletePosts } from '@/portal-app/blogs/queries'
 import { DeleteBlogPostDialog } from '../../components/blog-posts/DeleteBlogPostDialog'
 import type { PostListItem, PostStatus } from '@/types'
-import { formatDistanceToNow } from 'date-fns'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { useNavigate } from 'react-router-dom'
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { getStatusBadgeClasses } from '@/utils/statusBadge'
@@ -63,6 +63,7 @@ const ch = createColumnHelper<PostListItem>()
 
 export const BlogPostsPage = () => {
   const { t } = useTranslation('common')
+  const { formatRelativeTime } = useRegionalSettings()
   const { hasPermission } = usePermissions()
   usePageContext('Blog Posts')
   const navigate = useNavigate()
@@ -253,7 +254,7 @@ export const BlogPostsPage = () => {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.created')} />,
       meta: { label: t('labels.created') },
       size: 130,
-      cell: ({ getValue }) => formatDistanceToNow(new Date(getValue()), { addSuffix: true }),
+      cell: ({ getValue }) => formatRelativeTime(getValue()),
     }) as ColumnDef<PostListItem, unknown>,
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t])

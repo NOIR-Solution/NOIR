@@ -7,6 +7,7 @@
  */
 import { useState, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import type { DateRange } from 'react-day-picker'
 import {
   Search,
@@ -59,6 +60,7 @@ const HistoryFileCard = ({
   onView: () => void
   isSelected: boolean
 }) => {
+  const { timezone } = useRegionalSettings()
   return (
     <button
       onClick={onView}
@@ -81,7 +83,7 @@ const HistoryFileCard = ({
             noir-{date}.json
           </div>
           <div className="text-xs text-muted-foreground mt-0.5">
-            {formatDateDisplay(date)}
+            {formatDateDisplay(date, timezone)}
           </div>
         </div>
         <ChevronRight className={cn(
@@ -102,6 +104,7 @@ const HistoryFileViewer = ({
   onBack: () => void
 }) => {
   const { t } = useTranslation('common')
+  const { timezone } = useRegionalSettings()
   const [page, setPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedLevels, setSelectedLevels] = useState<Set<DevLogLevel>>(new Set())
@@ -153,7 +156,7 @@ const HistoryFileViewer = ({
         <div className="flex-1">
           <h2 className="font-semibold">noir-{date}.json</h2>
           <p className="text-sm text-muted-foreground">
-            {formatDateDisplay(date)} &middot; {totalCount.toLocaleString()} entries
+            {formatDateDisplay(date, timezone)} &middot; {totalCount.toLocaleString()} entries
           </p>
         </div>
         <Button
@@ -335,6 +338,7 @@ const HistoryFileViewer = ({
 // Main History Tab Content Component
 export const HistoryTab = () => {
   const { t } = useTranslation('common')
+  const { formatDate } = useRegionalSettings()
   const { data: availableDates = [], isLoading: isLoadingDates } = useAvailableLogDatesQuery()
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
@@ -379,6 +383,7 @@ export const HistoryTab = () => {
           placeholder={t('developerLogs.filterByDateRange')}
           className="h-9 w-[220px]"
           numberOfMonths={2}
+          formatDate={formatDate}
         />
       </div>
 

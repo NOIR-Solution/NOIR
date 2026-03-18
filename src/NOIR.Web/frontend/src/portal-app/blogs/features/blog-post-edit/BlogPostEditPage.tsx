@@ -626,6 +626,7 @@ export const BlogPostEditPage = () => {
                             onChange={setScheduledDate}
                             minDate={new Date()}
                             placeholder={t('blog.selectDate')}
+                            formatDate={formatDate}
                           />
                         </div>
                         <div className="space-y-2">

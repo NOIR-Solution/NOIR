@@ -28,6 +28,7 @@ import { useTableParams } from '@/hooks/useTableParams'
 import { useEnterpriseTable } from '@/hooks/useEnterpriseTable'
 import { createActionsColumn } from '@/lib/table/columnHelpers'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { useRowHighlight } from '@/hooks/useRowHighlight'
 import {
   Badge,
@@ -83,10 +84,12 @@ const ProjectCard = ({
   project,
   onClick,
   t,
+  formatDate,
 }: {
   project: ProjectListDto
   onClick: () => void
   t: (key: string, opts?: Record<string, unknown>) => string
+  formatDate: (date: Date | string) => string
 }) => {
   const progress = project.taskCount > 0
     ? Math.round((project.completedTaskCount / project.taskCount) * 100)
@@ -176,7 +179,7 @@ const ProjectCard = ({
                   }`}
                 >
                   {isOverdue ? <Clock className="h-3 w-3 flex-shrink-0" /> : <Calendar className="h-3 w-3 flex-shrink-0" />}
-                  {new Date(project.dueDate).toLocaleDateString()}
+                  {formatDate(project.dueDate)}
                 </span>
               </TooltipTrigger>
               <TooltipContent side="bottom">{t('pm.dueDate', { defaultValue: 'Due Date' })}</TooltipContent>
@@ -209,6 +212,7 @@ export const ProjectsPage = () => {
   const { t } = useTranslation('common')
   const navigate = useNavigate()
   const { hasPermission } = usePermissions()
+  const { formatDate } = useRegionalSettings()
   usePageContext('ProjectsPage')
 
   const { getRowAnimationClass } = useRowHighlight()
@@ -376,7 +380,7 @@ export const ProjectsPage = () => {
         const isOverdue = row.original.dueDate && new Date(row.original.dueDate) < new Date()
         return (
           <span className={`text-sm ${isOverdue ? 'text-red-500 font-medium' : 'text-muted-foreground'}`}>
-            {row.original.dueDate ? new Date(row.original.dueDate).toLocaleDateString() : '—'}
+            {row.original.dueDate ? formatDate(row.original.dueDate) : '—'}
           </span>
         )
       },
@@ -535,6 +539,7 @@ export const ProjectsPage = () => {
                   project={project}
                   onClick={() => handleProjectClick(project)}
                   t={t}
+                  formatDate={formatDate}
                 />
               ))}
             </div>

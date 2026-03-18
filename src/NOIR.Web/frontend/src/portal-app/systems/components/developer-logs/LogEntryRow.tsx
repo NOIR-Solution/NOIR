@@ -17,6 +17,7 @@ import {
 import { Badge, LogMessageFormatter, Tooltip, TooltipContent, TooltipTrigger } from '@uikit'
 
 import { cn } from '@/lib/utils'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import type { LogEntryDto } from '@/services/developerLogs'
 import {
   getLevelConfig,
@@ -40,6 +41,7 @@ export const LogEntryRow = ({
   onViewDetail,
 }: LogEntryRowProps) => {
   const { t } = useTranslation('common')
+  const { timezone } = useRegionalSettings()
   const config = getLevelConfig(entry.level)
   const [copied, setCopied] = useState(false)
   const hasException = !!entry.exception
@@ -90,11 +92,11 @@ export const LogEntryRow = ({
                 {formatRelativeTime(entry.timestamp)}
               </span>
               <span className="mx-1">·</span>
-              {formatTimestamp(entry.timestamp)}
+              {formatTimestamp(entry.timestamp, timezone)}
             </span>
           </TooltipTrigger>
           <TooltipContent side="top" className="font-mono text-xs">
-            {formatFullTimestamp(entry.timestamp)}
+            {formatFullTimestamp(entry.timestamp, timezone)}
           </TooltipContent>
         </Tooltip>
 

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { formatDistanceToNow } from 'date-fns'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { ClipboardList } from 'lucide-react'
 import { Badge, Card, CardContent, CardHeader, CardTitle, EmptyState } from '@uikit'
 import { getStatusBadgeClasses } from '@/utils/statusBadge'
@@ -11,6 +11,7 @@ interface RecentReceiptsCardProps {
 
 export const RecentReceiptsCard = ({ receipts }: RecentReceiptsCardProps) => {
   const { t } = useTranslation('common')
+  const { formatRelativeTime } = useRegionalSettings()
 
   return (
     <Card className="gap-0 shadow-sm hover:shadow-lg transition-all duration-300">
@@ -35,7 +36,7 @@ export const RecentReceiptsCard = ({ receipts }: RecentReceiptsCardProps) => {
                 <div className="min-w-0">
                   <p className="text-sm font-medium">{receipt.receiptNumber}</p>
                   <p className="text-xs text-muted-foreground">
-                    {receipt.itemCount} {t('labels.items', 'items')} &middot; {formatDistanceToNow(new Date(receipt.date), { addSuffix: true })}
+                    {receipt.itemCount} {t('labels.items', 'items')} &middot; {formatRelativeTime(receipt.date)}
                   </p>
                 </div>
                 <Badge

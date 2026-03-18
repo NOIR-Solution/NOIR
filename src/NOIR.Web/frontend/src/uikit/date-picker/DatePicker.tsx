@@ -25,6 +25,8 @@ interface DatePickerProps {
   maxDate?: Date
   /** Disable the picker */
   disabled?: boolean
+  /** Custom date formatter for display. Uses tenant regional format when provided. */
+  formatDate?: (date: Date) => string
 }
 
 export const DatePicker = ({
@@ -35,6 +37,7 @@ export const DatePicker = ({
   minDate,
   maxDate,
   disabled = false,
+  formatDate,
 }: DatePickerProps) => {
   const [open, setOpen] = React.useState(false)
 
@@ -56,7 +59,7 @@ export const DatePicker = ({
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-          {value ? format(value, 'PPP') : <span>{placeholder}</span>}
+          {value ? (formatDate ? formatDate(value) : format(value, 'PPP')) : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start" sideOffset={4}>

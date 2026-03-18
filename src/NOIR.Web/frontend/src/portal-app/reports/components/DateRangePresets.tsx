@@ -4,6 +4,7 @@
  */
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { subDays, startOfDay, endOfDay, startOfMonth, subMonths } from 'date-fns'
 import type { DateRange } from 'react-day-picker'
 import { DateRangePicker, Button } from '@uikit'
@@ -17,6 +18,7 @@ type PresetKey = 'today' | 'last7' | 'last30' | 'thisMonth' | 'lastMonth' | 'cus
 
 export const DateRangePresets = ({ value, onChange }: DateRangePresetsProps) => {
   const { t } = useTranslation('common')
+  const { formatDate } = useRegionalSettings()
   const [activePreset, setActivePreset] = useState<PresetKey>('last30')
 
   const presets: { key: PresetKey; label: string; getRange: () => DateRange }[] = [
@@ -93,6 +95,7 @@ export const DateRangePresets = ({ value, onChange }: DateRangePresetsProps) => 
         onChange={handleCustomChange}
         placeholder={t('reports.presets.custom', 'Custom range')}
         className="h-9 cursor-pointer"
+        formatDate={formatDate}
       />
     </div>
   )

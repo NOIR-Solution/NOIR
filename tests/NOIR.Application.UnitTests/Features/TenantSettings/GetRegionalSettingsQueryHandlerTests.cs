@@ -69,10 +69,10 @@ public class GetRegionalSettingsQueryHandlerTests
 
         // Assert
         result.IsSuccess.ShouldBe(true);
-        // Default values are defined in the handler
-        result.Value.Timezone.ShouldBe("UTC");
-        result.Value.Language.ShouldBe("en");
-        result.Value.DateFormat.ShouldBe("YYYY-MM-DD");
+        // Default values match Vietnamese locale (seeder defaults)
+        result.Value.Timezone.ShouldBe("Asia/Ho_Chi_Minh");
+        result.Value.Language.ShouldBe("vi");
+        result.Value.DateFormat.ShouldBe("DD/MM/YYYY");
     }
 
     [Fact]
@@ -94,8 +94,8 @@ public class GetRegionalSettingsQueryHandlerTests
         // Assert
         result.IsSuccess.ShouldBe(true);
         result.Value.Timezone.ShouldBe("Europe/London");
-        result.Value.Language.ShouldBe("en"); // Default
-        result.Value.DateFormat.ShouldBe("YYYY-MM-DD"); // Default
+        result.Value.Language.ShouldBe("vi"); // Default (Vietnamese)
+        result.Value.DateFormat.ShouldBe("DD/MM/YYYY"); // Default (Vietnamese)
     }
 
     [Fact]

@@ -29,6 +29,8 @@ interface DateRangePickerProps {
   disabled?: boolean
   /** Number of months to display */
   numberOfMonths?: number
+  /** Custom date formatter for display. Uses tenant regional format when provided. */
+  formatDate?: (date: Date) => string
 }
 
 export const DateRangePicker = ({
@@ -40,6 +42,7 @@ export const DateRangePicker = ({
   showClear = true,
   disabled = false,
   numberOfMonths = 2,
+  formatDate: formatDateProp,
 }: DateRangePickerProps) => {
   const { t } = useTranslation('common')
   const effectivePlaceholder = placeholder ?? t('labels.pickDateRange', 'Pick a date range')
@@ -54,14 +57,16 @@ export const DateRangePicker = ({
     onChange?.(undefined)
   }
 
+  const displayDate = (d: Date) => formatDateProp ? formatDateProp(d) : format(d, 'MMM d, yyyy')
+
   const formatDateRange = () => {
     if (!value?.from) return effectivePlaceholder
 
     if (value.to) {
-      return `${format(value.from, 'MMM d, yyyy')} - ${format(value.to, 'MMM d, yyyy')}`
+      return `${displayDate(value.from)} - ${displayDate(value.to)}`
     }
 
-    return format(value.from, 'MMM d, yyyy')
+    return displayDate(value.from)
   }
 
   const hasValue = value?.from !== undefined
@@ -100,7 +105,7 @@ export const DateRangePicker = ({
         <div className="flex items-center justify-between border-t p-3">
           <div className="text-xs text-muted-foreground">
             {hasValue
-              ? `${value.from ? format(value.from, 'PP') : ''} ${value.to ? ' → ' + format(value.to, 'PP') : ''}`
+              ? `${value.from ? displayDate(value.from) : ''} ${value.to ? ' → ' + displayDate(value.to) : ''}`
               : t('labels.selectDateRange', 'Select start and end dates')}
           </div>
           <div className="flex gap-2">

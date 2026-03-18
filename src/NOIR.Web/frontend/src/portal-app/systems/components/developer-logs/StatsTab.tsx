@@ -9,6 +9,7 @@ import { RefreshCw, Database, Clock } from 'lucide-react'
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Skeleton } from '@uikit'
 
 import { cn } from '@/lib/utils'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import type { LogBufferStatsDto } from '@/services/developerLogs'
 import { LOG_LEVELS, formatBytes, formatFullTimestamp } from './log-utils'
 
@@ -99,6 +100,7 @@ const StatsCard = ({
 
 export const StatsTab = ({ stats, onRefresh }: StatsTabProps) => {
   const { t } = useTranslation('common')
+  const { timezone } = useRegionalSettings()
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <Card className="lg:col-span-2 shadow-sm hover:shadow-lg transition-all duration-300">
@@ -126,13 +128,13 @@ export const StatsTab = ({ stats, onRefresh }: StatsTabProps) => {
               <div className="p-3 bg-muted rounded-lg">
                 <div className="text-xs text-muted-foreground mb-1">{t('developerLogs.oldestEntry')}</div>
                 <div className="font-mono text-sm">
-                  {stats.oldestEntry ? formatFullTimestamp(stats.oldestEntry) : t('labels.notAvailable', 'N/A')}
+                  {stats.oldestEntry ? formatFullTimestamp(stats.oldestEntry, timezone) : t('labels.notAvailable', 'N/A')}
                 </div>
               </div>
               <div className="p-3 bg-muted rounded-lg">
                 <div className="text-xs text-muted-foreground mb-1">{t('developerLogs.newestEntry')}</div>
                 <div className="font-mono text-sm">
-                  {stats.newestEntry ? formatFullTimestamp(stats.newestEntry) : t('labels.notAvailable', 'N/A')}
+                  {stats.newestEntry ? formatFullTimestamp(stats.newestEntry, timezone) : t('labels.notAvailable', 'N/A')}
                 </div>
               </div>
             </>

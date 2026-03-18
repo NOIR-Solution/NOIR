@@ -1,5 +1,6 @@
 import { useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -106,6 +107,7 @@ interface PromotionFormDialogProps {
 
 export const PromotionFormDialog = ({ open, onOpenChange, promotion, onSuccess }: PromotionFormDialogProps) => {
   const { t } = useTranslation('common')
+  const { formatDate } = useRegionalSettings()
   const isEditing = !!promotion
   const createMutation = useCreatePromotionMutation()
   const updateMutation = useUpdatePromotionMutation()
@@ -536,6 +538,7 @@ export const PromotionFormDialog = ({ open, onOpenChange, promotion, onSuccess }
                           value={field.value}
                           onChange={field.onChange}
                           placeholder={t('promotions.selectStartDate', 'Select start date')}
+                          formatDate={formatDate}
                         />
                       </FormControl>
                       <FormMessage />
@@ -555,6 +558,7 @@ export const PromotionFormDialog = ({ open, onOpenChange, promotion, onSuccess }
                           onChange={field.onChange}
                           placeholder={t('promotions.selectEndDate', 'Select end date')}
                           minDate={form.getValues('startDate')}
+                          formatDate={formatDate}
                         />
                       </FormControl>
                       <FormMessage />

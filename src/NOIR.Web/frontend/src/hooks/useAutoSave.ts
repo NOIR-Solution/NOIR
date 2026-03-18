@@ -92,7 +92,7 @@ export const useAutoSave = <T extends FieldValues>({
 
           // Show restoration toast
           toast.info(restoreMessage, {
-            description: i18n.t('autoSave.draftFrom', { ns: 'common', date: new Date(savedAt).toLocaleString(), defaultValue: 'From {{date}}' }),
+            description: i18n.t('autoSave.draftFrom', { ns: 'common', date: new Date(savedAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }), defaultValue: 'From {{date}}' }),
             action: {
               label: i18n.t('autoSave.discard', { ns: 'common', defaultValue: 'Discard' }),
               onClick: () => {

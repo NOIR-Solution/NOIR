@@ -7,6 +7,7 @@
 import { useState, useMemo } from 'react'
 import { useUrlTab } from '@/hooks/useUrlTab'
 import { useTranslation } from 'react-i18next'
+import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import type { DateRange } from 'react-day-picker'
 import { subDays, startOfDay, endOfDay } from 'date-fns'
 import {
@@ -125,14 +126,15 @@ const RevenueAreaChart = ({
   isLoading: boolean
 }) => {
   const { t } = useTranslation('common')
+  const { timezone } = useRegionalSettings()
 
   const chartData = useMemo(
     () =>
       data.map((d) => ({
         ...d,
-        dateLabel: new Date(d.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+        dateLabel: new Date(d.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: timezone }),
       })),
-    [data]
+    [data, timezone]
   )
 
   if (isLoading) {
