@@ -2031,67 +2031,64 @@ The `apiClient.ts` provides user-friendly error messages for HTTP status codes:
 - **403 Forbidden**: Shows "You don't have permission to perform this action." (i18n: `messages.permissionDenied`)
 - **401 Unauthorized**: Shows "Your session has expired. Please sign in again." (i18n: `messages.sessionExpired`)
 
-#### Form Validation Standards
+#### Form Validation Standards — "Reward Early, Punish Late"
 
-**Standard Pattern:** All forms MUST use `react-hook-form` + Zod + shadcn/ui Form components with `mode: 'onBlur'`.
+**Every `useForm()` MUST have:**
+```tsx
+useForm({ mode: 'onBlur', reValidateMode: 'onChange', ... })
+```
 
-**Why `onBlur`:**
-- Validates after user finishes typing (better UX)
-- Immediate feedback before form submission
-- Less intrusive than `onChange`
-- Consistent behavior across all forms
+**Two-gate error display** — `FormItem`, `FormLabel`, `FormControl`, `FormMessage` all use identical logic:
+```
+showError = (isDirty || isSubmitted || isServerError) && !isFocused
+```
+Errors are **always hidden while a field is focused** — never shown mid-typing.
 
 **Required Pattern:**
-
 ```tsx
-import { useForm } from 'react-hook-form'
+import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@uikit'
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage, FormErrorBanner } from '@uikit'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
-// 1. Define Zod schema
-const formSchema = z.object({
-  email: z.string().min(1, 'Email is required').email('Invalid email'),
-})
+const schema = useMemo(() => createSchema(t), [t])
+const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
+const [serverErrors, setServerErrors] = useState<string[]>([])
 
-// 2. Initialize form with mode: 'onBlur'
-const form = useForm<z.infer<typeof formSchema>>({
-  resolver: zodResolver(formSchema),
-  mode: 'onBlur',  // REQUIRED
+const form = useForm<FormValues>({
+  resolver: zodResolver(schema) as unknown as Resolver<FormValues>,
+  mode: 'onBlur',
+  reValidateMode: 'onChange',  // ← REQUIRED alongside mode
   defaultValues: { email: '' },
 })
 
-// 3. Use FormField components
-<Form {...form}>
-  <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
-    <FormField
-      control={form.control}
-      name="email"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>Email *</FormLabel>
-          <FormControl>
-            <Input type="text" {...field} />
-          </FormControl>
-          <FormMessage /> {/* Auto-displays errors */}
-        </FormItem>
-      )}
-    />
+// catch block:
+catch (err) { handleFormError(err, form, setServerErrors, t) }
+```
+
+```tsx
+<Form {...form} requiredFields={requiredFields}>
+  <form onSubmit={form.handleSubmit(onSubmit)}>
+    <FormErrorBanner errors={serverErrors} onDismiss={() => setServerErrors([])}
+      title={t('validation.unableToSave')} />
+    <FormField control={form.control} name="email" render={({ field }) => (
+      <FormItem>
+        <FormLabel>{t('labels.email')}</FormLabel>  {/* * auto-added from schema */}
+        <FormControl><Input {...field} /></FormControl>
+        <FormMessage />
+      </FormItem>
+    )} />
   </form>
 </Form>
 ```
 
-**Key Benefits:**
-- `FormLabel` auto-turns red on error
-- `FormMessage` auto-displays validation errors
-- Type safety from Zod schema
-- Consistent validation timing
+**Key utilities** (`@/lib/form`):
+- `getRequiredFields(schema)` — introspects Zod → `Set<string>` of required fields for auto-asterisk
+- `handleFormError(err, form, setServerErrors, t)` — maps API errors to field errors or banner
 
-**Anti-Pattern (DEPRECATED):** Manual `useState` for errors/touched state.
+**Convenience:** `useValidatedForm` from `@/hooks/useValidatedForm` bundles all rules.
 
-**Hook:** Use `useValidatedForm` for complex forms (defaults to `mode: 'onBlur'`).
-
-**Error Message Styling:** All error messages use `text-sm font-medium text-destructive` for consistency with `FormMessage`.
+**Anti-Pattern (DEPRECATED):** Manual `useState` for errors/touched state. Never `toast.error()` for form submit failures — use `FormErrorBanner`.
 
 **Full Documentation:** [Frontend Architecture - Form Validation Standards](frontend/architecture.md#form-validation-standards)
 

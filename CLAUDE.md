@@ -248,11 +248,17 @@ src/NOIR.Web/             # Endpoints, Middleware, Program.cs
 
 ### Validation
 
-**Stack**: react-hook-form + Zod + `mode: 'onBlur'` + `reValidateMode: 'onChange'`. FluentValidation rules must match Zod schemas. See `.claude/rules/form-validation-standard.md` for the full "reward early, punish late" focus-tracking pattern.
+**Stack**: react-hook-form + Zod + `mode: 'onBlur'` + `reValidateMode: 'onChange'`. Every `useForm()` MUST have both. Full pattern: `.claude/rules/form-validation-standard.md`.
+
+**Required field asterisk**: Auto-detected — pass `requiredFields={useMemo(() => getRequiredFields(schema), [schema])}` to `<Form>`. Never hardcode `required` prop on labels.
+
+**Server errors**: `handleFormError(err, form, setServerErrors, t)` in catch block + `<FormErrorBanner>` at top of form. Never `toast.error()` for form submit failures.
 
 **Zod `.issues`** (not `.errors`): `result.error.issues.forEach(...)` — `.errors` does not exist and throws.
 
-**i18n schema factories**: Use `zodResolver(createSchema(t)) as unknown as Resolver<FormData>` — `z.default()` causes type mismatch. Never use `as any`. See [docs/frontend/architecture.md#form-validation-standards](docs/frontend/architecture.md#form-validation-standards).
+**i18n schema factories**: `zodResolver(createSchema(t)) as unknown as Resolver<FormData>` — `z.default()` causes type mismatch. Never use `as any`.
+
+**Convenience**: `useValidatedForm` from `@/hooks/useValidatedForm` bundles all 4 rules (mode, reValidateMode, requiredFields, handleFormError).
 
 ### Design Language
 
