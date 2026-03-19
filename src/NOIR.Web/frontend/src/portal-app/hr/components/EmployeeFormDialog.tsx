@@ -1,4 +1,4 @@
-import { useEffect, useState, useDeferredValue } from 'react'
+import { useEffect, useMemo, useState, useDeferredValue } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { useForm, type Resolver } from 'react-hook-form'
@@ -22,6 +22,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormErrorBanner,
   FormMessage,
   Input,
   Select,
@@ -37,6 +38,7 @@ import {
 } from '@/portal-app/hr/queries'
 import { useDepartmentsQuery, useEmployeeSearchQuery } from '@/portal-app/hr/queries'
 import type { EmployeeDto, EmployeeListDto, EmploymentType } from '@/types/hr'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 const EMPLOYMENT_TYPES: EmploymentType[] = ['FullTime', 'PartTime', 'Contract', 'Intern']
 
@@ -77,10 +79,15 @@ export const EmployeeFormDialog = ({ open, onOpenChange, employee, onSuccess }: 
   const { data: managerResults } = useEmployeeSearchQuery(deferredManagerSearch)
 
   const fullEmployee = employee && 'departmentId' in employee ? employee as EmployeeDto : null
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const schema = useMemo(() => createEmployeeSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<EmployeeFormData>({
-    resolver: zodResolver(createEmployeeSchema(t)) as unknown as Resolver<EmployeeFormData>,
+    resolver: zodResolver(schema) as unknown as Resolver<EmployeeFormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -98,6 +105,7 @@ export const EmployeeFormDialog = ({ open, onOpenChange, employee, onSuccess }: 
 
   useEffect(() => {
     if (open) {
+      setServerErrors([])
       if (fullEmployee) {
         form.reset({
           firstName: fullEmployee.firstName,
@@ -167,8 +175,7 @@ export const EmployeeFormDialog = ({ open, onOpenChange, employee, onSuccess }: 
       onOpenChange(false)
       onSuccess?.()
     } catch (err) {
-      const message = err instanceof Error ? err.message : t('errors.generic', 'An error occurred')
-      toast.error(message)
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -202,10 +209,15 @@ export const EmployeeFormDialog = ({ open, onOpenChange, employee, onSuccess }: 
             </div>
           </div>
         </CredenzaHeader>
-        <Form {...form}>
+        <Form {...form} requiredFields={requiredFields}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CredenzaBody>
               <div className="space-y-4">
+                <FormErrorBanner
+                  errors={serverErrors}
+                  onDismiss={() => setServerErrors([])}
+                  title={t('validation.unableToSave', 'Unable to save')}
+                />
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}

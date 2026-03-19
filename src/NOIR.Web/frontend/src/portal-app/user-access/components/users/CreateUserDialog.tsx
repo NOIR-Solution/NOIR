@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -16,6 +16,7 @@ import {
   CredenzaTitle,
   CredenzaBody,
   EmptyState,
+  FormErrorBanner,
   Input,
   Label,
 } from '@uikit'
@@ -24,7 +25,7 @@ import { toast } from 'sonner'
 import { createUser } from '@/services/users'
 import { useAvailableRolesQuery } from '@/portal-app/user-access/queries'
 import { RolePermissionInfo } from './RolePermissionInfo'
-import { ApiError } from '@/services/apiClient'
+import { handleFormError } from '@/lib/form'
 
 /**
  * Creates validation schema for CreateUserCommand
@@ -81,17 +82,21 @@ export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDi
   const [showPassword, setShowPassword] = useState(false)
   const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set())
   const [permissionsCache] = useState(() => new Map<string, string[]>())
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const schema = useMemo(() => createUserSchemaFactory(t), [t])
 
   // Callback to cache loaded permissions
   const handlePermissionsLoaded = useCallback((roleId: string, permissions: string[]) => {
     permissionsCache.set(roleId, permissions)
   }, [permissionsCache])
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
+  const form = useForm<FormData>({
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     // TypeScript cannot infer resolver types from dynamic schema factories
     // Using 'as unknown as Resolver<T>' for type-safe assertion
-    resolver: zodResolver(createUserSchemaFactory(t)) as unknown as Resolver<FormData>,
+    resolver: zodResolver(schema) as unknown as Resolver<FormData>,
     defaultValues: {
       email: '',
       password: '',
@@ -102,12 +107,15 @@ export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDi
     },
   })
 
+  const { register, handleSubmit, formState: { errors }, reset } = form
+
   // Reset form when dialog closes
   useEffect(() => {
     if (!open) {
       reset()
       setSelectedRoles(new Set())
       setShowPassword(false)
+      setServerErrors([])
     }
   }, [open, reset])
 
@@ -138,10 +146,7 @@ export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDi
       onOpenChange(false)
       onSuccess()
     } catch (err) {
-      const message = err instanceof ApiError
-        ? err.message
-        : t('users.createError', 'Failed to create user')
-      toast.error(message)
+      handleFormError(err, form, setServerErrors, t)
     } finally {
       setLoading(false)
     }
@@ -167,6 +172,12 @@ export const CreateUserDialog = ({ open, onOpenChange, onSuccess }: CreateUserDi
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
           <CredenzaBody>
             <div className="grid gap-4">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
+
               {/* Email */}
               <div className="grid gap-2">
                 <Label htmlFor="email" className={errors.email ? 'text-destructive' : ''}>{t('labels.email', 'Email')} *</Label>

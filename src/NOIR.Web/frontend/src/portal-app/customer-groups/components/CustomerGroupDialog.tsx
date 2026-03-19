@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -18,12 +18,14 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormErrorBanner,
   FormMessage,
   Input,
   Switch,
   Textarea,
 } from '@uikit'
 
+import { getRequiredFields, handleFormError } from '@/lib/form'
 import { useCreateCustomerGroupMutation, useUpdateCustomerGroupMutation } from '@/portal-app/customer-groups/queries'
 import type { CustomerGroupListItem } from '@/types/customerGroup'
 import { toast } from 'sonner'
@@ -50,12 +52,17 @@ export const CustomerGroupDialog = ({ open, onOpenChange, group, onSuccess }: Cu
   const isEditing = !!group
   const createMutation = useCreateCustomerGroupMutation()
   const updateMutation = useUpdateCustomerGroupMutation()
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const schema = useMemo(() => createCustomerGroupSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<CustomerGroupFormData>({
     // TypeScript cannot infer resolver types from dynamic schema factories
     // Using 'as unknown as Resolver<T>' for type-safe assertion
-    resolver: zodResolver(createCustomerGroupSchema(t)) as unknown as Resolver<CustomerGroupFormData>,
+    resolver: zodResolver(schema) as unknown as Resolver<CustomerGroupFormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       description: '',
@@ -66,6 +73,7 @@ export const CustomerGroupDialog = ({ open, onOpenChange, group, onSuccess }: Cu
   // Reset form when dialog opens/closes or group changes
   useEffect(() => {
     if (open) {
+      setServerErrors([])
       if (group) {
         form.reset({
           name: group.name,
@@ -104,10 +112,7 @@ export const CustomerGroupDialog = ({ open, onOpenChange, group, onSuccess }: Cu
       onSuccess?.()
       onOpenChange(false)
     } catch (err) {
-      const message = err instanceof Error ? err.message : isEditing
-        ? t('customerGroups.updateError', 'Failed to update customer group')
-        : t('customerGroups.createError', 'Failed to create customer group')
-      toast.error(message)
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -134,9 +139,15 @@ export const CustomerGroupDialog = ({ open, onOpenChange, group, onSuccess }: Cu
           </div>
         </CredenzaHeader>
 
-        <Form {...form}>
+        <Form {...form} requiredFields={requiredFields}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <CredenzaBody className="space-y-4">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
+
               <FormField
                 control={form.control}
                 name="name"

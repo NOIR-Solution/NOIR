@@ -27,6 +27,7 @@ import {
   FormControl,
   FormDescription,
   FormField,
+  FormErrorBanner,
   FormItem,
   FormLabel,
   FormMessage,
@@ -40,6 +41,7 @@ import {
 } from '@uikit'
 
 import { toast } from 'sonner'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 import type {
   PaymentGateway,
   GatewaySchema,
@@ -87,6 +89,7 @@ export const ConfigureGatewayDialog = ({
   const [isTesting, setIsTesting] = useState(false)
   const [showProductionWarning, setShowProductionWarning] = useState(false)
   const [pendingEnvironment, setPendingEnvironment] = useState<GatewayEnvironment | null>(null)
+  const [serverErrors, setServerErrors] = useState<string[]>([])
 
   const isEditing = !!gateway
 
@@ -125,6 +128,8 @@ export const ConfigureGatewayDialog = ({
     return z.object(schemaFields)
   }, [schema.fields, isEditing, t])
 
+  const requiredFields = useMemo(() => getRequiredFields(formSchema), [formSchema])
+
   // Build default values
   const buildDefaultValues = (): FieldValues => {
     const defaults: FieldValues = {
@@ -144,12 +149,14 @@ export const ConfigureGatewayDialog = ({
     // Using 'as unknown as Resolver<T>' for type-safe assertion
     resolver: zodResolver(formSchema) as unknown as Resolver<FieldValues>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: buildDefaultValues(),
   })
 
   // Reset form when dialog opens/closes or gateway changes
   useEffect(() => {
     if (open) {
+      setServerErrors([])
       form.reset(buildDefaultValues())
       setTestResult(null)
     }
@@ -268,6 +275,8 @@ export const ConfigureGatewayDialog = ({
       } else {
         toast.error(result.error ?? t('errors.operationFailed'))
       }
+    } catch (err) {
+      handleFormError(err, form, setServerErrors, t)
     } finally {
       setLoading(false)
     }
@@ -311,8 +320,13 @@ export const ConfigureGatewayDialog = ({
               </a>
             )}
 
-            <Form {...form}>
+            <Form {...form} requiredFields={requiredFields}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormErrorBanner
+                  errors={serverErrors}
+                  onDismiss={() => setServerErrors([])}
+                  title={t('validation.unableToSave', 'Unable to save')}
+                />
                 {/* Display Name */}
                 <FormField
                   control={form.control}

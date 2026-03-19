@@ -35,6 +35,7 @@ import {
   Checkbox,
   Form,
   FormControl,
+  FormErrorBanner,
   FormField,
   FormItem,
   FormLabel,
@@ -67,6 +68,7 @@ import { validatePromoCode } from '@/services/promotions'
 import { getCustomers } from '@/services/customers'
 import type { CustomerSummaryDto } from '@/types/customer'
 import { formatCurrency } from '@/lib/utils/currency'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 // --- Types ---
 
@@ -523,11 +525,16 @@ export const ManualCreateOrderPage = () => {
   usePageContext('Orders')
 
   // Form state
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+  const schema = useMemo(() => createManualOrderSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
+
   const form = useForm<ManualOrderFormData>({
     // TypeScript cannot infer resolver types from dynamic schema factories
     // Using 'as unknown as Resolver<T>' for type-safe assertion
-    resolver: zodResolver(createManualOrderSchema(t)) as unknown as Resolver<ManualOrderFormData>,
+    resolver: zodResolver(schema) as unknown as Resolver<ManualOrderFormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       customerEmail: '',
       customerName: '',
@@ -706,8 +713,8 @@ export const ManualCreateOrderPage = () => {
       const order = await createOrderMutation.mutateAsync(buildRequest(data))
       toast.success(t('orders.manualCreate.success'))
       navigate(`/portal/ecommerce/orders/${order.id}`)
-    } catch {
-      toast.error(t('orders.manualCreate.error'))
+    } catch (err) {
+      handleFormError(err, form, setServerErrors, t)
     }
   })
 
@@ -716,8 +723,8 @@ export const ManualCreateOrderPage = () => {
       const order = await createAndCompleteMutation.mutateAsync(buildRequest(data))
       toast.success(t('orders.manualCreate.createAndCompleteSuccess'))
       navigate(`/portal/ecommerce/orders/${order.id}`)
-    } catch {
-      toast.error(t('orders.manualCreate.error'))
+    } catch (err) {
+      handleFormError(err, form, setServerErrors, t)
     }
   })
 
@@ -755,8 +762,13 @@ export const ManualCreateOrderPage = () => {
         />
       </div>
 
-      <Form {...form}>
+      <Form {...form} requiredFields={requiredFields}>
         <form onSubmit={handleSubmit} className="space-y-6">
+          <FormErrorBanner
+            errors={serverErrors}
+            onDismiss={() => setServerErrors([])}
+            title={t('validation.unableToSave', 'Unable to save')}
+          />
           {/* Section 1: Customer Info */}
           <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
             <CardHeader>

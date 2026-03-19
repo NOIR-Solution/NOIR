@@ -11,6 +11,7 @@ import {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
+  FormErrorBanner,
   Textarea,
 } from '@uikit'
 import { useReviewQuery, useAddAdminResponse } from '@/portal-app/reviews/queries'
@@ -32,12 +33,17 @@ export const AdminResponseDialog = ({
   const { data: review } = useReviewQuery(reviewId)
   const addResponseMutation = useAddAdminResponse()
   const [response, setResponse] = useState('')
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
 
   // Pre-fill with existing admin response when dialog opens
   useEffect(() => {
-    if (open && review?.adminResponse) {
-      setResponse(review.adminResponse)
-    } else if (!open) {
+    if (open) {
+      setServerErrors([])
+      if (review?.adminResponse) {
+        setResponse(review.adminResponse)
+      }
+    } else {
       setResponse('')
     }
   }, [open, review?.adminResponse])
@@ -48,8 +54,9 @@ export const AdminResponseDialog = ({
       await addResponseMutation.mutateAsync({ id: reviewId, response: response.trim() })
       toast.success(t('reviews.responseSuccess', 'Admin response added successfully'))
       onSuccess()
-    } catch {
-      toast.error(t('reviews.responseFailed', 'Failed to add admin response'))
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t('reviews.responseFailed', 'Failed to add admin response')
+      setServerErrors([message])
     }
   }
 
@@ -77,7 +84,12 @@ export const AdminResponseDialog = ({
           </div>
         </CredenzaHeader>
 
-        <CredenzaBody>
+        <CredenzaBody className="space-y-4">
+          <FormErrorBanner
+            errors={serverErrors}
+            onDismiss={() => setServerErrors([])}
+            title={t('validation.unableToSave', 'Unable to save')}
+          />
           <div className="py-2">
             <Textarea
               placeholder={t('reviews.responsePlaceholder', 'Write your response...')}

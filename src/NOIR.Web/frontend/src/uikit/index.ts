@@ -26,6 +26,7 @@ export * from './dropdown-menu'
 export * from './empty-state'
 export * from './file-preview'
 export * from './form'
+export * from './form-error-banner'
 // form-field: rename FormField to avoid conflict with form's FormField
 export { FormField as SimpleFormField, FormTextarea, FormError } from './form-field'
 export type { FormFieldProps as SimpleFormFieldProps } from './form-field'

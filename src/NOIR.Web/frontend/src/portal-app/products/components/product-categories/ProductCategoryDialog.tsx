@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -18,6 +18,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormErrorBanner,
   FormMessage,
   Input,
   Select,
@@ -32,6 +33,7 @@ import { useCreateProductCategory, useUpdateProductCategory, useProductCategorie
 import type { ProductCategoryListItem } from '@/types/product'
 import { toast } from 'sonner'
 import { FolderTree, Loader2 } from 'lucide-react'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 import { generateSlug } from '@/lib/utils/slug'
 
 const createCategorySchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
@@ -72,6 +74,7 @@ export const ProductCategoryDialog = ({
   const createMutation = useCreateProductCategory()
   const updateMutation = useUpdateProductCategory()
   const isSaving = createMutation.isPending || updateMutation.isPending
+  const [serverErrors, setServerErrors] = useState<string[]>([])
 
   // Fetch fresh categories when dialog opens - this fixes CAT-013 where newly created
   // categories weren't appearing in parent dropdown after page reload
@@ -90,11 +93,15 @@ export const ProductCategoryDialog = ({
     }
   }, [open, refreshCategories])
 
+  const schema = useMemo(() => createCategorySchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
+
   const form = useForm<CategoryFormData>({
     // TypeScript cannot infer resolver types from dynamic schema factories
     // Using 'as unknown as Resolver<T>' for type-safe assertion
-    resolver: zodResolver(createCategorySchema(t)) as unknown as Resolver<CategoryFormData>,
+    resolver: zodResolver(schema) as unknown as Resolver<CategoryFormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       slug: '',
@@ -108,6 +115,7 @@ export const ProductCategoryDialog = ({
   })
 
   useEffect(() => {
+    setServerErrors([])
     if (category) {
       // KNOWN LIMITATION: metaTitle, metaDescription, imageUrl are not included in
       // ProductCategoryListItem DTO. These fields will be empty when editing existing
@@ -156,7 +164,7 @@ export const ProductCategoryDialog = ({
       onOpenChange(false)
       onSuccess()
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : t('categories.saveFailed', 'Failed to save category'))
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -179,9 +187,15 @@ export const ProductCategoryDialog = ({
             </div>
           </div>
         </CredenzaHeader>
-        <Form {...form}>
+        <Form {...form} requiredFields={requiredFields}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <CredenzaBody className="space-y-4">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
+
               <FormField
                 control={form.control}
                 name="name"

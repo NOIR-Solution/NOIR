@@ -25,6 +25,7 @@ import {
   CredenzaTrigger,
   Form,
   FormControl,
+  FormErrorBanner,
   FormField,
   FormItem,
   FormLabel,
@@ -241,7 +242,7 @@ export const EmailChangeDialog = ({
           <div className="mt-4">
             {/* Step 1: Enter new email - shadcn Form with react-hook-form + Zod */}
             {step === 'email' && (
-              <Form {...emailForm.form}>
+              <Form {...emailForm.form} requiredFields={emailForm.requiredFields}>
                 <form
                   onSubmit={(e) => {
                     e.stopPropagation() // Prevent any bubbling to parent forms
@@ -296,11 +297,11 @@ export const EmailChangeDialog = ({
                     )}
                   />
 
-                  {emailForm.serverError && (
-                    <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                      <p className="text-sm font-medium text-destructive">{emailForm.serverError}</p>
-                    </div>
-                  )}
+                  <FormErrorBanner
+                    errors={emailForm.serverErrors}
+                    onDismiss={emailForm.dismissServerErrors}
+                    title={tCommon('validation.unableToSave', 'Unable to save')}
+                  />
 
                   <Button
                     type="submit"

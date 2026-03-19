@@ -1,10 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 import {
   Button,
@@ -22,6 +21,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormErrorBanner,
   FormMessage,
   Input,
   Textarea,
@@ -33,6 +33,7 @@ import {
 } from '@uikit'
 import { useCreateProject, useUpdateProject } from '@/portal-app/pm/queries'
 import type { ProjectDto, ProjectVisibility, ProjectStatus } from '@/types/pm'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 const PROJECT_COLORS = [
   '#6366f1', // indigo (default)
@@ -78,10 +79,15 @@ export const ProjectDialog = ({ open, onOpenChange, project }: ProjectDialogProp
   const createMutation = useCreateProject()
   const updateMutation = useUpdateProject()
   const isSubmitting = createMutation.isPending || updateMutation.isPending
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const schema = useMemo(() => createProjectSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<ProjectFormData>({
-    resolver: zodResolver(createProjectSchema(t)) as unknown as Resolver<ProjectFormData>,
+    resolver: zodResolver(schema) as unknown as Resolver<ProjectFormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       description: '',
@@ -98,6 +104,7 @@ export const ProjectDialog = ({ open, onOpenChange, project }: ProjectDialogProp
 
   useEffect(() => {
     if (open) {
+      setServerErrors([])
       if (project) {
         form.reset({
           name: project.name,
@@ -150,7 +157,7 @@ export const ProjectDialog = ({ open, onOpenChange, project }: ProjectDialogProp
             onOpenChange(false)
           },
           onError: (err) => {
-            toast.error(err instanceof Error ? err.message : t('errors.unknown'))
+            handleFormError(err, form, setServerErrors, t)
           },
         },
       )
@@ -160,7 +167,7 @@ export const ProjectDialog = ({ open, onOpenChange, project }: ProjectDialogProp
           onOpenChange(false)
         },
         onError: (err) => {
-          toast.error(err instanceof Error ? err.message : t('errors.unknown'))
+          handleFormError(err, form, setServerErrors, t)
         },
       })
     }
@@ -178,9 +185,14 @@ export const ProjectDialog = ({ open, onOpenChange, project }: ProjectDialogProp
             }
           </CredenzaDescription>
         </CredenzaHeader>
-        <Form {...form}>
+        <Form {...form} requiredFields={requiredFields}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CredenzaBody className="space-y-4">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
               <FormField
                 control={form.control}
                 name="name"

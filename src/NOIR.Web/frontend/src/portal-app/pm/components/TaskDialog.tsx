@@ -1,10 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 import {
   Button,
@@ -21,6 +20,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormErrorBanner,
   FormMessage,
   Input,
   Textarea,
@@ -32,6 +32,7 @@ import {
 } from '@uikit'
 import { useCreateTask, useProjectLabelsQuery, useAddLabelToTask } from '@/portal-app/pm/queries'
 import type { ProjectColumnDto, ProjectMemberDto } from '@/types/pm'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 const createTaskSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
   z.object({
@@ -73,10 +74,15 @@ export const TaskDialog = ({
   const addLabelMutation = useAddLabelToTask()
   const { data: labelsData } = useProjectLabelsQuery(projectId)
   const availableLabels = labelsData ?? []
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const schema = useMemo(() => createTaskSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<TaskFormData>({
-    resolver: zodResolver(createTaskSchema(t)) as unknown as Resolver<TaskFormData>,
+    resolver: zodResolver(schema) as unknown as Resolver<TaskFormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       title: '',
       description: '',
@@ -92,6 +98,7 @@ export const TaskDialog = ({
 
   useEffect(() => {
     if (open) {
+      setServerErrors([])
       form.reset({
         title: '',
         description: '',
@@ -130,7 +137,7 @@ export const TaskDialog = ({
 
       onOpenChange(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : t('errors.unknown'))
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -145,9 +152,14 @@ export const TaskDialog = ({
             {t('pm.createTaskDescription', { defaultValue: 'Add a new task to this project' })}
           </CredenzaDescription>
         </CredenzaHeader>
-        <Form {...form}>
+        <Form {...form} requiredFields={requiredFields}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CredenzaBody className="space-y-4">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
               <FormField
                 control={form.control}
                 name="title"

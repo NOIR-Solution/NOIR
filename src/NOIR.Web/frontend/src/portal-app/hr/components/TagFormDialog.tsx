@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,6 +19,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormErrorBanner,
   FormMessage,
   ColorPicker,
   Input,
@@ -31,6 +32,7 @@ import {
 } from '@uikit'
 import { useCreateTag, useUpdateTag } from '@/portal-app/hr/queries'
 import type { EmployeeTagDto, EmployeeTagCategory } from '@/types/hr'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 const TAG_CATEGORIES: EmployeeTagCategory[] = ['Team', 'Skill', 'Project', 'Location', 'Seniority', 'Employment', 'Custom']
 
@@ -62,10 +64,15 @@ export const TagFormDialog = ({ open, onOpenChange, tag }: TagFormDialogProps) =
   const isEditing = !!tag
   const createMutation = useCreateTag()
   const updateMutation = useUpdateTag()
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const schema = useMemo(() => createTagSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<TagFormData>({
-    resolver: zodResolver(createTagSchema(t)) as unknown as Resolver<TagFormData>,
+    resolver: zodResolver(schema) as unknown as Resolver<TagFormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       category: 'Custom',
@@ -77,6 +84,7 @@ export const TagFormDialog = ({ open, onOpenChange, tag }: TagFormDialogProps) =
 
   useEffect(() => {
     if (open) {
+      setServerErrors([])
       if (tag) {
         form.reset({
           name: tag.name,
@@ -123,8 +131,7 @@ export const TagFormDialog = ({ open, onOpenChange, tag }: TagFormDialogProps) =
       }
       onOpenChange(false)
     } catch (err) {
-      const message = err instanceof Error ? err.message : t('errors.generic', 'An error occurred')
-      toast.error(message)
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -147,10 +154,15 @@ export const TagFormDialog = ({ open, onOpenChange, tag }: TagFormDialogProps) =
             </div>
           </div>
         </CredenzaHeader>
-        <Form {...form}>
+        <Form {...form} requiredFields={requiredFields}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CredenzaBody>
               <div className="space-y-4">
+                <FormErrorBanner
+                  errors={serverErrors}
+                  onDismiss={() => setServerErrors([])}
+                  title={t('validation.unableToSave', 'Unable to save')}
+                />
                 <FormField
                   control={form.control}
                   name="name"

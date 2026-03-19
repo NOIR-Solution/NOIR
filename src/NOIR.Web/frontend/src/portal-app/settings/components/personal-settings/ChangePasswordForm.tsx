@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Lock, Eye, EyeOff, Shield, Loader2 } from 'lucide-react'
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label } from '@uikit'
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, FormErrorBanner, Input, Label } from '@uikit'
 
 import { changePassword, ApiError } from '@/services/settings'
 import { useAuthContext } from '@/contexts/AuthContext'
@@ -40,7 +40,7 @@ export const ChangePasswordForm = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   // Use validated form with Zod schema
-  const { form, handleSubmit, isSubmitting, serverError } = useValidatedForm<ChangePasswordFormData>({
+  const { form, handleSubmit, isSubmitting, serverErrors, dismissServerErrors } = useValidatedForm<ChangePasswordFormData>({
     schema: createChangePasswordFormSchema(tCommon),
     defaultValues: {
       currentPassword: '',
@@ -186,12 +186,11 @@ export const ChangePasswordForm = () => {
             )}
           </div>
 
-          {/* Server Error */}
-          {serverError && (
-            <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
-              <p className="text-sm text-destructive font-medium">{serverError}</p>
-            </div>
-          )}
+          <FormErrorBanner
+            errors={serverErrors}
+            onDismiss={dismissServerErrors}
+            title={tCommon('validation.unableToSave', 'Unable to save')}
+          />
 
           {/* Submit */}
           <Button

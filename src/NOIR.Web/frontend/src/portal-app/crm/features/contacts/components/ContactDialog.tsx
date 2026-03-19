@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -14,6 +14,8 @@ import {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
+  Form,
+  FormErrorBanner,
   Input,
   Label,
   Select,
@@ -25,6 +27,7 @@ import {
 } from '@uikit'
 import type { ContactDto, ContactListDto, ContactSource } from '@/types/crm'
 import { useCreateContact, useUpdateContact } from '@/portal-app/crm/queries'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 const CONTACT_SOURCES: ContactSource[] = ['Web', 'Referral', 'Social', 'Cold', 'Event', 'Other']
 
@@ -54,9 +57,13 @@ export const ContactDialog = ({ open, onOpenChange, contact }: ContactDialogProp
   const createMutation = useCreateContact()
   const updateMutation = useUpdateContact()
   const isPending = createMutation.isPending || updateMutation.isPending
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const schema = useMemo(() => createSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<ContactFormData>({
-    resolver: zodResolver(createSchema(t)) as never,
+    resolver: zodResolver(schema) as never,
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -69,10 +76,12 @@ export const ContactDialog = ({ open, onOpenChange, contact }: ContactDialogProp
       notes: '',
     },
     mode: 'onBlur',
+    reValidateMode: 'onChange',
   })
 
   useEffect(() => {
     if (open && contact) {
+      setServerErrors([])
       form.reset({
         firstName: contact.firstName,
         lastName: contact.lastName,
@@ -85,6 +94,7 @@ export const ContactDialog = ({ open, onOpenChange, contact }: ContactDialogProp
         notes: ('notes' in contact ? contact.notes : undefined) ?? '',
       })
     } else if (open) {
+      setServerErrors([])
       form.reset({
         firstName: '',
         lastName: '',
@@ -119,7 +129,7 @@ export const ContactDialog = ({ open, onOpenChange, contact }: ContactDialogProp
       }
       onOpenChange(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : t('errors.unknown'))
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -132,9 +142,15 @@ export const ContactDialog = ({ open, onOpenChange, contact }: ContactDialogProp
             {isEdit ? t('crm.contacts.edit') : t('crm.contacts.create')}
           </CredenzaDescription>
         </CredenzaHeader>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CredenzaBody>
-            <div className="space-y-4">
+        <Form {...form} requiredFields={requiredFields}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <CredenzaBody>
+              <div className="space-y-4">
+                <FormErrorBanner
+                  errors={serverErrors}
+                  onDismiss={() => setServerErrors([])}
+                  title={t('validation.unableToSave', 'Unable to save')}
+                />
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">{t('crm.contacts.firstName')}</Label>
@@ -237,7 +253,8 @@ export const ContactDialog = ({ open, onOpenChange, contact }: ContactDialogProp
               {isEdit ? t('labels.save') : t('labels.create')}
             </Button>
           </CredenzaFooter>
-        </form>
+          </form>
+        </Form>
       </CredenzaContent>
     </Credenza>
   )

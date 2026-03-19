@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -20,12 +20,14 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormErrorBanner,
   FormMessage,
   Input,
   Switch,
 } from '@uikit'
 import { useCreateWishlist, useUpdateWishlist } from '@/portal-app/wishlists/queries'
 import type { WishlistDto } from '@/types/wishlist'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 const createWishlistSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
   z.object({
@@ -54,12 +56,17 @@ export const WishlistFormDialog = ({
   const isEditing = !!wishlist
   const createMutation = useCreateWishlist()
   const updateMutation = useUpdateWishlist()
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const schema = useMemo(() => createWishlistSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<WishlistFormData>({
     // TypeScript cannot infer resolver types from dynamic schema factories
     // Using 'as unknown as Resolver<T>' for type-safe assertion
-    resolver: zodResolver(createWishlistSchema(t)) as unknown as Resolver<WishlistFormData>,
+    resolver: zodResolver(schema) as unknown as Resolver<WishlistFormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       isPublic: false,
@@ -69,6 +76,7 @@ export const WishlistFormDialog = ({
   // Reset form when dialog opens/closes or wishlist changes
   useEffect(() => {
     if (open) {
+      setServerErrors([])
       if (wishlist) {
         form.reset({
           name: wishlist.name,
@@ -101,10 +109,7 @@ export const WishlistFormDialog = ({
       onSuccess?.()
       onOpenChange(false)
     } catch (err) {
-      const message = err instanceof Error ? err.message : isEditing
-        ? t('wishlists.updateFailed', 'Failed to update wishlist')
-        : t('wishlists.createFailed', 'Failed to create wishlist')
-      toast.error(message)
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -133,9 +138,15 @@ export const WishlistFormDialog = ({
           </div>
         </CredenzaHeader>
 
-        <Form {...form}>
+        <Form {...form} requiredFields={requiredFields}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <CredenzaBody className="space-y-4">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
+
               <FormField
                 control={form.control}
                 name="name"

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Loader2, Tag, Pencil } from 'lucide-react'
 import { useForm, type Resolver } from 'react-hook-form'
@@ -19,14 +19,15 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormErrorBanner,
   FormMessage,
   Input,
   Textarea,
 } from '@uikit'
 
 import { toast } from 'sonner'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 import { createTag, updateTag } from '@/services/blog'
-import { ApiError } from '@/services/apiClient'
 import type { PostTagListItem, CreateTagRequest } from '@/types'
 
 const createFormSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
@@ -49,13 +50,18 @@ interface BlogTagDialogProps {
 export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDialogProps) => {
   const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
+  const [serverErrors, setServerErrors] = useState<string[]>([])
   const isEdit = !!tag
+
+  const schema = useMemo(() => createFormSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<FormValues>({
     // TypeScript cannot infer resolver types from dynamic schema factories
     // Using 'as unknown as Resolver<T>' for type-safe assertion
-    resolver: zodResolver(createFormSchema(t)) as unknown as Resolver<FormValues>,
+    resolver: zodResolver(schema) as unknown as Resolver<FormValues>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       slug: '',
@@ -66,6 +72,7 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
 
   useEffect(() => {
     if (open) {
+      setServerErrors([])
       // Reset form with tag data if editing
       if (tag) {
         form.reset({
@@ -120,10 +127,7 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
       onOpenChange(false)
       onSuccess()
     } catch (err) {
-      const message = err instanceof ApiError
-        ? err.message
-        : isEdit ? t('blog.failedToUpdateTag') : t('blog.failedToCreateTag')
-      toast.error(message)
+      handleFormError(err, form, setServerErrors, t)
     } finally {
       setLoading(false)
     }
@@ -154,9 +158,15 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
           </div>
         </CredenzaHeader>
 
-        <Form {...form}>
+        <Form {...form} requiredFields={requiredFields}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <CredenzaBody className="space-y-4">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
+
               <FormField
                 control={form.control}
                 name="name"

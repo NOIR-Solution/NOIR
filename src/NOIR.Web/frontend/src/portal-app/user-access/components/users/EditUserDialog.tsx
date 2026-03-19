@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -20,6 +20,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormErrorBanner,
   FormMessage,
   Input,
   Label,
@@ -29,6 +30,7 @@ import { toast } from 'sonner'
 import { updateUser } from '@/services/users'
 import { useUserDetailQuery } from '@/portal-app/user-access/queries'
 import type { UserListItem } from '@/types'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 const createFormSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
   z.object({
@@ -50,13 +52,18 @@ interface EditUserDialogProps {
 export const EditUserDialog = ({ user, open, onOpenChange, onSuccess }: EditUserDialogProps) => {
   const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
+  const [serverErrors, setServerErrors] = useState<string[]>([])
   const { data: profile, isLoading: loadingProfile } = useUserDetailQuery(user?.id, open && !!user)
+
+  const schema = useMemo(() => createFormSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<FormData>({
     // TypeScript cannot infer resolver types from dynamic schema factories
     // Using 'as unknown as Resolver<T>' for type-safe assertion
-    resolver: zodResolver(createFormSchema(t)) as unknown as Resolver<FormData>,
+    resolver: zodResolver(schema) as unknown as Resolver<FormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -68,6 +75,7 @@ export const EditUserDialog = ({ user, open, onOpenChange, onSuccess }: EditUser
   // Sync form state from query data
   useEffect(() => {
     if (profile) {
+      setServerErrors([])
       form.reset({
         firstName: profile.firstName || '',
         lastName: profile.lastName || '',
@@ -92,8 +100,8 @@ export const EditUserDialog = ({ user, open, onOpenChange, onSuccess }: EditUser
       toast.success(t('messages.updateSuccess', 'Updated successfully'))
       onSuccess()
       onOpenChange(false)
-    } catch {
-      toast.error(t('messages.operationFailed', 'Operation failed. Please try again.'))
+    } catch (err) {
+      handleFormError(err, form, setServerErrors, t)
     } finally {
       setLoading(false)
     }
@@ -123,10 +131,15 @@ export const EditUserDialog = ({ user, open, onOpenChange, onSuccess }: EditUser
             </div>
           </CredenzaBody>
         ) : (
-          <Form {...form}>
+          <Form {...form} requiredFields={requiredFields}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <CredenzaBody>
                 <div className="grid gap-4 py-4">
+                  <FormErrorBanner
+                    errors={serverErrors}
+                    onDismiss={() => setServerErrors([])}
+                    title={t('validation.unableToSave', 'Unable to save')}
+                  />
                   <div className="grid gap-2">
                     <Label htmlFor="email">{t('labels.email', 'Email')}</Label>
                     <Input

@@ -11,7 +11,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { User, Mail, Phone, Loader2 } from 'lucide-react'
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label } from '@uikit'
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, FormErrorBanner, Input, Label } from '@uikit'
 
 import { ProfileAvatar } from './ProfileAvatar'
 import { EmailChangeDialog } from './EmailChangeDialog'
@@ -48,7 +48,7 @@ export const ProfileForm = () => {
   const [emailDialogOpen, setEmailDialogOpen] = useState(false)
 
   // Use validated form with Zod schema
-  const { form, handleSubmit, isSubmitting, serverError } = useValidatedForm<ProfileFormData>({
+  const { form, handleSubmit, isSubmitting, serverErrors, dismissServerErrors } = useValidatedForm<ProfileFormData>({
     schema: updateUserProfileSchema,
     defaultValues: {
       firstName: '',
@@ -68,11 +68,6 @@ export const ProfileForm = () => {
       await refreshUser()
       notifyProfileChanged()
       toast.success(t('profile.saved'))
-    },
-    onError: (error) => {
-      if (!(error instanceof ApiError)) {
-        toast.error(t('profile.saveFailed'))
-      }
     },
   })
 
@@ -270,12 +265,11 @@ export const ProfileForm = () => {
             </div>
           </div>
 
-          {/* Error */}
-          {serverError && (
-            <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
-              <p className="text-sm text-destructive font-medium">{serverError}</p>
-            </div>
-          )}
+          <FormErrorBanner
+            errors={serverErrors}
+            onDismiss={dismissServerErrors}
+            title={tCommon('validation.unableToSave', 'Unable to save')}
+          />
 
           {/* Submit */}
           <Button

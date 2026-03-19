@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -20,10 +20,12 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormErrorBanner,
   FormMessage,
   Input,
   Textarea,
 } from '@uikit'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 import {
   useAddLoyaltyPointsMutation,
   useRedeemLoyaltyPointsMutation,
@@ -59,12 +61,17 @@ export const LoyaltyPointsDialog = ({ open, onOpenChange, customerId, customerNa
   const { t } = useTranslation('common')
   const addMutation = useAddLoyaltyPointsMutation()
   const redeemMutation = useRedeemLoyaltyPointsMutation()
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const schema = useMemo(() => createLoyaltySchema(t, mode, currentPoints), [t, mode, currentPoints])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<LoyaltyFormData>({
     // TypeScript cannot infer resolver types from dynamic schema factories
     // Using 'as unknown as Resolver<T>' for type-safe assertion
-    resolver: zodResolver(createLoyaltySchema(t, mode, currentPoints)) as unknown as Resolver<LoyaltyFormData>,
+    resolver: zodResolver(schema) as unknown as Resolver<LoyaltyFormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       points: 0,
       reason: '',
@@ -73,6 +80,7 @@ export const LoyaltyPointsDialog = ({ open, onOpenChange, customerId, customerNa
 
   useEffect(() => {
     if (open) {
+      setServerErrors([])
       form.reset({ points: 0, reason: '' })
     }
   }, [open, form])
@@ -94,11 +102,7 @@ export const LoyaltyPointsDialog = ({ open, onOpenChange, customerId, customerNa
       onSuccess?.()
       onOpenChange(false)
     } catch (err) {
-      const message = err instanceof Error ? err.message
-        : mode === 'add'
-          ? t('customers.pointsAddError', 'Failed to add points')
-          : t('customers.pointsRedeemError', 'Failed to redeem points')
-      toast.error(message)
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -133,9 +137,15 @@ export const LoyaltyPointsDialog = ({ open, onOpenChange, customerId, customerNa
           </div>
         </CredenzaHeader>
 
-        <Form {...form}>
+        <Form {...form} requiredFields={requiredFields}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <CredenzaBody className="space-y-4">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
+
               <FormField
                 control={form.control}
                 name="points"

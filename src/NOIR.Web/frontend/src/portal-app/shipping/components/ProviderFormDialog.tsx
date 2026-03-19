@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,6 +19,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormErrorBanner,
   FormMessage,
   Input,
   Select,
@@ -38,6 +39,7 @@ import {
   useConfigureProviderMutation,
   useUpdateProviderMutation,
 } from '@/portal-app/shipping/queries'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 const PROVIDER_CODES: ShippingProviderCode[] = [
   'GHTK',
@@ -87,14 +89,17 @@ export const ProviderFormDialog = ({ open, onOpenChange, provider }: ProviderFor
   const isEditing = !!provider
   const configureMutation = useConfigureProviderMutation()
   const updateMutation = useUpdateProviderMutation()
+  const [serverErrors, setServerErrors] = useState<string[]>([])
 
-  const schema = createFormSchema(t)
+  const schema = useMemo(() => createFormSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<FormData>({
     // TypeScript cannot infer resolver types from dynamic schema factories
     // Using 'as unknown as Resolver<T>' for type-safe assertion
     resolver: zodResolver(schema) as unknown as Resolver<FormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       providerCode: '',
       displayName: '',
@@ -109,6 +114,9 @@ export const ProviderFormDialog = ({ open, onOpenChange, provider }: ProviderFor
   })
 
   useEffect(() => {
+    if (open) {
+      setServerErrors([])
+    }
     if (open && provider) {
       form.reset({
         providerCode: provider.providerCode,
@@ -170,8 +178,8 @@ export const ProviderFormDialog = ({ open, onOpenChange, provider }: ProviderFor
         toast.success(t('shipping.providerCreated', { name: data.displayName }))
       }
       onOpenChange(false)
-    } catch {
-      toast.error(t('shipping.providerSaveFailed', 'Failed to save provider'))
+    } catch (err) {
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -200,9 +208,15 @@ export const ProviderFormDialog = ({ open, onOpenChange, provider }: ProviderFor
           </div>
         </CredenzaHeader>
 
-        <Form {...form}>
+        <Form {...form} requiredFields={requiredFields}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <CredenzaBody className="space-y-4">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
+
               {!isEditing && (
                 <FormField
                   control={form.control}

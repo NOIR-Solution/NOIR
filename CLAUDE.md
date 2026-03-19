@@ -248,7 +248,7 @@ src/NOIR.Web/             # Endpoints, Middleware, Program.cs
 
 ### Validation
 
-**Stack**: react-hook-form + Zod + `mode: 'onBlur'`. FluentValidation rules must match Zod schemas.
+**Stack**: react-hook-form + Zod + `mode: 'onBlur'` + `reValidateMode: 'onChange'`. FluentValidation rules must match Zod schemas. See `.claude/rules/form-validation-standard.md` for the full "reward early, punish late" focus-tracking pattern.
 
 **Zod `.issues`** (not `.errors`): `result.error.issues.forEach(...)` — `.errors` does not exist and throws.
 

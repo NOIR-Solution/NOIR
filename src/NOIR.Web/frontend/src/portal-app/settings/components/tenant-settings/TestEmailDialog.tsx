@@ -11,13 +11,13 @@ import {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
+  FormErrorBanner,
   Input,
   Label,
 } from '@uikit'
 
 import { useAuthContext } from '@/contexts/AuthContext'
 import { sendTestEmail, getDefaultSampleData } from '@/services/emailTemplates'
-import { ApiError } from '@/services/apiClient'
 import { useValidatedForm } from '@/hooks/useValidatedForm'
 import { sendTestEmailSchema } from '@/validation/schemas.generated'
 import { createValidationTranslator } from '@/lib/validation-i18n'
@@ -57,7 +57,7 @@ export const TestEmailDialog = ({
   const [sampleData, setSampleData] = useState<Record<string, string>>({})
 
   // Use validated form with Zod schema
-  const { form, handleSubmit, isSubmitting, serverError } = useValidatedForm<TestEmailFormData>({
+  const { form, handleSubmit, isSubmitting, serverErrors, dismissServerErrors } = useValidatedForm<TestEmailFormData>({
     schema: createTestEmailFormSchema(t),
     defaultValues: {
       recipientEmail: '',
@@ -70,16 +70,12 @@ export const TestEmailDialog = ({
       toast.success(t('emailTemplates.testEmailSent'))
       onOpenChange(false)
     },
-    onError: (error) => {
-      if (!(error instanceof ApiError)) {
-        toast.error(t('messages.operationFailed'))
-      }
-    },
   })
 
   // Initialize with user's email and default sample data when dialog opens
   useEffect(() => {
     if (open) {
+      dismissServerErrors()
       form.reset({ recipientEmail: user?.email || '' })
       setSampleData(getDefaultSampleData(availableVariables))
     }
@@ -149,12 +145,11 @@ export const TestEmailDialog = ({
                 </div>
               )}
 
-              {/* Server Error */}
-              {serverError && (
-                <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                  <p className="text-sm font-medium text-destructive">{serverError}</p>
-                </div>
-              )}
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={dismissServerErrors}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
             </div>
           </CredenzaBody>
 

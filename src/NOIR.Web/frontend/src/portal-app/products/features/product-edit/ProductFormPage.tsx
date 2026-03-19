@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import { useTranslation } from 'react-i18next'
@@ -81,6 +81,7 @@ import {
   SelectTrigger,
   SelectValue,
   EmptyState,
+  FormErrorBanner,
   Switch,
   Textarea,
 } from '@uikit'
@@ -115,6 +116,7 @@ import type { InventoryMovement, InventoryMovementType } from '@/types/inventory
 import { uploadMedia } from '@/services/media'
 import { toast } from 'sonner'
 import { getStatusBadgeClasses } from '@/utils/statusBadge'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 import type { ProductVariant, ProductImage, CreateProductVariantRequest, CreateProductImageRequest, UpdateProductRequest } from '@/types/product'
 
@@ -333,6 +335,7 @@ export const ProductFormPage = () => {
   })
 
   const [isSaving, setIsSaving] = useState(false)
+  const [serverErrors, setServerErrors] = useState<string[]>([])
   const [isPublishing, setIsPublishing] = useState(false)
   const [variants, setVariants] = useState<ProductVariant[]>([])
   const [images, setImages] = useState<ProductImage[]>([])
@@ -407,11 +410,15 @@ export const ProductFormPage = () => {
     setPendingAttributeValues(values)
   }
 
+  const productSchema = useMemo(() => createProductSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(productSchema), [productSchema])
+
   const form = useForm<ProductFormData>({
     // TypeScript cannot infer resolver types from dynamic schema factories
     // Using 'as unknown as Resolver<T>' for type-safe assertion
-    resolver: zodResolver(createProductSchema(t)) as unknown as Resolver<ProductFormData>,
+    resolver: zodResolver(productSchema) as unknown as Resolver<ProductFormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       slug: '',
@@ -542,8 +549,7 @@ export const ProductFormPage = () => {
         navigate(`/portal/ecommerce/products/${productId}/edit`)
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : t('products.messages.failedToSaveProduct')
-      toast.error(message)
+      handleFormError(err, form, setServerErrors, t)
     } finally {
       setIsSaving(false)
     }
@@ -906,8 +912,13 @@ export const ProductFormPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Form */}
         <div className="lg:col-span-2 space-y-6">
-          <Form {...form}>
+          <Form {...form} requiredFields={requiredFields}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
               {/* Basic Information */}
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
                 <CardHeader>

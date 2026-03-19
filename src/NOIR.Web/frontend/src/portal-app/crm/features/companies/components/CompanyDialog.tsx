@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -14,12 +14,15 @@ import {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
+  Form,
+  FormErrorBanner,
   Input,
   Label,
   Textarea,
 } from '@uikit'
 import type { CompanyDto, CompanyListDto } from '@/types/crm'
 import { useCreateCompany, useUpdateCompany } from '@/portal-app/crm/queries'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 const createSchema = (t: (key: string) => string) => z.object({
   name: z.string().min(1, t('validation.required')).max(200),
@@ -47,9 +50,13 @@ export const CompanyDialog = ({ open, onOpenChange, company }: CompanyDialogProp
   const createMutation = useCreateCompany()
   const updateMutation = useUpdateCompany()
   const isPending = createMutation.isPending || updateMutation.isPending
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const schema = useMemo(() => createSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<CompanyFormData>({
-    resolver: zodResolver(createSchema(t)) as never,
+    resolver: zodResolver(schema) as never,
     defaultValues: {
       name: '',
       domain: '',
@@ -62,10 +69,12 @@ export const CompanyDialog = ({ open, onOpenChange, company }: CompanyDialogProp
       notes: '',
     },
     mode: 'onBlur',
+    reValidateMode: 'onChange',
   })
 
   useEffect(() => {
     if (open && company) {
+      setServerErrors([])
       form.reset({
         name: company.name,
         domain: ('domain' in company ? company.domain : undefined) ?? '',
@@ -78,6 +87,7 @@ export const CompanyDialog = ({ open, onOpenChange, company }: CompanyDialogProp
         notes: ('notes' in company && company.notes) || '',
       })
     } else if (open) {
+      setServerErrors([])
       form.reset({
         name: '',
         domain: '',
@@ -115,7 +125,7 @@ export const CompanyDialog = ({ open, onOpenChange, company }: CompanyDialogProp
       }
       onOpenChange(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : t('errors.unknown'))
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -128,9 +138,15 @@ export const CompanyDialog = ({ open, onOpenChange, company }: CompanyDialogProp
             {isEdit ? t('crm.companies.edit') : t('crm.companies.create')}
           </CredenzaDescription>
         </CredenzaHeader>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CredenzaBody>
-            <div className="space-y-4">
+        <Form {...form} requiredFields={requiredFields}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <CredenzaBody>
+              <div className="space-y-4">
+                <FormErrorBanner
+                  errors={serverErrors}
+                  onDismiss={() => setServerErrors([])}
+                  title={t('validation.unableToSave', 'Unable to save')}
+                />
               <div className="space-y-2">
                 <Label htmlFor="name">{t('crm.companies.name')}</Label>
                 <Input
@@ -196,7 +212,8 @@ export const CompanyDialog = ({ open, onOpenChange, company }: CompanyDialogProp
               {isEdit ? t('labels.save') : t('labels.create')}
             </Button>
           </CredenzaFooter>
-        </form>
+          </form>
+        </Form>
       </CredenzaContent>
     </Credenza>
   )

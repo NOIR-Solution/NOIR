@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -20,6 +20,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormErrorBanner,
   FormMessage,
   Input,
   Select,
@@ -31,6 +32,7 @@ import {
 } from '@uikit'
 import { useRecordManualPaymentMutation } from '@/portal-app/payments/queries'
 import type { PaymentMethod } from '@/services/payments'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 const PAYMENT_METHODS: PaymentMethod[] = [
   'BankTransfer', 'COD', 'CreditCard', 'DebitCard',
@@ -58,12 +60,17 @@ interface RecordManualPaymentDialogProps {
 export const RecordManualPaymentDialog = ({ open, onOpenChange, onSuccess }: RecordManualPaymentDialogProps) => {
   const { t } = useTranslation('common')
   const recordMutation = useRecordManualPaymentMutation()
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const schema = useMemo(() => createRecordPaymentSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<RecordPaymentFormData>({
     // TypeScript cannot infer resolver types from dynamic schema factories
     // Using 'as unknown as Resolver<T>' for type-safe assertion
-    resolver: zodResolver(createRecordPaymentSchema(t)) as unknown as Resolver<RecordPaymentFormData>,
+    resolver: zodResolver(schema) as unknown as Resolver<RecordPaymentFormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       orderId: '',
       amount: undefined as unknown as number,
@@ -76,6 +83,7 @@ export const RecordManualPaymentDialog = ({ open, onOpenChange, onSuccess }: Rec
 
   useEffect(() => {
     if (open) {
+      setServerErrors([])
       form.reset({
         orderId: '',
         amount: undefined as unknown as number,
@@ -101,8 +109,7 @@ export const RecordManualPaymentDialog = ({ open, onOpenChange, onSuccess }: Rec
       onSuccess?.()
       onOpenChange(false)
     } catch (err) {
-      const message = err instanceof Error ? err.message : t('payments.recordPayment.error')
-      toast.error(message)
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -121,9 +128,15 @@ export const RecordManualPaymentDialog = ({ open, onOpenChange, onSuccess }: Rec
           </div>
         </CredenzaHeader>
 
-        <Form {...form}>
+        <Form {...form} requiredFields={requiredFields}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <CredenzaBody className="space-y-4">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
+
               <FormField
                 control={form.control}
                 name="orderId"

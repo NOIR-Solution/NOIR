@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { FileText, ArrowLeft, Save, Upload, X, Image as ImageIcon, Loader2, Calendar, Info } from 'lucide-react'
@@ -66,6 +66,7 @@ import {
   Switch,
   Textarea,
   TimePicker,
+  FormErrorBanner,
 } from '@uikit'
 
 import { toast } from 'sonner'
@@ -75,7 +76,7 @@ import { createPost, updatePost, publishPost, unpublishPost } from '@/services/b
 
 import { uploadMedia } from '@/services/media'
 import { useBlogCategoriesQuery, useBlogTagsQuery, useBlogPostDetailQuery } from '@/portal-app/blogs/queries'
-import { ApiError } from '@/services/apiClient'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 import type { Post, CreatePostRequest } from '@/types'
 
 const createFormSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
@@ -106,6 +107,7 @@ export const BlogPostEditPage = () => {
   const editorRef = useRef<TinyMCEEditor | null>(null)
 
   const [saving, setSaving] = useState(false)
+  const [serverErrors, setServerErrors] = useState<string[]>([])
   const [uploadingImage, setUploadingImage] = useState(false)
   const [post, setPost] = useState<Post | null>(null)
   const [contentHtml, setContentHtml] = useState('')
@@ -123,11 +125,15 @@ export const BlogPostEditPage = () => {
   const { data: categories = [] } = useBlogCategoriesQuery({})
   const { data: tags = [] } = useBlogTagsQuery({})
 
+  const schema = useMemo(() => createFormSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
+
   const form = useForm<FormValues>({
     // TypeScript cannot infer resolver types from dynamic schema factories
     // Using 'as unknown as Resolver<T>' for type-safe assertion
-    resolver: zodResolver(createFormSchema(t)) as unknown as Resolver<FormValues>,
+    resolver: zodResolver(schema) as unknown as Resolver<FormValues>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       title: '',
       slug: '',
@@ -277,8 +283,7 @@ export const BlogPostEditPage = () => {
 
       navigate('/portal/blog/posts')
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : t('blog.failedToSave')
-      toast.error(message)
+      handleFormError(err, form, setServerErrors, t)
     } finally {
       setSaving(false)
     }
@@ -385,11 +390,16 @@ export const BlogPostEditPage = () => {
         </div>
       </div>
 
-      <Form {...form}>
+      <Form {...form} requiredFields={requiredFields}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Main Content Area */}
             <div className="lg:col-span-2 space-y-6">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
               <Card className="shadow-sm hover:shadow-lg transition-all duration-300">
                 <CardHeader>
                   <CardTitle>{t('blog.content', 'Content')}</CardTitle>

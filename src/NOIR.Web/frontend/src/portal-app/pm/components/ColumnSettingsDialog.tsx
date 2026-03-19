@@ -1,9 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 import {
   Button,
@@ -15,10 +14,12 @@ import {
   CredenzaTitle,
   CredenzaBody,
   CompactColorPicker,
+  FormErrorBanner,
   Input,
 } from '@uikit'
 import { useUpdateColumn } from '@/portal-app/pm/queries'
 import type { ProjectColumnDto } from '@/types/pm'
+import { handleFormError } from '@/lib/form'
 
 const createSchema = (t: (key: string) => string) =>
   z.object({
@@ -51,6 +52,20 @@ export const ColumnSettingsDialog = ({
 }: ColumnSettingsDialogProps) => {
   const { t } = useTranslation('common')
   const updateColumnMutation = useUpdateColumn()
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const schema = useMemo(() => createSchema(t), [t])
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(schema) as never,
+    defaultValues: {
+      name: '',
+      color: '#6366f1',
+      wipLimit: '',
+    },
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
+  })
 
   const {
     register,
@@ -59,17 +74,11 @@ export const ColumnSettingsDialog = ({
     watch,
     setValue,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(createSchema(t)) as never,
-    defaultValues: {
-      name: '',
-      color: '#6366f1',
-      wipLimit: '',
-    },
-  })
+  } = form
 
   useEffect(() => {
     if (column && open) {
+      setServerErrors([])
       reset({
         name: column.name,
         color: column.color ?? '#6366f1',
@@ -95,7 +104,7 @@ export const ColumnSettingsDialog = ({
           onOpenChange(false)
         },
         onError: (err) => {
-          toast.error(err instanceof Error ? err.message : t('errors.unknown'))
+          handleFormError(err, form, setServerErrors, t)
         },
       },
     )
@@ -110,6 +119,11 @@ export const ColumnSettingsDialog = ({
         </CredenzaHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CredenzaBody className="space-y-4">
+            <FormErrorBanner
+              errors={serverErrors}
+              onDismiss={() => setServerErrors([])}
+              title={t('validation.unableToSave', 'Unable to save')}
+            />
             <div>
               <label className="text-sm font-medium">{t('pm.columnName')}</label>
               <Input

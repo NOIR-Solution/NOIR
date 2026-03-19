@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,6 +19,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormErrorBanner,
   FormMessage,
   Input,
   Switch,
@@ -33,6 +34,7 @@ import { useCreateProductAttributeMutation, useUpdateProductAttributeMutation } 
 import type { ProductAttributeListItem, AttributeType } from '@/types/productAttribute'
 import { toast } from 'sonner'
 import { Layers, Loader2 } from 'lucide-react'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 const ATTRIBUTE_TYPES: AttributeType[] = [
   'Select',
@@ -94,12 +96,17 @@ export const ProductAttributeDialog = ({
   const isEditing = !!attribute
   const createMutation = useCreateProductAttributeMutation()
   const updateMutation = useUpdateProductAttributeMutation()
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const schema = useMemo(() => createAttributeSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<AttributeFormData>({
     // TypeScript cannot infer resolver types from dynamic schema factories
     // Using 'as unknown as Resolver<T>' for type-safe assertion
-    resolver: zodResolver(createAttributeSchema(t)) as unknown as Resolver<AttributeFormData>,
+    resolver: zodResolver(schema) as unknown as Resolver<AttributeFormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       code: '',
       name: '',
@@ -130,6 +137,7 @@ export const ProductAttributeDialog = ({
   // For a full edit experience, consider fetching the complete ProductAttribute.
   useEffect(() => {
     if (open) {
+      setServerErrors([])
       if (attribute) {
         form.reset({
           code: attribute.code,
@@ -217,10 +225,7 @@ export const ProductAttributeDialog = ({
       onSuccess?.()
       onOpenChange(false)
     } catch (err) {
-      const message = err instanceof Error ? err.message : isEditing
-        ? t('productAttributes.updateError', 'Failed to update product attribute')
-        : t('productAttributes.createError', 'Failed to create product attribute')
-      toast.error(message)
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -269,9 +274,15 @@ export const ProductAttributeDialog = ({
           </div>
         </CredenzaHeader>
 
-        <Form {...form}>
+        <Form {...form} requiredFields={requiredFields}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <CredenzaBody className="space-y-4">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
+
               <Tabs defaultValue="basic" className="w-full">
                 <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="basic" className="cursor-pointer">{t('productAttributes.tabs.basic', 'Basic')}</TabsTrigger>

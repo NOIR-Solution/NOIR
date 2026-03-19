@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,10 +19,12 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormErrorBanner,
   FormMessage,
   Input,
   Textarea,
 } from '@uikit'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 import {
   useCreateCustomerMutation,
   useUpdateCustomerMutation,
@@ -53,15 +55,20 @@ export const CustomerFormDialog = ({ open, onOpenChange, customer, onSuccess }: 
   const isEditing = !!customer
   const createMutation = useCreateCustomerMutation()
   const updateMutation = useUpdateCustomerMutation()
+  const [serverErrors, setServerErrors] = useState<string[]>([])
 
   // Check if we have the full DTO (with tags/notes) or summary
   const fullCustomer = customer && 'tags' in customer ? customer as CustomerDto : null
 
+  const schema = useMemo(() => createCustomerSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
+
   const form = useForm<CustomerFormData>({
     // TypeScript cannot infer resolver types from dynamic schema factories
     // Using 'as unknown as Resolver<T>' for type-safe assertion
-    resolver: zodResolver(createCustomerSchema(t)) as unknown as Resolver<CustomerFormData>,
+    resolver: zodResolver(schema) as unknown as Resolver<CustomerFormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -74,6 +81,7 @@ export const CustomerFormDialog = ({ open, onOpenChange, customer, onSuccess }: 
 
   useEffect(() => {
     if (open) {
+      setServerErrors([])
       if (customer) {
         form.reset({
           firstName: customer.firstName,
@@ -118,10 +126,7 @@ export const CustomerFormDialog = ({ open, onOpenChange, customer, onSuccess }: 
       onSuccess?.()
       onOpenChange(false)
     } catch (err) {
-      const message = err instanceof Error ? err.message : isEditing
-        ? t('customers.updateError', 'Failed to update customer')
-        : t('customers.createError', 'Failed to create customer')
-      toast.error(message)
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -148,9 +153,15 @@ export const CustomerFormDialog = ({ open, onOpenChange, customer, onSuccess }: 
           </div>
         </CredenzaHeader>
 
-        <Form {...form}>
+        <Form {...form} requiredFields={requiredFields}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <CredenzaBody className="space-y-4">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
+
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}

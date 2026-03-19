@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FolderTree, Loader2 } from 'lucide-react'
 import { useForm, type Resolver } from 'react-hook-form'
@@ -18,6 +18,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormErrorBanner,
   FormMessage,
   Input,
   Select,
@@ -29,6 +30,7 @@ import {
 } from '@uikit'
 
 import { toast } from 'sonner'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 import { useCreateBlogCategory, useUpdateBlogCategory, useBlogCategoriesQuery } from '@/portal-app/blogs/queries'
 import type { PostCategoryListItem } from '@/types'
 
@@ -62,14 +64,20 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, parentId, onS
   const updateMutation = useUpdateBlogCategory()
   const isPending = createMutation.isPending || updateMutation.isPending
 
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
   const { data: allCategories = [] } = useBlogCategoriesQuery()
   const existingCategories = category
     ? allCategories.filter(c => c.id !== category.id && c.parentId !== category.id)
     : allCategories
 
+  const schema = useMemo(() => createFormSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
+
   const form = useForm<FormValues>({
-    resolver: zodResolver(createFormSchema(t)) as unknown as Resolver<FormValues>,
+    resolver: zodResolver(schema) as unknown as Resolver<FormValues>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       slug: '',
@@ -81,6 +89,7 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, parentId, onS
 
   useEffect(() => {
     if (!open) return
+    setServerErrors([])
     if (category) {
       form.reset({
         name: category.name,
@@ -127,8 +136,8 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, parentId, onS
       form.reset()
       onOpenChange(false)
       onSuccess()
-    } catch {
-      toast.error(isEdit ? t('blog.failedToUpdateCategory') : t('blog.failedToCreateCategory'))
+    } catch (err) {
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -151,10 +160,16 @@ export const BlogCategoryDialog = ({ open, onOpenChange, category, parentId, onS
           </div>
         </CredenzaHeader>
 
-        <Form {...form}>
+        <Form {...form} requiredFields={requiredFields}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CredenzaBody>
               <div className="space-y-4">
+                <FormErrorBanner
+                  errors={serverErrors}
+                  onDismiss={() => setServerErrors([])}
+                  title={t('validation.unableToSave', 'Unable to save')}
+                />
+
                 <FormField
                   control={form.control}
                   name="name"

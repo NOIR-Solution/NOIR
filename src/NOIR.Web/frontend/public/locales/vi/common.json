@@ -2846,6 +2846,7 @@
     "sortOrderMustBeNonNegative": "Thứ tự sắp xếp không được âm",
     "compareAtPriceMustBeHigher": "Giá so sánh phải cao hơn giá bán thường",
     "validationFailed": "Xác thực thất bại",
+    "unableToSave": "Không thể lưu",
     "invalidFileType": "Loại tệp không hợp lệ. Cho phép: {{types}}",
     "fileTooLarge": "Tệp quá lớn. Kích thước tối đa: {{maxSize}}MB"
   },

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -14,6 +14,8 @@ import {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
+  Form,
+  FormErrorBanner,
   Input,
   Label,
   Select,
@@ -25,6 +27,7 @@ import {
 } from '@uikit'
 import type { ActivityDto, ActivityType } from '@/types/crm'
 import { useCreateActivity, useUpdateActivity } from '@/portal-app/crm/queries'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 const ACTIVITY_TYPES: ActivityType[] = ['Call', 'Email', 'Meeting', 'Note']
 
@@ -52,9 +55,13 @@ export const ActivityDialog = ({ open, onOpenChange, activity, contactId, leadId
   const createMutation = useCreateActivity()
   const updateMutation = useUpdateActivity()
   const isPending = createMutation.isPending || updateMutation.isPending
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const schema = useMemo(() => createSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<ActivityFormData>({
-    resolver: zodResolver(createSchema(t)) as never,
+    resolver: zodResolver(schema) as never,
     defaultValues: {
       type: 'Call' as ActivityType,
       subject: '',
@@ -63,6 +70,7 @@ export const ActivityDialog = ({ open, onOpenChange, activity, contactId, leadId
       durationMinutes: '' as unknown as number,
     },
     mode: 'onBlur',
+    reValidateMode: 'onChange',
   })
 
   const selectedType = form.watch('type')
@@ -70,6 +78,7 @@ export const ActivityDialog = ({ open, onOpenChange, activity, contactId, leadId
 
   useEffect(() => {
     if (open && activity) {
+      setServerErrors([])
       form.reset({
         type: activity.type,
         subject: activity.subject,
@@ -78,6 +87,7 @@ export const ActivityDialog = ({ open, onOpenChange, activity, contactId, leadId
         durationMinutes: activity.durationMinutes ?? ('' as unknown as number),
       })
     } else if (open) {
+      setServerErrors([])
       form.reset({
         type: 'Call',
         subject: '',
@@ -116,7 +126,7 @@ export const ActivityDialog = ({ open, onOpenChange, activity, contactId, leadId
       }
       onOpenChange(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : t('errors.unknown'))
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -129,9 +139,15 @@ export const ActivityDialog = ({ open, onOpenChange, activity, contactId, leadId
             {isEdit ? t('crm.activities.edit') : t('crm.activities.log')}
           </CredenzaDescription>
         </CredenzaHeader>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CredenzaBody>
-            <div className="space-y-4">
+        <Form {...form} requiredFields={requiredFields}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <CredenzaBody>
+              <div className="space-y-4">
+                <FormErrorBanner
+                  errors={serverErrors}
+                  onDismiss={() => setServerErrors([])}
+                  title={t('validation.unableToSave', 'Unable to save')}
+                />
               <div className="space-y-2">
                 <Label htmlFor="type">{t('crm.activities.type')}</Label>
                 <Select
@@ -209,7 +225,8 @@ export const ActivityDialog = ({ open, onOpenChange, activity, contactId, leadId
               {isEdit ? t('labels.save') : t('labels.create')}
             </Button>
           </CredenzaFooter>
-        </form>
+          </form>
+        </Form>
       </CredenzaContent>
     </Credenza>
   )

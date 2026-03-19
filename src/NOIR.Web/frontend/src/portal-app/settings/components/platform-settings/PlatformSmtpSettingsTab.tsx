@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -33,6 +33,7 @@ import {
   Form,
   FormControl,
   FormDescription,
+  FormErrorBanner,
   FormField,
   FormItem,
   FormLabel,
@@ -49,6 +50,7 @@ import {
   useUpdatePlatformSmtpSettings,
   useTestPlatformSmtpConnection,
 } from '@/portal-app/settings/queries'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 // ============================================================================
 // SMTP Form Schema Factories
@@ -87,11 +89,15 @@ export const PlatformSmtpSettingsTab = ({ canEdit }: PlatformSmtpSettingsTabProp
   const [testDialogOpen, setTestDialogOpen] = useState(false)
   const [isConfigured, setIsConfigured] = useState(false)
   const [hasPassword, setHasPassword] = useState(false)
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const smtpSchema = useMemo(() => createSmtpSettingsSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(smtpSchema), [smtpSchema])
 
   const form = useForm<SmtpSettingsFormData>({
     // TypeScript cannot infer resolver types from dynamic schema factories
     // Using 'as unknown as Resolver<T>' for type-safe assertion
-    resolver: zodResolver(createSmtpSettingsSchema(t)) as unknown as Resolver<SmtpSettingsFormData>,
+    resolver: zodResolver(smtpSchema) as unknown as Resolver<SmtpSettingsFormData>,
     defaultValues: {
       host: '',
       port: 587,
@@ -102,6 +108,7 @@ export const PlatformSmtpSettingsTab = ({ canEdit }: PlatformSmtpSettingsTabProp
       useSsl: true,
     },
     mode: 'onBlur',
+    reValidateMode: 'onChange',
   })
 
   const testForm = useForm<TestEmailFormData>({
@@ -109,6 +116,7 @@ export const PlatformSmtpSettingsTab = ({ canEdit }: PlatformSmtpSettingsTabProp
     // Using 'as unknown as Resolver<T>' for type-safe assertion
     resolver: zodResolver(createTestEmailSchema(t)) as unknown as Resolver<TestEmailFormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       recipientEmail: '',
     },
@@ -117,6 +125,7 @@ export const PlatformSmtpSettingsTab = ({ canEdit }: PlatformSmtpSettingsTabProp
   // Sync form state when query data arrives
   useEffect(() => {
     if (settings) {
+      setServerErrors([])
       setIsConfigured(settings.isConfigured)
       setHasPassword(settings.hasPassword)
 
@@ -154,8 +163,7 @@ export const PlatformSmtpSettingsTab = ({ canEdit }: PlatformSmtpSettingsTabProp
           toast.success(t('platformSettings.smtp.saveSuccess'))
         },
         onError: (err) => {
-          const message = err instanceof ApiError ? err.message : t('platformSettings.smtp.failedToSaveSettings')
-          toast.error(message)
+          handleFormError(err, form, setServerErrors, t)
         },
       },
     )
@@ -234,8 +242,13 @@ export const PlatformSmtpSettingsTab = ({ canEdit }: PlatformSmtpSettingsTabProp
             </Alert>
           )}
 
-          <Form {...form}>
+          <Form {...form} requiredFields={requiredFields}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
               <div className="grid gap-6 sm:grid-cols-2">
                 <FormField
                   control={form.control}

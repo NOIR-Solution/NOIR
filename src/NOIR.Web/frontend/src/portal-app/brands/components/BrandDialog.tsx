@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,6 +19,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormErrorBanner,
   Input,
   LogoUploadField,
   Switch,
@@ -30,6 +31,7 @@ import { uploadMedia } from '@/services/media'
 import type { BrandListItem } from '@/types/brand'
 import { toast } from 'sonner'
 import { Loader2, Tag } from 'lucide-react'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 const createBrandSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
   z.object({
@@ -58,12 +60,15 @@ export const BrandDialog = ({ open, onOpenChange, brand, onSuccess }: BrandDialo
   const isEditing = !!brand
   const createMutation = useCreateBrandMutation()
   const updateMutation = useUpdateBrandMutation()
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const schema = useMemo(() => createBrandSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<BrandFormData>({
-    // TypeScript cannot infer resolver types from dynamic schema factories
-    // Using 'as unknown as Resolver<T>' for type-safe assertion
-    resolver: zodResolver(createBrandSchema(t)) as unknown as Resolver<BrandFormData>,
+    resolver: zodResolver(schema) as unknown as Resolver<BrandFormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       slug: '',
@@ -79,6 +84,7 @@ export const BrandDialog = ({ open, onOpenChange, brand, onSuccess }: BrandDialo
   // Reset form when dialog opens/closes or brand changes
   useEffect(() => {
     if (open) {
+      setServerErrors([])
       if (brand) {
         form.reset({
           name: brand.name,
@@ -140,10 +146,7 @@ export const BrandDialog = ({ open, onOpenChange, brand, onSuccess }: BrandDialo
       onSuccess?.()
       onOpenChange(false)
     } catch (err) {
-      const message = err instanceof Error ? err.message : isEditing
-        ? t('brands.updateError', 'Failed to update brand')
-        : t('brands.createError', 'Failed to create brand')
-      toast.error(message)
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -170,9 +173,15 @@ export const BrandDialog = ({ open, onOpenChange, brand, onSuccess }: BrandDialo
           </div>
         </CredenzaHeader>
 
-        <Form {...form}>
+        <Form {...form} requiredFields={requiredFields}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <CredenzaBody className="space-y-4">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
+
               <FormField
                 control={form.control}
                 name="name"

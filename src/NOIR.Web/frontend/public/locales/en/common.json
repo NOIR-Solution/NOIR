@@ -2846,6 +2846,7 @@
     "sortOrderMustBeNonNegative": "Sort order must be non-negative",
     "compareAtPriceMustBeHigher": "Compare-at price must be higher than the regular price",
     "validationFailed": "Validation failed",
+    "unableToSave": "Unable to save",
     "invalidFileType": "Invalid file type. Allowed: {{types}}",
     "fileTooLarge": "File too large. Maximum size: {{maxSize}}MB"
   },

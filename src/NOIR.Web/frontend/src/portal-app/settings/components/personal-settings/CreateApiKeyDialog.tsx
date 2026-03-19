@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Copy, Check, AlertTriangle, Eye, EyeOff } from 'lucide-react'
@@ -14,6 +14,7 @@ import {
   CredenzaBody,
   CredenzaFooter,
   Button,
+  FormErrorBanner,
   Input,
   Label,
   Textarea,
@@ -22,6 +23,7 @@ import { useCreateApiKey } from '@/hooks/useApiKeys'
 import { usePermissions } from '@/hooks/usePermissions'
 import { PermissionPicker } from '@/components/PermissionPicker'
 import type { ApiKeyCreatedDto } from '@/types/apiKey'
+import { handleFormError } from '@/lib/form'
 
 const createApiKeySchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
@@ -44,9 +46,18 @@ export const CreateApiKeyDialog = ({ open, onOpenChange }: CreateApiKeyDialogPro
   const [createdKey, setCreatedKey] = useState<ApiKeyCreatedDto | null>(null)
   const [copiedField, setCopiedField] = useState<'key' | 'secret' | null>(null)
   const [showSecret, setShowSecret] = useState(false)
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
 
   // Track selected permissions as a Set for the shared PermissionPicker
   const [selectedPermissionSet, setSelectedPermissionSet] = useState<Set<string>>(new Set())
+
+  const form = useForm<CreateApiKeyFormData>({
+    resolver: zodResolver(createApiKeySchema),
+    defaultValues: { name: '', description: '', permissions: [], expiresAt: '' },
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
+  })
 
   const {
     register,
@@ -54,11 +65,7 @@ export const CreateApiKeyDialog = ({ open, onOpenChange }: CreateApiKeyDialogPro
     setValue,
     reset,
     formState: { errors },
-  } = useForm<CreateApiKeyFormData>({
-    resolver: zodResolver(createApiKeySchema),
-    defaultValues: { name: '', description: '', permissions: [], expiresAt: '' },
-    mode: 'onBlur',
-  })
+  } = form
 
   // User's own permissions as a Set — only these are shown in the picker (memoized to avoid re-render cascade)
   const allowedPermissions = useMemo(() => new Set(userPermissions), [userPermissions])
@@ -81,8 +88,8 @@ export const CreateApiKeyDialog = ({ open, onOpenChange }: CreateApiKeyDialogPro
       })
       setCreatedKey(result)
       toast.success(t('apiKeys.createSuccess'))
-    } catch {
-      toast.error(t('apiKeys.createError'))
+    } catch (err) {
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -93,12 +100,19 @@ export const CreateApiKeyDialog = ({ open, onOpenChange }: CreateApiKeyDialogPro
     setTimeout(() => setCopiedField(null), 2000)
   }
 
+  useEffect(() => {
+    if (open) {
+      setServerErrors([])
+    }
+  }, [open])
+
   const handleClose = (openState: boolean) => {
     if (!openState) {
       setCreatedKey(null)
       setCopiedField(null)
       setShowSecret(false)
       setSelectedPermissionSet(new Set())
+      setServerErrors([])
       reset()
     }
     onOpenChange(openState)
@@ -187,6 +201,11 @@ export const CreateApiKeyDialog = ({ open, onOpenChange }: CreateApiKeyDialogPro
         </CredenzaHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col min-h-0">
           <CredenzaBody className="space-y-4">
+            <FormErrorBanner
+              errors={serverErrors}
+              onDismiss={() => setServerErrors([])}
+              title={t('validation.unableToSave', 'Unable to save')}
+            />
             <div className="space-y-2">
               <Label htmlFor="name">{t('apiKeys.name')}</Label>
               <Input

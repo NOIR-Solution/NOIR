@@ -1,12 +1,10 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AlertTriangle, Loader2, Shield } from 'lucide-react'
+import { Loader2, Shield } from 'lucide-react'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import {
-  Alert,
-  AlertDescription,
   Button,
   ColorPicker,
   Credenza,
@@ -21,6 +19,7 @@ import {
   FormDescription,
   FormField,
   FormItem,
+  FormErrorBanner,
   FormLabel,
   FormMessage,
   Input,
@@ -35,7 +34,7 @@ import {
 import { toast } from 'sonner'
 import { createRole } from '@/services/roles'
 import { useAvailableRolesQuery } from '@/portal-app/user-access/queries'
-import { ApiError } from '@/services/apiClient'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 const createFormSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
   z.object({
@@ -61,13 +60,17 @@ export const CreateRoleDialog = ({ open, onOpenChange, onSuccess }: CreateRoleDi
   const { t } = useTranslation('common')
   const [loading, setLoading] = useState(false)
   const { data: existingRoles = [] } = useAvailableRolesQuery()
-  const [apiError, setApiError] = useState<string | null>(null)
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const schema = useMemo(() => createFormSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<FormValues>({
     // TypeScript cannot infer resolver types from dynamic schema factories
     // Using 'as unknown as Resolver<T>' for type-safe assertion
-    resolver: zodResolver(createFormSchema(t)) as unknown as Resolver<FormValues>,
+    resolver: zodResolver(schema) as unknown as Resolver<FormValues>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       description: '',
@@ -79,7 +82,7 @@ export const CreateRoleDialog = ({ open, onOpenChange, onSuccess }: CreateRoleDi
 
   const onSubmit = async (values: FormValues) => {
     setLoading(true)
-    setApiError(null)
+    setServerErrors([])
     try {
       await createRole({
         name: values.name,
@@ -95,21 +98,7 @@ export const CreateRoleDialog = ({ open, onOpenChange, onSuccess }: CreateRoleDi
       onOpenChange(false)
       onSuccess()
     } catch (err) {
-      if (err instanceof ApiError) {
-        // Extract field-level errors from API response and set them on the form
-        const fieldErrors = err.response?.errors
-        if (fieldErrors) {
-          Object.entries(fieldErrors).forEach(([field, messages]) => {
-            const fieldName = field.charAt(0).toLowerCase() + field.slice(1)
-            if (fieldName in form.getValues()) {
-              form.setError(fieldName as keyof FormValues, { message: messages[0] })
-            }
-          })
-        }
-        setApiError(err.message)
-      } else {
-        setApiError(t('roles.createError', 'Failed to create role'))
-      }
+      handleFormError(err, form, setServerErrors, t)
     } finally {
       setLoading(false)
     }
@@ -132,15 +121,15 @@ export const CreateRoleDialog = ({ open, onOpenChange, onSuccess }: CreateRoleDi
           </div>
         </CredenzaHeader>
 
-        <Form {...form}>
+        <Form {...form} requiredFields={requiredFields}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <CredenzaBody className="space-y-4">
-              {apiError && (
-                <Alert variant="destructive" className="border-destructive/30">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription>{apiError}</AlertDescription>
-                </Alert>
-              )}
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
+
               <FormField
                 control={form.control}
                 name="name"

@@ -116,25 +116,49 @@ export const FormField = <TValues extends FieldValues>({
   autoComplete,
   render,
 }: FormFieldProps<TValues>) => {
-  const error = form.formState.errors[name]
-  const errorMessage = error?.message as string | undefined
+  const fieldState = form.getFieldState(name, form.formState)
+  const errorMessage = fieldState.error?.message as string | undefined
   const id = `field-${String(name)}`
+  const [isFocused, setIsFocused] = React.useState(false)
+  const blurTimer = React.useRef<ReturnType<typeof setTimeout>>(undefined)
+
+  // Show error only when the field has been interacted with and is not currently focused
+  const isServerError = fieldState.error && typeof fieldState.error === 'object' && 'type' in fieldState.error && fieldState.error.type === 'server'
+  const hasBeenValidated = isServerError || fieldState.isDirty || form.formState.isSubmitted
+  const showError = !!errorMessage && hasBeenValidated && !isFocused
+
+  const handleFocusCapture = React.useCallback(() => {
+    clearTimeout(blurTimer.current)
+    setIsFocused(true)
+  }, [])
+
+  const handleBlurCapture = React.useCallback(() => {
+    blurTimer.current = setTimeout(() => setIsFocused(false), 0)
+  }, [])
+
+  React.useEffect(() => {
+    return () => clearTimeout(blurTimer.current)
+  }, [])
 
   return (
     <Controller
       name={name}
       control={form.control}
       render={({ field }) => (
-        <div className={cn("space-y-2", className)}>
+        <div
+          className={cn("space-y-2", className)}
+          onFocusCapture={handleFocusCapture}
+          onBlurCapture={handleBlurCapture}
+        >
           {label && (
-            <Label htmlFor={id} className={cn(errorMessage && "text-destructive")}>
+            <Label htmlFor={id} className={cn(showError && "text-destructive", "gap-0.5")}>
               {label}
-              {required && <span className="text-destructive ml-1">*</span>}
+              {required && <span className="text-destructive">*</span>}
             </Label>
           )}
 
           {render ? (
-            render({ field, error: errorMessage, disabled })
+            render({ field, error: showError ? errorMessage : undefined, disabled })
           ) : (
             <Input
               {...field}
@@ -144,27 +168,26 @@ export const FormField = <TValues extends FieldValues>({
               disabled={disabled}
               autoFocus={autoFocus}
               autoComplete={autoComplete}
-              aria-invalid={!!errorMessage}
+              aria-invalid={showError}
               aria-describedby={
-                errorMessage ? `${id}-error` : description ? `${id}-description` : undefined
+                showError ? `${id}-error` : description ? `${id}-description` : undefined
               }
               className={inputClassName}
               value={field.value ?? ""}
               onChange={(e) => {
-                // Handle empty strings as undefined for optional fields
                 const value = e.target.value
                 field.onChange(value === "" ? "" : value)
               }}
             />
           )}
 
-          {errorMessage && (
+          {showError && (
             <p id={`${id}-error`} className="text-sm text-destructive animate-in fade-in-0">
               {errorMessage}
             </p>
           )}
 
-          {description && !errorMessage && (
+          {description && !showError && (
             <p id={`${id}-description`} className="text-sm text-muted-foreground">
               {description}
             </p>

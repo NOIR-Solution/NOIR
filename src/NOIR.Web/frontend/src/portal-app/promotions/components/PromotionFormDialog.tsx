@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
 import { useForm, type Resolver } from 'react-hook-form'
@@ -21,6 +21,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormErrorBanner,
   FormMessage,
   Input,
   Select,
@@ -33,6 +34,7 @@ import {
 import { useCreatePromotionMutation, useUpdatePromotionMutation } from '@/portal-app/promotions/queries'
 import type { PromotionDto, PromotionType, DiscountType, PromotionApplyLevel } from '@/types/promotion'
 import { toast } from 'sonner'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 // ============================================================================
 // Schema
@@ -111,12 +113,17 @@ export const PromotionFormDialog = ({ open, onOpenChange, promotion, onSuccess }
   const isEditing = !!promotion
   const createMutation = useCreatePromotionMutation()
   const updateMutation = useUpdatePromotionMutation()
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const schema = useMemo(() => createPromotionSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<PromotionFormData>({
     // TypeScript cannot infer resolver types from dynamic schema factories
     // Using 'as unknown as Resolver<T>' for type-safe assertion
-    resolver: zodResolver(createPromotionSchema(t)) as unknown as Resolver<PromotionFormData>,
+    resolver: zodResolver(schema) as unknown as Resolver<PromotionFormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       code: '',
@@ -140,6 +147,7 @@ export const PromotionFormDialog = ({ open, onOpenChange, promotion, onSuccess }
   // Reset form when dialog opens/closes or promotion changes
   useEffect(() => {
     if (open) {
+      setServerErrors([])
       if (promotion) {
         form.reset({
           name: promotion.name,
@@ -219,10 +227,7 @@ export const PromotionFormDialog = ({ open, onOpenChange, promotion, onSuccess }
       onSuccess?.()
       onOpenChange(false)
     } catch (err) {
-      const message = err instanceof Error ? err.message : isEditing
-        ? t('promotions.updateError', 'Failed to update promotion')
-        : t('promotions.createError', 'Failed to create promotion')
-      toast.error(message)
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -249,9 +254,15 @@ export const PromotionFormDialog = ({ open, onOpenChange, promotion, onSuccess }
           </div>
         </CredenzaHeader>
 
-        <Form {...form}>
+        <Form {...form} requiredFields={requiredFields}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <CredenzaBody className="space-y-4">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
+
               {/* Name */}
               <FormField
                 control={form.control}

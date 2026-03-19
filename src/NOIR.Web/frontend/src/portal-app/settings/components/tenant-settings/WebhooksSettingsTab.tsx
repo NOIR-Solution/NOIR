@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -39,6 +39,7 @@ import {
   Form,
   FormControl,
   FormDescription,
+  FormErrorBanner,
   FormField,
   FormItem,
   FormLabel,
@@ -76,6 +77,7 @@ import type {
   WebhookDeliveryStatus,
   CreateWebhookRequest,
 } from '@/types/webhook'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 
 // ============================================================================
 // Helpers
@@ -172,11 +174,15 @@ const WebhookDialog = ({ open, onOpenChange, webhook }: WebhookDialogProps) => {
   const { data: fullWebhook } = useWebhookById(isEditing && open ? webhook?.id : undefined)
   const createMutation = useCreateWebhook()
   const updateMutation = useUpdateWebhook()
+  const [serverErrors, setServerErrors] = useState<string[]>([])
 
-  const schema = createWebhookSchema(t)
+  const schema = useMemo(() => createWebhookSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
+
   const form = useForm<WebhookFormData>({
     resolver: zodResolver(schema) as unknown as Resolver<WebhookFormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       name: '',
       url: '',
@@ -190,6 +196,7 @@ const WebhookDialog = ({ open, onOpenChange, webhook }: WebhookDialogProps) => {
 
   useEffect(() => {
     if (open) {
+      setServerErrors([])
       // In edit mode, prefer the full DTO which includes description, customHeaders, etc.
       const source: Partial<WebhookSubscriptionDto> | undefined = fullWebhook ?? webhook
       form.reset({
@@ -226,7 +233,7 @@ const WebhookDialog = ({ open, onOpenChange, webhook }: WebhookDialogProps) => {
       onOpenChange(false)
       form.reset()
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : t('errors.unexpectedError'))
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -244,8 +251,13 @@ const WebhookDialog = ({ open, onOpenChange, webhook }: WebhookDialogProps) => {
           </CredenzaDescription>
         </CredenzaHeader>
         <CredenzaBody>
-          <Form {...form}>
+          <Form {...form} requiredFields={requiredFields}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4" id="webhook-form">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
               <FormField
                 control={form.control}
                 name="name"

@@ -14,7 +14,7 @@
  */
 
 import { useTranslation } from "react-i18next"
-import { Button, Checkbox, CredenzaFooter, Label, SimpleFormField as FormField, FormTextarea, FormError } from '@uikit'
+import { Button, Checkbox, CredenzaFooter, FormErrorBanner, Label, SimpleFormField as FormField, FormTextarea } from '@uikit'
 import { useValidatedForm } from "@/hooks/useValidatedForm"
 import { updateTenantSchema } from "@/validation/schemas.generated"
 import type { Tenant } from "@/types"
@@ -97,7 +97,7 @@ export const TenantFormValidated = ({ tenant, onSubmit, onCancel }: TenantFormVa
   const isEditing = !!tenant
 
   // Use the appropriate schema based on whether we're creating or editing
-  const { form, handleSubmit, isSubmitting, serverError } = useValidatedForm<
+  const { form, handleSubmit, isSubmitting, serverErrors, dismissServerErrors } = useValidatedForm<
     ProvisionTenantFormData | UpdateTenantFormData
   >({
     schema: isEditing ? createUpdateTenantFormSchema(t) : createProvisionTenantSchema(t),
@@ -125,7 +125,7 @@ export const TenantFormValidated = ({ tenant, onSubmit, onCancel }: TenantFormVa
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <FormError message={serverError} />
+      <FormErrorBanner errors={serverErrors} onDismiss={dismissServerErrors} title={t('validation.unableToSave', 'Unable to save')} />
 
       <FormField
         form={form}

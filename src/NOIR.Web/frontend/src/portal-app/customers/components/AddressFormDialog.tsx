@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,6 +19,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormErrorBanner,
   FormMessage,
   Input,
   Select,
@@ -28,6 +29,7 @@ import {
   SelectValue,
   Switch,
 } from '@uikit'
+import { getRequiredFields, handleFormError } from '@/lib/form'
 import {
   useAddCustomerAddressMutation,
   useUpdateCustomerAddressMutation,
@@ -67,12 +69,17 @@ export const AddressFormDialog = ({ open, onOpenChange, customerId, address, onS
   const isEditing = !!address
   const addMutation = useAddCustomerAddressMutation()
   const updateMutation = useUpdateCustomerAddressMutation()
+  const [serverErrors, setServerErrors] = useState<string[]>([])
+
+  const schema = useMemo(() => createAddressSchema(t), [t])
+  const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
 
   const form = useForm<AddressFormData>({
     // TypeScript cannot infer resolver types from dynamic schema factories
     // Using 'as unknown as Resolver<T>' for type-safe assertion
-    resolver: zodResolver(createAddressSchema(t)) as unknown as Resolver<AddressFormData>,
+    resolver: zodResolver(schema) as unknown as Resolver<AddressFormData>,
     mode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: {
       addressType: 'Shipping' as AddressType,
       fullName: '',
@@ -89,6 +96,7 @@ export const AddressFormDialog = ({ open, onOpenChange, customerId, address, onS
 
   useEffect(() => {
     if (open) {
+      setServerErrors([])
       if (address) {
         form.reset({
           addressType: address.addressType,
@@ -146,10 +154,7 @@ export const AddressFormDialog = ({ open, onOpenChange, customerId, address, onS
       onSuccess?.()
       onOpenChange(false)
     } catch (err) {
-      const message = err instanceof Error ? err.message : isEditing
-        ? t('customers.addressUpdateError', 'Failed to update address')
-        : t('customers.addressCreateError', 'Failed to add address')
-      toast.error(message)
+      handleFormError(err, form, setServerErrors, t)
     }
   }
 
@@ -176,9 +181,15 @@ export const AddressFormDialog = ({ open, onOpenChange, customerId, address, onS
           </div>
         </CredenzaHeader>
 
-        <Form {...form}>
+        <Form {...form} requiredFields={requiredFields}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <CredenzaBody className="space-y-4">
+              <FormErrorBanner
+                errors={serverErrors}
+                onDismiss={() => setServerErrors([])}
+                title={t('validation.unableToSave', 'Unable to save')}
+              />
+
               <FormField
                 control={form.control}
                 name="addressType"
