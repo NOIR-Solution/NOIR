@@ -1,13 +1,36 @@
 import { useTranslation } from 'react-i18next'
-import { AlignJustify, AlignCenter, AlignLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useDensity, type Density } from '@/contexts/DensityContext'
+
+const DensityCompactIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className={className} aria-hidden="true">
+    <line x1="4" y1="6" x2="20" y2="6" />
+    <line x1="4" y1="10" x2="20" y2="10" />
+    <line x1="4" y1="14" x2="20" y2="14" />
+    <line x1="4" y1="18" x2="20" y2="18" />
+  </svg>
+)
+
+const DensityNormalIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className={className} aria-hidden="true">
+    <line x1="4" y1="5" x2="20" y2="5" />
+    <line x1="4" y1="12" x2="20" y2="12" />
+    <line x1="4" y1="19" x2="20" y2="19" />
+  </svg>
+)
+
+const DensityComfortableIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className={className} aria-hidden="true">
+    <line x1="4" y1="7" x2="20" y2="7" />
+    <line x1="4" y1="17" x2="20" y2="17" />
+  </svg>
+)
 
 interface DensityOption {
   value: Density
   labelKey: string
   descriptionKey: string
-  icon: typeof AlignJustify
+  icon: typeof DensityCompactIcon
 }
 
 const densityOptions: DensityOption[] = [
@@ -15,19 +38,19 @@ const densityOptions: DensityOption[] = [
     value: 'compact',
     labelKey: 'density.compact',
     descriptionKey: 'density.compactDescription',
-    icon: AlignJustify,
+    icon: DensityCompactIcon,
   },
   {
     value: 'normal',
     labelKey: 'density.normal',
     descriptionKey: 'density.normalDescription',
-    icon: AlignCenter,
+    icon: DensityNormalIcon,
   },
   {
     value: 'comfortable',
     labelKey: 'density.comfortable',
     descriptionKey: 'density.comfortableDescription',
-    icon: AlignLeft,
+    icon: DensityComfortableIcon,
   },
 ]
 
