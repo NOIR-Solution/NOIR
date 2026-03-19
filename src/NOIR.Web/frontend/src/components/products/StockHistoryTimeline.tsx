@@ -6,7 +6,7 @@
  */
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRegionalSettings } from '@/contexts/RegionalSettingsContext'
+import { useRegionalSettingsOptional } from '@/contexts/RegionalSettingsContext'
 import {
   Package,
   TrendingUp,
@@ -107,7 +107,16 @@ export const StockHistoryTimeline = ({
   maxHeight = '400px',
 }: StockHistoryTimelineProps) => {
   const { t } = useTranslation()
-  const { formatRelativeTime } = useRegionalSettings()
+  const regional = useRegionalSettingsOptional()
+  const formatRelativeTime = regional?.formatRelativeTime ?? ((date: Date | string) => {
+    const d = typeof date === 'string' ? new Date(date) : date
+    const diffMs = Date.now() - d.getTime()
+    const diffMin = Math.floor(diffMs / 60000)
+    if (diffMin < 60) return `${diffMin}m ago`
+    const diffHrs = Math.floor(diffMin / 60)
+    if (diffHrs < 24) return `${diffHrs}h ago`
+    return `${Math.floor(diffHrs / 24)}d ago`
+  })
 
   // Sort movements by date (newest first)
   const sortedMovements = useMemo(() => {
