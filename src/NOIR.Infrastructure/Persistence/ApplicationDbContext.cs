@@ -143,6 +143,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<CrmCompany> CrmCompanies => Set<CrmCompany>();
     public DbSet<Lead> Leads => Set<Lead>();
     public DbSet<Pipeline> Pipelines => Set<Pipeline>();
+    public DbSet<PipelineStage> PipelineStages => Set<PipelineStage>();
     public DbSet<CrmActivity> CrmActivities => Set<CrmActivity>();
 
     // API Key entities

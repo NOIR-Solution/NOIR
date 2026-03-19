@@ -28,7 +28,7 @@ export const crmPipelineKeys = {
   all: ['crm-pipelines'] as const,
   lists: () => [...crmPipelineKeys.all, 'list'] as const,
   views: () => [...crmPipelineKeys.all, 'view'] as const,
-  view: (pipelineId: string, includeClosedDeals: boolean) => [...crmPipelineKeys.views(), pipelineId, includeClosedDeals] as const,
+  view: (pipelineId: string) => [...crmPipelineKeys.views(), pipelineId] as const,
 }
 
 export const crmActivityKeys = {

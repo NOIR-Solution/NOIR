@@ -30,6 +30,16 @@ public class PipelineStageConfiguration : IEntityTypeConfiguration<PipelineStage
             .HasMaxLength(7)
             .HasDefaultValue("#6366f1");
 
+        // StageType (stored as string per project enum serialization standard)
+        builder.Property(e => e.StageType)
+            .HasConversion<string>()
+            .HasMaxLength(20)
+            .HasDefaultValue(StageType.Active);
+
+        // IsSystem — Won/Lost stages are protected from deletion/rename
+        builder.Property(e => e.IsSystem)
+            .HasDefaultValue(false);
+
         // Tenant
         builder.Property(e => e.TenantId)
             .HasMaxLength(DatabaseConstants.TenantIdMaxLength);

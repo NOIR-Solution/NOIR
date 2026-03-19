@@ -1,203 +1,111 @@
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  DndContext,
-  DragOverlay,
-  PointerSensor,
-  KeyboardSensor,
-  useSensor,
-  useSensors,
-  closestCorners,
-  type DragEndEvent,
-  type DragStartEvent,
-} from '@dnd-kit/core'
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  sortableKeyboardCoordinates,
-} from '@dnd-kit/sortable'
-import { useState } from 'react'
 import { toast } from 'sonner'
-import { EmptyState, Skeleton } from '@uikit'
 import { Kanban } from 'lucide-react'
+import { KanbanBoard, EmptyState, type KanbanColumnDef, type KanbanMoveCardParams, type KanbanTerminateCardParams } from '@uikit'
 import type { PipelineViewDto, LeadCardDto, StageWithLeadsDto } from '@/types/crm'
-import { useMoveLeadStage } from '@/portal-app/crm/queries'
+import { useMoveLeadStage, useWinLead, useLoseLead } from '@/portal-app/crm/queries'
 import { LeadCard } from './LeadCard'
 import { StageColumnHeader } from './StageColumnHeader'
-import { WonLostColumns } from './WonLostColumns'
 
 interface PipelineKanbanProps {
   pipelineView: PipelineViewDto | undefined
   isLoading: boolean
-  showClosedDeals: boolean
   onLeadClick: (lead: LeadCardDto) => void
 }
 
-export const PipelineKanban = ({ pipelineView, isLoading, showClosedDeals, onLeadClick }: PipelineKanbanProps) => {
+/** Map a pipeline stage to a KanbanColumnDef for the generic board. */
+const stageToColumn = (stage: StageWithLeadsDto): KanbanColumnDef<LeadCardDto> => ({
+  id: stage.id,
+  cards: stage.leads,
+  isSystem: stage.isSystem,
+  systemType: stage.isSystem ? stage.stageType.toLowerCase() : undefined,
+})
+
+export const PipelineKanban = ({ pipelineView, isLoading, onLeadClick }: PipelineKanbanProps) => {
   const { t } = useTranslation('common')
   const moveLeadStageMutation = useMoveLeadStage()
-  const [activeId, setActiveId] = useState<string | null>(null)
+  const winLeadMutation = useWinLead()
+  const loseLeadMutation = useLoseLead()
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  )
+  const columns = pipelineView?.stages.map(stageToColumn) ?? []
 
-  const allLeads = pipelineView?.stages.flatMap(s => s.leads) ?? []
-  const activeLead = activeId ? allLeads.find(l => l.id === activeId) : null
+  const handleMoveCard = useCallback(({ cardId, toColumnId, prevCardId, nextCardId }: KanbanMoveCardParams) => {
+    if (!pipelineView) return
 
-  const wonLeads = allLeads.filter(l => l.status === 'Won')
-  const lostLeads = allLeads.filter(l => l.status === 'Lost')
-
-  const handleDragStart = useCallback((event: DragStartEvent) => {
-    setActiveId(String(event.active.id))
-  }, [])
-
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    setActiveId(null)
-    const { active, over } = event
-    if (!over || !pipelineView) return
-
-    const leadId = String(active.id)
-    const overId = String(over.id)
-
-    // Find which stage the lead was dragged to
-    let targetStage: StageWithLeadsDto | undefined
-
-    for (const stage of pipelineView.stages) {
-      // Check if dropped on a lead in this stage
-      if (stage.leads.some(l => l.id === overId)) {
-        targetStage = stage
-        break
-      }
-      // Check if dropped on the stage container itself
-      if (stage.id === overId) {
-        targetStage = stage
-        break
-      }
-    }
-
+    // Calculate new sort order from neighbors using server data
+    const targetStage = pipelineView.stages.find(s => s.id === toColumnId)
     if (!targetStage) return
 
-    // Find original stage
-    const originalStage = pipelineView.stages.find(s => s.leads.some(l => l.id === leadId))
-    if (!originalStage) return
-
-    // If same stage and same position, do nothing
-    if (originalStage.id === targetStage.id && leadId === overId) return
-
-    // Calculate new sort order
-    const targetLeads = targetStage.leads.filter(l => l.id !== leadId)
-    const overIndex = targetLeads.findIndex(l => l.id === overId)
+    const stageLeads = targetStage.leads.filter(l => l.id !== cardId)
+    const prevLead = prevCardId ? stageLeads.find(l => l.id === prevCardId) : null
+    const nextLead = nextCardId ? stageLeads.find(l => l.id === nextCardId) : null
 
     let newSortOrder: number
-    if (targetLeads.length === 0) {
+    if (!prevLead && !nextLead) {
       newSortOrder = 1
-    } else if (overIndex === -1) {
-      // Dropped on stage container, put at end
-      newSortOrder = targetLeads[targetLeads.length - 1].sortOrder + 1
-    } else if (overIndex === 0) {
-      newSortOrder = targetLeads[0].sortOrder / 2
+    } else if (!prevLead) {
+      newSortOrder = nextLead!.sortOrder > 0 ? nextLead!.sortOrder / 2 : nextLead!.sortOrder - 1
+    } else if (!nextLead) {
+      newSortOrder = prevLead.sortOrder + 1
     } else {
-      newSortOrder = (targetLeads[overIndex - 1].sortOrder + targetLeads[overIndex].sortOrder) / 2
+      const prev = prevLead.sortOrder
+      const next = nextLead.sortOrder
+      newSortOrder = prev < next ? (prev + next) / 2 : prev + 1
     }
 
     moveLeadStageMutation.mutate(
-      { leadId, newStageId: targetStage.id, newSortOrder },
-      {
-        onError: (err) => {
-          toast.error(err instanceof Error ? err.message : t('errors.unknown'))
-        },
-      },
+      { leadId: cardId, newStageId: toColumnId, newSortOrder },
+      { onError: (err) => toast.error(err instanceof Error ? err.message : t('errors.unknown')) },
     )
   }, [pipelineView, moveLeadStageMutation, t])
 
-  if (isLoading) {
-    return (
-      <div className="flex gap-4 overflow-x-auto pb-4">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="min-w-[280px] space-y-3">
-            <Skeleton className="h-12 w-full rounded-lg" />
-            <Skeleton className="h-24 w-full rounded-lg" />
-            <Skeleton className="h-24 w-full rounded-lg" />
-          </div>
-        ))}
-      </div>
-    )
-  }
+  const handleTerminateCard = useCallback(({ cardId, systemType }: KanbanTerminateCardParams) => {
+    if (systemType === 'won') {
+      winLeadMutation.mutate(cardId, {
+        onError: (err) => toast.error(err instanceof Error ? err.message : t('errors.unknown')),
+      })
+    } else if (systemType === 'lost') {
+      loseLeadMutation.mutate(
+        { id: cardId },
+        { onError: (err) => toast.error(err instanceof Error ? err.message : t('errors.unknown')) },
+      )
+    }
+  }, [winLeadMutation, loseLeadMutation, t])
 
-  if (!pipelineView || pipelineView.stages.length === 0) {
+  const renderColumnHeader = useCallback((column: KanbanColumnDef<LeadCardDto>) => {
+    const stage = pipelineView?.stages.find(s => s.id === column.id)
+    if (!stage) return null
     return (
-      <EmptyState
-        icon={Kanban}
-        title={t('crm.pipeline.noPipelines')}
-        description={t('crm.pipeline.noPipelinesDescription')}
+      <StageColumnHeader
+        name={stage.name}
+        color={stage.color}
+        totalValue={stage.totalValue}
+        leadCount={stage.leadCount}
       />
     )
-  }
+  }, [pipelineView])
+
+  const renderCard = useCallback((lead: LeadCardDto) => (
+    <LeadCard lead={lead} onClick={onLeadClick} />
+  ), [onLeadClick])
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCorners}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="flex gap-4 overflow-x-auto pb-4">
-        {pipelineView.stages.map((stage) => {
-          const stageActiveLeads = stage.leads.filter(l => l.status === 'Active')
-          const stageActiveValue = stageActiveLeads.reduce((sum, l) => sum + l.value, 0)
-
-          return (
-            <div key={stage.id} className="min-w-[280px] max-w-[320px] flex-shrink-0">
-              <div className="bg-muted/30 rounded-lg border border-border/50">
-                <StageColumnHeader
-                  name={stage.name}
-                  color={stage.color}
-                  totalValue={stageActiveValue}
-                  leadCount={stageActiveLeads.length}
-                />
-                <SortableContext
-                  items={stageActiveLeads.map(l => l.id)}
-                  strategy={verticalListSortingStrategy}
-                  id={stage.id}
-                >
-                  <div className="space-y-2 p-2 min-h-[100px]" data-stage-id={stage.id}>
-                    {stageActiveLeads.map((lead) => (
-                      <LeadCard
-                        key={lead.id}
-                        lead={lead}
-                        onClick={onLeadClick}
-                        isDraggable
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
-              </div>
-            </div>
-          )
-        })}
-
-        {showClosedDeals && (wonLeads.length > 0 || lostLeads.length > 0) && (
-          <WonLostColumns
-            wonLeads={wonLeads}
-            lostLeads={lostLeads}
-            onLeadClick={onLeadClick}
-          />
-        )}
-      </div>
-
-      <DragOverlay>
-        {activeLead && (
-          <div className="w-[280px]">
-            <LeadCard lead={activeLead} onClick={() => {}} isDraggable={false} />
-          </div>
-        )}
-      </DragOverlay>
-    </DndContext>
+    <KanbanBoard
+      columns={columns}
+      getCardId={(lead) => lead.id}
+      renderCard={renderCard}
+      renderColumnHeader={renderColumnHeader}
+      onMoveCard={handleMoveCard}
+      onTerminateCard={handleTerminateCard}
+      isLoading={isLoading}
+      emptyState={
+        <EmptyState
+          icon={Kanban}
+          title={t('crm.pipeline.noPipelines')}
+          description={t('crm.pipeline.noPipelinesDescription')}
+        />
+      }
+    />
   )
 }

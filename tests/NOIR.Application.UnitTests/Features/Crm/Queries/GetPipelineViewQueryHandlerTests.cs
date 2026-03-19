@@ -60,12 +60,16 @@ public class GetPipelineViewQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_IncludeClosedDeals_ShouldIncludeWonAndLost()
+    public async Task Handle_ShouldShowWonLeadsInWonSystemStage()
     {
-        // Arrange
+        // Arrange: pipeline with 1 active stage + Won/Lost system stages
         var pipeline = Pipeline.Create("Sales Pipeline", TestTenantId, isDefault: true);
         var stage = PipelineStage.Create(pipeline.Id, "New", 0, TestTenantId, "#6B7280");
+        var won = PipelineStage.CreateSystem(pipeline.Id, StageType.Won, 1, TestTenantId);
+        var lost = PipelineStage.CreateSystem(pipeline.Id, StageType.Lost, 2, TestTenantId);
         pipeline.Stages.Add(stage);
+        pipeline.Stages.Add(won);
+        pipeline.Stages.Add(lost);
 
         _pipelineRepoMock
             .Setup(x => x.FirstOrDefaultAsync(It.IsAny<PipelineByIdWithLeadsSpec>(), It.IsAny<CancellationToken>()))
@@ -81,14 +85,20 @@ public class GetPipelineViewQueryHandlerTests
             .Setup(x => x.ListAsync(It.IsAny<LeadsByPipelineSpec>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Lead> { activeLead, wonLead });
 
-        var query = new GetPipelineViewQuery(pipeline.Id, IncludeClosedDeals: true);
+        var query = new GetPipelineViewQuery(pipeline.Id);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
 
-        // Assert
+        // Assert: active stage has 1 lead; Won system stage has the won lead
         result.IsSuccess.ShouldBe(true);
-        result.Value.Stages[0].Leads.Count().ShouldBe(2);
+        result.Value.Stages.Count().ShouldBe(3); // 1 active + Won + Lost
+        result.Value.Stages[0].Name.ShouldBe("New");
+        result.Value.Stages[0].Leads.Count().ShouldBe(1);
+        result.Value.Stages[1].IsSystem.ShouldBe(true);
+        result.Value.Stages[1].Leads.Count().ShouldBe(1); // won lead
+        result.Value.Stages[2].IsSystem.ShouldBe(true);
+        result.Value.Stages[2].Leads.ShouldBeEmpty();
     }
 
     [Fact]

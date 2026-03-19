@@ -19,7 +19,7 @@ public class GetPipelinesQueryHandler
         var items = pipelines.Select(p => new Features.Crm.DTOs.PipelineDto(
             p.Id, p.Name, p.IsDefault,
             p.Stages.OrderBy(s => s.SortOrder)
-                .Select(s => new Features.Crm.DTOs.PipelineStageDto(s.Id, s.Name, s.SortOrder, s.Color))
+                .Select(s => new Features.Crm.DTOs.PipelineStageDto(s.Id, s.Name, s.SortOrder, s.Color, s.StageType, s.IsSystem))
                 .ToList(),
             p.CreatedAt, p.ModifiedAt)).ToList();
 

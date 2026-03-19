@@ -1,4 +1,5 @@
 using NOIR.Application.Features.Crm.DTOs;
+using NOIR.Domain.Entities.Crm;
 using NOIR.Domain.Enums;
 
 namespace NOIR.IntegrationTests.Endpoints;
@@ -109,7 +110,9 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         var pipeline = await response.Content.ReadFromJsonWithEnumsAsync<PipelineDto>();
         pipeline.ShouldNotBeNull();
         pipeline!.Name.ShouldBe(request.Name);
-        pipeline.Stages.Count().ShouldBe(request.Stages.Count);
+        // +2 for Won and Lost system stages auto-added on creation
+        pipeline.Stages.Count().ShouldBe(request.Stages.Count + 2);
+        pipeline.Stages.Count(s => s.IsSystem).ShouldBe(2);
     }
 
     [Fact]
@@ -137,8 +140,12 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var pipeline = await response.Content.ReadFromJsonWithEnumsAsync<PipelineDto>();
         pipeline.ShouldNotBeNull();
-        pipeline!.Stages.Count().ShouldBe(5);
-        pipeline.Stages.Select(s => s.Name).ShouldBe(new[] { "Lead", "Qualified", "Proposal", "Negotiation", "Closed" });
+        // 5 user-defined + 2 system (Won, Lost)
+        pipeline!.Stages.Count().ShouldBe(7);
+        var activeStages = pipeline.Stages.Where(s => !s.IsSystem).ToList();
+        activeStages.Select(s => s.Name).ShouldBe(new[] { "Lead", "Qualified", "Proposal", "Negotiation", "Closed" });
+        pipeline.Stages.Any(s => s.Name == "Won" && s.IsSystem).ShouldBe(true);
+        pipeline.Stages.Any(s => s.Name == "Lost" && s.IsSystem).ShouldBe(true);
     }
 
     [Fact]
@@ -377,6 +384,198 @@ public class PipelineEndpointsTests : IClassFixture<CustomWebApplicationFactory>
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    #endregion
+
+    #region POST /api/crm/pipelines/{pipelineId}/stages
+
+    [Fact]
+    public async Task CreateStage_ValidRequest_ShouldReturnNewStage()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+        var pipeline = await CreateTestPipelineAsync(adminClient);
+        var request = new CreateStageRequest("New Stage", "#f97316");
+
+        // Act
+        var response = await adminClient.PostAsJsonWithEnumsAsync(
+            $"/api/crm/pipelines/{pipeline.Id}/stages", request);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var stage = await response.Content.ReadFromJsonWithEnumsAsync<PipelineStageDto>();
+        stage.ShouldNotBeNull();
+        stage!.Name.ShouldBe("New Stage");
+        stage.IsSystem.ShouldBe(false);
+    }
+
+    [Fact]
+    public async Task CreateStage_Unauthenticated_ShouldReturnUnauthorized()
+    {
+        var response = await _client.PostAsJsonWithEnumsAsync(
+            $"/api/crm/pipelines/{Guid.NewGuid()}/stages", new CreateStageRequest("Stage", "#fff"));
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    #endregion
+
+    #region PUT /api/crm/pipelines/{pipelineId}/stages/{stageId}
+
+    [Fact]
+    public async Task UpdateStage_ActiveStage_ShouldUpdateNameAndColor()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+        var pipeline = await CreateTestPipelineAsync(adminClient);
+        var activeStage = pipeline.Stages.First(s => !s.IsSystem);
+        var request = new UpdateStageRequest("Renamed Stage", "#22c55e");
+
+        // Act
+        var response = await adminClient.PutAsJsonWithEnumsAsync(
+            $"/api/crm/pipelines/{pipeline.Id}/stages/{activeStage.Id}", request);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var updated = await response.Content.ReadFromJsonWithEnumsAsync<PipelineStageDto>();
+        updated!.Name.ShouldBe("Renamed Stage");
+        updated.Color.ShouldBe("#22c55e");
+    }
+
+    [Fact]
+    public async Task UpdateStage_SystemStage_ShouldOnlyUpdateColor()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+        var pipeline = await CreateTestPipelineAsync(adminClient);
+        var wonStage = pipeline.Stages.First(s => s.IsSystem && s.StageType == StageType.Won);
+        var request = new UpdateStageRequest("Renamed Won", "#ff0000");
+
+        // Act
+        var response = await adminClient.PutAsJsonWithEnumsAsync(
+            $"/api/crm/pipelines/{pipeline.Id}/stages/{wonStage.Id}", request);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var updated = await response.Content.ReadFromJsonWithEnumsAsync<PipelineStageDto>();
+        updated!.Name.ShouldBe("Won"); // Name unchanged for system stages
+        updated.Color.ShouldBe("#ff0000");
+    }
+
+    [Fact]
+    public async Task UpdateStage_NotFound_ShouldReturnNotFound()
+    {
+        var adminClient = await GetAdminClientAsync();
+        var response = await adminClient.PutAsJsonWithEnumsAsync(
+            $"/api/crm/pipelines/{Guid.NewGuid()}/stages/{Guid.NewGuid()}",
+            new UpdateStageRequest("Test", "#ffffff"));
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    #endregion
+
+    #region DELETE /api/crm/pipelines/{pipelineId}/stages/{stageId}
+
+    [Fact]
+    public async Task DeleteStage_ActiveStage_ShouldSucceed()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+        var pipeline = await CreateTestPipelineAsync(adminClient);
+        var activeStages = pipeline.Stages.Where(s => !s.IsSystem).ToList();
+        var stageToDelete = activeStages[0];
+        var targetStage = activeStages[1];
+
+        // Act
+        var response = await adminClient.DeleteAsync(
+            $"/api/crm/pipelines/{pipeline.Id}/stages/{stageToDelete.Id}?moveLeadsToStageId={targetStage.Id}");
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task DeleteStage_SystemStage_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+        var pipeline = await CreateTestPipelineAsync(adminClient);
+        var wonStage = pipeline.Stages.First(s => s.IsSystem);
+        var targetStage = pipeline.Stages.First(s => !s.IsSystem);
+
+        // Act
+        var response = await adminClient.DeleteAsync(
+            $"/api/crm/pipelines/{pipeline.Id}/stages/{wonStage.Id}?moveLeadsToStageId={targetStage.Id}");
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task DeleteStage_Unauthenticated_ShouldReturnUnauthorized()
+    {
+        var response = await _client.DeleteAsync(
+            $"/api/crm/pipelines/{Guid.NewGuid()}/stages/{Guid.NewGuid()}?moveLeadsToStageId={Guid.NewGuid()}");
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    #endregion
+
+    #region PUT /api/crm/pipelines/{pipelineId}/stages/reorder
+
+    [Fact]
+    public async Task ReorderStages_ValidRequest_ShouldSucceed()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+        var pipeline = await CreateTestPipelineAsync(adminClient);
+        var activeIds = pipeline.Stages
+            .Where(s => !s.IsSystem)
+            .OrderBy(s => s.SortOrder)
+            .Select(s => s.Id)
+            .ToList();
+
+        // Reverse the order
+        activeIds.Reverse();
+        var request = new ReorderStagesRequest(activeIds);
+
+        // Act
+        var response = await adminClient.PutAsJsonWithEnumsAsync(
+            $"/api/crm/pipelines/{pipeline.Id}/stages/reorder", request);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var stages = await response.Content.ReadFromJsonWithEnumsAsync<List<PipelineStageDto>>();
+        stages.ShouldNotBeNull();
+        // System stages should still be at the end
+        var systemStages = stages!.Where(s => s.IsSystem).ToList();
+        systemStages.All(s => s.SortOrder >= activeIds.Count).ShouldBe(true);
+    }
+
+    [Fact]
+    public async Task ReorderStages_WithSystemStageId_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var adminClient = await GetAdminClientAsync();
+        var pipeline = await CreateTestPipelineAsync(adminClient);
+        var allIds = pipeline.Stages.Select(s => s.Id).ToList(); // includes system stages
+        var request = new ReorderStagesRequest(allIds);
+
+        // Act
+        var response = await adminClient.PutAsJsonWithEnumsAsync(
+            $"/api/crm/pipelines/{pipeline.Id}/stages/reorder", request);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task ReorderStages_Unauthenticated_ShouldReturnUnauthorized()
+    {
+        var response = await _client.PutAsJsonWithEnumsAsync(
+            $"/api/crm/pipelines/{Guid.NewGuid()}/stages/reorder",
+            new ReorderStagesRequest(new List<Guid>()));
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     #endregion

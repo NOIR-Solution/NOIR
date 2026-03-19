@@ -59,8 +59,8 @@ public class UpdatePipelineCommandHandler
             .Select(s => s.Id!.Value)
             .ToHashSet();
 
-        // Remove stages not in the command (check for active leads first)
-        var stagesToRemove = existingStages.Where(s => !commandStageIds.Contains(s.Id)).ToList();
+        // Remove non-system stages not in the command (check for active leads first)
+        var stagesToRemove = existingStages.Where(s => !commandStageIds.Contains(s.Id) && !s.IsSystem).ToList();
         foreach (var stage in stagesToRemove)
         {
             var activeLeadsSpec = new Specifications.ActiveLeadsByStageSpec(stage.Id);
@@ -109,7 +109,7 @@ public class UpdatePipelineCommandHandler
     private static Features.Crm.DTOs.PipelineDto MapToDto(Pipeline p) =>
         new(p.Id, p.Name, p.IsDefault,
             p.Stages.OrderBy(s => s.SortOrder)
-                .Select(s => new Features.Crm.DTOs.PipelineStageDto(s.Id, s.Name, s.SortOrder, s.Color))
+                .Select(s => new Features.Crm.DTOs.PipelineStageDto(s.Id, s.Name, s.SortOrder, s.Color, s.StageType, s.IsSystem))
                 .ToList(),
             p.CreatedAt, p.ModifiedAt);
 }

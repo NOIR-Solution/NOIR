@@ -67,3 +67,43 @@ public sealed class DefaultPipelineSpec : Specification<Pipeline>
              .TagWith("DefaultPipeline");
     }
 }
+
+/// <summary>
+/// Get a single pipeline stage by ID (read-only).
+/// </summary>
+public sealed class StageByIdSpec : Specification<PipelineStage>
+{
+    public StageByIdSpec(Guid id)
+    {
+        Query.Where(s => s.Id == id)
+             .TagWith("StageById");
+    }
+}
+
+/// <summary>
+/// Get a single pipeline stage by ID with tracking for mutations.
+/// </summary>
+public sealed class StageByIdTrackingSpec : Specification<PipelineStage>
+{
+    public StageByIdTrackingSpec(Guid id)
+    {
+        Query.Where(s => s.Id == id)
+             .AsTracking()
+             .TagWith("StageByIdTracking");
+    }
+}
+
+/// <summary>
+/// Get all stages for a pipeline ordered by sort order.
+/// </summary>
+public sealed class StagesByPipelineSpec : Specification<PipelineStage>
+{
+    public StagesByPipelineSpec(Guid pipelineId, bool tracking = false)
+    {
+        Query.Where(s => s.PipelineId == pipelineId)
+             .OrderBy(s => s.SortOrder)
+             .TagWith("StagesByPipeline");
+
+        if (tracking) Query.AsTracking();
+    }
+}

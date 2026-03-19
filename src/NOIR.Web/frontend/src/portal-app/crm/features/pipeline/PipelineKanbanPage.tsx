@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { usePageContext } from '@/hooks/usePageContext'
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
@@ -11,8 +11,6 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Switch,
-  Label,
 } from '@uikit'
 import { usePipelinesQuery, usePipelineViewQuery } from '@/portal-app/crm/queries'
 import type { LeadCardDto } from '@/types/crm'
@@ -28,7 +26,6 @@ export const PipelineKanbanPage = () => {
 
   const { data: pipelines } = usePipelinesQuery()
   const [selectedPipelineId, setSelectedPipelineId] = useState<string>('')
-  const [showClosedDeals, setShowClosedDeals] = useState(false)
 
   // Auto-select default pipeline
   useEffect(() => {
@@ -40,7 +37,6 @@ export const PipelineKanbanPage = () => {
 
   const { data: pipelineView, isLoading: viewLoading } = usePipelineViewQuery(
     selectedPipelineId || undefined,
-    showClosedDeals,
   )
 
   const handleLeadClick = (lead: LeadCardDto) => {
@@ -55,24 +51,6 @@ export const PipelineKanbanPage = () => {
           <p className="text-muted-foreground">{t('crm.pipeline.description')}</p>
         </div>
         <div className="flex items-center gap-3">
-          {/* Show closed toggle */}
-          <div className="flex items-center gap-2">
-            {showClosedDeals ? (
-              <Eye className="h-4 w-4 text-muted-foreground" />
-            ) : (
-              <EyeOff className="h-4 w-4 text-muted-foreground" />
-            )}
-            <Switch
-              checked={showClosedDeals}
-              onCheckedChange={setShowClosedDeals}
-              className="cursor-pointer"
-              aria-label={showClosedDeals ? t('crm.pipeline.hideClosed') : t('crm.pipeline.showClosed')}
-            />
-            <Label className="text-sm cursor-pointer" onClick={() => setShowClosedDeals(!showClosedDeals)}>
-              {showClosedDeals ? t('crm.pipeline.hideClosed') : t('crm.pipeline.showClosed')}
-            </Label>
-          </div>
-
           {/* Pipeline selector */}
           {pipelines && pipelines.length > 1 && (
             <Select value={selectedPipelineId} onValueChange={setSelectedPipelineId}>
@@ -102,7 +80,6 @@ export const PipelineKanbanPage = () => {
       <PipelineKanban
         pipelineView={pipelineView}
         isLoading={viewLoading}
-        showClosedDeals={showClosedDeals}
         onLeadClick={handleLeadClick}
       />
     </div>

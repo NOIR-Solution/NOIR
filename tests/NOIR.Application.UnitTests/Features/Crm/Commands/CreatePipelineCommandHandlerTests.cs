@@ -51,7 +51,9 @@ public class CreatePipelineCommandHandlerTests
         result.IsSuccess.ShouldBe(true);
         result.Value.Name.ShouldBe("Sales Pipeline");
         result.Value.IsDefault.ShouldBe(false);
-        result.Value.Stages.Count().ShouldBe(2);
+        // 2 user-defined stages + 2 auto-added system stages (Won + Lost)
+        result.Value.Stages.Count().ShouldBe(4);
+        result.Value.Stages.Count(s => s.IsSystem).ShouldBe(2);
 
         _pipelineRepoMock.Verify(
             x => x.AddAsync(It.IsAny<Pipeline>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -98,11 +100,13 @@ public class CreatePipelineCommandHandlerTests
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
-        // Assert
+        // Assert: 3 user stages (ordered by SortOrder) + 2 system stages (Won, Lost) at the end
         result.IsSuccess.ShouldBe(true);
-        result.Value.Stages.Count().ShouldBe(3);
+        result.Value.Stages.Count().ShouldBe(5);
         result.Value.Stages[0].Name.ShouldBe("Qualification");
         result.Value.Stages[1].Name.ShouldBe("Proposal");
         result.Value.Stages[2].Name.ShouldBe("Negotiation");
+        result.Value.Stages[3].IsSystem.ShouldBe(true); // Won
+        result.Value.Stages[4].IsSystem.ShouldBe(true); // Lost
     }
 }

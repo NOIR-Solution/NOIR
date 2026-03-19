@@ -144,3 +144,16 @@ public sealed class ActiveLeadsByStageSpec : Specification<Lead>
              .TagWith("ActiveLeadsByStage");
     }
 }
+
+/// <summary>
+/// Get active leads in a stage with tracking (for stage migration on delete).
+/// </summary>
+public sealed class ActiveLeadsByStageTrackingSpec : Specification<Lead>
+{
+    public ActiveLeadsByStageTrackingSpec(Guid stageId)
+    {
+        Query.Where(l => l.StageId == stageId && l.Status == LeadStatus.Active)
+             .AsTracking()
+             .TagWith("ActiveLeadsByStageTracking");
+    }
+}

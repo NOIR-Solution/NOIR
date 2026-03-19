@@ -135,6 +135,11 @@ public interface IApplicationDbContext
     DbSet<Pipeline> Pipelines { get; }
 
     /// <summary>
+    /// CRM pipeline stages DbSet for direct stage mutations.
+    /// </summary>
+    DbSet<PipelineStage> PipelineStages { get; }
+
+    /// <summary>
     /// CRM activities DbSet for aggregate queries.
     /// </summary>
     DbSet<CrmActivity> CrmActivities { get; }

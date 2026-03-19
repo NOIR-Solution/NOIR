@@ -1,6 +1,10 @@
 using NOIR.Application.Features.Crm.Commands.CreatePipeline;
 using NOIR.Application.Features.Crm.Commands.UpdatePipeline;
 using NOIR.Application.Features.Crm.Commands.DeletePipeline;
+using NOIR.Application.Features.Crm.Commands.CreateStage;
+using NOIR.Application.Features.Crm.Commands.UpdateStage;
+using NOIR.Application.Features.Crm.Commands.DeleteStage;
+using NOIR.Application.Features.Crm.Commands.ReorderStages;
 using NOIR.Application.Features.Crm.Queries.GetPipelines;
 using NOIR.Application.Features.Crm.Queries.GetPipelineView;
 using NOIR.Application.Features.Crm.Queries.GetCrmDashboard;
@@ -96,6 +100,88 @@ public static class PipelineEndpoints
         .Produces<PipelineDto>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        // ── Stage CRUD ─────────────────────────────────────────────────────────
+
+        group.MapPost("/{pipelineId:guid}/stages", async (
+            Guid pipelineId,
+            CreateStageRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new CreateStageCommand(pipelineId, request.Name, request.Color)
+            {
+                AuditUserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<PipelineStageDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.CrmPipelineManage)
+        .WithName("CreateStage")
+        .WithSummary("Add a new stage to a pipeline")
+        .Produces<PipelineStageDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
+
+        group.MapPut("/{pipelineId:guid}/stages/{stageId:guid}", async (
+            Guid pipelineId,
+            Guid stageId,
+            UpdateStageRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new UpdateStageCommand(stageId, request.Name, request.Color)
+            {
+                AuditUserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<PipelineStageDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.CrmPipelineManage)
+        .WithName("UpdateStage")
+        .WithSummary("Update a pipeline stage (system stages: color only)")
+        .Produces<PipelineStageDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        group.MapDelete("/{pipelineId:guid}/stages/{stageId:guid}", async (
+            Guid pipelineId,
+            Guid stageId,
+            [FromQuery] Guid moveLeadsToStageId,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new DeleteStageCommand(stageId, moveLeadsToStageId)
+            {
+                AuditUserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<PipelineStageDto>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.CrmPipelineManage)
+        .WithName("DeleteStage")
+        .WithSummary("Delete a stage, migrating its leads to another stage first")
+        .Produces<PipelineStageDto>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
+
+        group.MapPut("/{pipelineId:guid}/stages/reorder", async (
+            Guid pipelineId,
+            ReorderStagesRequest request,
+            [FromServices] ICurrentUser currentUser,
+            IMessageBus bus) =>
+        {
+            var command = new ReorderStagesCommand(pipelineId, request.StageIds)
+            {
+                AuditUserId = currentUser.UserId
+            };
+            var result = await bus.InvokeAsync<Result<List<PipelineStageDto>>>(command);
+            return result.ToHttpResult();
+        })
+        .RequireAuthorization(Permissions.CrmPipelineManage)
+        .WithName("ReorderStages")
+        .WithSummary("Reorder active pipeline stages (system stages always remain at end)")
+        .Produces<List<PipelineStageDto>>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest);
 
         // CRM Dashboard (placed here as a general CRM endpoint)
         app.MapGroup("/api/crm")

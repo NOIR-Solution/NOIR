@@ -17,9 +17,9 @@ export const useLeadQuery = (id: string | undefined) =>
     enabled: !!id,
   })
 
-export const usePipelineViewQuery = (pipelineId: string | undefined, includeClosedDeals = false) =>
+export const usePipelineViewQuery = (pipelineId: string | undefined) =>
   useQuery({
-    queryKey: crmPipelineKeys.view(pipelineId!, includeClosedDeals),
-    queryFn: () => getPipelineView(pipelineId!, includeClosedDeals),
+    queryKey: crmPipelineKeys.view(pipelineId!),
+    queryFn: () => getPipelineView(pipelineId!),
     enabled: !!pipelineId,
   })

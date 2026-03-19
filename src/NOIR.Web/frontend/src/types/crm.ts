@@ -3,6 +3,7 @@
 export type ContactSource = 'Web' | 'Referral' | 'Social' | 'Cold' | 'Event' | 'Other'
 export type LeadStatus = 'Active' | 'Won' | 'Lost'
 export type ActivityType = 'Call' | 'Email' | 'Meeting' | 'Note'
+export type StageType = 'Active' | 'Won' | 'Lost'
 
 // ─── Contact DTOs ──────────────────────────────────────────────────────────
 
@@ -161,6 +162,8 @@ export interface PipelineStageDto {
   name: string
   sortOrder: number
   color: string
+  stageType: StageType
+  isSystem: boolean
 }
 
 export interface StageWithLeadsDto {
@@ -171,6 +174,8 @@ export interface StageWithLeadsDto {
   totalValue: number
   leadCount: number
   leads: LeadCardDto[]
+  stageType: StageType
+  isSystem: boolean
 }
 
 export interface PipelineViewDto {

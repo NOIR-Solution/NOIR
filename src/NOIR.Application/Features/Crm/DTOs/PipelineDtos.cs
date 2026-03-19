@@ -18,7 +18,9 @@ public sealed record PipelineStageDto(
     Guid Id,
     string Name,
     int SortOrder,
-    string Color);
+    string Color,
+    StageType StageType = StageType.Active,
+    bool IsSystem = false);
 
 /// <summary>
 /// Pipeline Kanban view with leads grouped by stage.
@@ -38,7 +40,9 @@ public sealed record StageWithLeadsDto(
     string Color,
     IReadOnlyList<LeadCardDto> Leads,
     decimal TotalValue,
-    int LeadCount);
+    int LeadCount,
+    StageType StageType = StageType.Active,
+    bool IsSystem = false);
 
 /// <summary>
 /// Stage data for creating a pipeline.
@@ -47,6 +51,15 @@ public sealed record CreatePipelineStageDto(
     string Name,
     int SortOrder,
     string Color = "#6366f1");
+
+/// <summary>Request to add a stage to an existing pipeline.</summary>
+public sealed record CreateStageRequest(string Name, string Color = "#6366f1");
+
+/// <summary>Request to update an existing stage.</summary>
+public sealed record UpdateStageRequest(string Name, string Color);
+
+/// <summary>Request to reorder active stages in a pipeline.</summary>
+public sealed record ReorderStagesRequest(List<Guid> StageIds);
 
 /// <summary>
 /// Stage data for updating a pipeline. Null Id = new stage.

@@ -172,11 +172,8 @@ export const getPipelines = async (): Promise<PipelineDto[]> => {
   return apiClient<PipelineDto[]>('/crm/pipelines')
 }
 
-export const getPipelineView = async (pipelineId: string, includeClosedDeals = false): Promise<PipelineViewDto> => {
-  const queryParams = new URLSearchParams()
-  if (includeClosedDeals) queryParams.append('includeClosedDeals', 'true')
-  const query = queryParams.toString()
-  return apiClient<PipelineViewDto>(`/crm/pipelines/${pipelineId}/view${query ? `?${query}` : ''}`)
+export const getPipelineView = async (pipelineId: string): Promise<PipelineViewDto> => {
+  return apiClient<PipelineViewDto>(`/crm/pipelines/${pipelineId}/view`)
 }
 
 export const createPipeline = async (request: CreatePipelineRequest): Promise<PipelineDto> => {
