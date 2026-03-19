@@ -310,40 +310,23 @@ export const DataTable = <TData extends RowData>({
           style={{ ...columnSizeVars, ...((isLoading || hasRows) && { minWidth: `${minTableWidth}px` }) }}
           wrapperClassName={(!isLoading && !hasRows) ? 'overflow-x-hidden' : undefined}
         >
-          {/* Colgroup — fixed cols get exact px, flex cols use cqi to fill remaining space.
-              Skip when empty: cqi calc rounding across many columns can exceed container by subpixels → unwanted scrollbar */}
+          {/* Colgroup — fixed cols (minSize===maxSize) get exact px widths,
+              flex cols have no width (table-auto lets the browser size them to content).
+              Skip when empty to avoid subpixel scrollbar artifacts. */}
           {(isLoading || hasRows) && (
           <colgroup>
-            {(() => {
-              const fixedTotal = visibleColumns.reduce((acc, col) => {
-                const min = col.columnDef.minSize
-                const max = col.columnDef.maxSize
-                return acc + (min !== undefined && max !== undefined && min === max ? min : 0)
-              }, 0)
-              const flexTotal = visibleColumns.reduce((acc, col) => {
-                const min = col.columnDef.minSize
-                const max = col.columnDef.maxSize
-                return acc + (min !== undefined && max !== undefined && min === max ? 0 : col.getSize())
-              }, 0)
-
-              return visibleColumns.map((column) => {
-                const minSize = column.columnDef.minSize
-                const maxSize = column.columnDef.maxSize
-                const isFixed = minSize !== undefined && maxSize !== undefined && minSize === maxSize
-                // Fixed: exact pixels. Flex: proportional share of (container - fixed) via cqi units.
-                // cqi = 1% of container inline size. 100cqi = container width.
-                const flexWidth = flexTotal > 0
-                  ? `calc((100cqi - ${fixedTotal}px) * ${column.getSize()} / ${flexTotal})`
-                  : `${column.getSize()}px`
-                return (
-                  <col
-                    key={column.id}
-                    data-col-id={column.id}
-                    style={{ width: isFixed ? `${minSize}px` : flexWidth }}
-                  />
-                )
-              })
-            })()}
+            {visibleColumns.map((column) => {
+              const minSize = column.columnDef.minSize
+              const maxSize = column.columnDef.maxSize
+              const isFixed = minSize !== undefined && maxSize !== undefined && minSize === maxSize
+              return (
+                <col
+                  key={column.id}
+                  data-col-id={column.id}
+                  style={isFixed ? { width: `${minSize}px` } : undefined}
+                />
+              )
+            })}
           </colgroup>
           )}
 

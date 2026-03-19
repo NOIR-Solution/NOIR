@@ -11,7 +11,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
   <div className={cn("relative w-full overflow-x-auto overflow-y-hidden outline-none", wrapperClassName)} tabIndex={0} role="region" aria-label="Scrollable table">
     <table
       ref={ref}
-      className={cn("w-full caption-bottom table-fixed", className)}
+      className={cn("w-full caption-bottom table-auto", className)}
       style={{ fontSize: 'var(--density-font-size)', ...style }}
       {...props}
     />
