@@ -98,7 +98,7 @@ const DataTableDemo = ({
 
   const displayedRows = isEmpty ? [] : INVOICES
 
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
     data: displayedRows,
     columns,
     tableKey: 'storybook-default',
@@ -134,8 +134,6 @@ const DataTableDemo = ({
         onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
         isCustomized={isCustomized}
         onResetSettings={resetToDefault}
-        density={settings.density}
-        onDensityChange={setDensity}
       />
 
       {selectedIds.length > 0 && (
@@ -146,7 +144,6 @@ const DataTableDemo = ({
 
       <DataTable
         table={table}
-        density={settings.density}
         isLoading={isLoading}
         onRowClick={(row) => alert(`Clicked: ${row.invoice}`)}
       />
@@ -243,7 +240,7 @@ const EnterpriseDataTableDemo = () => {
   const [searchInput, setSearchInput] = useState('')
   const columns = useMemo(getEnterpriseColumns, [])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity, setGrouping } =
+  const { table, settings, isCustomized, resetToDefault, setGrouping } =
     useEnterpriseTable({
       data: INVOICES,
       columns,
@@ -272,8 +269,6 @@ const EnterpriseDataTableDemo = () => {
         }}
         isCustomized={isCustomized}
         onResetSettings={resetToDefault}
-        density={settings.density}
-        onDensityChange={setDensity}
         onExportCSV={() => exportTableToCSV(table, { filename: 'invoices' })}
         onExportExcel={() => exportTableToExcel(table, { filename: 'invoices' })}
         groupableColumnIds={['status', 'method']}
@@ -283,7 +278,6 @@ const EnterpriseDataTableDemo = () => {
 
       <DataTable
         table={table}
-        density={settings.density}
         emptyState={
           <div className="py-8 text-center text-sm text-muted-foreground">No invoices found</div>
         }
@@ -300,7 +294,7 @@ export const Enterprise: Story = {
     docs: {
       description: {
         story:
-          'Enterprise-grade DataTable with column pinning, resizing, drag-to-reorder, density toggle, CSV/Excel export, and Group By — all settings persisted to localStorage.',
+          'Enterprise-grade DataTable with column pinning, resizing, drag-to-reorder, CSV/Excel export, and Group By — all settings persisted to localStorage. Density is controlled globally via Profile Settings.',
       },
     },
   },
@@ -406,7 +400,6 @@ const RowAnimationDemo = () => {
 
       <DataTable
         table={table}
-        density={settings.density}
         getRowAnimationClass={getRowAnimationClass}
       />
 
@@ -477,7 +470,7 @@ const GroupingAggregationDemo = () => {
     }) as ColumnDef<InvoiceRow, unknown>,
   ], [])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity, setGrouping } =
+  const { table, settings, isCustomized, resetToDefault, setGrouping } =
     useEnterpriseTable({
       data: INVOICES,
       columns,
@@ -506,8 +499,6 @@ const GroupingAggregationDemo = () => {
         onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
         isCustomized={isCustomized}
         onResetSettings={resetToDefault}
-        density={settings.density}
-        onDensityChange={setDensity}
         groupableColumnIds={['status', 'method']}
         grouping={settings.grouping}
         onGroupingChange={setGrouping}
@@ -515,7 +506,6 @@ const GroupingAggregationDemo = () => {
 
       <DataTable
         table={table}
-        density={settings.density}
         emptyState={
           <div className="py-8 text-center text-sm text-muted-foreground">No invoices found</div>
         }

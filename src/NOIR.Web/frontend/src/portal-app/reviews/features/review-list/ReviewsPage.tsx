@@ -221,7 +221,7 @@ export const ReviewsPage = () => {
   ], [t, formatDateTime])
 
   // Table instance
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
     data: tableData,
     columns,
     tableKey: 'reviews',
@@ -333,8 +333,6 @@ export const ReviewsPage = () => {
               onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
               isCustomized={isCustomized}
               onResetSettings={resetToDefault}
-              density={settings.density}
-              onDensityChange={setDensity}
               filterSlot={
                 <Select value={ratingFilter} onValueChange={handleRatingFilter}>
                   <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('reviews.filterByRating', 'Filter rating')}>
@@ -384,7 +382,6 @@ export const ReviewsPage = () => {
 
           <DataTable
             table={table}
-            density={settings.density}
             isLoading={isLoading}
             isStale={isContentStale}
             onRowClick={selectedCount === 0 ? (review) => setDetailReviewId(review.id) : undefined}

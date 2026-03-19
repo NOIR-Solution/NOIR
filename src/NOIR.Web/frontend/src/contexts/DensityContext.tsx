@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from 'react'
 
-export type Density = 'compact' | 'comfortable' | 'spacious'
+export type Density = 'compact' | 'normal' | 'comfortable'
 
 interface DensityContextType {
   /** Current density setting */
@@ -19,10 +19,10 @@ interface DensityContextType {
 const DensityContext = createContext<DensityContextType | undefined>(undefined)
 
 const STORAGE_KEY = 'noir-density-preference'
-const DEFAULT_DENSITY: Density = 'comfortable'
+const DEFAULT_DENSITY: Density = 'normal'
 
 const isValidDensity = (value: string | null): value is Density =>
-  value === 'compact' || value === 'comfortable' || value === 'spacious'
+  value === 'compact' || value === 'normal' || value === 'comfortable'
 
 const applyDensity = (density: Density) => {
   document.documentElement.setAttribute('data-density', density)

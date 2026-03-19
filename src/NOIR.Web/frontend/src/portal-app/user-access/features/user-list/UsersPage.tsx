@@ -243,7 +243,7 @@ export const UsersPage = () => {
   const users = data?.items ?? []
   const { editItem: userToEdit, openEdit: openEditUser, closeEdit: closeEditUser } = useUrlEditDialog<UserListItem>(users)
 
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
     data: users,
     columns,
     tableKey: 'users',
@@ -303,8 +303,6 @@ export const UsersPage = () => {
               onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
               isCustomized={isCustomized}
               onResetSettings={resetToDefault}
-              density={settings.density}
-              onDensityChange={setDensity}
               filterSlot={
                 <>
                   <Select
@@ -350,7 +348,6 @@ export const UsersPage = () => {
 
           <DataTable
             table={table}
-            density={settings.density}
             isLoading={isLoading}
             isStale={isContentStale}
             onRowClick={canEditUsers ? openEditUser : undefined}

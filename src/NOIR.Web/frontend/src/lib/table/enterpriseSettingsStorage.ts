@@ -186,10 +186,6 @@ export const checkIsCustomized = (
     return true
   }
 
-  // Check UI
-  if (settings.density !== 'normal') {
-    return true
-  }
   if (settings.showFiltersRow) {
     return true
   }

@@ -200,7 +200,7 @@ export const RolesPage = () => {
     return items.filter((r) => typeFilter === 'system' ? r.isSystemRole : !r.isSystemRole)
   }, [data?.items, typeFilter])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
     data: tableData,
     columns,
     tableKey: 'roles',
@@ -260,8 +260,6 @@ export const RolesPage = () => {
               onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
               isCustomized={isCustomized}
               onResetSettings={resetToDefault}
-              density={settings.density}
-              onDensityChange={setDensity}
               filterSlot={
                 <Select value={typeFilter} onValueChange={handleTypeFilter}>
                   <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('roles.filterByType', 'Filter by type')}>
@@ -280,7 +278,6 @@ export const RolesPage = () => {
         <CardContent className="space-y-3">
           <DataTable
             table={table}
-            density={settings.density}
             isLoading={isLoading}
             isStale={isContentStale}
             onRowClick={canUpdate ? openEditRole : undefined}

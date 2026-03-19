@@ -269,10 +269,10 @@ export const CommandPalette = () => {
     // Density toggle actions (show options other than current)
     const densityLabelKeys: Record<Density, string> = {
       compact: 'commandPalette.densityCompact',
+      normal: 'commandPalette.densityNormal',
       comfortable: 'commandPalette.densityComfortable',
-      spacious: 'commandPalette.densitySpacious',
     }
-    const densityActions = (['compact', 'comfortable', 'spacious'] as Density[])
+    const densityActions = (['compact', 'normal', 'comfortable'] as Density[])
       .filter((d) => d !== density)
       .map((d) => ({
         icon: SlidersHorizontal,

@@ -37,9 +37,6 @@ export interface EnterpriseTableSettings {
   /** Expanded groups — `true` means all expanded (TanStack sentinel), object for individual */
   expanded: true | Record<string, boolean>
 
-  /** UI density */
-  density: 'compact' | 'normal' | 'comfortable'
-
   /** Show filters row */
   showFiltersRow: boolean
 }
@@ -64,7 +61,6 @@ export const createDefaultSettings = (
   },
   grouping: [],
   expanded: {},
-  density: 'normal',
   showFiltersRow: false,
 })
 
@@ -73,7 +69,7 @@ export const createDefaultSettings = (
  *
  * Unified hook replacing both useServerTable and the original useEnterpriseTable.
  * Server-side state (pagination, sorting) is managed externally via props.
- * Enterprise UI state (visibility, order, sizing, pinning, density) is managed
+ * Enterprise UI state (visibility, order, sizing, pinning) is managed
  * internally and persisted to localStorage.
  */
 export interface EnterpriseTableOptions<TData> {
@@ -147,7 +143,7 @@ export interface EnterpriseTableReturn<TData> {
   /** TanStack table instance */
   table: Table<TData>
 
-  /** Current persisted settings (visibility, order, sizing, pinning, density) */
+  /** Current persisted settings (visibility, order, sizing, pinning) */
   settings: EnterpriseTableSettings
 
   /** Update settings (persists automatically) */
@@ -170,8 +166,6 @@ export interface EnterpriseTableReturn<TData> {
   expandAllGroups: () => void
   collapseAllGroups: () => void
 
-  /** UI actions */
-  setDensity: (density: EnterpriseTableSettings['density']) => void
   toggleFiltersRow: () => void
 }
 

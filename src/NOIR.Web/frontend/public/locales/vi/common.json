@@ -113,8 +113,8 @@
     "hintClose": "đóng",
     "hintOpen": "để mở",
     "densityCompact": "Chuyển sang mật độ thu gọn",
+    "densityNormal": "Chuyển sang mật độ bình thường",
     "densityComfortable": "Chuyển sang mật độ thoải mái",
-    "densitySpacious": "Chuyển sang mật độ rộng rãi",
     "searchResults": "Kết quả tìm kiếm",
     "searchProducts": "Sản phẩm",
     "searchOrders": "Đơn hàng",
@@ -130,10 +130,10 @@
     "description": "Điều chỉnh khoảng cách và kích thước của bảng, danh sách và thẻ.",
     "compact": "Thu gọn",
     "compactDescription": "Cho người dùng chuyên nghiệp và dữ liệu lớn",
+    "normal": "Bình thường",
+    "normalDescription": "Khoảng cách mặc định cân bằng",
     "comfortable": "Thoải mái",
-    "comfortableDescription": "Khoảng cách mặc định cân bằng",
-    "spacious": "Rộng rãi",
-    "spaciousDescription": "Nhiều không gian hơn cho khả năng tiếp cận"
+    "comfortableDescription": "Nhiều không gian hơn cho khả năng đọc"
   },
   "products": {
     "title": "Sản phẩm",
@@ -2135,11 +2135,7 @@
     "modifiedAt": "Ngày sửa",
     "creator": "Người tạo",
     "editor": "Người sửa",
-    "lastEditor": "Người sửa",
-    "density": "Mật độ hàng",
-    "densityCompact": "Thu gọn",
-    "densityNormal": "Bình thường",
-    "densityComfortable": "Thoải mái"
+    "lastEditor": "Người sửa"
   },
   "dataTable": {
     "sortAscending": "Sắp xếp tăng dần",

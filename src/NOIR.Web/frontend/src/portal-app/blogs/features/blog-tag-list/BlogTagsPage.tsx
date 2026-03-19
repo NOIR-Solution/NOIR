@@ -120,7 +120,7 @@ export const BlogTagsPage = () => {
 
   const tableData = useMemo(() => data, [data])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
     data: tableData,
     columns,
     tableKey: 'blog-tags',
@@ -172,15 +172,12 @@ export const BlogTagsPage = () => {
               onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
               isCustomized={isCustomized}
               onResetSettings={resetToDefault}
-              density={settings.density}
-              onDensityChange={setDensity}
             />
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
           <DataTable
             table={table}
-            density={settings.density}
             isLoading={isLoading}
             isStale={isContentStale}
             getRowAnimationClass={getRowAnimationClass}

@@ -295,14 +295,6 @@
   --density-header-height: 60px;
 }
 
-[data-density="spacious"] {
-  --density-row-height: 52px;
-  --density-cell-padding-y: 12px;
-  --density-cell-padding-x: 16px;
-  --density-font-size: 0.875rem;
-  --density-header-height: 56px;
-}
-
 /* Custom animations for landing and login pages */
 
 /* Gradient shift animation for backgrounds */

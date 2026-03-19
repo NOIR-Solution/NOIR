@@ -154,7 +154,7 @@ export const BlogCategoriesPage = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t, formatDateTime])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
     data,
     columns,
     rowCount: data.length,
@@ -208,8 +208,6 @@ export const BlogCategoriesPage = () => {
               onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
               isCustomized={isCustomized}
               onResetSettings={resetToDefault}
-              density={settings.density}
-              onDensityChange={setDensity}
               showColumnToggle={viewMode === 'table'}
             />
           </div>
@@ -243,7 +241,6 @@ export const BlogCategoriesPage = () => {
             <div className="space-y-3">
               <DataTable
                 table={table}
-                density={settings.density}
                 isLoading={isLoading}
                 isStale={isContentStale}
                 getRowAnimationClass={getRowAnimationClass}

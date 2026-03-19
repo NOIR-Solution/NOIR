@@ -185,7 +185,7 @@ export const TenantsPage = () => {
 
   const tableData = useMemo(() => data?.items ?? [], [data?.items])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
     data: tableData,
     columns,
     tableKey: 'tenants',
@@ -243,15 +243,12 @@ export const TenantsPage = () => {
               onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
               isCustomized={isCustomized}
               onResetSettings={resetToDefault}
-              density={settings.density}
-              onDensityChange={setDensity}
             />
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
           <DataTable
             table={table}
-            density={settings.density}
             isLoading={isLoading}
             isStale={isContentStale}
             onRowClick={(tenant) => handleEdit(tenant, 'details')}

@@ -113,8 +113,8 @@
     "hintClose": "close",
     "hintOpen": "to open",
     "densityCompact": "Switch to compact density",
+    "densityNormal": "Switch to normal density",
     "densityComfortable": "Switch to comfortable density",
-    "densitySpacious": "Switch to spacious density",
     "searchResults": "Search Results",
     "searchProducts": "Products",
     "searchOrders": "Orders",
@@ -130,10 +130,10 @@
     "description": "Adjust the spacing and size of tables, lists, and cards.",
     "compact": "Compact",
     "compactDescription": "For power users and large datasets",
+    "normal": "Normal",
+    "normalDescription": "Balanced default spacing",
     "comfortable": "Comfortable",
-    "comfortableDescription": "Balanced default spacing",
-    "spacious": "Spacious",
-    "spaciousDescription": "More breathing room for accessibility"
+    "comfortableDescription": "More breathing room for readability"
   },
   "products": {
     "title": "Products",
@@ -2135,11 +2135,7 @@
     "modifiedAt": "Modified At",
     "creator": "Creator",
     "editor": "Editor",
-    "lastEditor": "Editor",
-    "density": "Row density",
-    "densityCompact": "Compact",
-    "densityNormal": "Normal",
-    "densityComfortable": "Comfortable"
+    "lastEditor": "Editor"
   },
   "dataTable": {
     "sortAscending": "Sort Ascending",

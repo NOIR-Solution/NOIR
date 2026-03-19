@@ -1,5 +1,5 @@
 import type { Table, RowData } from '@tanstack/react-table'
-import { Search, X, Download, AlignJustify } from 'lucide-react'
+import { Search, X, Download } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { Button } from '../button/Button'
@@ -46,12 +46,6 @@ interface DataTableToolbarProps<TData extends RowData> {
   /** Called when user clicks "Reset to default" (full settings reset). */
   onResetSettings?: () => void
   /**
-   * Current density setting. When provided, shows a density toggle button.
-   */
-  density?: 'compact' | 'normal' | 'comfortable'
-  /** Called when user changes the density. */
-  onDensityChange?: (density: 'compact' | 'normal' | 'comfortable') => void
-  /**
    * Called to export table data as CSV.
    * When provided, shows an Export button.
    */
@@ -92,8 +86,6 @@ export const DataTableToolbar = <TData extends RowData>({
   onColumnsReorder,
   isCustomized = false,
   onResetSettings,
-  density,
-  onDensityChange,
   onExportCSV,
   onExportExcel,
   groupableColumnIds,
@@ -103,7 +95,6 @@ export const DataTableToolbar = <TData extends RowData>({
   const { t } = useTranslation('common')
 
   const hasExport = onExportCSV || onExportExcel
-  const hasDensityToggle = density !== undefined && onDensityChange !== undefined
 
   return (
     <div className={cn('flex flex-col gap-3 sm:flex-row sm:items-center', className)}>
@@ -141,47 +132,6 @@ export const DataTableToolbar = <TData extends RowData>({
 
       {/* Right: density + export + column management + actions */}
       <div className="flex items-center gap-2">
-        {/* Density toggle */}
-        {hasDensityToggle && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-9 cursor-pointer"
-                aria-label={t('labels.density', 'Row density')}
-              >
-                <AlignJustify className="mr-1.5 h-4 w-4" />
-                {density === 'compact'
-                  ? t('labels.densityCompact', 'Compact')
-                  : density === 'comfortable'
-                    ? t('labels.densityComfortable', 'Comfortable')
-                    : t('labels.densityNormal', 'Normal')}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                className={cn('cursor-pointer', density === 'compact' && 'font-medium text-primary')}
-                onClick={() => onDensityChange('compact')}
-              >
-                {t('labels.densityCompact', 'Compact')}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className={cn('cursor-pointer', density === 'normal' && 'font-medium text-primary')}
-                onClick={() => onDensityChange('normal')}
-              >
-                {t('labels.densityNormal', 'Normal')}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className={cn('cursor-pointer', density === 'comfortable' && 'font-medium text-primary')}
-                onClick={() => onDensityChange('comfortable')}
-              >
-                {t('labels.densityComfortable', 'Comfortable')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
-
         {/* Export button */}
         {hasExport && (
           onExportCSV && !onExportExcel ? (

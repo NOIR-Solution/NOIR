@@ -254,7 +254,7 @@ export const BlogPostsPage = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t, formatDateTime])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
     data: tableData,
     columns,
     rowCount: data?.totalCount ?? 0,
@@ -356,8 +356,6 @@ export const BlogPostsPage = () => {
               onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
               isCustomized={isCustomized}
               onResetSettings={resetToDefault}
-              density={settings.density}
-              onDensityChange={setDensity}
               filterSlot={
                 <>
                   <Select value={statusFilter} onValueChange={handleStatusChange}>
@@ -432,7 +430,6 @@ export const BlogPostsPage = () => {
 
           <DataTable
             table={table}
-            density={settings.density}
             isLoading={isLoading}
             isStale={isContentStale}
             onRowClick={selectedCount === 0 ? (post) => navigate(`/portal/blog/posts/${post.id}/edit`) : undefined}

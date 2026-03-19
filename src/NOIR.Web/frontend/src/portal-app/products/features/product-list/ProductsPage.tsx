@@ -462,7 +462,7 @@ export const ProductsPage = () => {
   ], [t, canUpdateProducts, canCreateProducts, canPublishProducts, canDeleteProducts, formatDateTime])
 
   const tableData = useMemo(() => data?.items ?? [], [data?.items])
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
     data: tableData,
     columns,
     tableKey: 'products',
@@ -573,8 +573,6 @@ export const ProductsPage = () => {
                 onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
                 isCustomized={isCustomized}
                 onResetSettings={resetToDefault}
-                density={settings.density}
-                onDensityChange={setDensity}
                 groupableColumnIds={['status', 'category', 'brand']}
                 grouping={settings.grouping}
                 onGroupingChange={(ids) => table.setGrouping(ids)}
@@ -818,7 +816,6 @@ export const ProductsPage = () => {
             <div className="space-y-3">
               <DataTable
                 table={table}
-                density={settings.density}
                 isLoading={loading}
                 isStale={isContentStale}
                 onRowClick={selectedIds.length === 0 ? (product) => navigate(`/portal/ecommerce/products/${product.id}`) : undefined}

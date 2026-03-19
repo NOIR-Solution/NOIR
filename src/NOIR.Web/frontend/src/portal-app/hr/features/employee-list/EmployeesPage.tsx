@@ -321,7 +321,7 @@ export const EmployeesPage = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t, formatDateTime])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity, setGrouping } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault, setGrouping } = useEnterpriseTable({
     data: employees,
     columns,
     tableKey: 'employees',
@@ -388,8 +388,6 @@ export const EmployeesPage = () => {
               onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
               isCustomized={isCustomized}
               onResetSettings={resetToDefault}
-              density={settings.density}
-              onDensityChange={setDensity}
               groupableColumnIds={['department', 'status', 'employmentType']}
               grouping={settings.grouping}
               onGroupingChange={setGrouping}
@@ -459,7 +457,6 @@ export const EmployeesPage = () => {
 
           <DataTable
             table={table}
-            density={settings.density}
             isLoading={isLoading}
             isStale={isContentStale}
             onRowClick={handleViewEmployee}

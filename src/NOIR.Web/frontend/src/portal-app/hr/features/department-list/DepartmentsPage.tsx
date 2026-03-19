@@ -219,7 +219,7 @@ export const DepartmentsPage = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t, flatDepartments, formatDateTime])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
     data: paginatedDepartments,
     columns,
     tableKey: 'departments',
@@ -284,8 +284,6 @@ export const DepartmentsPage = () => {
               onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
               isCustomized={isCustomized}
               onResetSettings={resetToDefault}
-              density={settings.density}
-              onDensityChange={setDensity}
             />
           </div>
         </CardHeader>
@@ -319,7 +317,6 @@ export const DepartmentsPage = () => {
             <>
               <DataTable
                 table={table}
-                density={settings.density}
                 isLoading={loading}
                 isStale={isContentStale}
                 onRowClick={openEditDepartment}

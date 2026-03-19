@@ -205,7 +205,7 @@ export const ContactsPage = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t, canUpdate, canDelete, showActions, formatDateTime])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
     data: contacts,
     columns,
     tableKey: 'crm-contacts',
@@ -260,8 +260,6 @@ export const ContactsPage = () => {
               onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
               isCustomized={isCustomized}
               onResetSettings={resetToDefault}
-              density={settings.density}
-              onDensityChange={setDensity}
               filterSlot={
                 <Select value={params.filters.source ?? 'all'} onValueChange={handleSourceFilter}>
                   <SelectTrigger className="w-[140px] h-9 cursor-pointer" aria-label={t('crm.contacts.filterBySource')}>
@@ -287,7 +285,6 @@ export const ContactsPage = () => {
 
           <DataTable
             table={table}
-            density={settings.density}
             isLoading={isLoading}
             isStale={isContentStale}
             onRowClick={handleViewContact}

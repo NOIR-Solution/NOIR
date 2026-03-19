@@ -157,7 +157,7 @@ export const PaymentsPage = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t, formatDateTime])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity, setGrouping } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault, setGrouping } = useEnterpriseTable({
     data: payments,
     columns,
     tableKey: 'payments',
@@ -216,8 +216,6 @@ export const PaymentsPage = () => {
               onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
               isCustomized={isCustomized}
               onResetSettings={resetToDefault}
-              density={settings.density}
-              onDensityChange={setDensity}
               groupableColumnIds={['status', 'method']}
               grouping={settings.grouping}
               onGroupingChange={setGrouping}
@@ -263,7 +261,6 @@ export const PaymentsPage = () => {
 
           <DataTable
             table={table}
-            density={settings.density}
             isLoading={isLoading}
             isStale={isContentStale}
             onRowClick={handleViewPayment}

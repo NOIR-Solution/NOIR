@@ -171,7 +171,7 @@ export const ProductAttributesPage = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t, canUpdateAttributes, canDeleteAttributes, showActions, formatDateTime])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
     data: attributes,
     columns,
     tableKey: 'product-attributes',
@@ -226,8 +226,6 @@ export const ProductAttributesPage = () => {
               onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
               isCustomized={isCustomized}
               onResetSettings={resetToDefault}
-              density={settings.density}
-              onDensityChange={setDensity}
             />
           </div>
         </CardHeader>
@@ -240,7 +238,6 @@ export const ProductAttributesPage = () => {
 
           <DataTable
             table={table}
-            density={settings.density}
             isLoading={isLoading}
             isStale={isContentStale}
             getRowAnimationClass={getRowAnimationClass}

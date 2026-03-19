@@ -258,7 +258,7 @@ export const MediaLibraryPage = () => {
   ], [t, formatDateTime])
 
   const tableData = useMemo(() => data?.items ?? [], [data?.items])
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
     data: tableData,
     columns,
     rowCount: data?.totalCount ?? 0,
@@ -358,8 +358,6 @@ export const MediaLibraryPage = () => {
                 onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
                 isCustomized={isCustomized}
                 onResetSettings={resetToDefault}
-                density={settings.density}
-                onDensityChange={setDensity}
                 filterSlot={
                   <MediaToolbar
                     searchValue={searchInput}
@@ -458,7 +456,6 @@ export const MediaLibraryPage = () => {
             <div className="space-y-3">
               <DataTable
                 table={table}
-                density={settings.density}
                 isLoading={isLoading}
                 isStale={isContentStale}
                 onRowClick={(item) => setDetailFile(item)}

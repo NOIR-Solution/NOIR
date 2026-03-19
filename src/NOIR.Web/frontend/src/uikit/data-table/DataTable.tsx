@@ -176,11 +176,6 @@ interface DataTableProps<TData extends RowData> {
   skeletonRowCount?: number
   className?: string
   /**
-   * Row density — compact (32px), normal (44px), comfortable (56px).
-   * Adds data-density attribute for CSS targeting.
-   */
-  density?: 'compact' | 'normal' | 'comfortable'
-  /**
    * Returns a CSS class name for row animation (highlight flash, fade-out).
    * Use with `useRowHighlight` hook.
    */
@@ -225,7 +220,6 @@ export const DataTable = <TData extends RowData>({
   onRowClick,
   skeletonRowCount = 5,
   className,
-  density = 'normal',
   getRowAnimationClass,
   focusedRowIndex = null,
   keyboardNavProps,
@@ -303,7 +297,6 @@ export const DataTable = <TData extends RowData>({
           isStale && 'opacity-60 pointer-events-none',
           className,
         )}
-        data-density={density}
         {...(keyboardNavProps as React.HTMLAttributes<HTMLDivElement>)}
       >
         <UITable

@@ -29,12 +29,12 @@ import {
  * Unified DataTable hook — replaces useServerTable.
  *
  * - Server-side state (pagination, sorting) → accepted as external props
- * - Enterprise UI state (visibility, order, sizing, pinning, density) → managed internally + persisted
+ * - Enterprise UI state (visibility, order, sizing, pinning) → managed internally + persisted
  * - Row selection → managed internally, accessible via table.getState().rowSelection
  *
  * @example Server-side (production pages)
  * ```tsx
- * const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+ * const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
  *   data: data?.items ?? [],
  *   columns,
  *   tableKey: 'users',
@@ -196,11 +196,6 @@ export const useEnterpriseTable = <TData>({
     updateSettings(prev => ({ ...prev, expanded: {} }))
   }, [updateSettings])
 
-  // ─── UI actions ────────────────────────────────────────────────────────────
-  const setDensity = useCallback((density: EnterpriseTableSettings['density']) => {
-    updateSettings(prev => ({ ...prev, density }))
-  }, [updateSettings])
-
   const toggleFiltersRow = useCallback(() => {
     updateSettings(prev => ({ ...prev, showFiltersRow: !prev.showFiltersRow }))
   }, [updateSettings])
@@ -348,7 +343,6 @@ export const useEnterpriseTable = <TData>({
     toggleGroupExpansion,
     expandAllGroups,
     collapseAllGroups,
-    setDensity,
     toggleFiltersRow,
   }
 }

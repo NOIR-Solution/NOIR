@@ -150,7 +150,7 @@ export const CustomerGroupsPage = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t, canUpdateGroups, canDeleteGroups, showActions, formatDateTime])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
     data: groups,
     columns,
     rowCount: groupsResponse?.totalCount ?? 0,
@@ -205,8 +205,6 @@ export const CustomerGroupsPage = () => {
               onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
               isCustomized={isCustomized}
               onResetSettings={resetToDefault}
-              density={settings.density}
-              onDensityChange={setDensity}
             />
           </div>
         </CardHeader>
@@ -219,7 +217,6 @@ export const CustomerGroupsPage = () => {
 
           <DataTable
             table={table}
-            density={settings.density}
             isLoading={isLoading}
             isStale={isContentStale}
             onRowClick={openEditGroup}

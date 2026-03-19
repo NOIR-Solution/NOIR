@@ -159,7 +159,7 @@ export const CompaniesPage = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t, canUpdate, canDelete, showActions, formatDateTime])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
     data: companies,
     columns,
     tableKey: 'crm-companies',
@@ -214,8 +214,6 @@ export const CompaniesPage = () => {
               onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
               isCustomized={isCustomized}
               onResetSettings={resetToDefault}
-              density={settings.density}
-              onDensityChange={setDensity}
             />
           </div>
         </CardHeader>
@@ -226,7 +224,6 @@ export const CompaniesPage = () => {
 
           <DataTable
             table={table}
-            density={settings.density}
             isLoading={isLoading}
             isStale={isContentStale}
             onRowClick={handleViewCompany}

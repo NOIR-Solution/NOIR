@@ -233,7 +233,7 @@ export const CustomersPage = () => {
 
   const tableData = useMemo(() => data?.items ?? [], [data?.items])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
     data: tableData,
     columns,
     tableKey: 'customers',
@@ -438,8 +438,6 @@ export const CustomersPage = () => {
               onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
               isCustomized={isCustomized}
               onResetSettings={resetToDefault}
-              density={settings.density}
-              onDensityChange={setDensity}
               groupableColumnIds={['segment', 'tier']}
               grouping={settings.grouping}
               onGroupingChange={(ids) => table.setGrouping(ids)}
@@ -518,7 +516,6 @@ export const CustomersPage = () => {
 
           <DataTable
             table={table}
-            density={settings.density}
             isLoading={isLoading}
             isStale={isContentStale}
             onRowClick={selectedCount === 0 ? (customer) => navigate(`/portal/ecommerce/customers/${customer.id}`) : undefined}

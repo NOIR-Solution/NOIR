@@ -389,7 +389,7 @@ export const ProjectsPage = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [t, formatDateTime])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
     data: sortedItems,
     columns,
     tableKey: 'projects',
@@ -450,8 +450,6 @@ export const ProjectsPage = () => {
             onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
             isCustomized={isCustomized}
             onResetSettings={resetToDefault}
-            density={settings.density}
-            onDensityChange={setDensity}
             filterSlot={
               <>
                 <Select value={params.filters.status ?? 'all'} onValueChange={setStatusFilter}>
@@ -517,7 +515,6 @@ export const ProjectsPage = () => {
             <>
               <DataTable
                 table={table}
-                density={settings.density}
                 isLoading={false}
                 isStale={isContentStale}
                 onRowClick={handleProjectClick}

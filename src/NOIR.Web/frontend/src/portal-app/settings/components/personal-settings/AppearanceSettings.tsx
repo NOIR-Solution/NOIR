@@ -18,15 +18,15 @@ const densityOptions: DensityOption[] = [
     icon: AlignJustify,
   },
   {
-    value: 'comfortable',
-    labelKey: 'density.comfortable',
-    descriptionKey: 'density.comfortableDescription',
+    value: 'normal',
+    labelKey: 'density.normal',
+    descriptionKey: 'density.normalDescription',
     icon: AlignCenter,
   },
   {
-    value: 'spacious',
-    labelKey: 'density.spacious',
-    descriptionKey: 'density.spaciousDescription',
+    value: 'comfortable',
+    labelKey: 'density.comfortable',
+    descriptionKey: 'density.comfortableDescription',
     icon: AlignLeft,
   },
 ]

@@ -248,7 +248,7 @@ export const PromotionsPage = () => {
 
   const tableData = useMemo(() => data?.items ?? [], [data?.items])
 
-  const { table, settings, isCustomized, resetToDefault, setDensity } = useEnterpriseTable({
+  const { table, settings, isCustomized, resetToDefault } = useEnterpriseTable({
     data: tableData,
     columns,
     rowCount: data?.totalCount ?? 0,
@@ -309,8 +309,6 @@ export const PromotionsPage = () => {
               onColumnsReorder={(newOrder) => table.setColumnOrder(newOrder)}
               isCustomized={isCustomized}
               onResetSettings={resetToDefault}
-              density={settings.density}
-              onDensityChange={setDensity}
               filterSlot={
                 <>
                   <Select value={statusFilter} onValueChange={handleStatusFilter}>
@@ -347,7 +345,6 @@ export const PromotionsPage = () => {
         <CardContent className="space-y-3">
           <DataTable
             table={table}
-            density={settings.density}
             isLoading={isLoading}
             isStale={isContentStale}
             onRowClick={openEditPromotion}
