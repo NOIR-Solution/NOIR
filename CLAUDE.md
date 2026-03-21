@@ -1,6 +1,6 @@
 # NOIR - Claude Code Instructions
 
-> For universal AI agent instructions, see [AGENTS.md](AGENTS.md). Version 3.8 (2026-03-14).
+> For universal AI agent instructions, see [AGENTS.md](AGENTS.md). Version 3.9 (2026-03-21).
 
 ## SuperClaude Framework
 
@@ -347,11 +347,12 @@ cd src/NOIR.Web/frontend && pnpm build-storybook  # Build check
 | **Index** | `docs/DOCUMENTATION_INDEX.md` |
 | **Knowledge Base** | `docs/KNOWLEDGE_BASE.md` |
 | **Backend Patterns** | `docs/backend/patterns/` |
-| **MCP Server** | `docs/backend/patterns/mcp-server.md` |
+| **MCP Server** | `docs/backend/patterns/mcp-server.md` (55 tools, 6 prompts, 7 resources) |
 | **Frontend Guide** | `docs/frontend/` |
-| **Hooks Reference** | `docs/frontend/hooks-reference.md` (41 hooks) |
+| **Hooks Reference** | `docs/frontend/hooks-reference.md` (41+ hooks) |
 | **Architecture Decisions** | `docs/decisions/` |
-| **Module Designs** | `docs/designs/` (HR, CRM, PM, Calendar) |
+| **Module Designs** | `docs/designs/` (HR ✅, CRM ✅, PM ✅, Calendar 📋) |
+| **QA Lessons** | `docs/qa/` |
 | **Roadmap** | `docs/roadmap.md` |
 
 Research reports → `docs/backend/research/`.
@@ -363,4 +364,4 @@ Research reports → `docs/backend/research/`.
 
 ---
 
-> Changelog: [CHANGELOG.md](CHANGELOG.md). Current version: 3.8 (2026-03-14).
+> Changelog: [CHANGELOG.md](CHANGELOG.md). Current version: 3.9 (2026-03-21).
