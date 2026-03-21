@@ -63,7 +63,7 @@ export const QuickActionsCard = ({ counts }: QuickActionsCardProps) => {
                 <action.icon className={`h-4 w-4 ${action.color}`} />
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-medium truncate">{action.label}</p>
+                <p className="text-sm font-medium leading-tight">{action.label}</p>
                 <Badge variant="outline" className="text-xs mt-0.5">
                   {action.count}
                 </Badge>

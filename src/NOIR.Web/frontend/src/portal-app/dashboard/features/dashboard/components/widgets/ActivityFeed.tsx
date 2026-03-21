@@ -129,7 +129,7 @@ export const ActivityFeed = ({ items }: ActivityFeedProps) => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <span className="font-medium text-sm leading-tight">
-                            {translateAuditDescription(t, item.description)}
+                            {translateAuditDescription(t, item.description || '')}
                           </span>
                           <Badge variant="outline" className={cn('text-[10px] px-1.5 py-0 leading-relaxed', config.textColor)}>
                             {t(`activityTimeline.operations.${item.type.toLowerCase()}`, item.type)}

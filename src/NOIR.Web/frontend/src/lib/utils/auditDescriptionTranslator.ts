@@ -59,6 +59,39 @@ const translateEntity = (t: TFunction, entity: string): string => {
   return key ? t(key, entity) : entity
 }
 
+/**
+ * Map PascalCase enum values to i18n keys for status translation in audit descriptions.
+ * Falls back to inserting spaces before capitals (e.g. "InProgress" → "In Progress").
+ */
+const STATUS_KEYS: Record<string, string> = {
+  // PM task statuses (top-level statuses.*)
+  'Todo': 'statuses.todo',
+  'InProgress': 'statuses.inProgress',
+  'InReview': 'statuses.inReview',
+  'Done': 'statuses.done',
+  'OnHold': 'statuses.onHold',
+  'Archived': 'statuses.archived',
+  'Cancelled': 'statuses.cancelled',
+  'Completed': 'statuses.completed',
+  'Active': 'statuses.active',
+  // Order statuses (orders.status.*)
+  'Pending': 'orders.status.pending',
+  'Confirmed': 'orders.status.confirmed',
+  'Processing': 'orders.status.processing',
+  'Shipped': 'orders.status.shipped',
+  'Delivered': 'orders.status.delivered',
+  'Refunded': 'orders.status.refunded',
+  // Product statuses (products.status.*)
+  'Draft': 'products.status.draft',
+}
+
+const translateStatus = (t: TFunction, status: string): string => {
+  const key = STATUS_KEYS[status]
+  if (key) return t(key, status)
+  // Fallback: insert spaces before capitals ("InProgress" → "In Progress")
+  return status.replace(/([a-z])([A-Z])/g, '$1 $2')
+}
+
 const PATTERNS: PatternTranslator[] = [
   // "Created {type} '{name}'"
   {
@@ -86,12 +119,12 @@ const PATTERNS: PatternTranslator[] = [
   // Status changes: "Changed {entity} status to {status}"
   {
     pattern: /^Changed (.+?) status to ['\s]*(.+?)['\s]*$/,
-    translate: (t, m) => t('audit.actions.changedStatus', { entity: translateEntity(t, m[1]), status: m[2] }),
+    translate: (t, m) => t('audit.actions.changedStatus', { entity: translateEntity(t, m[1]), status: translateStatus(t, m[2]) }),
   },
   // "Changed task status to '{status}'"
   {
     pattern: /^Changed task status to '(.+)'$/,
-    translate: (t, m) => t('audit.actions.changedTaskStatus', { status: m[1] }),
+    translate: (t, m) => t('audit.actions.changedTaskStatus', { status: translateStatus(t, m[1]) }),
   },
   // Task/Kanban specific
   { pattern: /^Moved task on Kanban board$/, translate: (t) => t('audit.actions.movedTaskKanban') },
