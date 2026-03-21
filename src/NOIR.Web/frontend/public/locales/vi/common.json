@@ -2142,7 +2142,9 @@
     "creator": "Người tạo",
     "editor": "Người sửa",
     "lastEditor": "Người sửa",
-    "clearDate": "Xóa ngày"
+    "clearDate": "Xóa ngày",
+    "back": "Quay lại",
+    "details": "Chi tiết"
   },
   "dataTable": {
     "sortAscending": "Sắp xếp tăng dần",

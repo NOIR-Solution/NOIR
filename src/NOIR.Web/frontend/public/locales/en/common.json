@@ -2142,7 +2142,9 @@
     "creator": "Creator",
     "editor": "Editor",
     "lastEditor": "Editor",
-    "clearDate": "Clear date"
+    "clearDate": "Clear date",
+    "back": "Back",
+    "details": "Details"
   },
   "dataTable": {
     "sortAscending": "Sort Ascending",
