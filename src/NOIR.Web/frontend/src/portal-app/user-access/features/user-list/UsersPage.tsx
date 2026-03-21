@@ -263,9 +263,6 @@ export const UsersPage = () => {
     getRowId: (row) => row.id,
   })
 
-  if (queryError) {
-    console.error(queryError)
-  }
 
   return (
     <div className="space-y-6">

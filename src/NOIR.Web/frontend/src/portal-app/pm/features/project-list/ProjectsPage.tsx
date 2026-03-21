@@ -118,7 +118,7 @@ const ProjectCard = ({
         </span>
         <div
           className="absolute top-2 left-2.5 text-white/60 flex items-center gap-1"
-          title={project.visibility}
+          title={t(`pm.visibility${project.visibility}`, { defaultValue: project.visibility })}
         >
           <VisibilityIcon visibility={project.visibility} />
         </div>

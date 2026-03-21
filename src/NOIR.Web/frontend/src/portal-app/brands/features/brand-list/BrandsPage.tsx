@@ -76,7 +76,7 @@ export const BrandsPage = () => {
     defaultPageSize,
   } = useTableParams({ defaultPageSize: 20, tableKey: 'brands' })
 
-  const { data, isLoading, isPlaceholderData, error: queryError, refetch: refresh } = useBrandsQuery(params)
+  const { data, isLoading, isPlaceholderData, refetch: refresh } = useBrandsQuery(params)
 
   const isContentStale = useDelayedLoading(isSearchStale || isFilterPending || isPlaceholderData)
   const deleteMutation = useDeleteBrandMutation()
@@ -236,9 +236,6 @@ export const BrandsPage = () => {
     getRowId: (row) => row.id,
   })
 
-  if (queryError) {
-    console.error(queryError)
-  }
 
   return (
     <div className="space-y-6">

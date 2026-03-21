@@ -38,6 +38,25 @@ Some UI text comes from backend entities and bypasses `t()`. These MUST have loc
 
 **Pattern:** When permission categories, role names, or enum values are displayed from API data, map them through translation keys rather than rendering raw English strings.
 
+### 3.1 Audit Description Translation
+
+Backend stores audit descriptions as hardcoded English strings in command `GetActionDescription()` methods (60+ commands). The frontend `translateAuditDescription()` utility translates these:
+
+```tsx
+import { translateAuditDescription } from '@/lib/utils/auditDescriptionTranslator'
+
+// In Activity Timeline / Dashboard:
+{translateAuditDescription(t, entry.actionDescription || '')}
+// "Deleted project column" → "Đã xóa cột dự án"
+// "Created brand 'Nike'" → "Đã tạo thương hiệu 'Nike'"
+```
+
+When adding new `IAuditableCommand` implementations, follow existing `GetActionDescription()` patterns (e.g., `"Created {type} '{name}'"`) so the frontend translator catches them. Keys: `audit.actions.*`, `audit.entities.*`, `audit.verbs.*`.
+
+### 3.2 DataTable Grouped Row Headers
+
+DataTable group row headers show raw `row.groupingValue`. Use `meta.groupValueFormatter` on enum columns — see `.claude/rules/datatable-standard.md` § Grouped Row Value Formatting.
+
 ### 4. Localization File Locations
 ```
 src/NOIR.Web/frontend/public/locales/

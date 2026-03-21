@@ -101,7 +101,7 @@ export const PromotionsPage = () => {
     promotionType: typeFilter !== 'all' ? typeFilter as PromotionType : undefined,
   }), [params, statusFilter, typeFilter])
 
-  const { data, isLoading, isPlaceholderData, error: queryError, refetch: refresh } = usePromotionsQuery(queryParams)
+  const { data, isLoading, isPlaceholderData, refetch: refresh } = usePromotionsQuery(queryParams)
   const isContentStale = useDelayedLoading(isSearchStale || isFilterPending || isPlaceholderData)
   const activateMutation = useActivatePromotionMutation()
   const deactivateMutation = useDeactivatePromotionMutation()
@@ -189,7 +189,10 @@ export const PromotionsPage = () => {
     }) as ColumnDef<PromotionDto, unknown>,
     ch.accessor('promotionType', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('promotions.type.label', 'Type')} />,
-      meta: { label: t('promotions.type.label', 'Type') },
+      meta: {
+        label: t('promotions.type.label', 'Type'),
+        groupValueFormatter: (v) => t(`promotions.type.${String(v).toLowerCase()}`, String(v)),
+      },
       enableGrouping: true,
       aggregationFn: 'count',
       aggregatedCell: ({ getValue }) => <span className="text-xs font-medium text-muted-foreground">{String(getValue() ?? 0)} items</span>,
@@ -207,7 +210,10 @@ export const PromotionsPage = () => {
     }) as ColumnDef<PromotionDto, unknown>,
     ch.accessor('status', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.status', 'Status')} />,
-      meta: { label: t('labels.status', 'Status') },
+      meta: {
+        label: t('labels.status', 'Status'),
+        groupValueFormatter: (v) => t(`promotions.status.${String(v).toLowerCase()}`, String(v)),
+      },
       size: 120,
       enableGrouping: true,
       aggregationFn: 'count',
@@ -269,9 +275,6 @@ export const PromotionsPage = () => {
     enableGrouping: true,
   })
 
-  if (queryError) {
-    console.error(queryError)
-  }
 
   return (
     <div className="space-y-6">

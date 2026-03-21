@@ -90,11 +90,11 @@ export const MediaToolbar = ({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all" className="cursor-pointer">{t('media.allFolders', 'All Folders')}</SelectItem>
-          <SelectItem value="blog" className="cursor-pointer">blog</SelectItem>
-          <SelectItem value="content" className="cursor-pointer">content</SelectItem>
-          <SelectItem value="avatars" className="cursor-pointer">avatars</SelectItem>
-          <SelectItem value="branding" className="cursor-pointer">branding</SelectItem>
-          <SelectItem value="products" className="cursor-pointer">products</SelectItem>
+          <SelectItem value="blog" className="cursor-pointer">{t('media.folders.blog', 'Blog')}</SelectItem>
+          <SelectItem value="content" className="cursor-pointer">{t('media.folders.content', 'Content')}</SelectItem>
+          <SelectItem value="avatars" className="cursor-pointer">{t('media.folders.avatars', 'Avatars')}</SelectItem>
+          <SelectItem value="branding" className="cursor-pointer">{t('media.folders.branding', 'Branding')}</SelectItem>
+          <SelectItem value="products" className="cursor-pointer">{t('media.folders.products', 'Products')}</SelectItem>
         </SelectContent>
       </Select>
 

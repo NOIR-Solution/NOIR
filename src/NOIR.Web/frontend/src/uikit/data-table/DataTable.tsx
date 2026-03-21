@@ -391,7 +391,7 @@ export const DataTable = <TData extends RowData>({
                       <button
                         type="button"
                         onClick={row.getToggleExpandedHandler()}
-                        className="flex cursor-pointer items-center gap-2 text-sm font-medium"
+                        className="flex cursor-pointer items-center gap-2 text-sm font-medium whitespace-nowrap"
                         aria-expanded={row.getIsExpanded()}
                       >
                         {row.getIsExpanded() ? (
@@ -399,7 +399,11 @@ export const DataTable = <TData extends RowData>({
                         ) : (
                           <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
                         )}
-                        <span>{String(row.groupingValue ?? '')}</span>
+                        <span>{(() => {
+                          const groupCol = table.getColumn(row.groupingColumnId ?? '')
+                          const formatter = groupCol?.columnDef.meta?.groupValueFormatter
+                          return formatter ? formatter(row.groupingValue) : String(row.groupingValue ?? '')
+                        })()}</span>
                         <span className="ml-1 text-xs font-normal text-muted-foreground">
                           ({row.subRows.length})
                         </span>

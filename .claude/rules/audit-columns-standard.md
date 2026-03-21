@@ -42,7 +42,7 @@ const columns = useMemo((): ColumnDef<ItemType, unknown>[] => [
 ], [t, formatDateTime])
 ```
 
-Use `createAuditColumns()` (Created At + Modified At only) when the backend DTO does not include user name fields.
+For DTOs without user name fields (no `CreatedByName`/`ModifiedByName`), only include the date columns (`createdAt`, `modifiedAt`) in column definitions manually.
 
 ## Backend DTO Contract
 

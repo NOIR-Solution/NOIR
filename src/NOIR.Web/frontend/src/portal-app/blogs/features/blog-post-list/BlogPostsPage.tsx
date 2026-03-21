@@ -96,7 +96,7 @@ export const BlogPostsPage = () => {
     categoryId: categoryFilter !== 'all' ? categoryFilter : undefined,
   }), [params, statusFilter, categoryFilter])
 
-  const { data, isLoading, isPlaceholderData, error: queryError, refetch: refresh } = useBlogPostsQuery(queryParams)
+  const { data, isLoading, isPlaceholderData, refetch: refresh } = useBlogPostsQuery(queryParams)
 
   const isContentStale = useDelayedLoading(isSearchStale || isFilterPending || isPlaceholderData)
   const { data: categories = [] } = useBlogCategoriesQuery({})
@@ -225,7 +225,10 @@ export const BlogPostsPage = () => {
     }) as ColumnDef<PostListItem, unknown>,
     ch.accessor('status', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.status')} />,
-      meta: { label: t('labels.status') },
+      meta: {
+        label: t('labels.status'),
+        groupValueFormatter: (v) => t(`blog.status.${String(v).toLowerCase()}`, String(v)),
+      },
       size: 110,
       enableGrouping: true,
       aggregationFn: 'count',
@@ -316,9 +319,6 @@ export const BlogPostsPage = () => {
     })
   }
 
-  if (queryError) {
-    console.error(queryError)
-  }
 
   return (
     <div className="space-y-6">

@@ -406,7 +406,13 @@ export const ProductsPage = () => {
     }) as ColumnDef<ProductListItem, unknown>,
     ch.accessor('status', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.status', 'Status')} />,
-      meta: { label: t('labels.status', 'Status') },
+      meta: {
+        label: t('labels.status', 'Status'),
+        groupValueFormatter: (v) => {
+          const status = PRODUCT_STATUS_CONFIG[v as keyof typeof PRODUCT_STATUS_CONFIG]
+          return status ? t(status.labelKey) : String(v)
+        },
+      },
       enableGrouping: true,
       cell: ({ getValue }) => {
         const status = PRODUCT_STATUS_CONFIG[getValue()]
@@ -498,7 +504,7 @@ export const ProductsPage = () => {
   ).length || 0
 
   const paginationRange = data
-    ? getPaginationRange(data.page, params.pageSize || DEFAULT_PRODUCT_PAGE_SIZE, data.totalCount)
+    ? getPaginationRange(data.page || params.page, params.pageSize || DEFAULT_PRODUCT_PAGE_SIZE, data.totalCount)
     : { from: 0, to: 0 }
 
   return (

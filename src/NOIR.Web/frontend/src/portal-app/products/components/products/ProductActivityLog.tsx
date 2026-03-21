@@ -6,6 +6,7 @@
  */
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { translateAuditDescription } from '@/lib/utils/auditDescriptionTranslator'
 import { ViewTransitionLink } from '@/components/navigation/ViewTransitionLink'
 import {
   Activity,
@@ -85,7 +86,7 @@ const CompactTimelineEntry = ({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium truncate">
-            {entry.actionDescription || entry.operationType}
+            {translateAuditDescription(t, entry.actionDescription || entry.operationType)}
           </span>
           {!entry.isSuccess && (
             <XCircle className="h-3.5 w-3.5 text-red-500 flex-shrink-0" />

@@ -609,6 +609,18 @@ public sealed class ProductsByIdsForUpdateSpec : Specification<Product>
 }
 
 /// <summary>
+/// Specification to get products by IDs (read-only, for name resolution).
+/// </summary>
+public sealed class ProductsByIdsSpec : Specification<Product>
+{
+    public ProductsByIdsSpec(List<Guid> ids)
+    {
+        Query.Where(p => ids.Contains(p.Id))
+             .TagWith("GetProductsByIds");
+    }
+}
+
+/// <summary>
 /// Specification to get all product categories for import lookup.
 /// </summary>
 public sealed class AllProductCategoriesSpec : Specification<ProductCategory>

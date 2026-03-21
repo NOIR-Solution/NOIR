@@ -118,6 +118,7 @@ export const BlogPostEditPage = () => {
   const [publishOption, setPublishOption] = useState<PublishOption>('draft')
   const [scheduledDate, setScheduledDate] = useState<Date | undefined>(undefined)
   const [scheduledTime, setScheduledTime] = useState('09:00')
+  const [scheduleError, setScheduleError] = useState<string | null>(null)
 
   const { data: queryPost, isLoading: queryLoading, refetch: refetchPost } = useBlogPostDetailQuery(isEdit ? id : undefined)
   const loading = isEdit && queryLoading
@@ -216,14 +217,14 @@ export const BlogPostEditPage = () => {
     // Validate schedule date if scheduling
     if (publishOption === 'schedule') {
       if (!scheduledDate) {
-        toast.error(t('blog.pleaseSelectDate'))
+        setScheduleError(t('blog.pleaseSelectDate'))
         return
       }
       const [hours, minutes] = scheduledTime.split(':').map(Number)
       const scheduledDateTime = new Date(scheduledDate)
       scheduledDateTime.setHours(hours, minutes, 0, 0)
       if (scheduledDateTime <= new Date()) {
-        toast.error(t('blog.scheduleMustBeFuture'))
+        setScheduleError(t('blog.scheduleMustBeFuture'))
         return
       }
     }
@@ -633,7 +634,7 @@ export const BlogPostEditPage = () => {
                           <Label className="text-sm font-medium">{t('labels.date')}</Label>
                           <DatePicker
                             value={scheduledDate}
-                            onChange={setScheduledDate}
+                            onChange={(date) => { setScheduledDate(date); setScheduleError(null) }}
                             minDate={new Date()}
                             placeholder={t('blog.selectDate')}
                             formatDate={formatDate}
@@ -643,12 +644,13 @@ export const BlogPostEditPage = () => {
                           <Label className="text-sm font-medium">{t('labels.time')}</Label>
                           <TimePicker
                             value={scheduledTime}
-                            onChange={(time) => setScheduledTime(time)}
+                            onChange={(time) => { setScheduledTime(time); setScheduleError(null) }}
                             placeholder={t('blog.selectTime')}
                             interval={30}
                           />
                         </div>
                       </div>
+                      {scheduleError && <p className="text-sm text-destructive">{scheduleError}</p>}
                       <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                         <Info className="h-3.5 w-3.5 flex-shrink-0" />
                         {t('blog.localTimezone')}

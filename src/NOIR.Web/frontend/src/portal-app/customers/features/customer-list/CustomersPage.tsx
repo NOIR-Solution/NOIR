@@ -111,7 +111,7 @@ export const CustomersPage = () => {
     tier: tierFilter !== 'all' ? tierFilter as CustomerTier : undefined,
   }), [params, segmentFilter, tierFilter])
 
-  const { data, isLoading, isPlaceholderData, error: queryError, refetch: refresh } = useCustomersQuery(queryParams)
+  const { data, isLoading, isPlaceholderData, refetch: refresh } = useCustomersQuery(queryParams)
   const { data: stats } = useCustomerStatsQuery()
 
   const customers = data?.items ?? []
@@ -186,7 +186,10 @@ export const CustomersPage = () => {
     }) as ColumnDef<CustomerSummaryDto, unknown>,
     ch.accessor('segment', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('customers.segmentLabel', 'Segment')} />,
-      meta: { label: t('customers.segmentLabel', 'Segment') },
+      meta: {
+        label: t('customers.segmentLabel', 'Segment'),
+        groupValueFormatter: (v) => t(`customers.segment.${String(v).toLowerCase()}`, String(v)),
+      },
       enableGrouping: true,
       cell: ({ getValue }) => (
         <Badge variant="outline" className={getSegmentBadgeClass(getValue())}>
@@ -196,7 +199,10 @@ export const CustomersPage = () => {
     }) as ColumnDef<CustomerSummaryDto, unknown>,
     ch.accessor('tier', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('customers.tierLabel', 'Tier')} />,
-      meta: { label: t('customers.tierLabel', 'Tier') },
+      meta: {
+        label: t('customers.tierLabel', 'Tier'),
+        groupValueFormatter: (v) => t(`customers.tier.${String(v).toLowerCase()}`, String(v)),
+      },
       enableGrouping: true,
       cell: ({ getValue }) => (
         <Badge variant="outline" className={getTierBadgeClass(getValue())}>
@@ -335,9 +341,6 @@ export const CustomersPage = () => {
     })
   }
 
-  if (queryError) {
-    console.error(queryError)
-  }
 
   return (
     <div className="space-y-6">

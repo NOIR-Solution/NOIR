@@ -141,26 +141,29 @@ const DateInput = ({
   value: string
   onChange: (v: string) => void
   placeholder?: string
-}) => (
-  <div className="relative">
-    <Input
-      type="date"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      className="h-8 pl-2 pr-7 text-sm cursor-pointer [color-scheme:light] dark:[color-scheme:dark]"
-    />
-    {value && (
-      <button
-        onClick={() => onChange('')}
-        className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-        aria-label="Clear date"
-      >
-        <X className="h-3 w-3" />
-      </button>
-    )}
-  </div>
-)
+}) => {
+  const { t } = useTranslation('common')
+  return (
+    <div className="relative">
+      <Input
+        type="date"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="h-8 pl-2 pr-7 text-sm cursor-pointer [color-scheme:light] dark:[color-scheme:dark]"
+      />
+      {value && (
+        <button
+          onClick={() => onChange('')}
+          className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          aria-label={t('labels.clearDate', { defaultValue: 'Clear date' })}
+        >
+          <X className="h-3 w-3" />
+        </button>
+      )}
+    </div>
+  )
+}
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 

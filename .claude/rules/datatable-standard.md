@@ -120,6 +120,25 @@ Columns with `meta: { align: 'center' }` (actions, select) get special handling 
 
 **Never** add manual padding/alignment to actions or select column cells — DataTable handles it automatically via `meta.align`.
 
+## Grouped Row Value Formatting
+
+When `enableGrouping: true`, group row headers display `row.groupingValue` directly. For enum columns (status, type), this shows English values in non-English UIs. Use `meta.groupValueFormatter` to translate:
+
+```tsx
+ch.accessor('status', {
+  enableGrouping: true,
+  meta: {
+    label: t('labels.status'),
+    groupValueFormatter: (v) => t(`orders.status.${String(v).toLowerCase()}`, String(v)),
+  },
+  cell: ({ getValue }) => <Badge>{t(`orders.status.${getValue().toLowerCase()}`)}</Badge>,
+})
+```
+
+- Only add to columns with **enum values** (status, type, priority) — not entity names (category, brand, department)
+- Copy the same translation key pattern from the column's `cell` renderer
+- DataTable reads `groupValueFormatter` from `columnDef.meta` in group row rendering (`whitespace-nowrap` prevents text wrapping)
+
 ## Pagination Spacing (MANDATORY)
 
 `CardContent` wrapping `<DataTable>` and `<DataTablePagination>` **MUST** include `space-y-3` to ensure 12px gap between table and pagination — matching the gap between toolbar and table.

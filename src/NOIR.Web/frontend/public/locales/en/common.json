@@ -991,7 +991,11 @@
     "createError": "Failed to create role",
     "deleteError": "Failed to delete role",
     "updateError": "Failed to update role",
-    "namePattern": "Role name must start with a letter and contain only letters, numbers, hyphens, or underscores (no spaces)."
+    "namePattern": "Role name must start with a letter and contain only letters, numbers, hyphens, or underscores (no spaces).",
+    "descriptions": {
+      "admin": "Full system access with all permissions within tenant",
+      "user": "Standard user access within tenant"
+    }
   },
   "users": {
     "title": "Users",
@@ -2021,6 +2025,8 @@
     "allCategories": "All Categories",
     "allStock": "All Stock",
     "viewDetails": "View Details",
+    "viewDetail": "View Detail",
+    "overview": "Overview",
     "created": "Created",
     "showingOfItems": "Showing {{from}}-{{to}} of {{total}} items",
     "showingCountOfTotal": "Showing {{count}} of {{total}} items",
@@ -2135,7 +2141,8 @@
     "modifiedAt": "Modified At",
     "creator": "Creator",
     "editor": "Editor",
-    "lastEditor": "Editor"
+    "lastEditor": "Editor",
+    "clearDate": "Clear date"
   },
   "dataTable": {
     "sortAscending": "Sort Ascending",
@@ -2762,7 +2769,14 @@
     "dragDropOrClick": "Drag & drop or click to select",
     "acceptedFormats": "JPG, PNG, GIF, WebP, AVIF (max 10MB)",
     "bulkDeleteTitle": "Delete {{count}} Files",
-    "deleteTitle": "Delete File"
+    "deleteTitle": "Delete File",
+    "folders": {
+      "blog": "Blog",
+      "content": "Content",
+      "avatars": "Avatars",
+      "branding": "Branding",
+      "products": "Products"
+    }
   },
   "json": {
     "noData": "No data",
@@ -3258,7 +3272,9 @@
       "darkModeDefaultHint": "Enable dark mode as the default theme for this tenant",
       "darkModeDescription": "Enable dark mode as the default theme for this tenant",
       "clickToUpload": "Click to upload",
-      "upload": "Upload"
+      "upload": "Upload",
+      "logoHint": "PNG, SVG, WebP up to 2MB",
+      "faviconHint": "ICO, PNG, SVG up to 2MB"
     },
     "contact": {
       "title": "Contact",
@@ -3948,6 +3964,13 @@
       "Installment": "Installment",
       "COD": "Cash on Delivery",
       "BuyNowPayLater": "Buy Now Pay Later"
+    },
+    "providers": {
+      "cod": "COD",
+      "momo": "MoMo",
+      "vnpay": "VNPay",
+      "zalopay": "ZaloPay",
+      "stripe": "Stripe"
     }
   },
   "network": {
@@ -4681,6 +4704,79 @@
       "expired": "Expired",
       "revoked": "Revoked",
       "inactive": "Inactive"
+    }
+  },
+  "audit": {
+    "actions": {
+      "createdEntity": "Created {{entity}} '{{name}}'",
+      "updatedEntity": "Updated {{entity}} '{{name}}'",
+      "deletedEntity": "Deleted {{entity}} '{{name}}'",
+      "bulk": "Bulk {{action}} {{count}} {{items}}",
+      "changedStatus": "Changed {{entity}} status to {{status}}",
+      "changedTaskStatus": "Changed task status to '{{status}}'",
+      "movedTaskKanban": "Moved task on Kanban board",
+      "archivedTask": "Archived task",
+      "restoredTask": "Restored task from archive",
+      "movedTaskToColumn": "Moved task to column '{{column}}'",
+      "addedLabelToTask": "Added label to task",
+      "removedLabelFromTask": "Removed label from task",
+      "deletedProjectColumn": "Deleted project column",
+      "movedLeadStage": "Moved lead to a different stage",
+      "markedLeadWon": "Marked lead as Won",
+      "markedLeadLost": "Marked lead as Lost",
+      "changedPassword": "Changed password",
+      "updatedProfile": "Updated profile",
+      "uploadedAvatar": "Uploaded avatar",
+      "deletedAvatar": "Deleted avatar",
+      "revokedSession": "Revoked session",
+      "createdInventoryReceipt": "Created {{type}} inventory receipt"
+    },
+    "verbs": {
+      "deleted": "deleted",
+      "published": "published",
+      "unpublished": "unpublished",
+      "activated": "activated",
+      "deactivated": "deactivated",
+      "approved": "approved",
+      "rejected": "rejected"
+    },
+    "entities": {
+      "brand": "brand",
+      "blogPost": "blog post",
+      "blogTag": "blog tag",
+      "blogCategory": "blog category",
+      "product": "product",
+      "productCategory": "product category",
+      "productAttribute": "product attribute",
+      "order": "order",
+      "customer": "customer",
+      "customerGroup": "customer group",
+      "customerAddress": "customer address",
+      "employee": "employee",
+      "department": "department",
+      "employeeTag": "employee tag",
+      "project": "project",
+      "projectColumn": "project column",
+      "task": "task",
+      "label": "label",
+      "role": "role",
+      "user": "user",
+      "tenant": "tenant",
+      "promotion": "promotion",
+      "review": "review",
+      "wishlist": "wishlist",
+      "emailTemplate": "email template",
+      "apiKey": "API key",
+      "lead": "lead",
+      "contact": "contact",
+      "company": "company",
+      "activity": "activity",
+      "pipeline": "pipeline",
+      "inventoryReceipt": "inventory receipt",
+      "payment": "payment",
+      "shippingProvider": "shipping provider",
+      "webhook": "webhook",
+      "media": "media"
     }
   }
 }

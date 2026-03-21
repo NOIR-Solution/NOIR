@@ -991,7 +991,11 @@
     "createError": "Tạo vai trò thất bại",
     "deleteError": "Xóa vai trò thất bại",
     "updateError": "Cập nhật vai trò thất bại",
-    "namePattern": "Tên vai trò phải bắt đầu bằng chữ cái và chỉ chứa chữ cái, số, dấu gạch ngang hoặc gạch dưới (không có khoảng trắng)."
+    "namePattern": "Tên vai trò phải bắt đầu bằng chữ cái và chỉ chứa chữ cái, số, dấu gạch ngang hoặc gạch dưới (không có khoảng trắng).",
+    "descriptions": {
+      "admin": "Toàn quyền truy cập hệ thống trong tổ chức",
+      "user": "Quyền truy cập tiêu chuẩn trong tổ chức"
+    }
   },
   "users": {
     "title": "Người dùng",
@@ -2021,6 +2025,8 @@
     "allCategories": "Tất cả danh mục",
     "allStock": "Tất cả tồn kho",
     "viewDetails": "Xem chi tiết",
+    "viewDetail": "Xem chi tiết",
+    "overview": "Tổng quan",
     "created": "Đã tạo",
     "showingOfItems": "Hiển thị {{from}}-{{to}} trong số {{total}} mục",
     "showingCountOfTotal": "Hiển thị {{count}} trong số {{total}} mục",
@@ -2135,7 +2141,8 @@
     "modifiedAt": "Ngày sửa",
     "creator": "Người tạo",
     "editor": "Người sửa",
-    "lastEditor": "Người sửa"
+    "lastEditor": "Người sửa",
+    "clearDate": "Xóa ngày"
   },
   "dataTable": {
     "sortAscending": "Sắp xếp tăng dần",
@@ -2762,7 +2769,14 @@
     "dragDropOrClick": "Kéo & thả hoặc nhấn để chọn",
     "acceptedFormats": "JPG, PNG, GIF, WebP, AVIF (tối đa 10MB)",
     "bulkDeleteTitle": "Xóa {{count}} tệp",
-    "deleteTitle": "Xóa tệp"
+    "deleteTitle": "Xóa tệp",
+    "folders": {
+      "blog": "Blog",
+      "content": "Nội dung",
+      "avatars": "Ảnh đại diện",
+      "branding": "Thương hiệu",
+      "products": "Sản phẩm"
+    }
   },
   "json": {
     "noData": "Không có dữ liệu",
@@ -3255,7 +3269,9 @@
       "darkModeDefaultHint": "Bật chế độ tối làm giao diện mặc định cho tổ chức này",
       "darkModeDescription": "Bật chế độ tối làm giao diện mặc định cho tổ chức này",
       "clickToUpload": "Nhấn để tải lên",
-      "upload": "Tải lên"
+      "upload": "Tải lên",
+      "logoHint": "PNG, SVG, WebP tối đa 2MB",
+      "faviconHint": "ICO, PNG, SVG tối đa 2MB"
     },
     "contact": {
       "title": "Liên hệ",
@@ -3945,6 +3961,13 @@
       "Installment": "Trả góp",
       "COD": "Thanh toán khi nhận hàng",
       "BuyNowPayLater": "Mua trước trả sau"
+    },
+    "providers": {
+      "cod": "COD",
+      "momo": "MoMo",
+      "vnpay": "VNPay",
+      "zalopay": "ZaloPay",
+      "stripe": "Stripe"
     }
   },
   "network": {
@@ -4678,6 +4701,79 @@
       "expired": "Hết hạn",
       "revoked": "Đã thu hồi",
       "inactive": "Không hoạt động"
+    }
+  },
+  "audit": {
+    "actions": {
+      "createdEntity": "Đã tạo {{entity}} '{{name}}'",
+      "updatedEntity": "Đã cập nhật {{entity}} '{{name}}'",
+      "deletedEntity": "Đã xóa {{entity}} '{{name}}'",
+      "bulk": "Thao tác hàng loạt: {{action}} {{count}} {{items}}",
+      "changedStatus": "Đã thay đổi trạng thái {{entity}} thành {{status}}",
+      "changedTaskStatus": "Đã thay đổi trạng thái công việc thành '{{status}}'",
+      "movedTaskKanban": "Đã di chuyển công việc trên bảng Kanban",
+      "archivedTask": "Đã lưu trữ công việc",
+      "restoredTask": "Đã khôi phục công việc từ lưu trữ",
+      "movedTaskToColumn": "Đã chuyển công việc sang cột '{{column}}'",
+      "addedLabelToTask": "Đã thêm nhãn vào công việc",
+      "removedLabelFromTask": "Đã xóa nhãn khỏi công việc",
+      "deletedProjectColumn": "Đã xóa cột dự án",
+      "movedLeadStage": "Đã chuyển deal sang giai đoạn khác",
+      "markedLeadWon": "Đã đánh dấu deal là Thắng",
+      "markedLeadLost": "Đã đánh dấu deal là Thua",
+      "changedPassword": "Đã đổi mật khẩu",
+      "updatedProfile": "Đã cập nhật hồ sơ",
+      "uploadedAvatar": "Đã tải ảnh đại diện lên",
+      "deletedAvatar": "Đã xóa ảnh đại diện",
+      "revokedSession": "Đã thu hồi phiên đăng nhập",
+      "createdInventoryReceipt": "Đã tạo phiếu kho {{type}}"
+    },
+    "verbs": {
+      "deleted": "đã xóa",
+      "published": "đã xuất bản",
+      "unpublished": "đã hủy xuất bản",
+      "activated": "đã kích hoạt",
+      "deactivated": "đã vô hiệu hóa",
+      "approved": "đã duyệt",
+      "rejected": "đã từ chối"
+    },
+    "entities": {
+      "brand": "thương hiệu",
+      "blogPost": "bài viết",
+      "blogTag": "thẻ bài viết",
+      "blogCategory": "danh mục bài viết",
+      "product": "sản phẩm",
+      "productCategory": "danh mục sản phẩm",
+      "productAttribute": "thuộc tính sản phẩm",
+      "order": "đơn hàng",
+      "customer": "khách hàng",
+      "customerGroup": "nhóm khách hàng",
+      "customerAddress": "địa chỉ khách hàng",
+      "employee": "nhân viên",
+      "department": "phòng ban",
+      "employeeTag": "nhãn nhân viên",
+      "project": "dự án",
+      "projectColumn": "cột dự án",
+      "task": "công việc",
+      "label": "nhãn",
+      "role": "vai trò",
+      "user": "người dùng",
+      "tenant": "tổ chức",
+      "promotion": "khuyến mãi",
+      "review": "đánh giá",
+      "wishlist": "danh sách yêu thích",
+      "emailTemplate": "mẫu email",
+      "apiKey": "khóa API",
+      "lead": "deal",
+      "contact": "liên hệ",
+      "company": "công ty",
+      "activity": "hoạt động",
+      "pipeline": "quy trình",
+      "inventoryReceipt": "phiếu kho",
+      "payment": "thanh toán",
+      "shippingProvider": "nhà vận chuyển",
+      "webhook": "webhook",
+      "media": "tệp media"
     }
   }
 }

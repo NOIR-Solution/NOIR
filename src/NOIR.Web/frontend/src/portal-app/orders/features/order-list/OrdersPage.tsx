@@ -97,7 +97,7 @@ export const OrdersPage = () => {
     status: statusFilter !== 'all' ? statusFilter as OrderStatus : undefined,
   }), [params, statusFilter])
 
-  const { data, isLoading, isPlaceholderData, error: queryError, refetch: refresh } = useOrdersQuery(queryParams)
+  const { data, isLoading, isPlaceholderData, refetch: refresh } = useOrdersQuery(queryParams)
 
   const orders = data?.items ?? []
 
@@ -140,7 +140,10 @@ export const OrdersPage = () => {
     }) as ColumnDef<OrderSummaryDto, unknown>,
     ch.accessor('status', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.status', 'Status')} />,
-      meta: { label: t('labels.status', 'Status') },
+      meta: {
+        label: t('labels.status', 'Status'),
+        groupValueFormatter: (v) => t(`orders.status.${String(v).toLowerCase()}`, String(v)),
+      },
       size: 130,
       enableGrouping: true,
       aggregationFn: 'count',
@@ -259,9 +262,6 @@ export const OrdersPage = () => {
     })
   }
 
-  if (queryError) {
-    console.error(queryError)
-  }
 
   return (
     <div className="space-y-6">

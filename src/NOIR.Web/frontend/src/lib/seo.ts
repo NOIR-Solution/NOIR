@@ -18,26 +18,6 @@ export const SEO_LIMITS = {
 } as const
 
 /**
- * Get the appropriate color class for character counter based on count
- * - Empty: neutral gray
- * - Too short (<50% of optimal): warning amber
- * - Optimal range: success green
- * - Near limit (between optimal and max): warning amber
- * - Over limit: error red
- */
-export const getCharCountColor = (
-  current: number,
-  optimal: number,
-  max: number
-): string => {
-  if (current === 0) return 'text-muted-foreground'
-  if (current < optimal * 0.5) return 'text-amber-500'
-  if (current <= optimal) return 'text-green-600 dark:text-green-500'
-  if (current <= max) return 'text-amber-500'
-  return 'text-destructive'
-}
-
-/**
  * Generate effective meta title from post title and site name
  * Used when metaTitle field is empty
  */
@@ -106,17 +86,3 @@ const truncateToWords = (text: string, maxLength: number): string => {
   return truncated.trimEnd() + '…'
 }
 
-/**
- * Get the status label for character count
- */
-export const getCharCountStatus = (
-  current: number,
-  optimal: number,
-  max: number
-): string | null => {
-  if (current === 0) return null
-  if (current < optimal * 0.5) return 'Too short'
-  if (current <= optimal) return 'Good'
-  if (current <= max) return 'Near limit'
-  return 'Too long'
-}

@@ -42,7 +42,7 @@ export const DEFAULT_PRODUCT_PAGE_SIZE = 10
 export const LOW_STOCK_THRESHOLD = 10
 
 // Stat card theme classes (Tailwind)
-export const STAT_CARD_THEMES = {
+const STAT_CARD_THEMES = {
   total: {
     iconBg: 'bg-primary/10 border-primary/20',
     iconColor: 'text-primary',

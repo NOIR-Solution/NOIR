@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react'
-import { useMediaQuery, useIsMobile, useIsTablet, useIsDesktop } from './useMediaQuery'
+import { useMediaQuery, useIsMobile } from './useMediaQuery'
 
 describe('useMediaQuery', () => {
   afterEach(() => {
@@ -67,26 +67,3 @@ describe('useIsMobile', () => {
   })
 })
 
-describe('useIsTablet', () => {
-  it('returns a boolean', () => {
-    const { result } = renderHook(() => useIsTablet())
-    expect(typeof result.current).toBe('boolean')
-  })
-
-  it('calls matchMedia with tablet breakpoint', () => {
-    renderHook(() => useIsTablet())
-    expect(window.matchMedia).toHaveBeenCalledWith('(min-width: 768px) and (max-width: 1023px)')
-  })
-})
-
-describe('useIsDesktop', () => {
-  it('returns a boolean', () => {
-    const { result } = renderHook(() => useIsDesktop())
-    expect(typeof result.current).toBe('boolean')
-  })
-
-  it('calls matchMedia with desktop breakpoint', () => {
-    renderHook(() => useIsDesktop())
-    expect(window.matchMedia).toHaveBeenCalledWith('(min-width: 1024px)')
-  })
-})

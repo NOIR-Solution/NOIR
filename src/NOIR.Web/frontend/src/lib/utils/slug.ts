@@ -27,13 +27,3 @@ export const generateSlug = (text: string): string => {
     .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
 }
 
-/**
- * Validate if a string is a valid slug format
- *
- * @param slug - The slug to validate
- * @returns true if valid, false otherwise
- */
-export const isValidSlug = (slug: string): boolean => {
-  const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
-  return slugRegex.test(slug)
-}

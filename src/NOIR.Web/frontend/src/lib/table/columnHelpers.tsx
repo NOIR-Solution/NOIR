@@ -98,50 +98,6 @@ export const createSelectColumn = <TData extends RowData>(): ColumnDef<TData, un
 })
 
 /**
- * Standard audit columns (Created At, Modified At) for list pages.
- * Place as the LAST data columns in the columns array.
- * NEVER use formatRelativeTime in DataTable — always formatDateTime.
- */
-export const createAuditColumns = <TData extends RowData>(
-  t: TFunction,
-  formatDateTime: (date: Date | string) => string,
-): ColumnDef<TData, unknown>[] => {
-  const cols: ColumnDef<RowData, unknown>[] = [
-    {
-      id: 'createdAt',
-      accessorFn: (row) => (row as Record<string, unknown>).createdAt,
-      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.createdAt', 'Created At')} />,
-      meta: { label: t('labels.createdAt', 'Created At') },
-      size: 160,
-      cell: ({ getValue }) => {
-        const value = getValue() as string | null | undefined
-        return value ? (
-          <span className="text-sm text-muted-foreground whitespace-nowrap">{formatDateTime(value)}</span>
-        ) : (
-          <span className="text-sm text-muted-foreground">—</span>
-        )
-      },
-    },
-    {
-      id: 'modifiedAt',
-      accessorFn: (row) => (row as Record<string, unknown>).modifiedAt,
-      header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.modifiedAt', 'Modified At')} />,
-      meta: { label: t('labels.modifiedAt', 'Modified At') },
-      size: 160,
-      cell: ({ getValue }) => {
-        const value = getValue() as string | null | undefined
-        return value ? (
-          <span className="text-sm text-muted-foreground whitespace-nowrap">{formatDateTime(value)}</span>
-        ) : (
-          <span className="text-sm text-muted-foreground">—</span>
-        )
-      },
-    },
-  ]
-  return cols as ColumnDef<TData, unknown>[]
-}
-
-/**
  * Full audit columns (Created At, Creator, Modified At, Editor) for list pages.
  * Use this when the backend provides createdByName and modifiedByName.
  * Place as the LAST data columns in the columns array.

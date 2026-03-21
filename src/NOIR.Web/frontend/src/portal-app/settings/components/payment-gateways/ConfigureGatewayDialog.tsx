@@ -273,7 +273,7 @@ export const ConfigureGatewayDialog = ({
         )
         onOpenChange(false)
       } else {
-        toast.error(result.error ?? t('errors.operationFailed'))
+        setServerErrors([result.error ?? t('errors.operationFailed')])
       }
     } catch (err) {
       handleFormError(err, form, setServerErrors, t)

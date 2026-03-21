@@ -120,7 +120,10 @@ export const PaymentsPage = () => {
     }) as ColumnDef<PaymentTransactionListDto, unknown>,
     ch.accessor('status', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('payments.status')} />,
-      meta: { label: t('payments.status') },
+      meta: {
+        label: t('payments.status'),
+        groupValueFormatter: (v) => t(`payments.statuses.${String(v)}`, String(v)),
+      },
       cell: ({ row }) => (
         <Badge variant="outline" className={paymentStatusColors[row.original.status]}>
           {t(`payments.statuses.${row.original.status}`, row.original.status)}
@@ -131,12 +134,15 @@ export const PaymentsPage = () => {
     ch.accessor('provider', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('payments.provider')} />,
       meta: { label: t('payments.provider') },
-      cell: ({ getValue }) => <span className="text-sm capitalize">{getValue()}</span>,
+      cell: ({ getValue }) => <span className="text-sm">{t(`payments.providers.${String(getValue()).toLowerCase()}`, String(getValue()))}</span>,
     }) as ColumnDef<PaymentTransactionListDto, unknown>,
     ch.accessor('paymentMethod', {
       id: 'method',
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('payments.method')} />,
-      meta: { label: t('payments.method') },
+      meta: {
+        label: t('payments.method'),
+        groupValueFormatter: (v) => t(`payments.methods.${String(v)}`, String(v)),
+      },
       cell: ({ row }) => (
         <span className="text-sm">
           {t(`payments.methods.${row.original.paymentMethod}`, row.original.paymentMethod)}

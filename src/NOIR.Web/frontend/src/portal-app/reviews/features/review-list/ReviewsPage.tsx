@@ -205,7 +205,10 @@ export const ReviewsPage = () => {
     }) as ColumnDef<ReviewDto, unknown>,
     ch.accessor('status', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('labels.status', 'Status')} />,
-      meta: { label: t('labels.status', 'Status') },
+      meta: {
+        label: t('labels.status', 'Status'),
+        groupValueFormatter: (v) => t(`reviews.status.${String(v).toLowerCase()}`, String(v)),
+      },
       size: 110,
       enableGrouping: true,
       aggregationFn: 'count',

@@ -295,7 +295,10 @@ export const EmployeesPage = () => {
     }) as ColumnDef<EmployeeListDto, unknown>,
     ch.accessor('status', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('hr.status')} />,
-      meta: { label: t('hr.status') },
+      meta: {
+        label: t('hr.status'),
+        groupValueFormatter: (v) => t(`hr.statuses.${String(v).toLowerCase()}`, String(v)),
+      },
       cell: ({ row }) => (
         <Badge variant="outline" className={getEmployeeStatusColor(row.original.status)}>
           {t(`hr.statuses.${row.original.status.toLowerCase()}`)}
@@ -307,7 +310,13 @@ export const EmployeesPage = () => {
     }) as ColumnDef<EmployeeListDto, unknown>,
     ch.accessor('employmentType', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('hr.employmentType')} />,
-      meta: { label: t('hr.employmentType') },
+      meta: {
+        label: t('hr.employmentType'),
+        groupValueFormatter: (v) => {
+          const s = String(v)
+          return t(`hr.employmentTypes.${s.charAt(0).toLowerCase() + s.slice(1).replace(/([A-Z])/g, (m) => m.toLowerCase())}`, s)
+        },
+      },
       cell: ({ row }) => (
         <Badge variant="outline" className={getEmploymentTypeColor(row.original.employmentType)}>
           {t(`hr.employmentTypes.${row.original.employmentType.charAt(0).toLowerCase() + row.original.employmentType.slice(1).replace(/([A-Z])/g, (m) => m.toLowerCase())}`)}

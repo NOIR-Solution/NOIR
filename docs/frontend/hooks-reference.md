@@ -1,6 +1,6 @@
 # Frontend Hooks Reference
 
-> Quick reference for all 41 custom React hooks in `src/NOIR.Web/frontend/src/hooks/`
+> Quick reference for all 35 custom React hooks in `src/NOIR.Web/frontend/src/hooks/`
 
 **Last Updated:** 2026-03-13
 
@@ -19,7 +19,6 @@
 | `useApiKeys` | Data Fetching | API key management |
 | `useEnterpriseTable` | Table | Unified server + enterprise table state with persistence |
 | `useTableParams` | Table | URL-synced pagination, sorting, search, filters |
-| `useVirtualTableRows` | Table | Virtual scrolling for large tables |
 | `useLogin` | Auth | Login mutation + redirect |
 | `usePermissions` | Auth | Permission checking (`hasPermission`, `hasAllPermissions`) |
 | `useFeatures` | Auth | Feature flag checking |
@@ -29,20 +28,15 @@
 | `useSignalR` | Real-Time | SignalR connection management |
 | `useEntityUpdateSignal` | Real-Time | CRUD change subscriptions |
 | `useSse` | Real-Time | Server-Sent Events consumer |
-| `useJobProgress` | Real-Time | Background job progress |
 | `useLogStream` | Real-Time | Developer log streaming |
 | `useBroadcastChannel` | Real-Time | Cross-tab session sync |
-| `useSelection` | UI State | Multi-select for lists/tables |
 | `useMediaQuery` | UI State | CSS media query watcher |
 | `useMobile` | UI State | Mobile breakpoint detection |
 | `useTabVisibility` | UI State | Page visibility API |
 | `useKeyboardShortcuts` | UI State | Global keyboard shortcuts |
-| `useUnsavedChanges` | UI State | Unsaved changes guard |
-| `useAutoSave` | UI State | Auto-save with debounce |
 | `useBreadcrumbs` | Navigation | Breadcrumb trail management |
 | `useViewTransition` | Navigation | View Transitions API wrapper |
 | `useValidatedForm` | Forms | react-hook-form + Zod wrapper |
-| `useSmartDefaults` | Forms | Populate form from last used values |
 | `useVariantAutoSave` | Forms | Product variant auto-save |
 | `useImageUpload` | Forms | Image upload with preview |
 | `useOnboarding` | Platform | Onboarding flow state |
@@ -196,17 +190,6 @@ const { params, searchInput, setSearchInput, isSearchStale, isFilterPending, set
 
 ---
 
-### `useVirtualTableRows`
-**File:** `hooks/useVirtualTableRows.ts`
-
-Virtual scrolling for large tables using `@tanstack/react-virtual`.
-
-```typescript
-const { virtualRows, totalHeight, containerRef } = useVirtualTableRows(table, { estimateSize: 52, overscan: 5 })
-```
-
----
-
 ## 3. Authentication & Authorization
 
 ### `useLogin`
@@ -348,17 +331,6 @@ const { lastEvent, isConnected } = useSse<JobProgressEvent>('/api/sse/events', {
 
 ---
 
-### `useJobProgress`
-**File:** `hooks/useJobProgress.ts`
-
-Convenience wrapper for tracking background job progress.
-
-```typescript
-const { progress, status, isComplete } = useJobProgress(jobId)
-```
-
----
-
 ### `useLogStream`
 **File:** `hooks/useLogStream.ts`
 
@@ -384,19 +356,6 @@ const { postMessage } = useBroadcastChannel('auth', (event) => {
 ---
 
 ## 6. UI State
-
-### `useSelection`
-**File:** `hooks/useSelection.ts`
-
-Multi-select state for lists and tables. Used for bulk operations.
-
-```typescript
-const { selectedIds, handleSelectAll, handleSelectNone, handleToggleSelect, isAllSelected } = useSelection(items)
-```
-
-> **Rule:** Call `useSelection(data)` AFTER the `data` variable declaration.
-
----
 
 ### `useMediaQuery`
 **File:** `hooks/useMediaQuery.ts`
@@ -445,28 +404,6 @@ useKeyboardShortcuts({
 
 ---
 
-### `useUnsavedChanges`
-**File:** `hooks/useUnsavedChanges.ts`
-
-Prevents navigation when form has unsaved changes.
-
-```typescript
-useUnsavedChanges(isDirty, 'You have unsaved changes.')
-```
-
----
-
-### `useAutoSave`
-**File:** `hooks/useAutoSave.ts`
-
-Debounced auto-save for form fields.
-
-```typescript
-const { lastSaved, isSaving } = useAutoSave(formValues, saveFunction, { debounceMs: 1000 })
-```
-
----
-
 ## 7. Navigation
 
 ### `useBreadcrumbs`
@@ -498,23 +435,12 @@ startTransition(() => navigate('/products'))
 ## 8. Forms
 
 ### `useValidatedForm`
-**File:** `hooks/useValidatedForm.ts` *(or `useSmartDefaults.ts`)*
+**File:** `hooks/useValidatedForm.ts`
 
 react-hook-form + Zod wrapper with standard `mode: 'onBlur'`.
 
 ```typescript
 const form = useValidatedForm(schema, defaultValues)
-```
-
----
-
-### `useSmartDefaults`
-**File:** `hooks/useSmartDefaults.ts`
-
-Populate form fields from last used values (localStorage).
-
-```typescript
-useSmartDefaults(form, 'product-create')
 ```
 
 ---
@@ -618,7 +544,6 @@ const { confirmDelete, DeleteConfirmDialog } = useSoftDelete({
 |------|-----------|
 | `useEntityUpdateSignal` | `useEntityUpdateSignal.test.tsx` |
 | `useMediaQuery` | `useMediaQuery.test.ts` |
-| `useSelection` | `useSelection.test.ts` |
 | `useTabVisibility` | `useTabVisibility.test.ts` |
 | `useUrlDialog` | `useUrlDialog.test.tsx` |
 | `useUrlEditDialog` | `useUrlEditDialog.test.tsx` |

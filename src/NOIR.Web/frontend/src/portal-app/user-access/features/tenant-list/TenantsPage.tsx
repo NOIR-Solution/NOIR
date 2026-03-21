@@ -64,7 +64,7 @@ export const TenantsPage = () => {
     defaultPageSize,
   } = useTableParams({ defaultPageSize: 10, tableKey: 'tenants' })
 
-  const { data, isLoading, isPlaceholderData, error: queryError, refetch: refresh } = useTenantsQuery(params)
+  const { data, isLoading, isPlaceholderData, refetch: refresh } = useTenantsQuery(params)
 
   const isContentStale = useDelayedLoading(isSearchStale || isFilterPending || isPlaceholderData)
   const deleteMutation = useDeleteTenantMutation()
@@ -205,9 +205,6 @@ export const TenantsPage = () => {
     getRowId: (row) => row.id,
   })
 
-  if (queryError) {
-    console.error(queryError)
-  }
 
   return (
     <div className="space-y-6">

@@ -90,6 +90,7 @@ export const PlatformSmtpSettingsTab = ({ canEdit }: PlatformSmtpSettingsTabProp
   const [isConfigured, setIsConfigured] = useState(false)
   const [hasPassword, setHasPassword] = useState(false)
   const [serverErrors, setServerErrors] = useState<string[]>([])
+  const [testServerErrors, setTestServerErrors] = useState<string[]>([])
 
   const smtpSchema = useMemo(() => createSmtpSettingsSchema(t), [t])
   const requiredFields = useMemo(() => getRequiredFields(smtpSchema), [smtpSchema])
@@ -180,7 +181,7 @@ export const PlatformSmtpSettingsTab = ({ canEdit }: PlatformSmtpSettingsTabProp
         },
         onError: (err) => {
           const message = err instanceof ApiError ? err.message : t('platformSettings.smtp.testFailed')
-          toast.error(message)
+          setTestServerErrors([message])
         },
       },
     )
@@ -410,7 +411,7 @@ export const PlatformSmtpSettingsTab = ({ canEdit }: PlatformSmtpSettingsTabProp
       </Card>
 
       {/* Test Connection Dialog */}
-      <Dialog open={testDialogOpen} onOpenChange={setTestDialogOpen}>
+      <Dialog open={testDialogOpen} onOpenChange={(open) => { setTestDialogOpen(open); if (open) setTestServerErrors([]) }}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>{t('platformSettings.smtp.testConnectionTitle')}</DialogTitle>
@@ -418,6 +419,11 @@ export const PlatformSmtpSettingsTab = ({ canEdit }: PlatformSmtpSettingsTabProp
           </DialogHeader>
           <Form {...testForm}>
             <form onSubmit={testForm.handleSubmit(onTestSubmit)} className="space-y-4">
+              <FormErrorBanner
+                errors={testServerErrors}
+                onDismiss={() => setTestServerErrors([])}
+                title={t('platformSettings.smtp.testFailed', 'Test failed')}
+              />
               <FormField
                 control={testForm.control}
                 name="recipientEmail"

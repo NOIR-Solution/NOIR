@@ -50,7 +50,7 @@ export const BlogTagsPage = () => {
 
   const { params, searchInput, setSearchInput, isSearchStale } = useTableParams({ defaultPageSize: 1000 })
   const queryParams = useMemo(() => ({ search: params.search }), [params.search])
-  const { data = [], isLoading, isPlaceholderData, error: queryError, refetch: refresh } = useBlogTagsQuery(queryParams)
+  const { data = [], isLoading, isPlaceholderData, refetch: refresh } = useBlogTagsQuery(queryParams)
   const isContentStale = useDelayedLoading(isSearchStale || isPlaceholderData)
   const { editItem: tagToEdit, openEdit: openEditTag, closeEdit: closeEditTag } = useUrlEditDialog<PostTagListItem>(data)
   const deleteMutation = useDeleteBlogTagMutation()
@@ -134,9 +134,6 @@ export const BlogTagsPage = () => {
     getRowId: (row) => row.id,
   })
 
-  if (queryError) {
-    console.error(queryError)
-  }
 
   return (
     <div className="space-y-6">

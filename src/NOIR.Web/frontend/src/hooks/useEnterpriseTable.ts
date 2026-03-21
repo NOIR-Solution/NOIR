@@ -350,14 +350,6 @@ export const useEnterpriseTable = <TData>({
 // ─── Selection utilities (moved from useServerTable) ──────────────────────────
 
 /**
- * Derive selected row IDs from raw rowSelection state (performance-correct pattern).
- * Do NOT call table.getFilteredSelectedRowModel() for bulk action counts —
- * it recalculates the full row model on every render.
- */
-export const getSelectedIds = (rowSelection: RowSelectionState): string[] =>
-  Object.keys(rowSelection)
-
-/**
  * useMemo-wrapped helper used in page components:
  *   const selectedIds = useSelectedIds(table.getState().rowSelection)
  */

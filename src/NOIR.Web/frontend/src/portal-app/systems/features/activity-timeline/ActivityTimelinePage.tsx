@@ -2,6 +2,7 @@ import { useState, useDeferredValue, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import { useDelayedLoading } from '@/hooks/useDelayedLoading'
+import { translateAuditDescription } from '@/lib/utils/auditDescriptionTranslator'
 import type { DateRange } from 'react-day-picker'
 import { usePageContext } from '@/hooks/usePageContext'
 import { useRegionalSettings, getLocaleForFormat } from '@/contexts/RegionalSettingsContext'
@@ -184,7 +185,7 @@ const TimelineEntry = ({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-medium text-sm">
-                {entry.actionDescription || entry.displayContext}
+                {translateAuditDescription(t, entry.actionDescription || entry.displayContext || '')}
               </span>
               <Badge variant="outline" className={cn('text-xs', config.textColor)}>
                 {t(`activityTimeline.operations.${entry.operationType.toLowerCase()}`, entry.operationType)}

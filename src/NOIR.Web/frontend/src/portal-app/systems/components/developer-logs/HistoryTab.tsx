@@ -156,7 +156,7 @@ const HistoryFileViewer = ({
         <div className="flex-1">
           <h2 className="font-semibold">noir-{date}.json</h2>
           <p className="text-sm text-muted-foreground">
-            {formatDateDisplay(date, timezone)} &middot; {totalCount.toLocaleString()} entries
+            {formatDateDisplay(date, timezone)} &middot; {totalCount.toLocaleString()} {t('developerLogs.entries')}
           </p>
         </div>
         <Button

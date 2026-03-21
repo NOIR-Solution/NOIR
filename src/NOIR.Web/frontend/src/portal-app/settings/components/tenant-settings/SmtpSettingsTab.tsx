@@ -90,6 +90,7 @@ export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
   const [isInherited, setIsInherited] = useState(true)
   const [hasPassword, setHasPassword] = useState(false)
   const [serverErrors, setServerErrors] = useState<string[]>([])
+  const [testServerErrors, setTestServerErrors] = useState<string[]>([])
 
   const schema = useMemo(() => createTenantSmtpSettingsSchema(t), [t])
   const requiredFields = useMemo(() => getRequiredFields(schema), [schema])
@@ -191,7 +192,7 @@ export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
       },
       onError: (error) => {
         const message = error instanceof ApiError ? error.message : t('platformSettings.smtp.failedToSaveSettings')
-        toast.error(message)
+        setServerErrors([message])
       },
     })
   }
@@ -207,7 +208,7 @@ export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
         },
         onError: (error) => {
           const message = error instanceof ApiError ? error.message : t('platformSettings.smtp.testFailed')
-          toast.error(message)
+          setTestServerErrors([message])
         },
       },
     )
@@ -457,7 +458,7 @@ export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
       </Card>
 
       {/* Test Connection Dialog */}
-      <Dialog open={testDialogOpen} onOpenChange={setTestDialogOpen}>
+      <Dialog open={testDialogOpen} onOpenChange={(open) => { setTestDialogOpen(open); if (open) setTestServerErrors([]) }}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>{t('platformSettings.smtp.testConnectionTitle')}</DialogTitle>
@@ -465,6 +466,11 @@ export const SmtpSettingsTab = ({ canEdit }: SmtpSettingsTabProps) => {
           </DialogHeader>
           <Form {...testForm}>
             <form onSubmit={testForm.handleSubmit(onTestSubmit)} className="space-y-4">
+              <FormErrorBanner
+                errors={testServerErrors}
+                onDismiss={() => setTestServerErrors([])}
+                title={t('platformSettings.smtp.testFailed', 'Test failed')}
+              />
               <FormField
                 control={testForm.control}
                 name="recipientEmail"

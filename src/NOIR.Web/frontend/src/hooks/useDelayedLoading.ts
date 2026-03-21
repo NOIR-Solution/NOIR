@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 
 /** Shared threshold before showing stale/loading indicators (ms). */
-export const STALE_DELAY_MS = 500
+const STALE_DELAY_MS = 500
 
 /**
  * Delays a boolean transitioning to `true` by `delay` ms.

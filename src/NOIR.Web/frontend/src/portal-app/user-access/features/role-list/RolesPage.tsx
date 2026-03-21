@@ -47,6 +47,11 @@ import type { RoleListItem } from '@/types'
 
 const ch = createColumnHelper<RoleListItem>()
 
+const SYSTEM_ROLE_DESCRIPTION_KEYS: Record<string, string> = {
+  admin: 'roles.descriptions.admin',
+  user: 'roles.descriptions.user',
+}
+
 export const RolesPage = () => {
   const { t } = useTranslation('common')
   const { hasPermission } = usePermissions()
@@ -78,7 +83,7 @@ export const RolesPage = () => {
     defaultPageSize,
   } = useTableParams({ defaultPageSize: 10, tableKey: 'roles' })
 
-  const { data, isLoading, isPlaceholderData, error: queryError, refetch: refresh } = useRolesQuery(params)
+  const { data, isLoading, isPlaceholderData, refetch: refresh } = useRolesQuery(params)
   const { editItem: roleToEdit, openEdit: openEditRole, closeEdit: closeEditRole } = useUrlEditDialog<RoleListItem>(data?.items)
   const deleteMutation = useDeleteRoleMutation()
 
@@ -156,9 +161,13 @@ export const RolesPage = () => {
     ch.accessor('description', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('roles.columns.description', 'Description')} />,
       meta: { label: t('roles.columns.description', 'Description') },
-      cell: ({ getValue }) => (
-        <span className="text-muted-foreground line-clamp-2">{getValue() || '-'}</span>
-      ),
+      cell: ({ row }) => {
+        const descKey = row.original.isSystemRole
+          ? SYSTEM_ROLE_DESCRIPTION_KEYS[row.original.name.toLowerCase()]
+          : undefined
+        const description = descKey ? t(descKey) : (row.original.description || '-')
+        return <span className="text-muted-foreground line-clamp-2">{description}</span>
+      },
     }) as ColumnDef<RoleListItem, unknown>,
     ch.accessor('permissionCount', {
       header: ({ column }) => <DataTableColumnHeader column={column} title={t('roles.columns.permissions', 'Permissions')} />,
@@ -220,9 +229,6 @@ export const RolesPage = () => {
     getRowId: (row) => row.id,
   })
 
-  if (queryError) {
-    console.error(queryError)
-  }
 
   return (
     <div className="space-y-6">

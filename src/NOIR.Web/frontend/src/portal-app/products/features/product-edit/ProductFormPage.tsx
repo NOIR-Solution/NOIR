@@ -1469,8 +1469,8 @@ export const ProductFormPage = () => {
                             <div className="flex-1">
                               <div className="font-medium">{variant.name}</div>
                               <div className="text-sm text-muted-foreground">
-                                {variant.sku && `SKU: ${variant.sku} • `}
-                                Stock: {variant.stockQuantity}
+                                {variant.sku && `${t('products.variantSku')}: ${variant.sku} • `}
+                                {t('products.variantStock')}: {variant.stockQuantity}
                               </div>
                             </div>
                             <div className="text-right">

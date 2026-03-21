@@ -19,6 +19,8 @@ declare module '@tanstack/react-table' {
     sticky?: 'left'
     /** Whether this column should be included in CSV/Excel exports */
     enableExport?: boolean
+    /** Formatter for grouped row headers — translates raw grouping value to display label */
+    groupValueFormatter?: (value: unknown) => string
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

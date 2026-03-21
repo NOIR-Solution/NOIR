@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRegionalSettings, getLocaleForFormat } from '@/contexts/RegionalSettingsContext'
+import { translateAuditDescription } from '@/lib/utils/auditDescriptionTranslator'
 import {
   Clock,
   User,
@@ -225,7 +226,7 @@ export const ActivityDetailsDialog = ({
             ) : (
               <XCircle className="h-5 w-5 text-red-500" />
             )}
-            {entry.actionDescription || entry.displayContext}
+            {translateAuditDescription(t, entry.actionDescription || entry.displayContext || '')}
           </CredenzaTitle>
           <CredenzaDescription asChild>
             <div className="space-y-2">
