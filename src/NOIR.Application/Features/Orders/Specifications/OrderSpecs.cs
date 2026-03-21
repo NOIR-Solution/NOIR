@@ -156,7 +156,8 @@ public sealed class OrdersListSpec : Specification<Order>
                 break;
         }
 
-        Query.Skip(skip).Take(take);
+        Query.Include(o => o.Items)
+            .Skip(skip).Take(take);
     }
 }
 
