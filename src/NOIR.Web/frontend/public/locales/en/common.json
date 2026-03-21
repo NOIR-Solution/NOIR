@@ -3979,7 +3979,7 @@
   },
   "webhooks": {
     "title": "Webhooks",
-    "description": "Description",
+    "description": "Manage outbound webhook subscriptions for event notifications.",
     "noWebhooks": "No webhooks configured",
     "noWebhooksDescription": "Create a webhook subscription to receive event notifications via HTTP POST.",
     "createWebhook": "Create Webhook",

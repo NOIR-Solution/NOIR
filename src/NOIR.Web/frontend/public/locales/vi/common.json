@@ -3976,7 +3976,7 @@
   },
   "webhooks": {
     "title": "Webhooks",
-    "description": "Mô tả",
+    "description": "Quản lý đăng ký webhook cho thông báo sự kiện.",
     "noWebhooks": "Chưa có webhook nào",
     "noWebhooksDescription": "Tạo webhook để nhận thông báo sự kiện qua HTTP POST.",
     "createWebhook": "Tạo Webhook",
