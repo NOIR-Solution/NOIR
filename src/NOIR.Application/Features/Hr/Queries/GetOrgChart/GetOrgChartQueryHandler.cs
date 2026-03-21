@@ -17,57 +17,94 @@ public class GetOrgChartQueryHandler
         GetOrgChartQuery query,
         CancellationToken cancellationToken)
     {
-        var deptSpec = new Specifications.AllDepartmentsSpec();
-        var allDepartments = (await _departmentRepository.ListAsync(deptSpec, cancellationToken))
+        // 1. Load all active departments
+        var allDepartments = (await _departmentRepository.ListAsync(
+                new Specifications.AllDepartmentsSpec(), cancellationToken))
             .Where(d => d.IsActive)
             .ToList();
 
-        IEnumerable<Department> targetDepartments;
+        // 2. Determine target department IDs (subtree if filtered)
+        var targetDeptIds = new HashSet<Guid>();
         if (query.DepartmentId.HasValue)
         {
-            targetDepartments = allDepartments.Where(d => d.Id == query.DepartmentId.Value);
+            CollectSubtree(query.DepartmentId.Value, allDepartments, targetDeptIds);
         }
         else
         {
-            targetDepartments = allDepartments.Where(d => d.ParentDepartmentId == null);
+            foreach (var dept in allDepartments)
+                targetDeptIds.Add(dept.Id);
         }
 
-        var departmentLookup = allDepartments.ToLookup(d => d.ParentDepartmentId);
+        // 3. Load employees for target departments
+        var employees = await _employeeRepository.ListAsync(
+            new Specifications.OrgChartEmployeesSpec(targetDeptIds), cancellationToken);
+
+        var employeeIdSet = employees.Select(e => e.Id).ToHashSet();
+
+        // 4. Build flat node list
         var nodes = new List<Features.Hr.DTOs.OrgChartNodeDto>();
 
-        foreach (var dept in targetDepartments)
+        // Department nodes
+        foreach (var dept in allDepartments.Where(d => targetDeptIds.Contains(d.Id)))
         {
-            var node = await BuildOrgChartNodeAsync(dept, departmentLookup, cancellationToken);
-            nodes.Add(node);
+            // If filtered and parent is outside the target set, make it a root
+            var parentId = dept.ParentDepartmentId;
+            if (parentId.HasValue && !targetDeptIds.Contains(parentId.Value))
+                parentId = null;
+
+            var empCount = employees.Count(e => e.DepartmentId == dept.Id);
+            var managerSubtitle = dept.Manager != null
+                ? $"Manager: {dept.Manager.FirstName} {dept.Manager.LastName}"
+                : null;
+
+            nodes.Add(new Features.Hr.DTOs.OrgChartNodeDto(
+                dept.Id,
+                Features.Hr.DTOs.OrgChartNodeType.Department,
+                dept.Name,
+                managerSubtitle,
+                null,
+                empCount,
+                null,
+                parentId,
+                null));
+        }
+
+        // Employee nodes
+        foreach (var emp in employees)
+        {
+            // Only include managerId edge if the manager is also in the result set
+            var managerId = emp.ManagerId.HasValue && employeeIdSet.Contains(emp.ManagerId.Value)
+                ? emp.ManagerId
+                : null;
+
+            nodes.Add(new Features.Hr.DTOs.OrgChartNodeDto(
+                emp.Id,
+                Features.Hr.DTOs.OrgChartNodeType.Employee,
+                emp.FullName,
+                emp.Position,
+                emp.AvatarUrl,
+                null,
+                emp.Status,
+                emp.DepartmentId,
+                managerId));
         }
 
         return Result.Success(nodes);
     }
 
-    private async Task<Features.Hr.DTOs.OrgChartNodeDto> BuildOrgChartNodeAsync(
-        Department department,
-        ILookup<Guid?, Department> departmentLookup,
-        CancellationToken cancellationToken)
+    /// <summary>
+    /// Recursively collects department IDs for the given root and all its descendants.
+    /// </summary>
+    private static void CollectSubtree(
+        Guid rootId,
+        List<Department> allDepartments,
+        HashSet<Guid> result)
     {
-        var employeeSpec = new Specifications.EmployeesByDepartmentSpec(department.Id);
-        var employeeCount = await _employeeRepository.CountAsync(employeeSpec, cancellationToken);
+        if (!result.Add(rootId)) return;
 
-        var children = new List<Features.Hr.DTOs.OrgChartNodeDto>();
-
-        foreach (var subDept in departmentLookup[department.Id])
+        foreach (var child in allDepartments.Where(d => d.ParentDepartmentId == rootId))
         {
-            var childNode = await BuildOrgChartNodeAsync(subDept, departmentLookup, cancellationToken);
-            children.Add(childNode);
+            CollectSubtree(child.Id, allDepartments, result);
         }
-
-        return new Features.Hr.DTOs.OrgChartNodeDto(
-            department.Id,
-            Features.Hr.DTOs.OrgChartNodeType.Department,
-            department.Name,
-            department.Manager != null ? $"Manager: {department.Manager.FirstName} {department.Manager.LastName}" : null,
-            null,
-            employeeCount,
-            null,
-            children);
     }
 }

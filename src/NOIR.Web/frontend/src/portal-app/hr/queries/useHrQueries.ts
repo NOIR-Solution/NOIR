@@ -72,6 +72,7 @@ export const useOrgChartQuery = (departmentId?: string) =>
   useQuery({
     queryKey: employeeKeys.orgChart(departmentId),
     queryFn: () => getOrgChart(departmentId),
+    placeholderData: keepPreviousData,
   })
 
 export const useHrReportsQuery = () =>

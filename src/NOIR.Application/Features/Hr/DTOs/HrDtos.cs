@@ -101,6 +101,7 @@ public sealed record DepartmentTreeNodeDto(
 
 /// <summary>
 /// Org chart node (can represent either a Department or an Employee).
+/// Flat list — frontend builds tree edges from ParentId and ManagerId.
 /// </summary>
 public sealed record OrgChartNodeDto(
     Guid Id,
@@ -110,7 +111,8 @@ public sealed record OrgChartNodeDto(
     string? AvatarUrl,
     int? EmployeeCount,
     EmployeeStatus? Status,
-    IReadOnlyList<OrgChartNodeDto> Children);
+    Guid? ParentId,
+    Guid? ManagerId);
 
 /// <summary>
 /// Type of node in the org chart.

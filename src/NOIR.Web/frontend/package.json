@@ -39,6 +39,7 @@
     "test:all": "vitest run && vitest run --config vitest.storybook.config.ts"
   },
   "dependencies": {
+    "@dagrejs/dagre": "^2.0.4",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
@@ -70,11 +71,11 @@
     "@tanstack/react-virtual": "^3.10.9",
     "@tinymce/tinymce-react": "^6.3.0",
     "@tippyjs/react": "^4.2.6",
+    "@xyflow/react": "^12.10.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.4",
     "d3": "^7.9.0",
-    "d3-org-chart": "^3.1.1",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.26.2",
     "i18next": "^24.2.3",

@@ -20,7 +20,8 @@ public class GetReviewsQueryHandlerTests
             .Setup(x => x.GetDisplayNamesAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<string, string?>());
 
-        _handler = new GetReviewsQueryHandler(_reviewRepositoryMock.Object, _userDisplayNameServiceMock.Object);
+        var productRepositoryMock = new Mock<IRepository<Product, Guid>>();
+        _handler = new GetReviewsQueryHandler(_reviewRepositoryMock.Object, productRepositoryMock.Object, _userDisplayNameServiceMock.Object);
     }
 
     private static ProductReview CreateTestReview(

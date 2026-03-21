@@ -269,16 +269,13 @@ test.describe('HR Departments & Tags @regression', () => {
         await page.goto('/portal/hr/org-chart');
         await page.waitForLoadState('networkidle');
 
-        // Wait for d3-org-chart to render — look for SVG or chart container
-        const chartContainer = page
-          .locator('svg')
-          .or(page.locator('[data-testid="org-chart"]'))
-          .or(page.locator('.org-chart-container'));
+        // Wait for React Flow to render
+        const chartContainer = page.locator('.react-flow');
 
         await expect(chartContainer.first()).toBeVisible({ timeout: 15_000 });
 
-        // Verify at least one node is visible (employee cards)
-        const node = page.locator('.node, [data-testid="org-node"], g.node');
+        // Verify at least one node is visible (React Flow nodes)
+        const node = page.locator('.react-flow__node');
         const nodeVisible = await node.first().isVisible({ timeout: 10_000 }).catch(() => false);
         if (!nodeVisible) {
           // Org chart may render differently — just verify the container is visible

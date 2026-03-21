@@ -339,15 +339,15 @@ test.describe('Cross-Module Data Linking @smoke', () => {
     await page.goto('/portal/hr/org-chart');
     await page.waitForLoadState('networkidle');
 
-    // Wait for org chart container to render (d3-org-chart uses SVG + foreignObject for HTML nodes)
-    const orgChart = page.locator('svg, [data-testid="org-chart"], .org-chart, canvas, [class*="org"]');
+    // Wait for React Flow to render nodes
+    const orgChart = page.locator('.react-flow');
     await expect(orgChart.first()).toBeVisible({ timeout: 15_000 });
 
-    // Wait a moment for d3 to finish rendering nodes
-    await page.waitForTimeout(2_000);
+    // Wait for React Flow nodes to render
+    const rfNode = page.locator('.react-flow__node');
+    await expect(rfNode.first()).toBeVisible({ timeout: 10_000 });
 
-    // Step 5: Verify employees appear in the chart
-    // d3-org-chart renders text in foreignObject divs which are accessible by Playwright
+    // Step 5: Verify employees appear in the chart nodes
     const managerNode = page.getByText(new RegExp(`E2E-Mgr`, 'i'));
     const reportNode = page.getByText(new RegExp(`E2E-Rpt`, 'i'));
 

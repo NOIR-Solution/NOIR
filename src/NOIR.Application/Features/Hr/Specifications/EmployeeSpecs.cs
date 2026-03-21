@@ -265,6 +265,18 @@ public sealed class EmployeesForExportSpec : Specification<Employee>
 }
 
 /// <summary>
+/// Employees for org chart — all employees in the given departments (no status filter).
+/// </summary>
+public sealed class OrgChartEmployeesSpec : Specification<Employee>
+{
+    public OrgChartEmployeesSpec(ICollection<Guid> departmentIds)
+    {
+        Query.Where(e => departmentIds.Contains(e.DepartmentId))
+             .TagWith("OrgChartEmployees");
+    }
+}
+
+/// <summary>
 /// Lightweight search for autocomplete.
 /// </summary>
 public sealed class EmployeeSearchSpec : Specification<Employee>

@@ -4134,15 +4134,15 @@
       "title": "Sơ đồ tổ chức",
       "description": "Sơ đồ tổ chức tương tác",
       "search": "Tìm nhân viên hoặc phòng ban...",
-      "export": "Xuất",
       "expandAll": "Mở rộng tất cả",
       "collapseAll": "Thu gọn tất cả",
-      "zoomIn": "Phóng to",
-      "zoomOut": "Thu nhỏ",
-      "fitScreen": "Vừa màn hình",
       "employees": "nhân viên",
       "noData": "Chưa có dữ liệu tổ chức",
-      "noDataDescription": "Thêm phòng ban và nhân viên để xem sơ đồ tổ chức"
+      "noDataDescription": "Thêm phòng ban và nhân viên để xem sơ đồ tổ chức",
+      "viewProfile": "Xem hồ sơ",
+      "viewDepartments": "Xem phòng ban",
+      "directReports": "báo cáo trực tiếp",
+      "reportsTo": "Báo cáo cho"
     },
     "reports": {
       "title": "Báo cáo nhân sự",

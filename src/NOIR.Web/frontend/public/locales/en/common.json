@@ -4137,15 +4137,15 @@
       "title": "Org Chart",
       "description": "Interactive organizational chart",
       "search": "Search employees or departments...",
-      "export": "Export",
       "expandAll": "Expand All",
       "collapseAll": "Collapse All",
-      "zoomIn": "Zoom In",
-      "zoomOut": "Zoom Out",
-      "fitScreen": "Fit to Screen",
       "employees": "employees",
       "noData": "No organizational data",
-      "noDataDescription": "Add departments and employees to see the org chart"
+      "noDataDescription": "Add departments and employees to see the org chart",
+      "viewProfile": "View Profile",
+      "viewDepartments": "View Departments",
+      "directReports": "direct reports",
+      "reportsTo": "Reports to"
     },
     "reports": {
       "title": "HR Reports",

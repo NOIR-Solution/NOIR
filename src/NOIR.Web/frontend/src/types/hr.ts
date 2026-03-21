@@ -209,7 +209,8 @@ export interface OrgChartNodeDto {
   avatarUrl?: string | null
   employeeCount?: number | null
   status?: EmployeeStatus | null
-  children: OrgChartNodeDto[]
+  parentId?: string | null
+  managerId?: string | null
 }
 
 // Reports DTOs
