@@ -107,7 +107,7 @@ public class LegalPageSeeder : ISeeder
         return """
             <h1>Terms of Service</h1>
 
-            <p><strong>Last Updated:</strong> {{CurrentDate}}</p>
+            <p><strong>Last Updated:</strong> 2026-03-21</p>
 
             <h2>1. Acceptance of Terms</h2>
             <p>By accessing and using this platform, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.</p>
@@ -155,7 +155,7 @@ public class LegalPageSeeder : ISeeder
         return """
             <h1>Privacy Policy</h1>
 
-            <p><strong>Last Updated:</strong> {{CurrentDate}}</p>
+            <p><strong>Last Updated:</strong> 2026-03-21</p>
 
             <h2>1. Introduction</h2>
             <p>We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you about how we look after your personal data and tell you about your privacy rights.</p>
