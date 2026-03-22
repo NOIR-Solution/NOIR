@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Loader2, Tag, Pencil } from 'lucide-react'
 import { useForm, type Resolver } from 'react-hook-form'
@@ -27,7 +27,7 @@ import {
 
 import { toast } from 'sonner'
 import { getRequiredFields, handleFormError } from '@/lib/form'
-import { createTag, updateTag } from '@/services/blog'
+import { useCreateBlogTag, useUpdateBlogTag } from '@/portal-app/blogs/queries/useBlogMutations'
 import type { PostTagListItem, CreateTagRequest } from '@/types'
 
 const createFormSchema = (t: (key: string, options?: Record<string, unknown>) => string) =>
@@ -49,8 +49,10 @@ interface BlogTagDialogProps {
 
 export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDialogProps) => {
   const { t } = useTranslation('common')
-  const [loading, setLoading] = useState(false)
   const [serverErrors, setServerErrors] = useState<string[]>([])
+  const createMutation = useCreateBlogTag()
+  const updateMutation = useUpdateBlogTag()
+  const isPending = createMutation.isPending || updateMutation.isPending
   const isEdit = !!tag
 
   const schema = useMemo(() => createFormSchema(t), [t])
@@ -106,7 +108,6 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
   }, [watchName, isEdit, form])
 
   const onSubmit = async (values: FormValues) => {
-    setLoading(true)
     try {
       const request: CreateTagRequest = {
         name: values.name,
@@ -116,10 +117,10 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
       }
 
       if (isEdit && tag) {
-        await updateTag(tag.id, request)
+        await updateMutation.mutateAsync({ id: tag.id, request })
         toast.success(t('blog.tagUpdated'))
       } else {
-        await createTag(request)
+        await createMutation.mutateAsync(request)
         toast.success(t('blog.tagCreated'))
       }
 
@@ -128,8 +129,6 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
       onSuccess()
     } catch (err) {
       handleFormError(err, form, setServerErrors, t)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -231,12 +230,12 @@ export const BlogTagDialog = ({ open, onOpenChange, tag, onSuccess }: BlogTagDia
             </CredenzaBody>
 
             <CredenzaFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="cursor-pointer">
+              <Button type="button" variant="outline" disabled={isPending} onClick={() => onOpenChange(false)} className="cursor-pointer">
                 {t('buttons.cancel')}
               </Button>
-              <Button type="submit" disabled={loading} className="cursor-pointer">
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {loading
+              <Button type="submit" disabled={isPending} className="cursor-pointer">
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isPending
                   ? t('buttons.saving')
                   : (isEdit ? t('buttons.update') : t('buttons.create'))}
               </Button>

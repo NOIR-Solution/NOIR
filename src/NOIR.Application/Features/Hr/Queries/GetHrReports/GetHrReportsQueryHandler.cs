@@ -30,7 +30,7 @@ public class GetHrReportsQueryHandler
             .ToList();
 
         var tagDistributionRaw = await _dbContext.EmployeeTagAssignments
-            .Where(a => !a.IsDeleted && a.EmployeeTag != null && a.EmployeeTag.IsActive)
+            .Where(a => !a.IsDeleted && a.EmployeeTag != null)
             .GroupBy(a => new { a.EmployeeTagId, TagName = a.EmployeeTag!.Name, a.EmployeeTag.Category, a.EmployeeTag.Color })
             .Select(g => new { g.Key.EmployeeTagId, g.Key.TagName, g.Key.Category, g.Key.Color, Count = g.Count() })
             .OrderByDescending(x => x.Count)

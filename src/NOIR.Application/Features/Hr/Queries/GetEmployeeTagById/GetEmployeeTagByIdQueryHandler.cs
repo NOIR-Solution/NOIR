@@ -24,7 +24,7 @@ public class GetEmployeeTagByIdQueryHandler
 
         return Result.Success(new EmployeeTagDto(
             tag.Id, tag.Name, tag.Category, tag.Color, tag.Description,
-            tag.SortOrder, tag.IsActive, tag.TagAssignments.Count,
+            tag.SortOrder, tag.TagAssignments.Count,
             tag.CreatedAt, tag.ModifiedAt));
     }
 }

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createCategory, updateCategory, deletePost, deleteCategory, deleteTag, reorderBlogCategories, bulkPublishPosts, bulkUnpublishPosts, bulkDeletePosts } from '@/services/blog'
+import { createCategory, updateCategory, createTag, updateTag, deletePost, deleteCategory, deleteTag, reorderBlogCategories, bulkPublishPosts, bulkUnpublishPosts, bulkDeletePosts } from '@/services/blog'
 import type { ReorderBlogCategoriesRequest } from '@/services/blog'
-import type { CreateCategoryRequest, UpdateCategoryRequest } from '@/types/blog'
+import type { CreateCategoryRequest, UpdateCategoryRequest, CreateTagRequest, UpdateTagRequest } from '@/types/blog'
 import { blogPostKeys, blogCategoryKeys, blogTagKeys } from './queryKeys'
 import { optimisticListDelete, optimisticArrayDelete } from '@/hooks/useOptimisticMutation'
 
@@ -47,6 +47,26 @@ export const useReorderBlogCategoriesMutation = () => {
     mutationFn: (request: ReorderBlogCategoriesRequest) => reorderBlogCategories(request),
     onError: () => {
       queryClient.invalidateQueries({ queryKey: blogCategoryKeys.all })
+    },
+  })
+}
+
+export const useCreateBlogTag = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (request: CreateTagRequest) => createTag(request),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: blogTagKeys.all })
+    },
+  })
+}
+
+export const useUpdateBlogTag = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, request }: { id: string; request: UpdateTagRequest }) => updateTag(id, request),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: blogTagKeys.all })
     },
   })
 }

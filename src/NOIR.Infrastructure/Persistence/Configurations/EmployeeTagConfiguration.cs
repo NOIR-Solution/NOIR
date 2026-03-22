@@ -35,10 +35,6 @@ public class EmployeeTagConfiguration : IEntityTypeConfiguration<EmployeeTag>
         builder.Property(e => e.SortOrder)
             .HasDefaultValue(0);
 
-        // Active status
-        builder.Property(e => e.IsActive)
-            .HasDefaultValue(true);
-
         // Unique index: TenantId + Name + Category
         builder.HasIndex(e => new { e.TenantId, e.Name, e.Category })
             .IsUnique()

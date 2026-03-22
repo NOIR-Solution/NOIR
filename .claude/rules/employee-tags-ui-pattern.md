@@ -1,31 +1,28 @@
-# Employee Tags — Card Layout (Not Table)
+# Employee Tags — DataTable with Category Grouping
 
-## Why Employee Tags Uses a Different UI Than Users or Blog Tags
+## UI Pattern
 
-**Employee Tags** (`/portal/hr/tags`) uses a **card-based layout** grouped by category. **Users** and **Blog Tags** use a **DataTable** (table layout). This is intentional.
+**Employee Tags** (`/portal/hr/tags`) uses **DataTable with `enableGrouping: true`** on the category column — consistent with all other list pages (Users, Blog Tags, Orders, etc.).
 
-### Design Rationale
+### Why DataTable (not cards)
 
-| Aspect | Users / Blog Tags | Employee Tags |
-|--------|-------------------|---------------|
-| **Data structure** | Flat list — all items are peers | **Categorical** — tags belong to 7 categories (Team, Skill, Project, Location, Seniority, Employment, Custom) |
-| **Primary task** | Scan rows, compare values, sort/filter | **Browse by category** — "What skills do we have?" "What teams exist?" |
-| **Visual emphasis** | Columns (name, slug, count) | **Color** — each tag has a color; cards give it prominence |
-| **Content** | Name + slug + count | **Name + description** — cards provide space for description |
-| **Mental model** | List/table for quick lookup | **Taxonomy** — grouped configuration view |
+Employee Tags was migrated from card layout to DataTable to gain: search, column visibility, sorting, audit columns, density control, and grouping — all provided by `useEnterpriseTable`. The 7-category grouping works naturally with TanStack Table's built-in grouping feature.
 
-### When to Use Table vs. Card Layout
+### Implementation
 
-- **Use DataTable** when: flat list, many columns, sortable, filterable, paginated (Users, Blog Tags, Products, Orders, etc.)
-- **Use card layout** when: items are grouped by category/type, color or visual identity matters, descriptions need space, browse-by-category UX (Employee Tags, tag taxonomies)
+- `TagsPage.tsx` — DataTable with `enableGrouping: true` on category column
+- Client-side search (name, description, category)
+- Columns: Actions, Name (with color dot via `ColorPopover`), Category (with `Badge` + `getStatusBadgeClasses`), Description, Employee Count, Sort Order (hidden), Audit columns
+- Category grouping: `meta.groupValueFormatter` translates enum values for i18n
+- `DeleteEmployeeTagDialog.tsx` — extracted delete confirmation dialog with tag preview
+- `TagFormDialog.tsx` — create/edit dialog with category, color picker (12 presets), description, sort order
+- `TagSelector.tsx` — tag assignment dialog for employees, grouped by category
 
-### Employee Tags Implementation
+### Domain Simplification
 
-- `TagsPage.tsx` — groups tags by `EmployeeTagCategory`, renders cards in a grid per category
-- No search (small dataset), no pagination
-- Each card: color dot, name, description, employee count badge, edit/delete buttons
-- Not in DataTable migration scope — different UX pattern by design
+- `IsActive` removed from `EmployeeTag` entity (soft delete handles activation/deactivation)
+- Consistent with `PostTag` (Blog Tags) which also has no `IsActive`
 
-### Consistency Note
+### MCP Tools
 
-If you add a new "tags" or "taxonomy" page with categories and colors, prefer the Employee Tags card pattern over a table. If you add a flat entity list, use DataTable.
+`HrTagTools.cs` — 6 tools: `noir_hr_tags_list`, `noir_hr_tags_get`, `noir_hr_tags_create`, `noir_hr_tags_update`, `noir_hr_tags_delete`, `noir_hr_tags_assign`

@@ -57,6 +57,6 @@ public class UpdateTagCommandHandler
 
         return Result.Success(new EmployeeTagDto(
             tag.Id, tag.Name, tag.Category, tag.Color, tag.Description,
-            tag.SortOrder, tag.IsActive, tag.EmployeeCount, tag.CreatedAt, tag.ModifiedAt));
+            tag.SortOrder, tag.EmployeeCount, tag.CreatedAt, tag.ModifiedAt));
     }
 }

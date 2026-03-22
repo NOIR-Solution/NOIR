@@ -11,6 +11,7 @@ import {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
+  EmptyState,
 } from '@uikit'
 import { useTagsQuery, useAssignTags, useRemoveTags } from '@/portal-app/hr/queries'
 import type { TagBriefDto, EmployeeTagCategory } from '@/types/hr'
@@ -26,7 +27,7 @@ interface TagSelectorProps {
 
 export const TagSelector = ({ open, onOpenChange, employeeId, currentTags }: TagSelectorProps) => {
   const { t } = useTranslation('common')
-  const { data: allTags } = useTagsQuery({ isActive: true })
+  const { data: allTags } = useTagsQuery()
   const assignMutation = useAssignTags()
   const removeMutation = useRemoveTags()
 
@@ -135,9 +136,11 @@ export const TagSelector = ({ open, onOpenChange, employeeId, currentTags }: Tag
               </div>
             ))}
             {tagsByCategory.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                {t('hr.tags.noTags')}
-              </p>
+              <EmptyState
+                icon={Tags}
+                title={t('hr.tags.noTags')}
+                description={t('hr.tags.noTagsDescription')}
+              />
             )}
           </div>
         </CredenzaBody>

@@ -41,7 +41,6 @@ public class EmployeeTagTests
         tag.Color.ShouldBe(TestColor);
         tag.Description.ShouldBe(TestDescription);
         tag.SortOrder.ShouldBe(0);
-        tag.IsActive.ShouldBeTrue();
         tag.TenantId.ShouldBe(TestTenantId);
     }
 
@@ -210,34 +209,4 @@ public class EmployeeTagTests
 
     #endregion
 
-    #region Deactivate / Activate Tests
-
-    [Fact]
-    public void Deactivate_ShouldSetIsActiveFalse()
-    {
-        // Arrange
-        var tag = CreateTestTag();
-
-        // Act
-        tag.Deactivate();
-
-        // Assert
-        tag.IsActive.ShouldBeFalse();
-    }
-
-    [Fact]
-    public void Activate_ShouldSetIsActiveTrue()
-    {
-        // Arrange
-        var tag = CreateTestTag();
-        tag.Deactivate();
-
-        // Act
-        tag.Activate();
-
-        // Assert
-        tag.IsActive.ShouldBeTrue();
-    }
-
-    #endregion
 }

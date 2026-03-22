@@ -54,6 +54,6 @@ public class CreateTagCommandHandler
 
         return Result.Success(new EmployeeTagDto(
             tag.Id, tag.Name, tag.Category, tag.Color, tag.Description,
-            tag.SortOrder, tag.IsActive, 0, tag.CreatedAt, tag.ModifiedAt));
+            tag.SortOrder, 0, tag.CreatedAt, tag.ModifiedAt));
     }
 }

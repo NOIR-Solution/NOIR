@@ -11,8 +11,8 @@ const API_URL = process.env.API_URL ?? 'http://localhost:4000';
  *         HR-TAG-003 (Edit tag), HR-TAG-004 (Delete tag)
  *
  * Notes:
- * - Tags use the /api/hr/employee-tags endpoint (ApiHelper.createEmployeeTag / deleteEmployeeTag)
- * - Tag categories: Skill, Department, Role, Project, Custom, Performance, Certification
+ * - Tags use the /api/hr/tags endpoint (ApiHelper.createEmployeeTag / deleteEmployeeTag)
+ * - Tag categories: Team, Skill, Project, Location, Seniority, Employment, Custom
  * - Tags page renders a card/grid layout, not a table
  */
 
@@ -89,7 +89,7 @@ test.describe('HR Tags @smoke @regression', () => {
       // Save and capture API response
       const createResponsePromise = page.waitForResponse(
         (resp: any) =>
-          resp.url().includes('/api/hr/employee-tags') && resp.request().method() === 'POST',
+          resp.url().includes('/api/hr/tags') && resp.request().method() === 'POST',
         { timeout: 15_000 },
       );
       await page.locator('[role="dialog"]').getByRole('button', { name: /create|save/i }).click();
@@ -155,7 +155,7 @@ test.describe('HR Tags @smoke @regression', () => {
 
       const updateResponsePromise = page.waitForResponse(
         (resp: any) =>
-          resp.url().includes('/api/hr/employee-tags') && resp.request().method() === 'PUT',
+          resp.url().includes('/api/hr/tags') && resp.request().method() === 'PUT',
         { timeout: 15_000 },
       );
       await page

@@ -48,7 +48,7 @@ export const useDepartmentQuery = (id: string | undefined) =>
     enabled: !!id,
   })
 
-export const useTagsQuery = (params?: { category?: EmployeeTagCategory; isActive?: boolean }) =>
+export const useTagsQuery = (params?: { category?: EmployeeTagCategory }) =>
   useQuery({
     queryKey: tagKeys.list(params ?? {}),
     queryFn: () => getTags(params),

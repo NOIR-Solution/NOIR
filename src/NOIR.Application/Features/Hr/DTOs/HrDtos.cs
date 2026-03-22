@@ -202,7 +202,6 @@ public sealed record EmployeeTagDto(
     string Color,
     string? Description,
     int SortOrder,
-    bool IsActive,
     int EmployeeCount,
     DateTimeOffset CreatedAt,
     DateTimeOffset? LastModifiedAt);

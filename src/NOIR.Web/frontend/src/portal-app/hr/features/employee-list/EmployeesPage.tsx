@@ -126,7 +126,7 @@ export const EmployeesPage = () => {
 
   const { data: employeesResponse, isLoading, isPlaceholderData, error: queryError, refetch } = useEmployeesQuery(params)
   const { data: departments } = useDepartmentsQuery()
-  const { data: allTags } = useTagsQuery({ isActive: true })
+  const { data: allTags } = useTagsQuery()
   const deactivateMutation = useDeactivateEmployee()
   const reactivateMutation = useReactivateEmployee()
   const bulkAssignTagsMutation = useBulkAssignTags()

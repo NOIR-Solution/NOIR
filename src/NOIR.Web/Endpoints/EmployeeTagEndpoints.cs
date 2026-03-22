@@ -25,17 +25,16 @@ public static class EmployeeTagEndpoints
         // Get all tags (with optional filters)
         group.MapGet("/", async (
             [FromQuery] EmployeeTagCategory? category,
-            [FromQuery] bool? isActive,
             IMessageBus bus) =>
         {
-            var query = new GetTagsQuery(category, isActive);
+            var query = new GetTagsQuery(category);
             var result = await bus.InvokeAsync<Result<List<EmployeeTagDto>>>(query);
             return result.ToHttpResult();
         })
         .RequireAuthorization(Permissions.HrTagsRead)
         .WithName("GetEmployeeTags")
         .WithSummary("Get all employee tags")
-        .WithDescription("Returns all employee tags with optional filtering by category and active status.")
+        .WithDescription("Returns all employee tags with optional filtering by category.")
         .Produces<List<EmployeeTagDto>>(StatusCodes.Status200OK);
 
         // Get single tag by ID

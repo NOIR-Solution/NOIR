@@ -37,13 +37,10 @@ public sealed class EmployeeTagByNameAndCategorySpec : Specification<EmployeeTag
 /// </summary>
 public sealed class AllEmployeeTagsSpec : Specification<EmployeeTag>
 {
-    public AllEmployeeTagsSpec(EmployeeTagCategory? category = null, bool? isActive = null)
+    public AllEmployeeTagsSpec(EmployeeTagCategory? category = null)
     {
         if (category.HasValue)
             Query.Where(t => t.Category == category.Value);
-
-        if (isActive.HasValue)
-            Query.Where(t => t.IsActive == isActive.Value);
 
         Query.Include(t => t.TagAssignments)
              .OrderBy(t => t.Category)

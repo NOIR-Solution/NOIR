@@ -132,10 +132,9 @@ export const reorderDepartments = async (request: ReorderDepartmentsRequest): Pr
 
 // ─── Tag endpoints ────────────────────────────────────────────────────────
 
-export const getTags = async (params?: { category?: EmployeeTagCategory; isActive?: boolean }): Promise<EmployeeTagDto[]> => {
+export const getTags = async (params?: { category?: EmployeeTagCategory }): Promise<EmployeeTagDto[]> => {
   const queryParams = new URLSearchParams()
   if (params?.category) queryParams.append('category', params.category)
-  if (params?.isActive != null) queryParams.append('isActive', params.isActive.toString())
   const query = queryParams.toString()
   return apiClient<EmployeeTagDto[]>(`/hr/tags${query ? `?${query}` : ''}`)
 }

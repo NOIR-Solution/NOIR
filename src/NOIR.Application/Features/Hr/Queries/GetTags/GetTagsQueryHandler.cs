@@ -13,12 +13,12 @@ public class GetTagsQueryHandler
         GetTagsQuery query,
         CancellationToken cancellationToken)
     {
-        var spec = new AllEmployeeTagsSpec(query.Category, query.IsActive);
+        var spec = new AllEmployeeTagsSpec(query.Category);
         var tags = await _tagRepository.ListAsync(spec, cancellationToken);
 
         var items = tags.Select(t => new EmployeeTagDto(
             t.Id, t.Name, t.Category, t.Color, t.Description,
-            t.SortOrder, t.IsActive, t.EmployeeCount,
+            t.SortOrder, t.EmployeeCount,
             t.CreatedAt, t.ModifiedAt)).ToList();
 
         return Result.Success(items);

@@ -156,7 +156,6 @@ export interface EmployeeTagDto {
   color: string
   description?: string | null
   sortOrder: number
-  isActive: boolean
   employeeCount: number
   createdAt: string
   lastModifiedAt?: string | null

@@ -10,7 +10,6 @@ public class EmployeeTag : TenantAggregateRoot<Guid>
     public string Color { get; private set; } = "#6366f1";
     public string? Description { get; private set; }
     public int SortOrder { get; private set; }
-    public bool IsActive { get; private set; } = true;
 
     // Navigation
     public virtual ICollection<EmployeeTagAssignment> TagAssignments { get; private set; } = new List<EmployeeTagAssignment>();
@@ -32,8 +31,7 @@ public class EmployeeTag : TenantAggregateRoot<Guid>
             Category = category,
             Color = color?.Trim() ?? "#6366f1",
             Description = description?.Trim(),
-            SortOrder = sortOrder,
-            IsActive = true
+            SortOrder = sortOrder
         };
         return tag;
     }
@@ -48,6 +46,4 @@ public class EmployeeTag : TenantAggregateRoot<Guid>
         SortOrder = sortOrder;
     }
 
-    public void Deactivate() => IsActive = false;
-    public void Activate() => IsActive = true;
 }
