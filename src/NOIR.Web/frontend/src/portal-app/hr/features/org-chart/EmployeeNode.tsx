@@ -59,7 +59,7 @@ export const EmployeeNode = memo(({ data, selected }: NodeProps<EmployeeNodeType
                 variant="outline"
                 className={cn('px-1.5 py-0 text-[10px]', getStatusBadgeClasses(colorKey))}
               >
-                {data.status}
+                {t(`hr.statuses.${data.status.toLowerCase()}`, data.status)}
               </Badge>
             )}
           </div>

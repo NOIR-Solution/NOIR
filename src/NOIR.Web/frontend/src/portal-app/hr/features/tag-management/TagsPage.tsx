@@ -160,8 +160,8 @@ export const TagsPage = () => {
       ),
     }) as ColumnDef<EmployeeTagDto, unknown>,
     ch.accessor('employeeCount', {
-      header: ({ column }) => <DataTableColumnHeader column={column} title={t('hr.employees.title', 'Employees')} />,
-      meta: { align: 'center' as const, label: t('hr.employees.title', 'Employees') },
+      header: ({ column }) => <DataTableColumnHeader column={column} title={t('hr.employees', 'Employees')} />,
+      meta: { align: 'center' as const, label: t('hr.employees', 'Employees') },
       size: 100,
       cell: ({ getValue }) => (
         <Badge variant="outline" className={getStatusBadgeClasses(getValue() as number > 0 ? 'blue' : 'gray')}>
