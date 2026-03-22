@@ -4368,13 +4368,13 @@
     },
     "dashboard": {
       "overview": "Tổng quan CRM",
-      "pipelineValue": "Giá trị Pipeline",
-      "activePipeline": "Pipeline hoạt động",
+      "pipelineValue": "Giá trị quy trình",
+      "activePipeline": "Quy trình đang hoạt động",
       "conversion": "Tỷ lệ chuyển đổi",
       "totalContacts": "Tổng liên hệ",
       "totalCompanies": "Tổng công ty",
       "activeDeals": "Giao dịch đang mở",
-      "totalPipelineValue": "Giá trị Pipeline",
+      "totalPipelineValue": "Giá trị quy trình",
       "wonThisMonth": "Thắng tháng này",
       "lostThisMonth": "Thua tháng này",
       "conversionRate": "Tỷ lệ chuyển đổi (90 ngày)"
