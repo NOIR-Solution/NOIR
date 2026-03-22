@@ -21,6 +21,9 @@ public class GetReviewsQueryHandlerTests
             .ReturnsAsync(new Dictionary<string, string?>());
 
         var productRepositoryMock = new Mock<IRepository<Product, Guid>>();
+        productRepositoryMock
+            .Setup(x => x.ListAsync(It.IsAny<ISpecification<Product>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Product>());
         _handler = new GetReviewsQueryHandler(_reviewRepositoryMock.Object, productRepositoryMock.Object, _userDisplayNameServiceMock.Object);
     }
 
