@@ -29,6 +29,10 @@
 # Temporary working directory (screenshots, test artifacts, debug output)
 temp/
 
+# QA system (execution results and state are ephemeral, cases/flows are committed)
+.qa/results/
+.qa/state.json
+
 # AI files to ignore
 .claude/settings.local.json
 .claude/*.local.*

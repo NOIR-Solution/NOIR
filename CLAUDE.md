@@ -102,6 +102,10 @@
 
 31. **UI/UX audit automation** — `cd src/NOIR.Web/frontend/e2e && npx playwright test --project=ui-audit --project=ui-audit-platform`. Crawls 52 admin + 4 platform pages (56 total) with 11 custom rules + axe-core. Output in `.ui-audit/` (gitignored). Feed `claude < .ui-audit/prompt.md` for batch fixes.
 
+### QA System
+
+32. **QA orchestrator** — `/noir-qa` runs 5-phase pipeline: git diff analysis → test case update (`.qa/cases/`) → flow organization (`.qa/flows/`) → browser execution (Playwright MCP + visual protocol + ui-audit) → results + fix-retest loop. Targeted: `/noir-qa test <feature>`. Fix mode: `/noir-qa fix`. See `.qa/README.md`.
+
 See `docs/backend/patterns/mcp-server.md` for full guide including prompts, resources, and SDK gotchas.
 
 ---
