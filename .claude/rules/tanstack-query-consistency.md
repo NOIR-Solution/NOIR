@@ -66,7 +66,7 @@ const { data, isLoading } = useEntityDetailQuery(id, open && !!id)
 
 ## Exceptions (NOT required to use TanStack Query)
 
-- File uploads (`useImageUpload`, TinyMCE `images_upload_handler`)
+- File uploads (`useImageUpload`, RichTextEditor `onImageUpload`)
 - Real-time streams (SSE, WebSocket, SignalR — e.g., `useLogStream`)
 - Auth login/logout flows (one-time redirecting operations)
 - Service files in `src/services/` (these are `queryFn` implementations)

@@ -78,7 +78,7 @@ ALL frontend UI MUST use shared components from `@uikit` or `@/components`. Neve
 
 ## Before Creating a New Component
 
-1. **Check `@uikit`** — 98+ components. Run: `grep -r "export" src/uikit/index.ts`
+1. **Check `@uikit`** — 99+ components. Run: `grep -r "export" src/uikit/index.ts`
 2. **Check `@/components`** — shared app components (PermissionPicker, BulkActionToolbar, etc.)
 3. **Check Storybook** — `pnpm storybook` at http://localhost:6006
 4. If no match exists AND the component is used in 2+ places → add to `@uikit` with a story.

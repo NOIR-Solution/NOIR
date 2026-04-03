@@ -186,7 +186,7 @@ src/NOIR.Web/             # Endpoints, Middleware, Program.cs
     └── Mcp/             # MCP server — Tools/, Resources/, Prompts/, Filters/
     └── frontend/         # React 19 SPA (pnpm)
         ├── src/portal-app/      # Domain-driven feature modules (56 pages)
-        ├── src/uikit/           # UI components + stories (@uikit, 98 components)
+        ├── src/uikit/           # UI components + stories (@uikit, 99 components)
         ├── src/components/      # Shared app components
         ├── src/hooks/           # Custom hooks (41+)
         ├── src/services/        # API service clients (generated + manual)
@@ -295,7 +295,7 @@ For TanStack Query hooks, `useEnterpriseTable` (unified table hook), React 19 pe
 
 ## Storybook & UIKit
 
-**98 component stories** in `src/uikit/{component}/`. Config: `.storybook/main.ts` (React + Vite + Tailwind CSS 4).
+**99 component stories** in `src/uikit/{component}/`. Config: `.storybook/main.ts` (React + Vite + Tailwind CSS 4).
 
 ```bash
 cd src/NOIR.Web/frontend && pnpm storybook       # Dev: http://localhost:6006
@@ -368,4 +368,4 @@ Research reports → `docs/backend/research/`.
 
 ---
 
-> Changelog: [CHANGELOG.md](CHANGELOG.md). Current version: 3.9 (2026-03-21).
+> Changelog: [CHANGELOG.md](CHANGELOG.md). Current version: 4.0 (2026-04-03).

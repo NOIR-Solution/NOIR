@@ -114,7 +114,7 @@
 
 **Frontend Tests:** 831 total
 - 154 Vitest unit tests
-- 677 Storybook browser tests (98 UIKit components)
+- 677 Storybook browser tests (99 UIKit components)
 
 ---
 

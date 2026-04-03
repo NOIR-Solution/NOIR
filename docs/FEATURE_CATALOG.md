@@ -1656,7 +1656,7 @@ await _hubContext.Clients.User(userId).SendAsync("ReceiveNotification", notifica
   - Tenant overrides created on first edit (COW)
   - Revert-to-default deletes tenant copy
 - **Entity:** `LegalPage` extends `PlatformTenantAggregateRoot<Guid>`
-- **Rich Editor:** TinyMCE (self-hosted) with image upload support
+- **Rich Editor:** Tiptap RichTextEditor (@uikit) with image upload support
 - **SEO Fields:** MetaTitle, MetaDescription, CanonicalUrl, AllowIndexing
 - **Seeding:** Platform templates seeded in `ApplicationDbContextSeeder`
 
@@ -1763,7 +1763,7 @@ await _hubContext.Clients.User(userId).SendAsync("ReceiveNotification", notifica
 ### Frontend
 
 - **Admin List:** `/portal/legal-pages` — Shows all pages with "Platform Default" or "Customized" badges
-- **Admin Editor:** `/portal/legal-pages/{id}` — TinyMCE editor with SEO sidebar
+- **Admin Editor:** `/portal/legal-pages/{id}` — RichTextEditor with SEO sidebar
 - **Public Routes:** `/terms`, `/privacy` — React pages fetching from public API
 
 ---

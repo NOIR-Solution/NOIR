@@ -1,5 +1,27 @@
 # CLAUDE.md Changelog
 
+## [4.0] - 2026-04-03
+
+### Added
+- **RichTextEditor UIKit component**: Tiptap v3 headless editor with `full`/`minimal` presets, image upload, variable insertion, dark mode, Storybook stories
+- **Memory: library update lessons**: MimeKit CVE needs latest version, Tiptap v3 named exports, safe major bumps (lucide, Wolverine, Stripe)
+
+### Changed
+- **TinyMCE → Tiptap migration**: Replaced TinyMCE 6 (EOL) with Tiptap 3 (MIT) across 4 pages (Blog, Product, Legal, Email Template)
+- **Bundle size**: vendor-tinymce 1,263KB → vendor-tiptap 433KB (−69% gzipped)
+- **Backend packages**: Microsoft.* 10.0.5, WolverineFx 5.27, Stripe 51, FusionCache 2.6, Hangfire 1.8.23, Finbuckle 10.0.4, and 20+ more
+- **Frontend packages**: 30+ patches/minors, Tailwind 4.2.2, lucide-react 1.7.0, Storybook 10.3.4, Vitest 4.1.2
+- **UIKit component count**: 98 → 99 (updated across all docs)
+- **All TinyMCE references** updated to Tiptap/RichTextEditor in docs, rules, e2e tests
+
+### Fixed
+- **MimeKit CVE** (GHSA-g7hc-96xr-gvvx): Override transitive dep to 4.15.1 — 0 NuGet warnings
+
+### Removed
+- `tinymce` + `@tinymce/tinymce-react` packages
+- `public/tinymce/` self-hosted skins/icons/models directory (78 files)
+- TinyMCE CSS styles from `index.css`
+
 ## [3.7] - 2026-03-13
 
 ### Added

@@ -33,7 +33,7 @@ NOIR is a comprehensive, AI-built enterprise SaaS foundation — e-commerce core
 - JWT auth with refresh tokens and RBAC
 - Hierarchical audit logging (HTTP → command → entity)
 - Email system with database-driven templates
-- React 19 SPA + 98 UIKit components + Storybook (677/677 stories)
+- React 19 SPA + 99 UIKit components + Storybook (677/677 stories)
 - PWA + SignalR + SSE + multi-tab session sync
 - MCP Server with 55 AI-callable tools, 6 prompts, 7 resources
 - 13,546 automated tests (12,715 backend + 831 frontend)

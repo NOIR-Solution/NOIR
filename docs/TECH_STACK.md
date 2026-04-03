@@ -73,7 +73,7 @@ NOIR is built on modern, production-ready technologies selected for:
 
 | Technology | Version | Purpose | Docs |
 |------------|---------|---------|------|
-| **Wolverine** | 4.0 | CQRS messaging | [Wolverine](https://wolverinefx.net/) |
+| **Wolverine** | 5.27 | CQRS messaging | [Wolverine](https://wolverinefx.net/) |
 | **MediatR** | - | Replaced by Wolverine | - |
 
 **Why Wolverine?**
@@ -678,7 +678,7 @@ const form = useForm<FormData>({
 |------|---------|---------|
 | **Storybook** | 10.2 | Interactive component catalog |
 
-**Storybook** provides an isolated development environment for 98 UI components in `src/uikit/` with 98 stories (677 browser tests verified via Playwright). Each component has a `.stories.tsx` file with interactive controls. Access at `http://localhost:6006`.
+**Storybook** provides an isolated development environment for 99 UI components in `src/uikit/` with 99 stories (677 browser tests verified via Playwright). Each component has a `.stories.tsx` file with interactive controls. Access at `http://localhost:6006`.
 
 ### Package Management
 

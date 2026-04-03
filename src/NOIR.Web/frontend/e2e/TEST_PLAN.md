@@ -1070,7 +1070,7 @@ All tests including P2: cross-browser, import/export, advanced workflows, permis
   2. Click "New Post"
   3. Verify redirect to `/portal/blog/posts/new`
   4. Fill in Title: `E2E Blog Post {timestamp}`
-  5. Wait for TinyMCE editor to initialize (contenteditable becomes true)
+  5. Wait for Tiptap editor to initialize (contenteditable becomes true)
   6. Type body content in the editor
   7. Select a category
   8. Set status to Draft
@@ -1083,7 +1083,7 @@ All tests including P2: cross-browser, import/export, advanced workflows, permis
 - **Preconditions:** Blog post created via API
 - **Steps:**
   1. Navigate to `/portal/blog/posts/{id}/edit`
-  2. Wait for TinyMCE to load with existing content
+  2. Wait for Tiptap editor to load with existing content
   3. Modify the title
   4. Add formatted content (bold, heading, link) in the editor
   5. Save

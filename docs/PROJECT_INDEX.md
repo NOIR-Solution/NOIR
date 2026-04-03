@@ -34,7 +34,7 @@
 | **API Endpoint Groups** | 52 | Minimal API endpoint files |
 | **Repositories** | 44 | Infrastructure repositories |
 | **EF Core Configurations** | 85 | Entity type configurations |
-| **UIKit Component Dirs** | 98 | shadcn/ui + custom components in `uikit/` |
+| **UIKit Component Dirs** | 99 | shadcn/ui + custom components in `uikit/` |
 | **Storybook Stories** | 97 | Interactive component catalog in `uikit/` |
 | **Custom Hooks** | 35 | React hooks in `hooks/` |
 | **API Services** | 40 | Frontend API clients |
@@ -466,7 +466,7 @@ NOIR.Web/
     │   ├── layouts/                     # Layout components
     │   │   ├── auth/                    # Auth pages (login, forgot-password, etc.)
     │   │   └── PortalLayout.tsx
-    │   ├── uikit/                       # 98 UI component dirs + stories (@uikit barrel)
+    │   ├── uikit/                       # 99 UI component dirs + stories (@uikit barrel)
     │   ├── components/                  # Shared app-level components
     │   ├── contexts/                    # React contexts (Auth, Theme, Notification, etc.)
     │   ├── hooks/                       # Shared custom React hooks (32)
@@ -709,7 +709,7 @@ NOIR.Web/
 
 - **Copy-on-Write** - Platform defaults with tenant overrides (same as Email Templates)
 - **SEO** - MetaTitle, MetaDescription, CanonicalUrl, AllowIndexing
-- **Rich Editor** - TinyMCE (self-hosted) with image upload
+- **Rich Editor** - Tiptap RichTextEditor (@uikit) with image upload
 - **Public API** - Slug-based resolution (tenant override → platform default)
 
 **Key Files:**
