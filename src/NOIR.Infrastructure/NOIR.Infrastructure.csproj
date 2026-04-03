@@ -54,8 +54,8 @@
         <PackageReference Include="FluentEmail.MailKit" Version="3.0.2" />
         <PackageReference Include="FluentEmail.Razor" Version="3.0.2" />
         <!-- Override MimeKit transitive dependency to fix CVE (GHSA-g7hc-96xr-gvvx) -->
-        <PackageReference Include="MimeKit" Version="4.12.0" />
-        <PackageReference Include="MailKit" Version="4.12.0" />
+        <PackageReference Include="MimeKit" Version="4.15.1" />
+        <PackageReference Include="MailKit" Version="4.15.1" />
         <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="10.0.5" />
 
         <!-- Logging -->
