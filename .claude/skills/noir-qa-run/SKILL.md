@@ -283,7 +283,45 @@ Every case including P2 edge + P3 cosmetic.
 
 Read `.claude/skills/noir-test-flow/SKILL.md` for the complete visual testing protocol.
 
-### Service Setup
+### Phase 0: Environment Reset (new cycle only — NOT for RESUME)
+
+**Applies to**: FULL INIT, RE-RUN, INCREMENTAL. **Skip for**: RESUME (keep existing data state).
+
+A fresh database ensures deterministic counts and no leftover test data from previous runs. This is the foundation for reliable CRUD verification (count N→N+1 is only meaningful on a known dataset).
+
+```bash
+# 1. Stop services
+netstat -ano | grep ":4000 " | grep "LISTEN" | awk '{print $5}' | sort -u | while read pid; do taskkill //F //PID "$pid" 2>/dev/null; done
+netstat -ano | grep ":3000 " | grep "LISTEN" | awk '{print $5}' | sort -u | while read pid; do taskkill //F //PID "$pid" 2>/dev/null; done
+sleep 2
+
+# 2. Drop and recreate databases (EF Core)
+cd src/NOIR.Web
+dotnet ef database drop --context ApplicationDbContext --force --no-build 2>/dev/null
+dotnet ef database drop --context TenantStoreDbContext --force --no-build 2>/dev/null
+
+# 3. Rebuild + apply migrations + seed
+cd ../..
+dotnet build src/NOIR.sln -v q
+dotnet ef database update --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context TenantStoreDbContext
+dotnet ef database update --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext
+
+# 4. Start backend (seeds run automatically on first request)
+cd src/NOIR.Web
+ASPNETCORE_ENVIRONMENT=Development ASPNETCORE_URLS="http://localhost:4000" dotnet run --no-build > ../../.backend.log 2>&1 &
+sleep 5
+curl -sf http://localhost:4000/robots.txt -o /dev/null && echo "Backend: OK" || echo "Backend: FAILED"
+
+# 5. Start frontend
+cd ../..
+powershell -Command "Start-Process cmd -ArgumentList '/c cd /d src\NOIR.Web\frontend && pnpm run dev > ..\..\..\.frontend.log 2>&1'"
+sleep 5
+curl -sf http://localhost:3000 -o /dev/null && echo "Frontend: OK" || echo "Frontend: FAILED"
+```
+
+**After reset**: Login as `admin@noir.local` / `123qwe` → verify dashboard loads with seeded data. Record baseline counts (products, customers, orders, etc.) — these are the "N" values for CRUD verification (count N→N+1 after CREATE).
+
+**If services are already running and mode is RESUME**: Skip Phase 0 entirely, just verify health:
 ```bash
 BACKEND_UP=$(curl -sf http://localhost:4000/robots.txt -o /dev/null -w "%{http_code}" 2>/dev/null || echo "000")
 FRONTEND_UP=$(curl -sf http://localhost:3000 -o /dev/null -w "%{http_code}" 2>/dev/null || echo "000")
