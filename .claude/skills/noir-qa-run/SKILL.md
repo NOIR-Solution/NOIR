@@ -20,12 +20,18 @@ cat .qa/state.json 2>/dev/null
 **Decision tree:**
 
 ```
+.qa/state.json has status "IN_PROGRESS"?
+  YES → MODE: RESUME (pick up where left off — exact domain + operation)
+
 .qa/cases/ is empty?
-  YES → MODE: FULL INIT (generate all cases from scratch)
-  NO  → .qa/state.json exists with status "IN_PROGRESS"?
-          YES → MODE: RESUME (pick up where left off)
-          NO  → MODE: INCREMENTAL (git diff → update changed → execute → fix)
+  YES → MODE: FULL INIT (generate all cases + execute ALL 66 operations)
+
+git diff from lastCheckedCommit to HEAD has changes?
+  YES → MODE: INCREMENTAL (update cases for changed domains → execute ONLY affected domains + regression)
+  NO  → MODE: RE-RUN (no code changed — re-execute ALL 66 operations from scratch, fresh results)
 ```
+
+**RE-RUN mode** (status=COMPLETE, no code changes): The previous run's results are stale evidence. Re-execute all 66 operations to produce fresh results. This catches: regressions from data state changes, transient bugs that were masked, and operations that were improperly marked PASS in previous runs.
 
 ---
 
@@ -169,9 +175,9 @@ Tag [smoke]. Visual checkboxes. Check docs/qa/.
 
 ---
 
-## MODE: INCREMENTAL (existing cases — update what changed)
+## MODE: INCREMENTAL (code changed since last run)
 
-### Phase A: Git Diff → Targeted Update
+### Phase A: Detect What Changed
 
 ```bash
 LAST_COMMIT=$(cat .qa/state.json 2>/dev/null | jq -r '.lastCheckedCommit // empty')
@@ -179,29 +185,71 @@ LAST_COMMIT=$(cat .qa/state.json 2>/dev/null | jq -r '.lastCheckedCommit // empt
 git diff --name-only "$LAST_COMMIT" HEAD
 ```
 
-Map changed files → affected feature domains (see `noir-qa SKILL.md` Phase 1.2 mapping table).
+Map changed files → affected domains using this table:
 
-**If 3+ feature domains affected** → spawn parallel agents (one per affected domain), each updating its `.qa/cases/{feature}.md`:
-- Read existing cases
-- Read changed source files
-- Add new cases for new pages/dialogs/fields
-- Update existing cases if behavior changed
-- Mark cases `[DEPRECATED]` if feature removed
-- Add regression cases for recently-fixed bugs (`git log --grep="fix(qa)"`)
+| File path pattern | Affected domain(s) |
+|-------------------|-------------------|
+| `portal-app/products/`, `Features/Products/` | Domain 1: Products |
+| `portal-app/orders/`, `Features/Orders/` | Domain 2: Orders |
+| `portal-app/customers/`, `Features/Customers/` | Domain 3: Customers |
+| `portal-app/blog/`, `portal-app/media/`, `Features/Blog/` | Domain 4: Content |
+| `portal-app/hr/`, `Features/Hr/` | Domain 5: HR |
+| `portal-app/crm/`, `Features/Crm/` | Domain 6: CRM |
+| `portal-app/projects/`, `Features/Pm/` | Domain 7: PM |
+| `portal-app/admin/`, `Features/Settings/`, `Features/Users/` | Domain 8: Settings |
+| `portal-app/dashboard/`, `Features/Dashboard/` | Domain 9: Dashboard |
+| `Features/Tenants/`, `Modules/` | Domain 10: Platform |
+| `uikit/`, `components/`, `hooks/`, `lib/` | ALL domains (shared component — full re-run) |
 
-**If 1-2 domains affected** → update directly (no agent team needed).
+### Phase B: Update Test Cases for Affected Domains
 
-**If shared component changed** (uikit/, components/, hooks/):
-- Identify all pages using that component
-- Add `[regression]` tag to affected cases across multiple feature files
+For each affected domain:
+1. Read the changed source files to understand what changed
+2. Update `.qa/cases/{domain}.md`:
+   - **New page/dialog/field** → add new test cases
+   - **Changed behavior** → update existing case steps
+   - **Removed feature** → mark cases `[DEPRECATED]`
+   - **Bug fix** (`git log --grep="fix"`) → add `[regression]` case to verify the fix holds
+3. Update the CRUD matrix operations if needed:
+   - New entity type → add CREATE/EDIT/DELETE operations to that domain's table
+   - New status transition → add STATUS operation
+   - New linked data relationship → add LINKED DATA verification
 
-After updating, proceed to **Build Flows** (below).
+**If 3+ domains affected** → spawn parallel agents (one per domain).
+**If shared component changed** → mark ALL domains for re-execution.
+
+### Phase C: Execute ONLY Affected Domains
+
+- Execute the CRUD matrix operations **only for affected domains** (not all 10)
+- PLUS: re-execute `[regression]`-tagged operations from previously-passing domains
+- PLUS: always re-execute cross-feature linked data verification (CF-1 through CF-4)
+- Record results alongside previous run's results (don't wipe passing domains)
+
+### Phase D: Update State
+
+```json
+{
+  "lastCheckedCommit": "HEAD",
+  "domainsExecuted": ["domain1", "domain5"],
+  "domainsCarriedForward": ["domain2", "domain3", "domain4", "domain6", "domain7", "domain8", "domain9", "domain10"]
+}
+```
 
 ---
 
 ## MODE: RESUME (interrupted session)
 
-Read `.qa/state.json` → skip to the phase/feature where it left off. Do NOT re-generate cases or re-execute passed tests. Continue from exact checkpoint.
+Read `.qa/state.json` → find `checkpoint` field (e.g., `"domain5-op3"`) → skip to that exact domain and operation. Do NOT re-execute completed domains/operations. Continue sequentially from checkpoint.
+
+---
+
+## MODE: RE-RUN (no code changes, previous run complete)
+
+Previous results are stale. Start fresh:
+1. Clear `.qa/results/latest.md`
+2. Execute ALL 66 operations across ALL 10 domains from Domain 1, Operation 1.1
+3. Produce completely new results
+4. This catches: regressions from data state changes, transient bugs masked in previous run, operations that were improperly shallow
 
 ---
 
@@ -237,77 +285,210 @@ Read `.claude/skills/noir-test-flow/SKILL.md` for the complete visual testing pr
 
 ### Service Setup
 ```bash
-# Check and start services if needed — see noir-qa SKILL.md Phase 0.3
 BACKEND_UP=$(curl -sf http://localhost:4000/robots.txt -o /dev/null -w "%{http_code}" 2>/dev/null || echo "000")
 FRONTEND_UP=$(curl -sf http://localhost:3000 -o /dev/null -w "%{http_code}" 2>/dev/null || echo "000")
 ```
 
-### What to Execute
+### THE EXECUTION MODEL: Mandatory CRUD Matrix
 
-| Mode | Suite to execute |
-|------|-----------------|
-| FULL INIT | `regression.md` (P0+P1) — covers all core functionality |
-| INCREMENTAL | Only cases in affected feature domains + regression-tagged cases |
-| RESUME | Continue from checkpoint in state.json |
+**Every domain below has a MANDATORY operation checklist. You CANNOT move to the next domain until ALL operations for the current domain are completed and recorded. There is NO "depth over breadth" escape hatch — ALL domains MUST be tested with full CRUD.**
 
-### Per-Case Execution Contract
+**If context limits force a session break**: save state with exact domain + operation checkpoint. Resume picks up at the exact operation, not the next domain.
 
-**CRITICAL: "Execute" means INTERACT, not just LOOK.** A screenshot of a page loading is NOT execution. You must follow the test case steps and interact with the application.
+**Execution order**: Domain 1 → Domain 2 → ... → Domain 10 → Cross-Feature Flows → Visual Batch → Cleanup
 
-#### Execution Depth by Case Type
+---
 
-| Case Type | Minimum Required Actions | Evidence Required |
-|-----------|-------------------------|-------------------|
-| **CREATE** | Open dialog/page → fill ALL required fields → submit → verify success toast → verify item appears in list with correct data | Screenshots: (1) empty form, (2) filled form, (3) success state, (4) item in list |
-| **UPDATE** | Find entity → open edit → change 2+ fields → save → verify changes persisted (reload page, check list) | Screenshots: (1) before edit, (2) form with changes, (3) after save showing new values |
-| **DELETE** | Find entity → click delete → verify confirmation dialog → confirm → verify entity removed from list → verify count decremented | Screenshots: (1) before delete with count, (2) confirmation dialog, (3) after delete with updated count |
-| **STATUS TRANSITION** | Navigate to entity detail → click status action button → confirm if needed → verify new status badge → verify timeline updated | Screenshots: (1) before status, (2) action click, (3) after status with timeline |
-| **LIST/VIEW** | Navigate → verify DataTable columns render → test search (type query, verify filter) → test sort (click header) → test pagination (next page) | Screenshots: (1) full page, (2) search results, (3) sorted column |
-| **LINKED DATA** | Perform action on Entity A → navigate to Entity B → verify B reflects the change (count, list entry, timeline) | Screenshots: (1) action on A, (2) B before, (3) B after showing change |
-| **FORM VALIDATION** | Submit empty required fields → verify inline errors appear (not toast) → fill with invalid data → verify field-level errors → fix → submit succeeds | Screenshots: (1) errors shown, (2) specific field error, (3) successful submit |
-| **VISUAL** | Screenshot in light → toggle dark mode → screenshot → toggle Vietnamese → screenshot → resize 768px → screenshot. Analyze each for issues. | All 4 screenshots with written analysis |
+### DOMAIN 1: Products (Catalog)
 
-#### Anti-Patterns (DO NOT DO)
+| # | Operation | Steps | Evidence Required | PASS criteria |
+|---|-----------|-------|-------------------|---------------|
+| 1.1 | **LIST** | Navigate → verify DataTable columns + stat cards + count | Screenshot of list | Columns render, count matches stat cards |
+| 1.2 | **SEARCH** | Type product name in search → verify filtered results → clear | Screenshot of filtered results | Only matching products shown, count updates |
+| 1.3 | **CREATE** | Click "Sản phẩm mới" → fill name, slug, description, SKU, price, category, brand → Save | Screenshots: (1) filled form, (2) saved product in edit mode | Product saved, redirected to edit page, status "Bản nháp" |
+| 1.4 | **ADD VARIANT** | On edit page → scroll to Variants → fill name, SKU, price, stock → Add | Screenshot of variant in table | Variant appears in variants table with correct data |
+| 1.5 | **STATUS: Publish** | Click "Xuất bản" → verify status badge changes | Screenshot showing "Đang bán" badge | Status changes from Draft to Active |
+| 1.6 | **LINKED DATA** | Navigate to Products list → verify count incremented (N→N+1) → Navigate to Dashboard → verify "Sản phẩm nháp" count decreased | Screenshots: (1) product list with new count, (2) dashboard | List count +1, dashboard draft count correct |
+| 1.7 | **EDIT** | Open product via actions menu → change name + price → Save → verify in list | Screenshots: (1) edit form, (2) list showing updated values | Changed fields persisted |
+| 1.8 | **DELETE** | Click actions ⋮ → Delete → confirm dialog → confirm → verify removed from list, count decremented | Screenshots: (1) confirm dialog, (2) list with count N→N-1 | Entity removed, count updated |
 
-- ❌ Navigate to page → screenshot → "PASS" (this tests nothing)
-- ❌ Skip form filling because "the dialog looks correct"  
-- ❌ Mark CREATE as PASS without actually creating an entity
-- ❌ Mark DELETE as PASS without actually deleting an entity
-- ❌ Check only visual rendering without testing interactions
-- ❌ Test 50 pages shallowly instead of 15 pages deeply
+### DOMAIN 2: Orders
 
-#### Depth Over Breadth Rule
+| # | Operation | Steps | Evidence Required | PASS criteria |
+|---|-----------|-------|-------------------|---------------|
+| 2.1 | **LIST** | Navigate → verify DataTable + status badges + filter dropdown | Screenshot of list | 9 orders with correct status badges |
+| 2.2 | **FILTER** | Select status filter (e.g., "Đã xác nhận") → verify filtered | Screenshot of filtered results | Only matching orders shown |
+| 2.3 | **DETAIL** | Click order row → verify: timeline, products table, customer info, payment info, shipping, notes, actions | Full-page screenshot | All sections render with correct data |
+| 2.4 | **STATUS: Ship** | On Confirmed order → click "Giao hàng" → fill tracking + carrier → submit | Screenshots: (1) ship dialog, (2) updated status + tracking info | Status changes, tracking displayed, timeline updated |
+| 2.5 | **STATUS: Deliver** | On Shipping order → click "Đánh dấu đã giao" → confirm | Screenshot of delivered status | Status changes, timeline updated |
+| 2.6 | **ADD NOTE** | Type internal note → click "Thêm ghi chú" → verify note appears | Screenshot of note in notes section | Note appears with timestamp |
+| 2.7 | **LINKED DATA** | Navigate to Dashboard → verify order status metrics updated (badge counts reflect transitions) | Screenshot of dashboard order metrics | Counts match actual statuses |
 
-**If context limits force a choice: test 15 pages with full CRUD depth rather than 50 pages with screenshots only.** Prioritize:
-1. Cross-feature flows (`.qa/flows/cross-feature.md`) — these catch the most real bugs
-2. P0 cases (status transitions, CRUD, data integrity)
-3. P1 smoke cases (page loads, basic interactions)
-4. Visual checks (dark/VI/responsive — batch these efficiently)
+### DOMAIN 3: Customers
 
-#### Per-Case Recording
+| # | Operation | Steps | Evidence Required | PASS criteria |
+|---|-----------|-------|-------------------|---------------|
+| 3.1 | **LIST** | Navigate → verify stat cards + DataTable + segment/tier columns | Screenshot of list | Count matches stat card, columns render |
+| 3.2 | **CREATE** | Click "Khách hàng mới" → fill first name, last name, email, phone → submit | Screenshots: (1) filled dialog, (2) list with new customer | Customer in list, count N→N+1 |
+| 3.3 | **DETAIL** | Click customer row → verify tabs: Overview, Orders, Addresses | Screenshot of detail page with tabs | All tabs render, customer info correct |
+| 3.4 | **EDIT** | Click actions ⋮ → Edit → change 2+ fields → save → verify in list | Screenshots: (1) edit dialog, (2) list with updated values | Changes persisted |
+| 3.5 | **DELETE** | Click actions ⋮ → Delete → confirm → verify removed, count decremented | Screenshots: (1) confirm dialog, (2) list with count N→N-1 | Removed, count updated |
+| 3.6 | **SEARCH** | Search by name → verify filter → clear | Screenshot of search results | Correct filtering |
+| 3.7 | **LINKED DATA** | Navigate to Dashboard → verify "Tổng khách hàng" matches actual count | Screenshot of dashboard customer widget | Count matches |
 
-For each executed case, record in `.qa/results/latest.md`:
-```markdown
-| TC-XXX-NNN | Title | ✅ PASS / ❌ FAIL | Actions: created entity "X", verified in list, count updated |
+### DOMAIN 4: Content (Blog)
+
+| # | Operation | Steps | Evidence Required | PASS criteria |
+|---|-----------|-------|-------------------|---------------|
+| 4.1 | **LIST** | Navigate to Blog Posts → verify DataTable + thumbnails + status badges | Screenshot of list | Posts with correct statuses, categories |
+| 4.2 | **CREATE POST** | Click "Bài viết mới" → fill title, category, Tiptap editor content → Save as Draft | Screenshots: (1) form with Tiptap, (2) saved post | Post saved, status "Bản nháp" |
+| 4.3 | **PUBLISH** | On edit page → click Publish → verify status changes | Screenshot of published status | "Đã xuất bản" badge |
+| 4.4 | **EDIT** | Open post → change title → save → verify in list | Screenshot of updated list | Title updated in list |
+| 4.5 | **DELETE** | Delete post → confirm → verify removed from list | Screenshot of list with post gone | Removed, count updated |
+| 4.6 | **BLOG TAGS** | Navigate to Blog Tags → Create tag → verify in list → Delete tag | Screenshot of tag list | CRUD works |
+| 4.7 | **BLOG CATEGORIES** | Navigate to Blog Categories → verify tree/table renders | Screenshot of categories | Categories display |
+
+### DOMAIN 5: HR
+
+| # | Operation | Steps | Evidence Required | PASS criteria |
+|---|-----------|-------|-------------------|---------------|
+| 5.1 | **EMPLOYEES LIST** | Navigate → verify DataTable + dept/position/status columns | Screenshot of list | All columns render |
+| 5.2 | **CREATE EMPLOYEE** | Click "Tạo nhân viên" → fill name, email, department, position → submit | Screenshots: (1) filled form, (2) list with new employee | Employee in list, auto-code generated |
+| 5.3 | **EDIT EMPLOYEE** | Open edit → change position → save → verify | Screenshot of updated list | Changes persisted |
+| 5.4 | **DELETE EMPLOYEE** | Delete → confirm → verify count | Screenshot of list with employee gone | Removed, count updated |
+| 5.5 | **DEPARTMENTS** | Navigate → verify tree view → Create department → verify in tree | Screenshots: (1) tree, (2) new dept in tree | Tree renders, new dept appears |
+| 5.6 | **EMPLOYEE TAGS** | Navigate → verify DataTable with category grouping → Create tag with color | Screenshot of tags with grouping | Grouping works, color picker works |
+| 5.7 | **LINKED DATA** | After creating employee in dept → navigate to Departments → verify employee count on that department | Screenshot of dept with count | Count reflects new employee |
+
+### DOMAIN 6: CRM
+
+| # | Operation | Steps | Evidence Required | PASS criteria |
+|---|-----------|-------|-------------------|---------------|
+| 6.1 | **CONTACTS LIST** | Navigate → verify DataTable | Screenshot of list | Contacts render |
+| 6.2 | **CREATE CONTACT** | Create via dialog → fill name, email, phone → submit | Screenshots: (1) dialog, (2) list | Contact in list |
+| 6.3 | **COMPANIES** | Navigate → verify list → Create company → verify | Screenshot of company in list | CRUD works |
+| 6.4 | **PIPELINE KANBAN** | Navigate → verify columns render with deals | Screenshot of Kanban | Columns + deal cards visible |
+| 6.5 | **CREATE DEAL** | Click "Tạo Deal" → fill name, value, contact → submit → verify on Kanban | Screenshot of deal on board | Deal appears in first stage |
+| 6.6 | **EDIT CONTACT** | Edit contact → change fields → save → verify | Screenshot of updated contact | Changes persisted |
+| 6.7 | **DELETE CONTACT** | Delete contact → confirm → verify removed | Screenshot of list | Removed, count updated |
+| 6.8 | **LINKED DATA** | Navigate to Dashboard → verify CRM widgets (contact count, pipeline value) | Screenshot of CRM dashboard widgets | Counts match |
+
+### DOMAIN 7: PM (Project Management)
+
+| # | Operation | Steps | Evidence Required | PASS criteria |
+|---|-----------|-------|-------------------|---------------|
+| 7.1 | **PROJECTS** | Navigate → verify grid/list with project cards | Screenshot of projects | Cards render with status |
+| 7.2 | **KANBAN BOARD** | Click project → verify columns + task cards | Screenshot of Kanban | Columns and tasks visible |
+| 7.3 | **CREATE TASK** | Click "Thêm thẻ" (quick-add) → type title → Enter → verify card appears | Screenshot of new task on board | Task appears in column |
+| 7.4 | **TASK DETAIL** | Click task → verify detail modal (description, subtasks, comments, labels) | Screenshot of detail modal | All sections render |
+| 7.5 | **ADD COMMENT** | In task detail → type comment → submit → verify appears with timestamp | Screenshot of comment | Comment with timestamp |
+| 7.6 | **ADD SUBTASK** | In task detail → add subtask → verify appears | Screenshot of subtask | Subtask in list |
+| 7.7 | **DELETE TASK** | Delete task → confirm → verify removed from board | Screenshot of board without task | Removed from column |
+
+### DOMAIN 8: Settings & Users
+
+| # | Operation | Steps | Evidence Required | PASS criteria |
+|---|-----------|-------|-------------------|---------------|
+| 8.1 | **SETTINGS TABS** | Navigate to Tenant Settings → click through ALL tabs (Branding, Regional, SMTP, Email Templates, Modules, etc.) → verify each loads | Screenshot of 3+ tabs | All tabs accessible, URL-synced |
+| 8.2 | **USERS LIST** | Navigate → verify DataTable | Screenshot of users | Users render with roles/status |
+| 8.3 | **ROLES LIST** | Navigate → verify roles with permissions | Screenshot of roles | Roles render |
+| 8.4 | **CREATE ROLE** | Create role with 3+ permissions → verify in list | Screenshots: (1) create dialog with PermissionPicker, (2) role in list | Role created with permissions |
+| 8.5 | **EDIT ROLE** | Edit role → change permissions → save → verify | Screenshot of updated role | Permissions updated |
+| 8.6 | **DELETE ROLE** | Delete role → confirm → verify removed | Screenshot of list | Removed |
+
+### DOMAIN 9: Dashboard & Reports
+
+| # | Operation | Steps | Evidence Required | PASS criteria |
+|---|-----------|-------|-------------------|---------------|
+| 9.1 | **DASHBOARD** | Navigate → verify ALL widget groups: Quick Actions, Activity Timeline, Revenue, Orders, Customers, Products, Content, Inventory, CRM | Full-page screenshot | All widgets render with data |
+| 9.2 | **WIDGET DATA** | Cross-check: revenue total, order count, customer count, product count against respective list pages | Record counts from dashboard vs list pages | Numbers match |
+| 9.3 | **ACTIVITY TIMELINE** | Verify recent actions from this QA session appear (creates, edits, deletes) | Screenshot of timeline | Our actions visible |
+| 9.4 | **REPORTS** | Navigate to Reports → verify Revenue tab loads with chart | Screenshot of reports | Charts render |
+
+### DOMAIN 10: Platform Admin
+
+| # | Operation | Steps | Evidence Required | PASS criteria |
+|---|-----------|-------|-------------------|---------------|
+| 10.1 | **LOGIN** | Logout → login as platform@noir.local → verify platform UI | Screenshot of platform dashboard | Platform admin UI loads |
+| 10.2 | **TENANTS** | Navigate to Tenants → verify list | Screenshot of tenants | Tenants render |
+| 10.3 | **FEATURE MGMT** | Navigate to Feature Management → toggle a module off → verify sidebar hides feature → toggle back on | Screenshots: (1) module off, (2) sidebar without feature, (3) module on | Module toggle works |
+| 10.4 | **RE-LOGIN** | Logout → login as admin@noir.local to restore tenant admin session | Verify dashboard loads | Back to tenant admin |
+
+---
+
+### CROSS-FEATURE LINKED DATA VERIFICATION
+
+After ALL 10 domains are complete, execute these cross-checks:
+
+| # | Flow | Steps | PASS criteria |
+|---|------|-------|---------------|
+| CF-1 | **Dashboard ↔ Lists** | Compare dashboard counts with actual list totals for: products, orders, customers, blog posts | All counts match |
+| CF-2 | **Order ↔ Customer** | Navigate to customer who has orders → verify Orders tab shows correct orders | Order history matches |
+| CF-3 | **Activity Timeline** | Navigate to Activity Timeline page → verify all CRUD actions from this session are logged with correct descriptions | Actions logged |
+| CF-4 | **Language switch** | Switch to EN → verify 3 random pages → switch back to VI | No raw i18n keys, all text switches |
+
+---
+
+### VISUAL BATCH (after all CRUD is done)
+
+Test 5 representative pages across dark mode + responsive:
+
+| Page | Dark mode | 768px responsive |
+|------|-----------|-----------------|
+| Dashboard | Screenshot + analyze | Screenshot + analyze |
+| Products list | Screenshot + analyze | Screenshot + analyze |
+| Order detail | Screenshot + analyze | Screenshot + analyze |
+| CRM Pipeline | Screenshot + analyze | Screenshot + analyze |
+| Settings | Screenshot + analyze | Screenshot + analyze |
+
+**Per screenshot**: verify no contrast issues, no overflow, no broken layouts, no hardcoded colors.
+
+---
+
+### GATE: Domain Completion Checklist
+
+**Before moving to the next domain, verify ALL of these for the current domain:**
+
 ```
-The "Notes" column MUST describe what you DID, not just what you SAW. "Page loads correctly" is insufficient — "Created customer 'Test QA', verified in list row 1, count changed 13→14" is correct.
+☐ CREATE executed — entity actually created, visible in list, count verified
+☐ EDIT executed — 2+ fields changed, changes persisted after reload
+☐ DELETE executed — entity removed, count decremented, confirmation dialog appeared
+☐ SEARCH tested — search input filters correctly, clear resets
+☐ LINKED DATA verified — at least 1 cross-entity check (dashboard count, related entity, timeline)
+☐ Results recorded in .qa/results/latest.md with action descriptions (not "page loads")
+```
 
-After each feature domain:
-- Run **ui-audit** automated checks:
-  ```bash
-  cd src/NOIR.Web/frontend/e2e && npx playwright test --project=ui-audit --grep "{feature-pattern}"
-  ```
-  This catches: axe-core a11y violations, missing cursor-pointer, missing aria-label, missing EmptyState, DataTable column order issues.
-- Save progress to `.qa/state.json`
-- Commit any fixes
+**If ANY checkbox is unchecked → you are NOT done with this domain. Go back and complete it.**
+
+---
+
+### Per-Case Recording
+
+For each operation, record in `.qa/results/latest.md`:
+```markdown
+| 1.3 | CREATE Product | ✅ PASS | Created "QA Test Product" (SKU: QA-001, 350000đ), verified in list, count 17→18 |
+```
+The Notes column MUST describe what you DID: entity name, field values, count changes. "Page loads correctly" = AUTOMATIC FAIL of the recording.
+
+### Anti-Patterns (HARD RULES — violating any = invalid QA run)
+
+- ❌ Navigate to page → screenshot → "PASS" (this is NOT testing)
+- ❌ Skip CREATE/EDIT/DELETE for ANY domain (all 10 domains need full CRUD)
+- ❌ Mark CRUD as PASS without actually mutating data
+- ❌ Skip linked data verification (dashboard counts, related entity counts)
+- ❌ Move to next domain with incomplete checklist
+- ❌ Use "depth over breadth" as excuse to skip domains (ALL domains are mandatory)
+- ❌ Record "page loads" as action description
 
 ### Context Management
 
 If approaching context limits:
-1. Save `.qa/state.json` with exact checkpoint
-2. Save `.qa/results/latest.md`
+1. Save `.qa/state.json` with exact domain + operation number (e.g., `"checkpoint": "domain5-op3"`)
+2. Save `.qa/results/latest.md` with all completed operations
 3. Commit all work
-4. Tell user: **"Progress saved at [feature]. Run `/noir-qa-run` to resume. [N] cases remaining."**
+4. Tell user: **"Progress saved at Domain [N], Operation [M]. Run `/noir-qa-run` to resume. [X] domains remaining, [Y] operations remaining."**
+
+**On resume**: Read state.json → skip to exact operation → continue. Do NOT re-execute completed operations.
 
 ---
 
@@ -404,15 +585,21 @@ LOOP:
 
 ## Rules
 
-- **INTERACT, DON'T JUST LOOK** — Every CRUD test case MUST actually create/edit/delete data. A screenshot of a page loading is NOT a test. If you haven't clicked a button, filled a form, or verified a data change, you haven't tested anything. This is the #1 rule.
-- **NEVER write Playwright scripts** — use `mcp__playwright__*` MCP tools directly with AI reasoning (Opus model, max effort). The value is AI visual analysis + intelligent decision-making, not scripted test automation.
-- **AUTONOMOUS** — do not ask user questions. Make best judgment, document decisions.
-- **ZERO tolerance** for CRITICAL/HIGH — loop until zero.
-- **Depth over breadth** — 15 pages tested deeply (CRUD + linked data) beats 50 pages with screenshots. Prioritize cross-feature flows and P0 cases.
-- **Commit incrementally** — per feature, never batch at end.
-- **Screenshots as evidence** — before + after every bug fix AND every CRUD operation.
-- **Notes must describe actions** — "Page loads" is WRONG. "Created entity X, verified in list, count N→N+1" is RIGHT.
-- **Session-safe** — save state constantly. Resume seamlessly in new conversation.
-- **No scope creep** — fix bugs, don't refactor. Minimal changes only.
-- **Agent teams** — use parallel agents when generating/updating 3+ feature domains.
-- **Clean up test data** — After testing, delete test entities you created (unless they're needed for subsequent tests).
+### Execution Rules (HARD — violating = invalid run)
+
+1. **ALL 10 DOMAINS MANDATORY** — You MUST execute CREATE + EDIT + DELETE + SEARCH + LINKED DATA for every domain. No domain may be skipped. No "depth over breadth" escape. If context runs out, save checkpoint and resume — do NOT declare "complete" with missing domains.
+2. **INTERACT, DON'T JUST LOOK** — Every CRUD operation MUST actually mutate data. A screenshot of a page loading is NOT a test. If you haven't filled a form, clicked submit, and verified the data changed, you haven't tested anything.
+3. **VERIFY LINKED DATA after every mutation** — After CREATE/EDIT/DELETE, navigate to at least 1 related page (dashboard, parent entity, detail page) and verify counts/data updated. This catches real bugs that single-page testing misses.
+4. **COMPLETE DOMAIN GATE before moving on** — All 6 checkboxes (CREATE, EDIT, DELETE, SEARCH, LINKED DATA, RECORDED) must be checked before starting the next domain. Go back if anything is missed.
+5. **RECORD ACTIONS, NOT OBSERVATIONS** — "Page loads correctly" = invalid. "Created 'QA Customer' (email: qa@test.com), verified in list row 1, count 13→14, dashboard count matches" = valid.
+
+### Process Rules
+
+6. **NEVER write Playwright scripts** — use `mcp__playwright__*` MCP tools directly with AI reasoning. The value is AI visual analysis, not scripted automation.
+7. **AUTONOMOUS** — do not ask user questions. Make best judgment, document decisions.
+8. **ZERO tolerance** for CRITICAL/HIGH — fix-retest loop until zero.
+9. **Commit incrementally** — per feature, never batch at end.
+10. **Session-safe** — save state with exact domain + operation checkpoint. Resume picks up at exact operation.
+11. **No scope creep** — fix bugs, don't refactor. Minimal changes only.
+12. **Agent teams** — use parallel agents when generating/updating 3+ feature domains.
+13. **Clean up test data** — Delete test entities after testing (last domain before visual batch).
