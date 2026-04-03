@@ -54,6 +54,7 @@ public class AddProductOptionValueCommandHandler
 
         // Add value to option
         var optionValue = option.AddValue(command.Value, command.DisplayValue);
+        _unitOfWork.TrackAsAdded(optionValue);
 
         if (command.ColorCode is not null)
         {

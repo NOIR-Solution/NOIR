@@ -45,6 +45,7 @@ public class AddProductOptionCommandHandler
 
         // Add option to product
         var option = product.AddOption(command.Name, command.DisplayName);
+        _unitOfWork.TrackAsAdded(option);
 
         // Add values if provided
         if (command.Values is { Count: > 0 })
@@ -52,6 +53,7 @@ public class AddProductOptionCommandHandler
             foreach (var valueReq in command.Values)
             {
                 var optionValue = option.AddValue(valueReq.Value, valueReq.DisplayValue);
+                _unitOfWork.TrackAsAdded(optionValue);
                 if (valueReq.ColorCode is not null)
                 {
                     optionValue.SetColorCode(valueReq.ColorCode);

@@ -59,6 +59,7 @@ public class AddCustomerAddressCommandHandler
             _currentUser.TenantId);
 
         customer.Addresses.Add(address);
+        _unitOfWork.TrackAsAdded(address);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         await _entityUpdateHub.PublishEntityUpdatedAsync(

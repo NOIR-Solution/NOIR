@@ -115,23 +115,12 @@ public class UploadProductImageCommandHandler : IScopedService
         var extraLargeUrl = result.Variants
             .FirstOrDefault(v => v.Variant == ImageVariant.ExtraLarge && v.Format == OutputFormat.WebP)?.Url;
 
-        // TWO-SAVE PATTERN: Add image without isPrimary first to avoid ClearPrimary() causing
-        // DbUpdateConcurrencyException when Variants are loaded (they have StockQuantity as concurrency token)
-        var isPrimaryRequested = command.IsPrimary;
-        var image = product.AddImage(primaryUrl, command.AltText, isPrimary: false);
+        var image = product.AddImage(primaryUrl, command.AltText, command.IsPrimary);
         _unitOfWork.TrackAsAdded(image);
 
         try
         {
-            // First save: adds the new image only (no modifications to existing entities)
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            // Second save: if primary was requested, set it now (entities are in clean state)
-            if (isPrimaryRequested)
-            {
-                product.SetPrimaryImage(image.Id);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-            }
         }
         catch (Exception ex)
         {
@@ -153,7 +142,7 @@ public class UploadProductImageCommandHandler : IScopedService
             primaryUrl,
             command.AltText,
             image.SortOrder,
-            isPrimaryRequested,
+            command.IsPrimary,
             thumbUrl,
             mediumUrl,
             largeUrl,

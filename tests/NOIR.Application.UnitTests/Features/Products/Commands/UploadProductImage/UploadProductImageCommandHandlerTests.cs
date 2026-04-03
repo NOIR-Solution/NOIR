@@ -223,10 +223,10 @@ public class UploadProductImageCommandHandlerTests
         result.IsSuccess.ShouldBe(true);
         result.Value.IsPrimary.ShouldBe(true);
 
-        // Two-save pattern: expect 2 calls when isPrimary=true
+        // Single save: isPrimary is now set directly in AddImage (no two-save workaround)
         _unitOfWorkMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
-            Times.Exactly(2));
+            Times.Once);
     }
 
     [Fact]

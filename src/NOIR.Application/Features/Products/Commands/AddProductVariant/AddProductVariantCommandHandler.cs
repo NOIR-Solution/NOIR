@@ -46,6 +46,10 @@ public class AddProductVariantCommandHandler
             command.Sku,
             command.Options);
 
+        // Explicitly mark as Added — ValueGeneratedOnAdd + client-generated GUID
+        // causes EF Core to track as Modified instead of Added when added via navigation collection
+        _unitOfWork.TrackAsAdded(variant);
+
         // Set additional properties
         if (command.CompareAtPrice.HasValue)
         {
