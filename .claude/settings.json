@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Edit(/.claude/skills/noir-qa/**)",
+      "Edit(/.claude/skills/noir-qa-run/**)"
+    ]
+  }
+}
