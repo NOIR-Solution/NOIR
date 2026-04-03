@@ -10,7 +10,7 @@ export const nativeTitleRule: AuditRule = {
       'button[title], a[title], [role="tab"][title], select[title], [role="combobox"][title], [role="switch"][title]',
       (elements) => {
         return elements
-          .filter(el => !el.closest('.tox, .tox-editor-container, .tox-tinymce'))
+          .filter(el => !el.closest('.rich-text-editor, .tiptap-content'))
           .slice(0, 10)
           .map(el => ({
             title: el.getAttribute('title') ?? '',

@@ -8,37 +8,12 @@ import { OfflineBanner } from '@/components/OfflineBanner'
 import { EntityConflictDialog } from '@/components/EntityConflictDialog'
 import { EntityDeletedDialog } from '@/components/EntityDeletedDialog'
 import { FileText, ArrowLeft, RotateCcw, Save, Info, Loader2 } from 'lucide-react'
-import { Editor } from '@tinymce/tinymce-react'
-import type { Editor as TinyMCEEditor } from 'tinymce'
+import { type Editor as TiptapEditor } from '@tiptap/react'
 import {
   useLegalPageQuery,
   useUpdateLegalPage,
   useRevertLegalPage,
 } from '@/portal-app/settings/queries'
-
-// Import TinyMCE 6 for self-hosted usage
-/* eslint-disable import/no-unresolved */
-import 'tinymce/tinymce'
-import 'tinymce/models/dom'
-import 'tinymce/themes/silver'
-import 'tinymce/icons/default'
-import 'tinymce/plugins/advlist'
-import 'tinymce/plugins/autolink'
-import 'tinymce/plugins/lists'
-import 'tinymce/plugins/link'
-import 'tinymce/plugins/image'
-import 'tinymce/plugins/charmap'
-import 'tinymce/plugins/preview'
-import 'tinymce/plugins/anchor'
-import 'tinymce/plugins/searchreplace'
-import 'tinymce/plugins/visualblocks'
-import 'tinymce/plugins/code'
-import 'tinymce/plugins/fullscreen'
-import 'tinymce/plugins/insertdatetime'
-import 'tinymce/plugins/media'
-import 'tinymce/plugins/table'
-import 'tinymce/plugins/wordcount'
-/* eslint-enable import/no-unresolved */
 
 import { usePermissions, Permissions } from '@/hooks/usePermissions'
 import {
@@ -57,6 +32,7 @@ import {
   CredenzaTitle,
   Input,
   Label,
+  RichTextEditor,
   Skeleton,
   Switch,
   Textarea,
@@ -68,7 +44,7 @@ import { ApiError } from '@/services/apiClient'
 
 /**
  * Legal Page Edit Page
- * Admin page for editing legal page content with TinyMCE editor.
+ * Admin page for editing legal page content with rich text editor.
  */
 export const LegalPageEditPage = () => {
   usePageContext('Legal Pages')
@@ -83,7 +59,7 @@ export const LegalPageEditPage = () => {
   const { formatDate } = useRegionalSettings()
   const { hasPermission } = usePermissions()
   const canEdit = hasPermission(Permissions.LegalPagesUpdate)
-  const editorRef = useRef<TinyMCEEditor | null>(null)
+  const editorRef = useRef<TiptapEditor | null>(null)
 
   // TanStack Query + Mutations
   const { data: queryPage, isLoading: loading } = useLegalPageQuery(id)
@@ -413,117 +389,27 @@ export const LegalPageEditPage = () => {
               </div>
               <div className="space-y-2">
                 <Label>{t('legalPages.htmlContent')}</Label>
-                <Editor
-                  onInit={(_evt, editor) => {
-                    editorRef.current = editor
-                  }}
+                <RichTextEditor
+                  preset="full"
+                  height={500}
                   value={htmlContent}
-                  onEditorChange={(content) => setHtmlContent(content)}
-                  disabled={!canEdit}
-                  init={{
-                    height: 500,
-                    menubar: true,
-                    skin_url: '/tinymce/skins/ui/oxide',
-                    content_css: '/tinymce/skins/content/default/content.min.css',
-                    plugins: [
-                      'advlist',
-                      'autolink',
-                      'lists',
-                      'link',
-                      'image',
-                      'charmap',
-                      'preview',
-                      'anchor',
-                      'searchreplace',
-                      'visualblocks',
-                      'code',
-                      'fullscreen',
-                      'insertdatetime',
-                      'media',
-                      'table',
-                      'wordcount',
-                    ],
-                    toolbar:
-                      'undo redo | blocks | ' +
-                      'bold italic forecolor backcolor | alignleft aligncenter ' +
-                      'alignright alignjustify | bullist numlist outdent indent | ' +
-                      'link image media table | code fullscreen preview',
-                    content_style: `
-                      body {
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-                        font-size: 16px;
-                        line-height: 1.7;
-                        color: #333;
-                        padding: 15px;
-                        max-width: 100%;
-                        margin: 0;
-                      }
-                      body > *:first-child {
-                        margin-top: 0;
-                      }
-                      h1, h2, h3, h4, h5, h6 {
-                        margin-top: 1.5em;
-                        margin-bottom: 0.5em;
-                        font-weight: 600;
-                      }
-                      p {
-                        margin: 1em 0;
-                      }
-                      img {
-                        max-width: 100%;
-                        height: auto;
-                      }
-                      pre {
-                        background: #f4f4f5;
-                        padding: 1em;
-                        border-radius: 4px;
-                        overflow-x: auto;
-                      }
-                      code {
-                        background: #f4f4f5;
-                        padding: 0.2em 0.4em;
-                        border-radius: 3px;
-                        font-size: 0.9em;
-                      }
-                      blockquote {
-                        border-left: 4px solid #e5e7eb;
-                        padding-left: 1em;
-                        margin: 1em 0;
-                        color: #6b7280;
-                      }
-                      ul, ol {
-                        margin: 1em 0;
-                        padding-left: 1.5em;
-                      }
-                      li {
-                        margin: 0.5em 0;
-                      }
-                    `,
-                    branding: false,
-                    promotion: false,
-                    // Security: Convert unsafe embed/object elements to safer alternatives (CVE-2024-29881)
-                    convert_unsafe_embeds: true,
-                    // Image upload handler - uses unified media endpoint
-                    images_upload_handler: async (blobInfo) => {
-                      const formData = new FormData()
-                      formData.append('file', blobInfo.blob(), blobInfo.filename())
-
-                      const response = await fetch('/api/media/upload?folder=legal', {
-                        method: 'POST',
-                        body: formData,
-                        credentials: 'include',
-                      })
-
-                      if (!response.ok) {
-                        throw new Error(t('errors.uploadFailed', 'Upload failed'))
-                      }
-
-                      const { location } = await response.json()
-                      return location
-                    },
-                    automatic_uploads: true,
-                    file_picker_types: 'image',
+                  onChange={(content) => setHtmlContent(content)}
+                  readOnly={!canEdit}
+                  onImageUpload={async (file) => {
+                    const formData = new FormData()
+                    formData.append('file', file)
+                    const response = await fetch('/api/media/upload?folder=legal', {
+                      method: 'POST',
+                      body: formData,
+                      credentials: 'include',
+                    })
+                    if (!response.ok) {
+                      throw new Error(t('errors.uploadFailed', 'Upload failed'))
+                    }
+                    const result = await response.json()
+                    return result.defaultUrl || result.location || ''
                   }}
+                  onReady={(editor) => { editorRef.current = editor }}
                 />
               </div>
             </CardContent>

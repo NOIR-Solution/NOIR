@@ -27,19 +27,10 @@ test.describe('Blog Posts @smoke', () => {
       // Fill title
       await page.getByLabel('Title', { exact: true }).fill(data.title);
 
-      // Wait for TinyMCE or contenteditable editor to be ready
-      const editorFrame = page.locator('iframe[id*="tinymce"]');
-      const hasIframe = await editorFrame.isVisible({ timeout: 5_000 }).catch(() => false);
-
-      if (hasIframe) {
-        const editorBody = editorFrame.contentFrame().locator('body[contenteditable="true"]');
-        await editorBody.waitFor({ state: 'visible', timeout: 10_000 });
-        await editorBody.fill('E2E test blog content');
-      } else {
-        const editableDiv = page.locator('[contenteditable="true"]').first();
-        if (await editableDiv.isVisible({ timeout: 3_000 }).catch(() => false)) {
-          await editableDiv.fill('E2E test blog content');
-        }
+      // Wait for Tiptap editor to be ready
+      const editableDiv = page.locator('.tiptap[contenteditable="true"]').first();
+      if (await editableDiv.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        await editableDiv.fill('E2E test blog content');
       }
 
       await page.getByRole('button', { name: /save|publish|create/i }).click();

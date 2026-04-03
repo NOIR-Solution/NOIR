@@ -383,61 +383,115 @@
   animation-delay: 4s;
 }
 
-/* TinyMCE Autocomplete Popup Styling */
-.tox .tox-autocompleter {
-  animation: tinymce-autocomplete-fade-in 150ms ease-out;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+/* Tiptap Rich Text Editor Styles */
+.tiptap-content .tiptap {
+  padding: 1rem;
+  outline: none;
+  color: var(--foreground);
+  font-size: 0.9375rem;
+  line-height: 1.625;
+}
+
+.tiptap-content .tiptap > * + * {
+  margin-top: 0.5em;
+}
+
+.tiptap-content .tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--muted-foreground);
+  pointer-events: none;
+  height: 0;
+}
+
+.tiptap-content .tiptap h1 { font-size: 2em; font-weight: 700; }
+.tiptap-content .tiptap h2 { font-size: 1.5em; font-weight: 600; }
+.tiptap-content .tiptap h3 { font-size: 1.25em; font-weight: 600; }
+.tiptap-content .tiptap h4 { font-size: 1.125em; font-weight: 600; }
+
+.tiptap-content .tiptap ul { list-style: disc; padding-left: 1.5em; }
+.tiptap-content .tiptap ol { list-style: decimal; padding-left: 1.5em; }
+
+.tiptap-content .tiptap blockquote {
+  border-left: 3px solid var(--border);
+  padding-left: 1em;
+  margin-left: 0;
+  color: var(--muted-foreground);
+}
+
+.tiptap-content .tiptap pre {
+  background: var(--muted);
+  border-radius: 0.375rem;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  overflow-x: auto;
+}
+
+.tiptap-content .tiptap code {
+  background: var(--muted);
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+.tiptap-content .tiptap pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+.tiptap-content .tiptap a {
+  color: var(--primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.tiptap-content .tiptap img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.375rem;
+}
+
+.tiptap-content .tiptap img.ProseMirror-selectednode {
+  outline: 2px solid var(--primary);
+  border-radius: 0.375rem;
+}
+
+.tiptap-content .tiptap table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 0.5em 0;
+}
+
+.tiptap-content .tiptap table td,
+.tiptap-content .tiptap table th {
   border: 1px solid var(--border);
-  overflow: hidden;
+  padding: 0.5rem;
+  min-width: 1em;
+  vertical-align: top;
 }
 
-@keyframes tinymce-autocomplete-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.tiptap-content .tiptap table th {
+  background: var(--muted);
+  font-weight: 600;
 }
 
-/* Autocomplete menu items */
-.tox .tox-autocompleter .tox-menu {
+.tiptap-content .tiptap table .selectedCell {
+  background: color-mix(in oklch, var(--primary) 15%, transparent);
+}
+
+.tiptap-content .tiptap mark {
+  background-color: #fef08a;
+  border-radius: 0.125rem;
+}
+
+.tiptap-content .tiptap hr {
   border: none;
-  background: var(--popover);
-}
-
-.tox .tox-autocompleter .tox-collection__item {
-  padding: 8px 12px;
-  border-radius: 4px;
-  margin: 2px 4px;
-  transition: background-color 100ms ease;
-}
-
-.tox .tox-autocompleter .tox-collection__item:hover,
-.tox .tox-autocompleter .tox-collection__item--active {
-  background-color: var(--accent);
-}
-
-/* Highlight matched text in autocomplete */
-.tox .tox-autocompleter .tox-collection__item-label mark,
-.tox .tox-autocompleter .tox-collection__item mark {
-  background-color: color-mix(in oklch, var(--primary) 20%, transparent);
-  color: inherit;
-  border-radius: 2px;
-  padding: 0 2px;
-}
-
-/* Variable badge styling in autocomplete */
-.tox .tox-autocompleter .tox-collection__item-caret {
-  display: none;
-}
-
-/* Dark mode adjustments */
-.dark .tox .tox-autocompleter {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+  border-top: 1px solid var(--border);
+  margin: 1em 0;
 }
 
 /* ─── Orbital Logo Animation ─────────────────────────────────── */

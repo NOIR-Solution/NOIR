@@ -5,32 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Editor } from '@tinymce/tinymce-react'
-import type { Editor as TinyMCEEditor } from 'tinymce'
-
-// Import TinyMCE 6 for self-hosted usage
-/* eslint-disable import/no-unresolved */
-import 'tinymce/tinymce'
-import 'tinymce/models/dom'
-import 'tinymce/themes/silver'
-import 'tinymce/icons/default'
-import 'tinymce/plugins/advlist'
-import 'tinymce/plugins/autolink'
-import 'tinymce/plugins/lists'
-import 'tinymce/plugins/link'
-import 'tinymce/plugins/image'
-import 'tinymce/plugins/charmap'
-import 'tinymce/plugins/preview'
-import 'tinymce/plugins/anchor'
-import 'tinymce/plugins/searchreplace'
-import 'tinymce/plugins/visualblocks'
-import 'tinymce/plugins/code'
-import 'tinymce/plugins/fullscreen'
-import 'tinymce/plugins/insertdatetime'
-import 'tinymce/plugins/media'
-import 'tinymce/plugins/table'
-import 'tinymce/plugins/wordcount'
-/* eslint-enable import/no-unresolved */
+import { type Editor as TiptapEditor } from '@tiptap/react'
 
 import {
   ArrowLeft,
@@ -82,6 +57,7 @@ import {
   SelectValue,
   EmptyState,
   FormErrorBanner,
+  RichTextEditor,
   Switch,
   Textarea,
 } from '@uikit'
@@ -347,7 +323,7 @@ export const ProductFormPage = () => {
   const [isDeletingVariant, setIsDeletingVariant] = useState(false)
   const [isDeletingImage, setIsDeletingImage] = useState(false)
   const [descriptionHtml, setDescriptionHtml] = useState('')
-  const editorRef = useRef<TinyMCEEditor | null>(null)
+  const editorRef = useRef<TiptapEditor | null>(null)
   const [pendingAttributeValues, setPendingAttributeValues] = useState<Record<string, unknown>>({})
 
   // Local state for create mode (before product exists)
@@ -994,58 +970,13 @@ export const ProductFormPage = () => {
                         dangerouslySetInnerHTML={{ __html: descriptionHtml || `<p class="text-muted-foreground">${t('products.noDescription')}</p>` }}
                       />
                     ) : (
-                      <Editor
-                        onInit={(_evt, editor) => {
-                          editorRef.current = editor
-                        }}
+                      <RichTextEditor
+                        preset="minimal"
+                        height={400}
                         value={descriptionHtml}
-                        onEditorChange={(content) => setDescriptionHtml(content)}
-                        init={{
-                          height: 400,
-                          menubar: false,
-                          skin_url: '/tinymce/skins/ui/oxide',
-                          content_css: '/tinymce/skins/content/default/content.min.css',
-                          plugins: [
-                            'advlist',
-                            'autolink',
-                            'lists',
-                            'link',
-                            'image',
-                            'charmap',
-                            'preview',
-                            'anchor',
-                            'searchreplace',
-                            'visualblocks',
-                            'code',
-                            'fullscreen',
-                            'insertdatetime',
-                            'media',
-                            'table',
-                            'wordcount',
-                          ],
-                          toolbar:
-                            'undo redo | blocks | ' +
-                            'bold italic forecolor | alignleft aligncenter ' +
-                            'alignright alignjustify | bullist numlist outdent indent | ' +
-                            'link image | code preview',
-                          content_style: `
-                            body {
-                              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                              font-size: 14px;
-                              line-height: 1.6;
-                              color: #333;
-                              padding: 12px;
-                              max-width: 100%;
-                              margin: 0;
-                            }
-                            p { margin: 0.75em 0; }
-                            h1, h2, h3, h4, h5, h6 { margin-top: 1.25em; margin-bottom: 0.5em; font-weight: 600; }
-                            img { max-width: 100%; height: auto; }
-                            ul, ol { margin: 0.75em 0; padding-left: 1.5em; }
-                          `,
-                          statusbar: false,
-                          resize: false,
-                        }}
+                        onChange={(content) => setDescriptionHtml(content)}
+                        onReady={(editor) => { editorRef.current = editor }}
+                        readOnly={isViewMode}
                       />
                     )}
                     <p className="text-xs text-muted-foreground mt-2">

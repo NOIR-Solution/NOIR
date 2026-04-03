@@ -42,17 +42,10 @@ export class BlogPostsPage {
 
   async fillPostForm(data: { title: string; content?: string }) {
     await this.page.getByLabel('Title', { exact: true }).fill(data.title);
-    // TinyMCE editor — wait for contenteditable body
+    // Tiptap editor — contenteditable div (no iframe)
     if (data.content) {
-      const editorBody = this.page.locator('iframe[id*="tinymce"]').contentFrame().locator('body[contenteditable="true"]');
-      const hasIframe = await editorBody.isVisible({ timeout: 5_000 }).catch(() => false);
-      if (hasIframe) {
-        await editorBody.fill(data.content);
-      } else {
-        // Fallback: some editors use a contenteditable div
-        const editableDiv = this.page.locator('[contenteditable="true"]').first();
-        await editableDiv.fill(data.content);
-      }
+      const editableDiv = this.page.locator('.tiptap[contenteditable="true"]').first();
+      await editableDiv.fill(data.content);
     }
   }
 

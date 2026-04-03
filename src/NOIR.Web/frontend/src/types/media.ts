@@ -90,7 +90,7 @@ export interface MediaUploadResult {
   error?: string
   slug?: string
   defaultUrl?: string
-  location?: string // TinyMCE compatibility alias for defaultUrl
+  location?: string
   thumbHash?: string
   dominantColor?: string
   metadata?: {

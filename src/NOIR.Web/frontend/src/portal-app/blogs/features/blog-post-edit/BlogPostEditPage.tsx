@@ -5,32 +5,7 @@ import { FileText, ArrowLeft, Save, Upload, X, Image as ImageIcon, Loader2, Cale
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { Editor } from '@tinymce/tinymce-react'
-import type { Editor as TinyMCEEditor } from 'tinymce'
-
-// Import TinyMCE 6 for self-hosted usage
-/* eslint-disable import/no-unresolved */
-import 'tinymce/tinymce'
-import 'tinymce/models/dom'
-import 'tinymce/themes/silver'
-import 'tinymce/icons/default'
-import 'tinymce/plugins/advlist'
-import 'tinymce/plugins/autolink'
-import 'tinymce/plugins/lists'
-import 'tinymce/plugins/link'
-import 'tinymce/plugins/image'
-import 'tinymce/plugins/charmap'
-import 'tinymce/plugins/preview'
-import 'tinymce/plugins/anchor'
-import 'tinymce/plugins/searchreplace'
-import 'tinymce/plugins/visualblocks'
-import 'tinymce/plugins/code'
-import 'tinymce/plugins/fullscreen'
-import 'tinymce/plugins/insertdatetime'
-import 'tinymce/plugins/media'
-import 'tinymce/plugins/table'
-import 'tinymce/plugins/wordcount'
-/* eslint-enable import/no-unresolved */
+import { type Editor as TiptapEditor } from '@tiptap/react'
 
 import { usePageContext } from '@/hooks/usePageContext'
 import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
@@ -67,6 +42,7 @@ import {
   Textarea,
   TimePicker,
   FormErrorBanner,
+  RichTextEditor,
 } from '@uikit'
 
 import { toast } from 'sonner'
@@ -104,7 +80,7 @@ export const BlogPostEditPage = () => {
   const isEdit = !!id
   usePageContext(isEdit ? 'Edit Post' : 'New Post')
   const { formatDateTime, formatDate } = useRegionalSettings()
-  const editorRef = useRef<TinyMCEEditor | null>(null)
+  const editorRef = useRef<TiptapEditor | null>(null)
 
   const [saving, setSaving] = useState(false)
   const [serverErrors, setServerErrors] = useState<string[]>([])
@@ -461,112 +437,29 @@ export const BlogPostEditPage = () => {
 
                   <div>
                     <FormLabel className="mb-2 block">{t('blog.contentLabel')}</FormLabel>
-                    <Editor
-                      onInit={(_evt, editor) => {
-                        editorRef.current = editor
-                      }}
+                    <RichTextEditor
+                      preset="full"
+                      height={500}
                       value={contentHtml}
-                      onEditorChange={(content) => setContentHtml(content)}
-                      init={{
-                        height: 500,
-                        menubar: true,
-                        skin_url: '/tinymce/skins/ui/oxide',
-                        content_css: '/tinymce/skins/content/default/content.min.css',
-                        plugins: [
-                          'advlist',
-                          'autolink',
-                          'lists',
-                          'link',
-                          'image',
-                          'charmap',
-                          'preview',
-                          'anchor',
-                          'searchreplace',
-                          'visualblocks',
-                          'code',
-                          'fullscreen',
-                          'insertdatetime',
-                          'media',
-                          'table',
-                          'wordcount',
-                        ],
-                        toolbar:
-                          'undo redo | blocks | ' +
-                          'bold italic forecolor backcolor | alignleft aligncenter ' +
-                          'alignright alignjustify | bullist numlist outdent indent | ' +
-                          'link image media table | code fullscreen preview',
-                        content_style: `
-                          body {
-                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-                            font-size: 16px;
-                            line-height: 1.7;
-                            color: #333;
-                            padding: 15px;
-                            max-width: 100%;
-                            margin: 0;
-                          }
-                          body > *:first-child {
-                            margin-top: 0;
-                          }
-                          h1, h2, h3, h4, h5, h6 {
-                            margin-top: 1.5em;
-                            margin-bottom: 0.5em;
-                            font-weight: 600;
-                          }
-                          p {
-                            margin: 1em 0;
-                          }
-                          img {
-                            max-width: 100%;
-                            height: auto;
-                          }
-                          pre {
-                            background: #f4f4f5;
-                            padding: 1em;
-                            border-radius: 4px;
-                            overflow-x: auto;
-                          }
-                          code {
-                            background: #f4f4f5;
-                            padding: 0.2em 0.4em;
-                            border-radius: 3px;
-                            font-size: 0.9em;
-                          }
-                          blockquote {
-                            border-left: 4px solid #e5e7eb;
-                            padding-left: 1em;
-                            margin: 1em 0;
-                            color: #6b7280;
-                          }
-                        `,
-                        statusbar: false,
-                        resize: false,
-                        branding: false,
-                        promotion: false,
-                        // Security: Convert unsafe embed/object elements to safer alternatives (CVE-2024-29881)
-                        convert_unsafe_embeds: true,
-                        // Image upload handler - uses unified media endpoint
-                        images_upload_handler: async (blobInfo) => {
-                          const formData = new FormData()
-                          formData.append('file', blobInfo.blob(), blobInfo.filename())
+                      onChange={(content) => setContentHtml(content)}
+                      onImageUpload={async (file) => {
+                        const formData = new FormData()
+                        formData.append('file', file)
 
-                          const response = await fetch('/api/media/upload?folder=blog', {
-                            method: 'POST',
-                            body: formData,
-                            credentials: 'include',
-                          })
+                        const response = await fetch('/api/media/upload?folder=blog', {
+                          method: 'POST',
+                          body: formData,
+                          credentials: 'include',
+                        })
 
-                          if (!response.ok) {
-                            throw new Error(t('errors.uploadFailed', 'Upload failed'))
-                          }
+                        if (!response.ok) {
+                          throw new Error(t('errors.uploadFailed', 'Upload failed'))
+                        }
 
-                          // Response includes location (alias for defaultUrl) for TinyMCE compatibility
-                          const { location } = await response.json()
-                          return location
-                        },
-                        automatic_uploads: true,
-                        file_picker_types: 'image',
+                        const result = await response.json()
+                        return result.defaultUrl || result.location || ''
                       }}
+                      onReady={(editor) => { editorRef.current = editor }}
                     />
                   </div>
                 </CardContent>

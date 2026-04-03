@@ -6,35 +6,11 @@ import { useEntityUpdateSignal } from '@/hooks/useEntityUpdateSignal'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { EntityConflictDialog } from '@/components/EntityConflictDialog'
 import { EntityDeletedDialog } from '@/components/EntityDeletedDialog'
-import { Editor } from '@tinymce/tinymce-react'
-import type { Editor as TinyMCEEditor } from 'tinymce'
+import { type Editor as TiptapEditor } from '@tiptap/react'
 import { z } from 'zod'
 import { updateEmailTemplateSchema } from '@/validation/schemas.generated'
 import { formatDisplayName } from '@/lib/utils'
 
-// Import TinyMCE 6 for self-hosted usage
-/* eslint-disable import/no-unresolved */
-import 'tinymce/tinymce'
-import 'tinymce/models/dom'
-import 'tinymce/themes/silver'
-import 'tinymce/icons/default'
-import 'tinymce/plugins/advlist'
-import 'tinymce/plugins/autolink'
-import 'tinymce/plugins/lists'
-import 'tinymce/plugins/link'
-import 'tinymce/plugins/image'
-import 'tinymce/plugins/charmap'
-import 'tinymce/plugins/preview'
-import 'tinymce/plugins/anchor'
-import 'tinymce/plugins/searchreplace'
-import 'tinymce/plugins/visualblocks'
-import 'tinymce/plugins/code'
-import 'tinymce/plugins/fullscreen'
-import 'tinymce/plugins/insertdatetime'
-import 'tinymce/plugins/media'
-import 'tinymce/plugins/table'
-import 'tinymce/plugins/wordcount'
-/* eslint-enable import/no-unresolved */
 import {
   ArrowLeft,
   Save,
@@ -62,6 +38,7 @@ import {
   DropdownMenuTrigger,
   Input,
   Label,
+  RichTextEditor,
   Skeleton,
   Switch,
   Textarea,
@@ -97,7 +74,7 @@ type EmailTemplateFormErrors = {
 
 /**
  * Email Template Edit Page
- * Full editor with TinyMCE, variable insertion, preview and test email functionality.
+ * Full editor with rich text editing, variable insertion, preview and test email functionality.
  */
 export const EmailTemplateEditPage = () => {
   const { t } = useTranslation('common')
@@ -108,9 +85,9 @@ export const EmailTemplateEditPage = () => {
   const settingsBackUrl = fromContext === 'platform'
     ? '/portal/admin/platform-settings?tab=emailTemplates'
     : '/portal/admin/tenant-settings?tab=emailTemplates'
-  const editorRef = useRef<TinyMCEEditor | null>(null)
+  const editorRef = useRef<TiptapEditor | null>(null)
 
-  // Track editor initialization to prevent false "unsaved changes" from TinyMCE normalization
+  // Track editor initialization to prevent false "unsaved changes" from editor normalization
   const editorInitializedRef = useRef(false)
   const initialHtmlBodyRef = useRef<string | null>(null)
   // Ref to handlePreview for use in useEffect without dependency cycle
@@ -202,10 +179,10 @@ export const EmailTemplateEditPage = () => {
     }
   }, [template, loading, searchParams, setSearchParams])
 
-  // Track changes - compare against normalized initial values after TinyMCE initialization
+  // Track changes - compare against normalized initial values after editor initialization
   useEffect(() => {
     if (!template) return
-    // Don't track changes until editor has initialized (to avoid false positives from TinyMCE normalization)
+    // Don't track changes until editor has initialized (to avoid false positives from editor normalization)
     if (!editorInitializedRef.current) return
 
     const changed =
@@ -352,7 +329,7 @@ export const EmailTemplateEditPage = () => {
   const insertVariable = (variable: string) => {
     const variableText = `{{${variable}}}`
     if (editorRef.current) {
-      editorRef.current.insertContent(variableText)
+      editorRef.current.chain().focus().insertContent(variableText).run()
     }
   }
 
@@ -590,115 +567,23 @@ export const EmailTemplateEditPage = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <Editor
-                onInit={(_evt, editor) => {
-                  editorRef.current = editor
-                  // Capture the normalized HTML after TinyMCE initialization
-                  // Use setTimeout to ensure we get the fully normalized content
-                  setTimeout(() => {
-                    initialHtmlBodyRef.current = editor.getContent()
-                    editorInitializedRef.current = true
-                  }, 100)
-                }}
+              <RichTextEditor
+                preset="full"
+                height={500}
                 value={htmlBody}
-                onEditorChange={(content) => {
+                onChange={(content) => {
                   setHtmlBody(content)
                   if (errors.htmlBody) setErrors((prev) => ({ ...prev, htmlBody: undefined }))
                 }}
-                init={{
-                  height: 500,
-                  menubar: false,
-                  skin_url: '/tinymce/skins/ui/oxide',
-                  content_css: '/tinymce/skins/content/default/content.min.css',
-                  plugins: [
-                    'advlist',
-                    'autolink',
-                    'lists',
-                    'link',
-                    'image',
-                    'charmap',
-                    'preview',
-                    'anchor',
-                    'searchreplace',
-                    'visualblocks',
-                    'code',
-                    'fullscreen',
-                    'insertdatetime',
-                    'media',
-                    'table',
-                    'wordcount',
-                  ],
-                  toolbar:
-                    'undo redo | blocks | ' +
-                    'bold italic forecolor backcolor | alignleft aligncenter ' +
-                    'alignright alignjustify | bullist numlist outdent indent | ' +
-                    'link image table | code fullscreen preview',
-                  content_style: `
-                    body {
-                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-                      font-size: 14px;
-                      line-height: 1.6;
-                      color: #333;
-                      padding: 10px;
-                    }
-                  `,
-                  branding: false,
-                  promotion: false,
-                  // Security: Convert unsafe embed/object elements to safer alternatives (CVE-2024-29881)
-                  convert_unsafe_embeds: true,
-                  // Setup autocomplete for variables when typing {{
-                  setup: (editor) => {
-                    // Register autocompleter for {{ trigger with CardMenuItem for better UX
-                    editor.ui.registry.addAutocompleter('variables', {
-                      trigger: '{{',
-                      minChars: 0,
-                      columns: 1,
-                      highlightOn: ['variable_name'],
-                      fetch: (pattern) => {
-                        const variables = template?.availableVariables || []
-                        const filtered = variables.filter((v) =>
-                          v.toLowerCase().includes(pattern.toLowerCase())
-                        )
-                        return Promise.resolve(
-                          filtered.map((variable) => ({
-                            type: 'cardmenuitem' as const,
-                            value: `{{${variable}}}`,
-                            label: variable,
-                            items: [
-                              {
-                                type: 'cardcontainer',
-                                direction: 'horizontal',
-                                align: 'left',
-                                valign: 'middle',
-                                items: [
-                                  {
-                                    type: 'cardtext',
-                                    text: variable,
-                                    name: 'variable_name',
-                                    classes: ['tox-collection__item-label'],
-                                  },
-                                ],
-                              },
-                            ],
-                          }))
-                        )
-                      },
-                      onAction: (autocompleteApi, rng, value) => {
-                        editor.selection.setRng(rng)
-                        editor.insertContent(value)
-                        autocompleteApi.hide()
-                      },
-                    })
-
-                    // Handle drag & drop of variables
-                    editor.on('drop', (e) => {
-                      const variableData = e.dataTransfer?.getData('text/variable')
-                      if (variableData) {
-                        e.preventDefault()
-                        editor.insertContent(`{{${variableData}}}`)
-                      }
-                    })
-                  },
+                variables={template.availableVariables}
+                onReady={(editor) => {
+                  editorRef.current = editor
+                  // Capture the normalized HTML after Tiptap initialization
+                  // Use setTimeout to ensure we get the fully normalized content
+                  setTimeout(() => {
+                    initialHtmlBodyRef.current = editor.getHTML()
+                    editorInitializedRef.current = true
+                  }, 100)
                 }}
               />
               {errors.htmlBody && (
