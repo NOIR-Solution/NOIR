@@ -250,15 +250,47 @@ FRONTEND_UP=$(curl -sf http://localhost:3000 -o /dev/null -w "%{http_code}" 2>/d
 | INCREMENTAL | Only cases in affected feature domains + regression-tagged cases |
 | RESUME | Continue from checkpoint in state.json |
 
-### Per-Case Execution
+### Per-Case Execution Contract
 
-For each test case in execution order:
-1. Execute steps via Playwright MCP (sidebar navigation — not direct URL)
-2. Apply **noir-test-flow visual protocol** for visual-tagged cases:
-   - Light → Dark → Vietnamese → 768px (screenshot + analyze each)
-3. Apply **Mini Triple Check** on every dialog, tab, empty state, popup
-4. Verify data consistency after every CRUD operation
-5. Record PASS ✅ or FAIL ❌ in `.qa/results/latest.md`
+**CRITICAL: "Execute" means INTERACT, not just LOOK.** A screenshot of a page loading is NOT execution. You must follow the test case steps and interact with the application.
+
+#### Execution Depth by Case Type
+
+| Case Type | Minimum Required Actions | Evidence Required |
+|-----------|-------------------------|-------------------|
+| **CREATE** | Open dialog/page → fill ALL required fields → submit → verify success toast → verify item appears in list with correct data | Screenshots: (1) empty form, (2) filled form, (3) success state, (4) item in list |
+| **UPDATE** | Find entity → open edit → change 2+ fields → save → verify changes persisted (reload page, check list) | Screenshots: (1) before edit, (2) form with changes, (3) after save showing new values |
+| **DELETE** | Find entity → click delete → verify confirmation dialog → confirm → verify entity removed from list → verify count decremented | Screenshots: (1) before delete with count, (2) confirmation dialog, (3) after delete with updated count |
+| **STATUS TRANSITION** | Navigate to entity detail → click status action button → confirm if needed → verify new status badge → verify timeline updated | Screenshots: (1) before status, (2) action click, (3) after status with timeline |
+| **LIST/VIEW** | Navigate → verify DataTable columns render → test search (type query, verify filter) → test sort (click header) → test pagination (next page) | Screenshots: (1) full page, (2) search results, (3) sorted column |
+| **LINKED DATA** | Perform action on Entity A → navigate to Entity B → verify B reflects the change (count, list entry, timeline) | Screenshots: (1) action on A, (2) B before, (3) B after showing change |
+| **FORM VALIDATION** | Submit empty required fields → verify inline errors appear (not toast) → fill with invalid data → verify field-level errors → fix → submit succeeds | Screenshots: (1) errors shown, (2) specific field error, (3) successful submit |
+| **VISUAL** | Screenshot in light → toggle dark mode → screenshot → toggle Vietnamese → screenshot → resize 768px → screenshot. Analyze each for issues. | All 4 screenshots with written analysis |
+
+#### Anti-Patterns (DO NOT DO)
+
+- ❌ Navigate to page → screenshot → "PASS" (this tests nothing)
+- ❌ Skip form filling because "the dialog looks correct"  
+- ❌ Mark CREATE as PASS without actually creating an entity
+- ❌ Mark DELETE as PASS without actually deleting an entity
+- ❌ Check only visual rendering without testing interactions
+- ❌ Test 50 pages shallowly instead of 15 pages deeply
+
+#### Depth Over Breadth Rule
+
+**If context limits force a choice: test 15 pages with full CRUD depth rather than 50 pages with screenshots only.** Prioritize:
+1. Cross-feature flows (`.qa/flows/cross-feature.md`) — these catch the most real bugs
+2. P0 cases (status transitions, CRUD, data integrity)
+3. P1 smoke cases (page loads, basic interactions)
+4. Visual checks (dark/VI/responsive — batch these efficiently)
+
+#### Per-Case Recording
+
+For each executed case, record in `.qa/results/latest.md`:
+```markdown
+| TC-XXX-NNN | Title | ✅ PASS / ❌ FAIL | Actions: created entity "X", verified in list, count updated |
+```
+The "Notes" column MUST describe what you DID, not just what you SAW. "Page loads correctly" is insufficient — "Created customer 'Test QA', verified in list row 1, count changed 13→14" is correct.
 
 After each feature domain:
 - Run **ui-audit** automated checks:
@@ -372,11 +404,15 @@ LOOP:
 
 ## Rules
 
+- **INTERACT, DON'T JUST LOOK** — Every CRUD test case MUST actually create/edit/delete data. A screenshot of a page loading is NOT a test. If you haven't clicked a button, filled a form, or verified a data change, you haven't tested anything. This is the #1 rule.
 - **NEVER write Playwright scripts** — use `mcp__playwright__*` MCP tools directly with AI reasoning (Opus model, max effort). The value is AI visual analysis + intelligent decision-making, not scripted test automation.
 - **AUTONOMOUS** — do not ask user questions. Make best judgment, document decisions.
 - **ZERO tolerance** for CRITICAL/HIGH — loop until zero.
+- **Depth over breadth** — 15 pages tested deeply (CRUD + linked data) beats 50 pages with screenshots. Prioritize cross-feature flows and P0 cases.
 - **Commit incrementally** — per feature, never batch at end.
-- **Screenshots as evidence** — before + after every bug fix.
+- **Screenshots as evidence** — before + after every bug fix AND every CRUD operation.
+- **Notes must describe actions** — "Page loads" is WRONG. "Created entity X, verified in list, count N→N+1" is RIGHT.
 - **Session-safe** — save state constantly. Resume seamlessly in new conversation.
 - **No scope creep** — fix bugs, don't refactor. Minimal changes only.
 - **Agent teams** — use parallel agents when generating/updating 3+ feature domains.
+- **Clean up test data** — After testing, delete test entities you created (unless they're needed for subsequent tests).

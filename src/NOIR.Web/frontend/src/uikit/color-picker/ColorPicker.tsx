@@ -108,7 +108,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
               <Pipette className="w-4 h-4 text-muted-foreground" />
             )}
           </button>
-          <Input
+          <input
             ref={colorInputRef}
             type="color"
             value={value || '#3B82F6'}
