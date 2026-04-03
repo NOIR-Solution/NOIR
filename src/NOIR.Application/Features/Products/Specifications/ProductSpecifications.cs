@@ -100,6 +100,9 @@ public sealed class ProductsSpec : Specification<Product>
         // Include brand for display
         Query.Include(p => p.BrandEntity!);
 
+        // Include variants for TotalStock calculation
+        Query.Include(p => p.Variants);
+
         // Include images for list display
         Query.Include(p => p.Images);
 
