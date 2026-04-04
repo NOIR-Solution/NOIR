@@ -988,6 +988,17 @@
       "hierarchyLevel": "Hierarchy Level",
       "isSystem": "System Role"
     },
+    "fields": {
+      "name": "Role Name",
+      "namePlaceholder": "e.g., Editor, Viewer",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe what this role can do...",
+      "parentRole": "Parent Role",
+      "parentRolePlaceholder": "Select parent role (optional)",
+      "noParent": "No parent role",
+      "parentRoleDescription": "Child roles inherit permissions from their parent.",
+      "color": "Color"
+    },
     "createError": "Failed to create role",
     "deleteError": "Failed to delete role",
     "updateError": "Failed to update role",
@@ -2144,7 +2155,10 @@
     "lastEditor": "Editor",
     "clearDate": "Clear date",
     "back": "Back",
-    "details": "Details"
+    "details": "Details",
+    "createdSuccessfully": "Created successfully",
+    "savedSuccessfully": "Saved successfully",
+    "deletedSuccessfully": "Deleted successfully"
   },
   "dataTable": {
     "sortAscending": "Sort Ascending",

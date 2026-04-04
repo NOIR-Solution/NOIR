@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import * as signalR from '@microsoft/signalr'
-import { useTranslation } from 'react-i18next'
-import { toast } from '@/lib/toast'
 import { getAccessToken } from '@/services/tokenStorage'
 import { useAuthContext } from '@/contexts/AuthContext'
 import type { EntityUpdateSignal } from '@/types/signals'
@@ -36,7 +34,6 @@ export const useEntityUpdateSignal = (options: UseEntityUpdateSignalOptions): Us
     onNavigateAway,
   } = options
 
-  const { t } = useTranslation('common')
   const { user } = useAuthContext()
   const tenantId = user?.tenantId ?? 'default'
 
@@ -119,7 +116,8 @@ export const useEntityUpdateSignal = (options: UseEntityUpdateSignalOptions): Us
 
       if (!isDirtyRef.current) {
         onAutoReloadRef.current?.()
-        toast.info(t('entityUpdate.autoReloaded'))
+        // Silently reload — don't show toast. The user's own mutation already
+        // shows a success toast; a second "auto-reloaded" toast is noise.
       } else {
         setConflictSignal(signal)
       }
@@ -207,7 +205,7 @@ export const useEntityUpdateSignal = (options: UseEntityUpdateSignalOptions): Us
       cleanup()
       connectionRef.current = null
     }
-  }, [entityType, tenantId, t])
+  }, [entityType, tenantId])
 
   // Handle entityId changes — leave old group, join new group
   useEffect(() => {

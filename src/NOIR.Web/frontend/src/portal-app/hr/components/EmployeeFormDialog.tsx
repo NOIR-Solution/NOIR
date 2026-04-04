@@ -36,7 +36,7 @@ import {
   useCreateEmployee,
   useUpdateEmployee,
 } from '@/portal-app/hr/queries'
-import { useDepartmentsQuery, useEmployeeSearchQuery } from '@/portal-app/hr/queries'
+import { useDepartmentsQuery, useEmployeeSearchQuery, useEmployeeQuery } from '@/portal-app/hr/queries'
 import type { EmployeeDto, EmployeeListDto, EmploymentType } from '@/types/hr'
 import { getRequiredFields, handleFormError } from '@/lib/form'
 
@@ -78,7 +78,9 @@ export const EmployeeFormDialog = ({ open, onOpenChange, employee, onSuccess }: 
   const deferredManagerSearch = useDeferredValue(managerSearch)
   const { data: managerResults } = useEmployeeSearchQuery(deferredManagerSearch)
 
-  const fullEmployee = employee && 'departmentId' in employee ? employee as EmployeeDto : null
+  // Fetch full employee data when editing — EmployeeListDto from the table lacks departmentId/managerId/joinDate
+  const { data: fetchedEmployee } = useEmployeeQuery(open && isEditing ? employee?.id : undefined)
+  const fullEmployee = fetchedEmployee ?? (employee && 'departmentId' in employee ? employee as EmployeeDto : null)
   const [serverErrors, setServerErrors] = useState<string[]>([])
 
   const schema = useMemo(() => createEmployeeSchema(t), [t])
@@ -120,7 +122,8 @@ export const EmployeeFormDialog = ({ open, onOpenChange, employee, onSuccess }: 
           notes: fullEmployee.notes || '',
           createUserAccount: false,
         })
-      } else {
+      } else if (!isEditing) {
+        // Only reset to empty defaults for CREATE mode — not when waiting for edit data to load
         form.reset({
           firstName: '',
           lastName: '',
@@ -136,7 +139,7 @@ export const EmployeeFormDialog = ({ open, onOpenChange, employee, onSuccess }: 
         })
       }
     }
-  }, [open, fullEmployee, form])
+  }, [open, fullEmployee, isEditing, form])
 
   const onSubmit = async (data: EmployeeFormData) => {
     try {

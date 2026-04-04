@@ -988,6 +988,17 @@
       "hierarchyLevel": "Cấp độ phân cấp",
       "isSystem": "Vai trò Hệ thống"
     },
+    "fields": {
+      "name": "Tên vai trò",
+      "namePlaceholder": "VD: Biên tập viên, Người xem",
+      "description": "Mô tả",
+      "descriptionPlaceholder": "Mô tả vai trò này có thể làm gì...",
+      "parentRole": "Vai trò cha",
+      "parentRolePlaceholder": "Chọn vai trò cha (tùy chọn)",
+      "noParent": "Không có vai trò cha",
+      "parentRoleDescription": "Vai trò con kế thừa quyền hạn từ vai trò cha.",
+      "color": "Màu sắc"
+    },
     "createError": "Tạo vai trò thất bại",
     "deleteError": "Xóa vai trò thất bại",
     "updateError": "Cập nhật vai trò thất bại",
@@ -2144,7 +2155,10 @@
     "lastEditor": "Người sửa",
     "clearDate": "Xóa ngày",
     "back": "Quay lại",
-    "details": "Chi tiết"
+    "details": "Chi tiết",
+    "createdSuccessfully": "Tạo thành công",
+    "savedSuccessfully": "Lưu thành công",
+    "deletedSuccessfully": "Xóa thành công"
   },
   "dataTable": {
     "sortAscending": "Sắp xếp tăng dần",
