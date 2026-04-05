@@ -26,8 +26,8 @@ src/
   NOIR.Web/             # Endpoints, Middleware, SignalR Hubs, Program.cs
     frontend/           # React 19 SPA
       src/portal-app/   # 24 feature modules
-      src/uikit/        # 98 components + stories (@uikit alias)
-      src/hooks/        # 41 custom hooks
+      src/uikit/        # 99 components + stories (@uikit alias)
+      src/hooks/        # 44 custom hooks
       src/services/     # 40+ API services (auto-generated)
       public/locales/   # i18n: EN + VI
 tests/

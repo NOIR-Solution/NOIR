@@ -2,7 +2,7 @@
 
 > Your guide to navigating all NOIR documentation.
 
-**Last Updated:** 2026-03-13
+**Last Updated:** 2026-04-05
 
 ---
 
@@ -92,7 +92,7 @@
 | [localization-guide.md](frontend/localization-guide.md) | i18n management |
 | [COLOR_SCHEMA_GUIDE.md](frontend/COLOR_SCHEMA_GUIDE.md) | Color system |
 | [design-standards.md](frontend/design-standards.md) | Design standards and guidelines |
-| [hooks-reference.md](frontend/hooks-reference.md) | 41 custom React hooks reference |
+| [hooks-reference.md](frontend/hooks-reference.md) | 44 custom React hooks reference |
 
 ---
 
@@ -104,7 +104,7 @@
 |----------|---------|
 | [README.md](testing/README.md) | Testing overview, conventions, and running tests |
 
-### Test Coverage Summary (2026-03-12)
+### Test Coverage Summary (2026-04-05)
 
 **Backend Tests:** 12,715 across 4 test projects
 - 2,971 Domain unit tests
@@ -146,6 +146,16 @@
 | Document | Purpose | Status |
 |----------|--------|--------|
 | [enterprise-datatable-build-spec.md](designs/enterprise-datatable-build-spec.md) | Enterprise DataTable build specification | Phase 1-2 Complete |
+| [workflow-datatable-phase3-5.md](designs/workflow-datatable-phase3-5.md) | DataTable phases 3-5 roadmap | Planned |
+
+---
+
+## QA Lessons (`qa/`)
+
+| Document | Purpose |
+|----------|---------|
+| [real-qa-lessons-2026-03-21.md](qa/real-qa-lessons-2026-03-21.md) | Bug patterns: i18n, test fixture issues |
+| [real-qa-lessons-2026-03-22.md](qa/real-qa-lessons-2026-03-22.md) | Bug patterns: unmocked deps, English in Vietnamese |
 
 ---
 
@@ -170,19 +180,20 @@
 
 | Metric | Count |
 |--------|-------|
-| **Total Docs** | 56 |
+| **Total Docs** | 60 |
 | **Backend Patterns** | 21 |
 | **Backend Architecture** | 2 |
 | **Backend Research** | 5 |
 | **Frontend Guides** | 7 |
 | **Testing Docs** | 1 |
+| **QA Lessons** | 2 |
 | **ADRs** | 3 |
 | **Module Designs** | 4 |
-| **Platform Designs** | 1 |
+| **Platform Designs** | 2 |
 | **Backend Tests** | 12,715 |
 | **Frontend Tests** | 831 (154 unit + 677 Storybook) |
 | **Total Tests** | 13,546 |
 
 ---
 
-**Version:** 5.3 (Updated 2026-03-13 — Added Enterprise DataTable design doc, corrected hook count 50→41)
+**Version:** 5.4 (Updated 2026-04-05 — Added QA lessons, DataTable phase 3-5 doc, updated MCP 55→62 tools, hooks 41→44)

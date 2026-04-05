@@ -188,7 +188,7 @@ src/NOIR.Web/             # Endpoints, Middleware, Program.cs
         ├── src/portal-app/      # Domain-driven feature modules (56 pages)
         ├── src/uikit/           # UI components + stories (@uikit, 99 components)
         ├── src/components/      # Shared app components
-        ├── src/hooks/           # Custom hooks (41+)
+        ├── src/hooks/           # Custom hooks (44)
         ├── src/services/        # API service clients (generated + manual)
         ├── src/contexts/        # React Context providers (Auth, Regional, Theme)
         ├── src/lib/             # Utility functions
@@ -351,9 +351,9 @@ cd src/NOIR.Web/frontend && pnpm build-storybook  # Build check
 | **Index** | `docs/DOCUMENTATION_INDEX.md` |
 | **Knowledge Base** | `docs/KNOWLEDGE_BASE.md` |
 | **Backend Patterns** | `docs/backend/patterns/` |
-| **MCP Server** | `docs/backend/patterns/mcp-server.md` (55 tools, 6 prompts, 7 resources) |
+| **MCP Server** | `docs/backend/patterns/mcp-server.md` (62 tools, 6 prompts, 7 resources) |
 | **Frontend Guide** | `docs/frontend/` |
-| **Hooks Reference** | `docs/frontend/hooks-reference.md` (41+ hooks) |
+| **Hooks Reference** | `docs/frontend/hooks-reference.md` (44 hooks) |
 | **Architecture Decisions** | `docs/decisions/` |
 | **Module Designs** | `docs/designs/` (HR ✅, CRM ✅, PM ✅, Calendar 📋) |
 | **QA Lessons** | `docs/qa/` |

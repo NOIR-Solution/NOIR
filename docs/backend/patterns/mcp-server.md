@@ -20,7 +20,7 @@ McpRequestFilters
 ├── AddCallToolFilter   ← Module gating + telemetry logging
 └── AddListToolsFilter  ← Hides disabled-module tools from listing
        │
-[McpServerToolType] classes   ← 55 tools across 12 domains
+[McpServerToolType] classes   ← 62 tools across 14 domains
 [McpServerResourceType] classes ← 7 resources (schema + entity)
 [McpServerPromptType] classes   ← 6 prompt templates
 ```

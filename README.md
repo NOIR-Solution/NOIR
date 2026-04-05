@@ -45,7 +45,7 @@ Building a multi-tenant SaaS platform from scratch typically takes months of boi
 
 ```mermaid
 flowchart TB
-    FE["🖥️ React 19 Frontend<br/>56 pages · 99 UIKit components · 41 hooks"]
+    FE["🖥️ React 19 Frontend<br/>56 pages · 99 UIKit components · 44 hooks"]
     WEB["⚡ Web Layer — ASP.NET Core 10<br/>53 endpoint groups · JWT · Multi-tenancy · SignalR + SSE · MCP Server"]
     APP["📋 Application Layer — CQRS via Wolverine<br/>Commands · Queries · Validators · Domain Events · Audit"]
     DOM["🏛️ Domain Layer<br/>Entities · Value Objects · Repository Interfaces · Specifications"]
@@ -68,7 +68,7 @@ NOIR/
 │       └── frontend/          # React 19 SPA
 │           ├── src/portal-app/ # Feature modules (56 pages)
 │           ├── src/uikit/      # 99 UI components + Storybook stories
-│           └── src/hooks/      # 41 custom hooks
+│           └── src/hooks/      # 44 custom hooks
 ├── tests/                     # 13,546 tests
 └── docs/                      # Architecture, patterns, module designs
 ```
@@ -80,7 +80,7 @@ NOIR/
 - **Repository + Specification** — reusable, composable query objects
 - **Soft Delete** — data safety by default, hard delete only for GDPR
 - **Domain Events** — decoupled cross-cutting reactions to state changes
-- **MCP Server** — 55 AI-callable tools via Model Context Protocol (Streamable HTTP)
+- **MCP Server** — 62 AI-callable tools via Model Context Protocol (Streamable HTTP)
 
 ---
 
@@ -97,7 +97,7 @@ NOIR/
 | ⚡ | **Real-Time** | SignalR hubs, SSE for job progress, multi-tab session sync |
 | 📧 | **Email** | Database-driven templates with Mustache interpolation, multi-tenant inheritance |
 | 📱 | **PWA** | Installable on all platforms, offline support, smart caching strategies |
-| 🤖 | **MCP Server** | 55 AI-callable tools + 6 prompts + 7 resources via Model Context Protocol (Streamable HTTP) |
+| 🤖 | **MCP Server** | 62 AI-callable tools + 6 prompts + 7 resources via Model Context Protocol (Streamable HTTP) |
 | 📊 | **Enterprise DataTable** | Drag-reorder columns, density toggle, pinning, resizing, settings persistence |
 | 🔍 | **UI/UX Audit** | Automated WCAG 2.1 AA compliance + 11 custom consistency rules, Playwright-powered |
 
