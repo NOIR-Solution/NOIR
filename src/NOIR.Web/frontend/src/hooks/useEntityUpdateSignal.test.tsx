@@ -204,7 +204,7 @@ describe('useEntityUpdateSignal', () => {
       registeredHandlers['EntityUpdated'](makeSignal({ operation: 'Updated' }))
     })
 
-    expect(mockToastInfo).toHaveBeenCalledWith('entityUpdate.autoReloaded')
+    expect(mockToastInfo).not.toHaveBeenCalled()
   })
 
   it('sets conflictSignal when EntityUpdated (Updated) received and isDirty=true', async () => {
