@@ -26,8 +26,8 @@ src/
   NOIR.Web/             # Endpoints, Middleware, SignalR Hubs, Program.cs
     frontend/           # React 19 SPA
       src/portal-app/   # 24 feature modules
-      src/uikit/        # 99 components + stories (@uikit alias)
-      src/hooks/        # 44 custom hooks
+      src/uikit/        # 100 components + stories (@uikit alias)
+      src/hooks/        # 40 custom hooks
       src/services/     # 40+ API services (auto-generated)
       public/locales/   # i18n: EN + VI
 tests/
@@ -110,9 +110,9 @@ dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-projec
 | Frontend tests | 154 (Vitest) + 677 (Storybook browser) |
 | UI/UX audit | Playwright-based, 52 pages, 11 rules + axe-core |
 | Feature modules | 35 module definitions |
-| UIKit components | 98 stories across 100 component directories |
+| UIKit components | 99 stories across 100 component directories |
 | API endpoint groups | 53 |
-| MCP tools | 55 AI-callable tools + 6 prompts + 7 resources |
+| MCP tools | 62 AI-callable tools + 6 prompts + 7 resources |
 
 ---
 

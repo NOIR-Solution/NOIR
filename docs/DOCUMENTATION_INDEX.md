@@ -2,7 +2,7 @@
 
 > Your guide to navigating all NOIR documentation.
 
-**Last Updated:** 2026-04-05
+**Last Updated:** 2026-04-11
 
 ---
 
@@ -92,7 +92,7 @@
 | [localization-guide.md](frontend/localization-guide.md) | i18n management |
 | [COLOR_SCHEMA_GUIDE.md](frontend/COLOR_SCHEMA_GUIDE.md) | Color system |
 | [design-standards.md](frontend/design-standards.md) | Design standards and guidelines |
-| [hooks-reference.md](frontend/hooks-reference.md) | 44 custom React hooks reference |
+| [hooks-reference.md](frontend/hooks-reference.md) | 40 custom React hooks reference |
 
 ---
 
@@ -114,7 +114,7 @@
 
 **Frontend Tests:** 831 total
 - 154 Vitest unit tests
-- 677 Storybook browser tests (99 UIKit components)
+- 677 Storybook browser tests (100 UIKit components)
 
 ---
 
@@ -145,8 +145,8 @@
 
 | Document | Purpose | Status |
 |----------|--------|--------|
-| [enterprise-datatable-build-spec.md](designs/enterprise-datatable-build-spec.md) | Enterprise DataTable build specification | Phase 1-2 Complete |
-| [workflow-datatable-phase3-5.md](designs/workflow-datatable-phase3-5.md) | DataTable phases 3-5 roadmap | Planned |
+| [enterprise-datatable-build-spec.md](designs/enterprise-datatable-build-spec.md) | Enterprise DataTable build specification | Complete |
+| [workflow-datatable-phase3-5.md](designs/workflow-datatable-phase3-5.md) | DataTable phases 3-5 implementation details | Complete |
 
 ---
 
@@ -196,4 +196,4 @@
 
 ---
 
-**Version:** 5.4 (Updated 2026-04-05 — Added QA lessons, DataTable phase 3-5 doc, updated MCP 55→62 tools, hooks 41→44)
+**Version:** 5.5 (Updated 2026-04-11 — Corrected UIKit 99→100 components, hooks 44→40, DataTable designs marked complete)

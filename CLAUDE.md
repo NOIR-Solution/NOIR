@@ -1,6 +1,6 @@
 # NOIR - Claude Code Instructions
 
-> For universal AI agent instructions, see [AGENTS.md](AGENTS.md). Version 3.9 (2026-03-21).
+> For universal AI agent instructions, see [AGENTS.md](AGENTS.md). Version 4.0 (2026-04-11).
 
 ## SuperClaude Framework
 
@@ -186,9 +186,9 @@ src/NOIR.Web/             # Endpoints, Middleware, Program.cs
     └── Mcp/             # MCP server — Tools/, Resources/, Prompts/, Filters/
     └── frontend/         # React 19 SPA (pnpm)
         ├── src/portal-app/      # Domain-driven feature modules (56 pages)
-        ├── src/uikit/           # UI components + stories (@uikit, 99 components)
+        ├── src/uikit/           # UI components + stories (@uikit, 100 components)
         ├── src/components/      # Shared app components
-        ├── src/hooks/           # Custom hooks (44)
+        ├── src/hooks/           # Custom hooks (40)
         ├── src/services/        # API service clients (generated + manual)
         ├── src/contexts/        # React Context providers (Auth, Regional, Theme)
         ├── src/lib/             # Utility functions
@@ -295,7 +295,7 @@ For TanStack Query hooks, `useEnterpriseTable` (unified table hook), React 19 pe
 
 ## Storybook & UIKit
 
-**99 component stories** in `src/uikit/{component}/`. Config: `.storybook/main.ts` (React + Vite + Tailwind CSS 4).
+**100 components, 99 stories** in `src/uikit/{component}/`. Config: `.storybook/main.ts` (React + Vite + Tailwind CSS 4).
 
 ```bash
 cd src/NOIR.Web/frontend && pnpm storybook       # Dev: http://localhost:6006
@@ -353,7 +353,7 @@ cd src/NOIR.Web/frontend && pnpm build-storybook  # Build check
 | **Backend Patterns** | `docs/backend/patterns/` |
 | **MCP Server** | `docs/backend/patterns/mcp-server.md` (62 tools, 6 prompts, 7 resources) |
 | **Frontend Guide** | `docs/frontend/` |
-| **Hooks Reference** | `docs/frontend/hooks-reference.md` (44 hooks) |
+| **Hooks Reference** | `docs/frontend/hooks-reference.md` (40 hooks) |
 | **Architecture Decisions** | `docs/decisions/` |
 | **Module Designs** | `docs/designs/` (HR ✅, CRM ✅, PM ✅, Calendar 📋) |
 | **QA Lessons** | `docs/qa/` |

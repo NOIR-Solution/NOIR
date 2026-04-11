@@ -35,7 +35,7 @@ cd src/NOIR.Web/frontend && pnpm install && pnpm run dev
 pnpm run generate:api    # Sync types from backend
 ```
 
-## Critical Rules (Summary — see CLAUDE.md for full 31 rules)
+## Critical Rules (Summary — see CLAUDE.md for full 32 rules)
 
 1. **Specifications for all queries** — Never raw `DbSet` queries. Always `TagWith("MethodName")`.
 2. **IUnitOfWork for persistence** — Repos don't auto-save. Call `SaveChangesAsync()` after mutations.

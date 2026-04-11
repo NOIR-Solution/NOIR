@@ -6,7 +6,7 @@
 
 ## Testing at a Glance
 
-### Backend Testing (11,974 tests)
+### Backend Testing (12,715 tests)
 
 ```bash
 # Run all backend tests
@@ -196,7 +196,7 @@ Tests run automatically on every push to `main` branch via GitHub Actions.
 
 **Backend Tests Workflow:**
 - Builds solution
-- Runs all 11,974 tests
+- Runs all 12,715 tests
 - Fails build if any test fails
 - Execution time: ~3 minutes
 
@@ -244,5 +244,5 @@ Tests run automatically on every push to `main` branch via GitHub Actions.
 ---
 
 **Last Updated:** 2026-02-27
-**Test Count:** 11,974 tests
+**Test Count:** 12,715 tests
 **Focus:** Backend unit, integration, and architecture testing

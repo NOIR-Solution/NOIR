@@ -45,7 +45,7 @@ Building a multi-tenant SaaS platform from scratch typically takes months of boi
 
 ```mermaid
 flowchart TB
-    FE["🖥️ React 19 Frontend<br/>56 pages · 99 UIKit components · 44 hooks"]
+    FE["🖥️ React 19 Frontend<br/>56 pages · 100 UIKit components · 40 hooks"]
     WEB["⚡ Web Layer — ASP.NET Core 10<br/>53 endpoint groups · JWT · Multi-tenancy · SignalR + SSE · MCP Server"]
     APP["📋 Application Layer — CQRS via Wolverine<br/>Commands · Queries · Validators · Domain Events · Audit"]
     DOM["🏛️ Domain Layer<br/>Entities · Value Objects · Repository Interfaces · Specifications"]
@@ -67,8 +67,8 @@ NOIR/
 │   └── NOIR.Web/              # API endpoints, middleware, SPA host
 │       └── frontend/          # React 19 SPA
 │           ├── src/portal-app/ # Feature modules (56 pages)
-│           ├── src/uikit/      # 99 UI components + Storybook stories
-│           └── src/hooks/      # 44 custom hooks
+│           ├── src/uikit/      # 100 UI components + Storybook stories
+│           └── src/hooks/      # 40 custom hooks
 ├── tests/                     # 13,546 tests
 └── docs/                      # Architecture, patterns, module designs
 ```
@@ -192,7 +192,7 @@ See [TECH_STACK.md](docs/TECH_STACK.md) for the complete technology reference.
 | Integration Tests | 1,141 | API endpoints with real database |
 | Architecture Tests | 46 | Layer dependency enforcement |
 | Frontend Unit Tests | 154 | Hooks, lib utilities (96% coverage) |
-| Storybook Browser Tests | 677 | 99 UIKit components in Chromium |
+| Storybook Browser Tests | 677 | 100 UIKit components in Chromium |
 | **Total** | **13,546** | |
 
 ```bash
@@ -258,7 +258,7 @@ cd src/NOIR.Web/frontend && pnpm install && pnpm run dev
 | Storybook | http://localhost:6006 |
 | Hangfire Dashboard | http://localhost:4000/hangfire |
 
-Default credentials: `admin@noir.local` / `123qwe`
+Default credentials (development only): `admin@noir.local` / `123qwe`
 
 ---
 

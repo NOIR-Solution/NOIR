@@ -145,9 +145,6 @@ After migrating a page, verify:
 
 ---
 
-## After All Migrations
+## After All Migrations (Completed 2026-03-13)
 
-- [ ] Deprecate or remove `ColumnVisibilityDropdown` and `useColumnVisibility`.
-- [ ] Delete `UserTable.tsx` (UsersPage now uses DataTable).
-- [ ] Delete `MediaTable.tsx` if MediaLibraryPage migrates to DataTable.
-- [ ] Run full UI audit — target 0 CRITICAL, 0 HIGH across all 52+ pages.
+All migrations complete. `ColumnVisibilityDropdown`, `useColumnVisibility`, `UserTable.tsx`, and `MediaTable.tsx` have been removed. This checklist is retained as a reference for future DataTable page creation.

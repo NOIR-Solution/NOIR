@@ -678,7 +678,7 @@ const form = useForm<FormData>({
 |------|---------|---------|
 | **Storybook** | 10.2 | Interactive component catalog |
 
-**Storybook** provides an isolated development environment for 99 UI components in `src/uikit/` with 99 stories (677 browser tests verified via Playwright). Each component has a `.stories.tsx` file with interactive controls. Access at `http://localhost:6006`.
+**Storybook** provides an isolated development environment for 100 UI components in `src/uikit/` with 99 stories (677 browser tests verified via Playwright). Each component has a `.stories.tsx` file with interactive controls. Access at `http://localhost:6006`.
 
 ### Package Management
 

@@ -20,7 +20,7 @@
 
 ## Project Overview
 
-**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 11,974 backend tests.
+**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 12,715 backend tests.
 
 ### Key Statistics
 
@@ -40,7 +40,7 @@
 | **API Services** | 40 | Frontend API clients |
 | **Frontend Pages** | 56 | React page components |
 | **Documentation Files** | 45 | Markdown docs in `docs/` |
-| **Backend Tests** | 11,974 | Domain (2,963) + Application (8,163) + Integration (803) + Architecture (45) |
+| **Backend Tests** | 12,715 | Domain (2,971) + Application (8,557) + Integration (1,141) + Architecture (46) |
 
 **Technologies:** .NET 10, React 19, SQL Server, EF Core 10, Wolverine, SignalR, Vite, TypeScript 5, Tailwind CSS 4, Zod, Storybook 10.2, pnpm
 
@@ -54,7 +54,7 @@ NOIR/
 │   ├── NOIR.Infrastructure/      # 🔧 Infrastructure and persistence
 │   └── NOIR.Web/                 # 🌐 API endpoints and SPA host
 │       └── frontend/             # ⚛️  React frontend application
-├── tests/                        # ✅ 11,974 backend tests across 4 test projects
+├── tests/                        # ✅ 12,715 backend tests across 4 test projects
 │   ├── NOIR.Domain.UnitTests/    # Domain logic tests
 │   ├── NOIR.Application.UnitTests/ # Handler/service/validator tests
 │   ├── NOIR.IntegrationTests/    # API integration tests (requires DB)
@@ -466,7 +466,7 @@ NOIR.Web/
     │   ├── layouts/                     # Layout components
     │   │   ├── auth/                    # Auth pages (login, forgot-password, etc.)
     │   │   └── PortalLayout.tsx
-    │   ├── uikit/                       # 99 UI component dirs + stories (@uikit barrel)
+    │   ├── uikit/                       # 100 UI component dirs + stories (@uikit barrel)
     │   ├── components/                  # Shared app-level components
     │   ├── contexts/                    # React contexts (Auth, Theme, Notification, etc.)
     │   ├── hooks/                       # Shared custom React hooks (32)

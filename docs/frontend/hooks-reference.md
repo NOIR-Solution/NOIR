@@ -1,8 +1,8 @@
 # Frontend Hooks Reference
 
-> Quick reference for all 35 custom React hooks in `src/NOIR.Web/frontend/src/hooks/`
+> Quick reference for all 40 custom React hooks in `src/NOIR.Web/frontend/src/hooks/`
 
-**Last Updated:** 2026-03-13
+**Last Updated:** 2026-04-11
 
 ---
 

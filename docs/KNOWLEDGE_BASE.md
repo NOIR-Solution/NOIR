@@ -2291,11 +2291,11 @@ new Error(ErrorCodes.Auth.DuplicateEmail, "This email address is already in use.
 
 | Project | Tests | Purpose |
 |---------|-------|---------|
-| `NOIR.Domain.UnitTests` | 2,963 | Domain entity tests |
-| `NOIR.Application.UnitTests` | 8,163 | Handler, specification, validator tests |
-| `NOIR.ArchitectureTests` | 45 | Dependency constraints |
-| `NOIR.IntegrationTests` | 803 | API integration tests |
-| **Total** | **11,974** | |
+| `NOIR.Domain.UnitTests` | 2,971 | Domain entity tests |
+| `NOIR.Application.UnitTests` | 8,557 | Handler, specification, validator tests |
+| `NOIR.ArchitectureTests` | 46 | Dependency constraints |
+| `NOIR.IntegrationTests` | 1,141 | API integration tests |
+| **Total** | **12,715** | |
 
 ### Test Patterns
 
@@ -2391,7 +2391,7 @@ dotnet test --collect:"XPlat Code Coverage"
 | Localization | `docs/frontend/localization-guide.md` | i18n setup |
 | Color Schema | `docs/frontend/COLOR_SCHEMA_GUIDE.md` | Color guidelines |
 | Design Standards | `docs/frontend/design-standards.md` | UI design standards |
-| Hooks Reference | `docs/frontend/hooks-reference.md` | 44 custom hooks guide |
+| Hooks Reference | `docs/frontend/hooks-reference.md` | 40 custom hooks guide |
 
 ### Architecture Decisions
 
@@ -2457,4 +2457,4 @@ docker-compose up -d  # Start SQL Server + MailHog
 
 ---
 
-*Updated: 2026-04-05 | Total Tests: 13,546 | Backend: 12,715 | Frontend: 831 | UIKit: 100 dirs, 99 stories | Hooks: 44 | Pages: 56 | Feature Modules: 35 | Endpoints: 53 groups | MCP Tools: 62*
+*Updated: 2026-04-11 | Total Tests: 13,546 | Backend: 12,715 | Frontend: 831 | UIKit: 100 dirs, 99 stories | Hooks: 40 | Pages: 56 | Feature Modules: 35 | Endpoints: 53 groups | MCP Tools: 62*

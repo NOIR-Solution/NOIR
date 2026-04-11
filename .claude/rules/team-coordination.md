@@ -1,6 +1,6 @@
 # Team Coordination Rules (Shared)
 
-> Referenced by `.claude/prompts/noir-*.md`. Do not duplicate this content in prompt files.
+> Shared rules for multi-agent coordination. Do not duplicate this content in other files.
 
 ## Agent Team Default
 
