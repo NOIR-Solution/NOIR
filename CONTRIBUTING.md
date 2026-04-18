@@ -11,6 +11,22 @@ Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md). We expect all 
 1. Read [SETUP.md](SETUP.md) for development environment setup
 2. Review [CLAUDE.md](CLAUDE.md) for coding standards
 3. Check the [docs/](docs/) folder for architecture documentation
+4. Set up your AI assistant (see below) so your environment matches the rest of the team
+
+## AI Assistant Setup (Claude Code)
+
+The repo ships a committed `.claude/` directory with shared rules, project-specific skills, and a declared plugin set so every contributor gets the same AI tooling.
+
+**On first clone:**
+```bash
+./setup-claude.sh        # macOS / Linux / Windows Git Bash
+.\setup-claude.ps1       # Windows PowerShell
+claude                   # Opens Claude Code — accept plugin install prompts
+```
+
+The setup script verifies Claude CLI, .NET SDK, Node.js, pnpm, SQL Server, and lists any missing plugins. It also restores backend + frontend dependencies.
+
+**Full onboarding details** (manual vs automated steps, troubleshooting, plugin list, skill inventory): see [.claude/ONBOARDING.md](.claude/ONBOARDING.md).
 
 ## How to Contribute
 

@@ -4,5 +4,52 @@
       "Edit(/.claude/skills/noir-qa/**)",
       "Edit(/.claude/skills/noir-qa-run/**)"
     ]
+  },
+  "extraKnownMarketplaces": {
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
+    },
+    "claude-code-workflows": {
+      "source": {
+        "source": "github",
+        "repo": "wshobson/agents"
+      }
+    },
+    "anthropic-agent-skills": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/skills"
+      }
+    },
+    "dotnet-skills": {
+      "source": {
+        "source": "github",
+        "repo": "Aaronontheweb/dotnet-skills"
+      }
+    },
+    "ui-ux-pro-max-skill": {
+      "source": {
+        "source": "github",
+        "repo": "nextlevelbuilder/ui-ux-pro-max-skill"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "context7@claude-plugins-official": true,
+    "serena@claude-plugins-official": true,
+    "csharp-lsp@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "claude-code-setup@claude-plugins-official": true,
+    "accessibility-compliance@claude-code-workflows": true,
+    "full-stack-orchestration@claude-code-workflows": true,
+    "document-skills@anthropic-agent-skills": true,
+    "dotnet-skills@dotnet-skills": true,
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true
   }
 }
