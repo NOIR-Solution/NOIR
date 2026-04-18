@@ -55,7 +55,8 @@ $ExpectedPlugins = @(
     'full-stack-orchestration@claude-code-workflows',
     'document-skills@anthropic-agent-skills',
     'dotnet-skills@dotnet-skills',
-    'ui-ux-pro-max@ui-ux-pro-max-skill'
+    'ui-ux-pro-max@ui-ux-pro-max-skill',
+    'marketing-skills@marketingskills'
 )
 
 $ExpectedSkills = @(
@@ -67,7 +68,8 @@ $ExpectedSkills = @(
     'noir-migration',
     'noir-form-scaffold',
     'noir-mcp-tool-add',
-    'noir-datatable-page'
+    'noir-datatable-page',
+    'noir-seo-check'
 )
 
 $RepoRoot = $PSScriptRoot

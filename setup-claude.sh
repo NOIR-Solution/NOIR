@@ -59,6 +59,7 @@ EXPECTED_PLUGINS=(
     "document-skills@anthropic-agent-skills"
     "dotnet-skills@dotnet-skills"
     "ui-ux-pro-max@ui-ux-pro-max-skill"
+    "marketing-skills@marketingskills"
 )
 
 EXPECTED_SKILLS=(
@@ -71,6 +72,7 @@ EXPECTED_SKILLS=(
     "noir-form-scaffold"
     "noir-mcp-tool-add"
     "noir-datatable-page"
+    "noir-seo-check"
 )
 
 #-------------------------------------------------------------------------------

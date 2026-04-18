@@ -91,8 +91,9 @@ From `.claude/settings.json` → `enabledPlugins`. All 13:
 | `full-stack-orchestration` | `wshobson/agents` | Multi-agent feature orchestration (deployment/perf/security/test) |
 | `document-skills` | `anthropics/skills` | PDF / XLSX / PPTX / DOCX authoring |
 | `ui-ux-pro-max` | `nextlevelbuilder/ui-ux-pro-max-skill` | 161 palettes, 57 font pairings, 25 chart types |
+| `marketing-skills` | `coreyhaines31/marketingskills` | 36 skills: `seo-audit`, `schema-markup`, `copywriting`, CRO (page/signup/onboarding/form/popup/paywall), `email-sequence`, `analytics-tracking`, `pricing-strategy` — applicable to blog CMS + product pages + email templates + tenant onboarding |
 
-**To verify after setup:** `claude` → `/plugin` → the list should show all 13 as installed.
+**To verify after setup:** `claude` → `/plugin` → the list should show all 14 as installed.
 
 ---
 
@@ -108,6 +109,7 @@ Located in `.claude/skills/`:
 | `noir-mcp-tool-add` | Expose a feature to AI agents | CLAUDE.md Rules 25-30 |
 | `noir-datatable-page` | Create a list page | `.claude/rules/datatable-standard.md` |
 | `noir-qa`, `noir-qa-run`, `noir-test-flow` | Run QA workflows | `.qa/README.md` |
+| `noir-seo-check` | Audit SEO + structured data on public pages (blog, products, categories) | `docs/backend/research/seo-meta-and-hint-text-best-practices.md` |
 | `ui-audit` | Run UI/UX audit | CLAUDE.md Rule 31 |
 
 Claude picks these up automatically based on the conversation — you don't type their names. Just describe what you're doing.

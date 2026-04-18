@@ -35,6 +35,12 @@
         "source": "github",
         "repo": "nextlevelbuilder/ui-ux-pro-max-skill"
       }
+    },
+    "marketingskills": {
+      "source": {
+        "source": "github",
+        "repo": "coreyhaines31/marketingskills"
+      }
     }
   },
   "enabledPlugins": {
@@ -50,6 +56,7 @@
     "full-stack-orchestration@claude-code-workflows": true,
     "document-skills@anthropic-agent-skills": true,
     "dotnet-skills@dotnet-skills": true,
-    "ui-ux-pro-max@ui-ux-pro-max-skill": true
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true,
+    "marketing-skills@marketingskills": true
   }
 }
