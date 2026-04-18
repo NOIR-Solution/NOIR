@@ -44,7 +44,7 @@ docs/
   decisions/           # ADRs
 .claude/
   rules/               # 20 project rules auto-loaded into every conversation
-  skills/              # 9 NOIR-specific skills (noir-qa, noir-feature-add, etc.)
+  skills/              # 10 NOIR-specific skills (noir-qa, noir-feature-add, noir-seo-check, etc.)
   settings.json        # Declared plugins + marketplaces for team consistency
   ONBOARDING.md        # AI tooling setup guide
 ```

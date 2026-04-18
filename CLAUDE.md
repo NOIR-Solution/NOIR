@@ -1,6 +1,6 @@
 # NOIR — Claude Code Instructions
 
-> Universal AI instructions: [AGENTS.md](AGENTS.md). First-time setup: [.claude/ONBOARDING.md](.claude/ONBOARDING.md). Version 4.1 (2026-04-18).
+> Universal AI instructions: [AGENTS.md](AGENTS.md). First-time setup: [.claude/ONBOARDING.md](.claude/ONBOARDING.md). Version 4.2 (2026-04-18).
 >
 > Deep guidance for every rule below lives in `.claude/rules/*.md` (20 files, auto-loaded). Rules here are the terse source-of-truth; rule files have examples + background. Never duplicate rule-file content here.
 
@@ -15,8 +15,10 @@ Natural language → skill. Available: `/sc:help` · `/sc:recommend "task"`.
 | Form (dialog/page) | `noir-form-scaffold` |
 | List page with DataTable | `noir-datatable-page` |
 | Expose feature to AI | `noir-mcp-tool-add` |
+| SEO audit / meta tags / structured data | `noir-seo-check` + `seo-audit` (marketing-skills) |
 | UI/UX design work | `/ui-ux-pro-max` |
 | .NET patterns (EF, Aspire, perf, testing) | `dotnet-skills:*` |
+| Marketing (CRO, copywriting, email, pricing) | `marketing-skills:*` |
 
 ---
 
@@ -160,7 +162,7 @@ src/
 tests/                  Domain · Application · Integration · Architecture
 .claude/
   rules/                20 auto-loaded rule files (source of truth)
-  skills/               9 NOIR-specific skills
+  skills/               10 NOIR-specific skills
   settings.json         Declared plugins + marketplaces
   ONBOARDING.md         AI tooling setup guide
 ```
@@ -253,4 +255,4 @@ HR (Employee EMP-, Department tree, 7 tag categories, org chart via xyflow), CRM
 
 ---
 
-> Changelog: [CHANGELOG.md](CHANGELOG.md). Rules philosophy: every rule prevents a documented bug (see `.claude/rules/cto-team.md`). Kill test for new rules: if you can't name the bug, don't add it.
+> Changelog: [CHANGELOG.md](CHANGELOG.md) · current version 4.2 (2026-04-18). Rules philosophy: every rule prevents a documented bug (see `.claude/rules/cto-team.md`). Kill test for new rules: if you can't name the bug, don't add it.

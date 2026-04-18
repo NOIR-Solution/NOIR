@@ -1,5 +1,18 @@
 # CLAUDE.md Changelog
 
+## [4.2] - 2026-04-18 (same-day SEO additions)
+
+### Added
+- **`marketing-skills` plugin** (`coreyhaines31/marketingskills`, MIT) — 36 skills covering SEO (seo-audit, schema-markup, site-architecture, programmatic-seo), CRO (page/signup/onboarding/form/popup/paywall), copywriting, email-sequence, analytics-tracking, pricing-strategy, revops
+- **`noir-seo-check` custom skill** — layers NOIR DTO knowledge (BlogPostDto, ProductDto, ReviewDto) on top of generic SEO audits; enforces `docs/backend/research/seo-meta-and-hint-text-best-practices.md`; catches client-rendered meta tags, relative og:image URLs, tenant-canonical conflicts, missing `aggregateRating`, stale sitemap `<lastmod>`
+
+### Changed
+- `.claude/settings.json` — plugin count 13 → 14, marketplaces 5 → 6
+- `setup-claude.sh` / `setup-claude.ps1` — arrays updated for new plugin + skill
+- `.claude/ONBOARDING.md` — plugin table + skill table expanded
+- CLAUDE.md SuperClaude routing table — added SEO + marketing rows
+- `.gitignore` — gitignore `.claude/scheduled_tasks.lock` (per-session Claude Code runtime state)
+
 ## [4.1] - 2026-04-18
 
 ### Added

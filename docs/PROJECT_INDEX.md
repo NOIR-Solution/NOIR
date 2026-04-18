@@ -39,7 +39,7 @@
 | **Frontend Pages** | 56 | React page components |
 | **Documentation Files** | ~57 | Markdown docs in `docs/` |
 | **Rule files (auto-loaded)** | 20 | `.claude/rules/*.md` — project guardrails |
-| **Project skills** | 9 | `.claude/skills/` — NOIR-specific scaffolding |
+| **Project skills** | 10 | `.claude/skills/` — NOIR-specific scaffolding |
 | **Tests** | 13,546 | Backend 12,715 (Domain 2,971 + Application 8,557 + Integration 1,141 + Architecture 46) + Frontend 831 |
 
 **Technologies:** .NET 10, React 19, SQL Server 2022, EF Core 10, Wolverine 5, SignalR, Vite 7, TypeScript 5.9, Tailwind CSS 4, Zod, Storybook 10.3, pnpm 10.28.1
