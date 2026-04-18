@@ -26,6 +26,10 @@
 .agents/skills/playwright-skill/.temp-*.js
 .claude/skills/playwright-skill/.temp-*.js
 
+# Claude Code runtime state (per-session, not committable)
+.claude/scheduled_tasks.lock
+.claude/*.lock
+
 # Temporary working directory (screenshots, test artifacts, debug output)
 temp/
 
