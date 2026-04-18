@@ -45,7 +45,7 @@ Building a multi-tenant SaaS platform from scratch typically takes months of boi
 
 ```mermaid
 flowchart TB
-    FE["🖥️ React 19 Frontend<br/>56 pages · 100 UIKit components · 40 hooks"]
+    FE["🖥️ React 19 Frontend<br/>56 pages · 101 UIKit components · 44 hooks"]
     WEB["⚡ Web Layer — ASP.NET Core 10<br/>53 endpoint groups · JWT · Multi-tenancy · SignalR + SSE · MCP Server"]
     APP["📋 Application Layer — CQRS via Wolverine<br/>Commands · Queries · Validators · Domain Events · Audit"]
     DOM["🏛️ Domain Layer<br/>Entities · Value Objects · Repository Interfaces · Specifications"]
@@ -67,8 +67,8 @@ NOIR/
 │   └── NOIR.Web/              # API endpoints, middleware, SPA host
 │       └── frontend/          # React 19 SPA
 │           ├── src/portal-app/ # Feature modules (56 pages)
-│           ├── src/uikit/      # 100 UI components + Storybook stories
-│           └── src/hooks/      # 40 custom hooks
+│           ├── src/uikit/      # 101 UI components + Storybook stories
+│           └── src/hooks/      # 44 custom hooks
 ├── tests/                     # 13,546 tests
 └── docs/                      # Architecture, patterns, module designs
 ```
@@ -218,8 +218,16 @@ cd src/NOIR.Web/frontend && pnpm test:storybook           # Storybook browser te
 
 ```bash
 git clone https://github.com/NOIR-Solution/NOIR.git && cd NOIR
+
+# One-shot environment check + dependency restore (recommended)
+./setup-claude.sh           # macOS / Linux / Windows Git Bash
+.\setup-claude.ps1          # Windows PowerShell
+
+# Or do it manually:
 dotnet build src/NOIR.sln
 ```
+
+The setup script verifies .NET SDK, Node.js, pnpm, and SQL client; runs `dotnet restore` + `pnpm install`; and reports on Claude Code AI tooling state. See [.claude/ONBOARDING.md](.claude/ONBOARDING.md) for AI-assisted development setup.
 
 #### Database
 
@@ -337,6 +345,7 @@ NOIR welcomes contributions. The project is 100% AI-assisted, but we value high-
 1. Read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines and coding standards
 2. Review [CLAUDE.md](CLAUDE.md) for architecture rules and patterns
 3. Explore [docs/](docs/) for detailed architecture documentation
+4. Set up Claude Code (optional but recommended): [.claude/ONBOARDING.md](.claude/ONBOARDING.md)
 
 **Workflow:**
 1. Fork the repository

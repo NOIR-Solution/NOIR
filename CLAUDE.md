@@ -1,371 +1,256 @@
-# NOIR - Claude Code Instructions
+# NOIR — Claude Code Instructions
 
-> For universal AI agent instructions, see [AGENTS.md](AGENTS.md). Version 4.0 (2026-04-11).
+> Universal AI instructions: [AGENTS.md](AGENTS.md). First-time setup: [.claude/ONBOARDING.md](.claude/ONBOARDING.md). Version 4.1 (2026-04-18).
+>
+> Deep guidance for every rule below lives in `.claude/rules/*.md` (20 files, auto-loaded). Rules here are the terse source-of-truth; rule files have examples + background. Never duplicate rule-file content here.
 
-## SuperClaude Framework
+## SuperClaude routing
 
-**Just say what you need in natural language.** Available skills: `/sc:help` | `/sc:recommend "your task"`
+Natural language → skill. Available: `/sc:help` · `/sc:recommend "task"`.
 
-**Routing hints:** Use `dotnet-backend-patterns` skill for C#/.NET backend work. Use `/ui-ux-pro-max` skill for all UI/UX work.
+| Task | Skill |
+|---|---|
+| New feature (Sidebar+Permissions+OpenAPI+Modules+MCP) | `noir-feature-add` |
+| EF migration (needs correct `--context`) | `noir-migration` |
+| Form (dialog/page) | `noir-form-scaffold` |
+| List page with DataTable | `noir-datatable-page` |
+| Expose feature to AI | `noir-mcp-tool-add` |
+| UI/UX design work | `/ui-ux-pro-max` |
+| .NET patterns (EF, Aspire, perf, testing) | `dotnet-skills:*` |
 
 ---
 
-## Critical Rules
+## The 32 rules
 
-### Core Principles
+### Core
 
-1. **Check existing patterns first** - Look at similar files before writing new code
-2. **Use Specifications for all queries** - Never raw `DbSet` queries. Always include `TagWith("MethodName")`.
-3. **Run `dotnet build src/NOIR.sln`** after code changes
-4. **Soft delete only** - Never hard delete unless explicitly requested for GDPR
+1. **Read 2–3 similar files before writing new code.**
+2. **All queries via Specifications.** Never raw `DbSet`. Every spec: `.TagWith("MethodName")`.
+3. **`dotnet build src/NOIR.sln` after any C# change.**
+4. **Soft delete only.** Hard delete only on explicit GDPR request.
 
-### Dependency Injection
+### DI
 
-5. **No using statements** - Add to `GlobalUsings.cs` in each project
-6. **Marker interfaces for DI** - `IScopedService`, `ITransientService`, `ISingletonService`. Auto-registered via Scrutor:
-   ```csharp
-   public class CustomerService : ICustomerService, IScopedService { }
-   ```
+5. **No `using` in files.** Add to `GlobalUsings.cs` per project.
+6. **Marker interfaces for DI:** `IScopedService`, `ITransientService`, `ISingletonService`. Scrutor auto-registers.
 
-### Data Access
+### Data access
 
-7. **IUnitOfWork for persistence** - Repos do NOT auto-save. Always call `SaveChangesAsync()` after mutations. Never inject `ApplicationDbContext` directly.
-   ```csharp
-   await _repository.AddAsync(entity, ct);
-   await _unitOfWork.SaveChangesAsync(ct);  // REQUIRED
-   ```
-8. **AsTracking for mutations** - Specs default to `AsNoTracking`. Add `.AsTracking()` for entities you'll modify:
-   ```csharp
-   Query.Where(c => c.Id == id).AsTracking().TagWith("CustomerById");
-   ```
-9. **AsSplitQuery for multiple collections** - Prevents cartesian explosion on multi-Include queries.
+7. **`IUnitOfWork.SaveChangesAsync()` after every mutation.** Repos do not auto-save. Never inject `ApplicationDbContext`.
+8. **Specs default to `AsNoTracking`.** Add `.AsTracking()` on queries whose results you'll modify.
+9. **`.AsSplitQuery()` when Include-ing multiple collections** — prevents cartesian explosion.
 
 ### Architecture
 
-10. **Co-locate Command + Handler + Validator** - All in `Application/Features/{Feature}/Commands/{Action}/` or `Queries/{Action}/`
+10. **Co-locate Command + Handler + Validator** in `Application/Features/{Feature}/Commands|Queries/{Action}/`.
 
-### Audit & Activity Timeline
+### Audit
 
-11. **Audit logging for user actions** - Mutation commands via frontend MUST implement `IAuditableCommand`. Requires: (a) Command implements `IAuditableCommand<TResult>`, (b) Endpoint sets `UserId`, (c) Frontend calls `usePageContext('PageName')`. See `docs/backend/patterns/hierarchical-audit-logging.md`.
-12. **Before-state resolvers for Update commands** - `IAuditableCommand<TDto>` with `OperationType.Update` MUST register a resolver in `DependencyInjection.cs`: `services.AddBeforeStateResolver<YourDto, GetYourEntityQuery>(...)`. Without this, Activity Timeline shows "No handler diff available".
+11. **User-facing mutations implement `IAuditableCommand<T>`.** Endpoint sets `UserId` (ecommerce) or `AuditUserId` (CRM/HR/PM/Customers); frontend calls `usePageContext('PageName')`. See `docs/backend/patterns/hierarchical-audit-logging.md`.
+12. **Update commands register a before-state resolver** in `DependencyInjection.cs` via `AddBeforeStateResolver<TDto, TQuery>(...)`. Missing → Activity Timeline shows "No handler diff available".
 
 ### Serialization
 
-13. **Enums serialize as strings** - Configured in HTTP JSON, SignalR, and Source Generator. See `docs/backend/patterns/json-enum-serialization.md`.
+13. **Enums as strings** across HTTP JSON, SignalR, source generator. See `docs/backend/patterns/json-enum-serialization.md`.
 
 ### Security
 
-14. **OTP flow consistency** - All OTP features MUST follow `PasswordResetService.cs` pattern:
-    - Cooldown active → return existing session (no new OTP)
-    - Cooldown passed, same target → `ResendOtpInternalAsync` (keeps sessionToken)
-    - Different target → mark old as used, create new session
-    - Frontend: clear OTP input on error via `useEffect`. Use refs for sessionToken.
+14. **OTP follows `PasswordResetService.cs`:** cooldown → return existing session; same target post-cooldown → `ResendOtpInternalAsync`; different target → mark old used + new session. Frontend clears OTP input on error via `useEffect`; use refs for sessionToken.
 
-### Error Handling
+### Errors
 
-15. **Error.Validation parameter order** - `Error.Validation(propertyName, message, code?)`. WRONG: `Error.Validation("message", errorCode)` — shows error codes instead of messages!
+15. **`Error.Validation(propertyName, message, code?)`** — property first. Reversed args show error code instead of message.
 
-### Email System
+### Email
 
-16. **Email templates are database-driven** - Loaded from `EmailTemplate` table, NOT .cshtml files. NEVER create files in `src/NOIR.Web/EmailTemplates/`. Edit via DB seeder or Admin UI.
+16. **Email templates are DB-driven.** `EmailTemplate` table, not .cshtml. Never create files in `NOIR.Web/EmailTemplates/`.
 
-### Multi-Tenancy
+### Multi-tenancy
 
-17. **System users: TenantId = null** - Platform admins MUST have `IsSystemUser = true` and `TenantId = null`. The `TenantIdSetterInterceptor` protects this. See `docs/backend/architecture/tenant-id-interceptor.md`.
-18. **Unique constraints MUST include TenantId** - Pattern: `builder.HasIndex(e => new { e.Slug, e.TenantId }).IsUnique()`. Exceptions: security tokens, correlation IDs, system entities, junction tables with tenant-scoped FKs.
+17. **Platform admins: `IsSystemUser = true` + `TenantId = null`.** `TenantIdSetterInterceptor` enforces.
+18. **Unique indexes include `TenantId`:** `HasIndex(e => new { e.Slug, e.TenantId }).IsUnique()`. Exceptions: security tokens, correlation IDs, system entities, junction tables.
 
 ### Testing
 
-19. **All tests must pass** - `dotnet test src/NOIR.sln` after any change. Never leave failing tests.
-20. **New features need tests** - Unit tests in `tests/NOIR.Application.UnitTests`, domain tests in `tests/NOIR.Domain.UnitTests`, integration tests in `tests/NOIR.IntegrationTests`.
-21. **New repositories need DI verification test** - Create `{Entity}Repository.cs` in `Infrastructure/Persistence/Repositories/` AND a test verifying DI registration.
-22. **100% API endpoint integration test coverage** - Every endpoint MUST have integration tests in `tests/NOIR.IntegrationTests/Endpoints/{Feature}EndpointsTests.cs`. Required test cases per endpoint: (a) happy path, (b) unauthenticated → 401, (c) invalid input → 400/404. New features MUST include integration tests before merging. Pattern: `[Collection("Integration")] + IClassFixture<CustomWebApplicationFactory>`.
+19. **All tests must pass.** `dotnet test src/NOIR.sln` after every change.
+20. **New features need tests** — unit (`Application|Domain.UnitTests`) + integration (`IntegrationTests`).
+21. **New repo → DI verification test.** `Infrastructure/Persistence/Repositories/{Entity}Repository.cs` + assertion in `RepositoryRegistrationTests.cs`.
+22. **100% endpoint integration coverage.** `tests/NOIR.IntegrationTests/Endpoints/{Feature}EndpointsTests.cs`: happy path + 401 + 400/404. Pattern: `[Collection("Integration")] + IClassFixture<CustomWebApplicationFactory>`.
 
-### Database Migrations
+### Migrations
 
-23. **Always specify --context** - `--context ApplicationDbContext` (→ `Migrations/App`) or `--context TenantStoreDbContext` (→ `Migrations/Tenant`). See Quick Reference.
+23. **Always pass `--context`.** `ApplicationDbContext` → `Migrations/App`; `TenantStoreDbContext` → `Migrations/Tenant`. Use `noir-migration` skill.
 
-### Pre-Push
+### Pre-push
 
-24. **Run frontend build before push** - `cd src/NOIR.Web/frontend && pnpm run build`. CI runs strict mode. Pre-push hook at `.git/hooks/pre-push`.
+24. **Frontend build must pass strict mode** before push. `cd src/NOIR.Web/frontend && pnpm run build`. Pre-push hook: `.git/hooks/pre-push`.
 
-### MCP Server
+### MCP server
 
-25. **MCP tool naming** — `noir_{domain}_{action}` (e.g. `noir_orders_ship`, `noir_crm_leads_win`). Always set explicit `Name` in `[McpServerTool(Name = "...")]` — never rely on method name default.
-26. **Always add `[RequiresModule]` to tool classes** — The filter in `McpServiceRegistration.cs` enforces it automatically; no per-method checks needed.
-27. **Accept strings for GUIDs and enums** — AI clients send strings. Parse with `Guid.Parse(id)` and `Enum.TryParse<T>(value, true, out var e)`.
-28. **`ListToolsResult` is NOT a record** — Cannot use `result with { Tools = ... }`. Mutate `result.Tools` directly; it's a settable `IList<Tool>`.
-29. **Audit commands in MCP tools** — Check whether the command uses `UserId` (Orders, Blog) or `AuditUserId` (CRM, HR, PM, Customers) — they differ by feature.
-30. **OpenAPI + MCP consistency** — When modifying a query/command constructor or adding a new capability, `grep -r "new XxxQuery\|new XxxCommand" src/NOIR.Web/Mcp/` to find affected tools and update them. New features need both OpenAPI tags AND MCP tools (see `.claude/rules/feature-registry-sync.md`).
+25. **Tool name: `noir_{domain}_{action}`.** Always explicit `[McpServerTool(Name = "...")]`, never method-name default.
+26. **`[RequiresModule]` on the tool class**, not per method. `McpServiceRegistration.cs` enforces.
+27. **GUIDs and enums as strings in signature** — AI clients send strings. Parse inside.
+28. **`ListToolsResult` is NOT a record.** Mutate `result.Tools` directly; `with { ... }` fails.
+29. **Check audit ID field per feature** — `UserId` (Orders/Blog) vs `AuditUserId` (CRM/HR/PM/Customers). Silent compile with wrong one = NULL audit.
+30. **When modifying a query/command, grep MCP tools:** `grep -r "new XxxQuery\|new XxxCommand" src/NOIR.Web/Mcp/`. New features need OpenAPI tag **AND** MCP tool — see `.claude/rules/feature-registry-sync.md`.
 
-### UI Audit
+### UI audit
 
-31. **UI/UX audit automation** — `cd src/NOIR.Web/frontend/e2e && npx playwright test --project=ui-audit --project=ui-audit-platform`. Crawls 52 admin + 4 platform pages (56 total) with 11 custom rules + axe-core. Output in `.ui-audit/` (gitignored). Feed `claude < .ui-audit/prompt.md` for batch fixes.
+31. **UI audit:** `cd src/NOIR.Web/frontend/e2e && npx playwright test --project=ui-audit --project=ui-audit-platform`. 52 admin + 4 platform pages, 11 custom rules + axe-core. Output in `.ui-audit/` (gitignored). `claude < .ui-audit/prompt.md` for batch fixes.
 
-### QA System
+### QA
 
-32. **QA orchestrator** — `/noir-qa` runs 5-phase pipeline: git diff analysis → test case update (`.qa/cases/`) → flow organization (`.qa/flows/`) → browser execution (Playwright MCP + visual protocol + ui-audit) → results + fix-retest loop. Targeted: `/noir-qa test <feature>`. Fix mode: `/noir-qa fix`. See `.qa/README.md`.
-
-See `docs/backend/patterns/mcp-server.md` for full guide including prompts, resources, and SDK gotchas.
+32. **`/noir-qa`** runs 5-phase pipeline (git diff → test cases → flows → browser exec → fix-retest). Targeted: `/noir-qa test <feature>`. Fix mode: `/noir-qa fix`. See `.qa/README.md`.
 
 ---
 
-## Quick Reference
+## Commands
 
 ```bash
-# Build & Run
+# Setup & build
+./setup-claude.sh                                  # First clone: env check + restore
 dotnet build src/NOIR.sln
-dotnet run --project src/NOIR.Web
-dotnet watch --project src/NOIR.Web        # hot reload
+dotnet watch --project src/NOIR.Web                # hot reload backend
 
-# Tests (12,715 backend · 13,546 total)
+# Start everything
+./start-dev.sh                                     # Auto-detects OS, frees ports
+
+# Tests  (13,546 total · 12,715 backend)
 dotnet test src/NOIR.sln
-dotnet test src/NOIR.sln --collect:"XPlat Code Coverage"
+cd src/NOIR.Web/frontend && pnpm test:coverage
 
 # Frontend
 cd src/NOIR.Web/frontend && pnpm install && pnpm run dev
-pnpm run generate:api                      # Sync types from backend
-cd e2e && npx playwright test --project=ui-audit --project=ui-audit-platform  # UI/UX consistency audit
+pnpm run generate:api                              # Sync types from backend
+pnpm storybook                                     # http://localhost:6006
 
-# Migrations (CRITICAL: always specify --context)
+# UI audit
+cd src/NOIR.Web/frontend/e2e && npx playwright test --project=ui-audit --project=ui-audit-platform
+
+# Migrations (ALWAYS pass --context — see rule 23 or use noir-migration skill)
 dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext --output-dir Migrations/App
 dotnet ef migrations add NAME --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context TenantStoreDbContext --output-dir Migrations/Tenant
-dotnet ef database update --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context ApplicationDbContext
-dotnet ef database update --project src/NOIR.Infrastructure --startup-project src/NOIR.Web --context TenantStoreDbContext
 ```
 
-### Admin Credentials
+**URLs:** Frontend `:3000` · API `:4000` · API Docs `:4000/api/docs` · MCP `:4000/api/mcp` · Storybook `:6006`
+**Logs:** `.backend.log`, `.frontend.log`, `.storybook.log` (project root)
+**Dev accounts:** `platform@noir.local` / `admin@noir.local` — password `123qwe`
 
-| Account | Email | Password |
-|---------|-------|----------|
-| **Platform Admin** | `platform@noir.local` | `123qwe` |
-| **Tenant Admin** | `admin@noir.local` | `123qwe` |
+**Windows native:** spawn frontend detached: `powershell -Command "Start-Process cmd -ArgumentList '/c cd /d src\NOIR.Web\frontend && pnpm run dev'"`
 
 ---
 
-## Running the Website
+## Project structure
 
-```bash
-./start-dev.sh                             # Recommended: auto-detects OS, frees ports, starts everything
+```
+src/
+  NOIR.Domain/          Entities, ISpecification, repository interfaces
+  NOIR.Application/     Features/{Feature}/{Commands|Queries}/{Action}/ · DTOs · validators
+  NOIR.Infrastructure/  EF Core, repos, service implementations
+  NOIR.Web/             Endpoints · Middleware · Program.cs
+    Mcp/                  Tools · Resources · Prompts · Filters
+    frontend/             React 19 SPA (pnpm)
+      src/portal-app/       56 pages, domain-driven modules
+      src/uikit/            @uikit — 101 components + 99 stories
+      src/hooks/            44 custom hooks
+      src/services/         API clients (generated + manual)
+      src/contexts/         Auth, Regional, Theme
+      src/validation/       Zod schemas (generated from FluentValidation)
+      src/i18n/             i18next — EN + VI
+tests/                  Domain · Application · Integration · Architecture
+.claude/
+  rules/                20 auto-loaded rule files (source of truth)
+  skills/               9 NOIR-specific skills
+  settings.json         Declared plugins + marketplaces
+  ONBOARDING.md         AI tooling setup guide
 ```
 
-**Manual startup** (if script fails):
-```bash
-cd src/NOIR.Web && dotnet run              # Terminal 1 - Backend
-cd src/NOIR.Web/frontend && pnpm install && pnpm run dev  # Terminal 2 - Frontend
-```
-
-**Claude Code on Windows** — Frontend MUST use PowerShell to spawn detached (run from project root):
-```bash
-powershell -Command "Start-Process cmd -ArgumentList '/c cd /d src\NOIR.Web\frontend && pnpm run dev'"
-```
-
-| Service | URL |
-|---------|-----|
-| **Frontend** | http://localhost:3000 |
-| **Backend API** | http://localhost:4000 |
-| **API Docs** | http://localhost:4000/api/docs |
-| **MCP Server** | http://localhost:4000/api/mcp |
-| **Storybook** | http://localhost:6006 |
-
-Logs: `.backend.log`, `.frontend.log`, `.storybook.log` in project root.
+**Read/Modify:** `src/`, `tests/`, `docs/`, `.claude/`. **Avoid:** `*.Designer.cs`, `Migrations/` (auto-generated).
 
 ---
 
-## Project Structure
-
-```
-src/NOIR.Domain/          # Entities, IRepository, ISpecification
-src/NOIR.Application/     # Features (Command + Handler + Validator co-located), DTOs
-    └── Features/{Feature}/
-        ├── Commands/{Action}/   # {Action}Command.cs + Handler + Validator
-        └── Queries/{Action}/    # {Action}Query.cs + Handler
-    └── Common/Interfaces/       # Service abstractions
-src/NOIR.Infrastructure/  # EF Core, Repositories, Service implementations
-src/NOIR.Web/             # Endpoints, Middleware, Program.cs
-    └── Mcp/             # MCP server — Tools/, Resources/, Prompts/, Filters/
-    └── frontend/         # React 19 SPA (pnpm)
-        ├── src/portal-app/      # Domain-driven feature modules (56 pages)
-        ├── src/uikit/           # UI components + stories (@uikit, 100 components)
-        ├── src/components/      # Shared app components
-        ├── src/hooks/           # Custom hooks (40)
-        ├── src/services/        # API service clients (generated + manual)
-        ├── src/contexts/        # React Context providers (Auth, Regional, Theme)
-        ├── src/lib/             # Utility functions
-        ├── src/layouts/         # Page layouts
-        ├── src/types/           # TypeScript type definitions
-        ├── src/validation/      # Zod schemas (generated from backend)
-        └── src/i18n/            # i18next configuration (EN + VI)
-```
-
----
-
-## Naming Conventions
+## Naming
 
 | Type | Pattern | Example |
-|------|---------|---------|
-| Specification | `[Entity][Filter]Spec` | `ActiveCustomersSpec` |
+|---|---|---|
+| Spec | `[Entity][Filter]Spec` | `ActiveCustomersSpec` |
 | Command | `[Action][Entity]Command` | `CreateOrderCommand` |
 | Query | `Get[Entity][Filter]Query` | `GetActiveUsersQuery` |
 | Handler | `[Command]Handler` | `CreateOrderCommandHandler` |
-| Configuration | `[Entity]Configuration` | `CustomerConfiguration` |
+| EF Config | `[Entity]Configuration` | `CustomerConfiguration` |
 | MCP Tool | `noir_{domain}_{action}` | `noir_orders_ship` |
 
 ---
 
-## Frontend Rules (React/TypeScript)
+## Frontend rules (React 19 + TypeScript)
 
-### Code Style
-- **Arrow functions only**: `export const MyComponent = () => { ... }`. ESLint enforces this.
-- **Named exports preferred**: `export const X` over `export default`. Exception: React.lazy pages need both.
-- Use `/ui-ux-pro-max` skill for ALL UI/UX work.
+**Code style:** arrow functions only (`export const X = () => {}`); named exports preferred (exception: React.lazy pages).
 
-### Gotchas (Bug Prevention)
+**Non-negotiable — every interactive element:** `cursor-pointer`. Every icon-only button: contextual `aria-label`. Every destructive action: confirmation dialog.
 
-**cursor-pointer**: ALL interactive elements (Tabs, Checkboxes, Select, DropdownMenu, Switch) MUST have `cursor-pointer`.
+**Forms:** use `useValidatedForm` (bundles `mode: 'onBlur'` + `reValidateMode: 'onChange'` + `requiredFields` + `handleFormError` + `FormErrorBanner`). Never `toast.error` for form submits. See `.claude/rules/form-validation-standard.md`.
 
-**aria-label**: ALL icon-only buttons must have contextual `aria-label={`Delete ${item.name}`}`.
+**Table list pages:** `useEnterpriseTable` + `DataTable`. Card `gap-0`, CardHeader `pb-3`, CardContent `space-y-3`. Actions column first (44px), Select second (40px), audit columns last. See `.claude/rules/datatable-standard.md` + `table-list-standard.md` + `audit-columns-standard.md`.
 
-**Confirmation dialogs**: Required for ALL destructive actions.
+**Dialogs:** Use `Credenza` (not `AlertDialog`). No built-in X — every dialog needs `CredenzaFooter` with Close/Cancel. Destructive: `border-destructive/30`.
 
-**Multi-select dropdown stays open**: Add `onSelect={(e) => e.preventDefault()}` to `DropdownMenuCheckboxItem`.
+**Status badges:** `variant="outline"` + `getStatusBadgeClasses('green'|'gray'|'red'|...)`. Never `variant="default"/"secondary"`.
 
-**Dialog focus ring clipping**: NEVER wrap form inputs in `overflow-hidden`, `ScrollArea`, or `overflow-y-auto`. Let dialogs grow naturally.
+**Empty states:** `<EmptyState icon title description />` from `@uikit`. Never plain `text-muted-foreground` div.
 
-**Dialog footer spacing**: `CredenzaFooter` has `mt-4` built-in. Do NOT add `space-y-4` to `<form>` just to get footer spacing — it's already handled. If using raw `DialogFooter` (not Credenza), wrap the `<form>` with `className="space-y-4"` or add `mt-4` to the footer manually.
+**Dates:** `useRegionalSettings().formatDateTime` in tables. `formatRelativeTime` only in timelines/comments. Never `toLocaleString`. See `.claude/rules/date-formatting.md`.
 
-**Dialog close convention**: No built-in X button. Every dialog MUST have `CredenzaFooter`/`DialogFooter` with Close/Cancel button. Users close via footer button, click-outside, or ESC. See `.claude/rules/dialog-header-spacing.md`.
+**i18n:** Every user-facing string via `t()`. Add keys to BOTH `en/common.json` AND `vi/common.json`. VI is sentence case, pure Vietnamese (no "Bài viết Blog"). See `.claude/rules/localization-check.md` + `sidebar-naming-convention.md`.
 
-**No native `title=` tooltips**: Use Radix `<Tooltip>` from `@uikit` instead of HTML `title` attribute. Add `aria-label` for accessibility.
+**Component-based design:** Never raw HTML input/table/button when `@uikit` has it. See `.claude/rules/component-based-design.md`.
 
-**Gradient text**: MUST include `text-transparent` with `bg-clip-text`.
+**Tight gotchas (bug-specific, not covered elsewhere):**
+- Multi-select dropdown stays open: `onSelect={(e) => e.preventDefault()}` on `DropdownMenuCheckboxItem`
+- Dialog focus ring clipping: never wrap form inputs in `overflow-hidden` / `ScrollArea` / `overflow-y-auto`
+- Gradient text: must include `text-transparent` with `bg-clip-text`
+- Mermaid labels: `<br/>`, never `\n` (GitHub renders as HTML)
+- Radix Checkbox bulk ops (60+): use `LightCheckbox` pattern from `PermissionPicker.tsx` — Radix Presence causes infinite re-renders
 
-**Card shadows**: `shadow-sm hover:shadow-lg transition-all duration-300`.
+**Branding:** Orbital logo = 3 concentric SVG circles with `.orbital-animated`. Light bg: `stroke="currentColor" text-primary`. Dark: `stroke="white" strokeOpacity="0.9"`. Sidebar: `text-sidebar-primary`. Always `aria-hidden="true"` on decorative logos.
 
-**Radix Checkbox bulk operations**: 60+ Radix Checkboxes changing state simultaneously causes "Maximum update depth exceeded" (Radix Presence `setNode` in ref callback). Use `LightCheckbox` from `PermissionPicker.tsx` pattern — a plain `<button role="checkbox">` with conditional icon, no Radix Presence.
+**PWA** already configured (`public/manifest.json` + `index.html` meta). Do not duplicate.
 
-**Mermaid node labels**: Use `<br/>` for line breaks, NEVER `\n`. GitHub renders node text as HTML — `\n` shows as literal text. Wrong: `["Title\nSubtitle"]`. Right: `["Title<br/>Subtitle"]`.
-
-**Pagination spacing**: `CardContent` wrapping DataTable + DataTablePagination MUST have `space-y-3`. When using ternary for opacity transitions, include `space-y-3` in BOTH branches.
-
-**Checkbox centering**: DataTable handles `meta.align === 'center'` columns automatically (zero td padding + flex wrapper). Never add manual padding to actions or select column cells.
-
-### Validation
-
-**Stack**: react-hook-form + Zod + `mode: 'onBlur'` + `reValidateMode: 'onChange'`. Every `useForm()` MUST have both. Full pattern: `.claude/rules/form-validation-standard.md`.
-
-**Required field asterisk**: Auto-detected — pass `requiredFields={useMemo(() => getRequiredFields(schema), [schema])}` to `<Form>`. Never hardcode `required` prop on labels.
-
-**Server errors**: `handleFormError(err, form, setServerErrors, t)` in catch block + `<FormErrorBanner>` at top of form. Never `toast.error()` for form submit failures.
-
-**Zod `.issues`** (not `.errors`): `result.error.issues.forEach(...)` — `.errors` does not exist and throws.
-
-**i18n schema factories**: `zodResolver(createSchema(t)) as unknown as Resolver<FormData>` — `z.default()` causes type mismatch. Never use `as any`.
-
-**Convenience**: `useValidatedForm` from `@/hooks/useValidatedForm` bundles all 4 rules (mode, reValidateMode, requiredFields, handleFormError).
-
-### Design Language
-
-**ONE design language** — ALL UI must follow [docs/frontend/design-standards.md](docs/frontend/design-standards.md). Key rules:
-
-- **Dialogs**: Use `Credenza` (not `AlertDialog`). Destructive dialogs: `border-destructive/30` on `CredenzaContent`.
-- **Destructive buttons**: `variant="destructive"` + `className="cursor-pointer bg-destructive/10 text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground transition-colors"`.
-- **Status badges**: `variant="outline"` + `getStatusBadgeClasses('green'|'gray'|'red'|...)` from `@/utils/statusBadge`. Never `variant="default"/"secondary"` for status.
-- **Empty states**: Use `<EmptyState icon={X} title={t('...')} description={t('...')} />` from `@uikit`. Never plain `<div className="text-center py-8 text-muted-foreground">`.
-- **Create buttons**: No `shadow-lg hover:shadow-xl`. Use `className="group transition-all duration-300"`.
-- **Table list pages**: MUST use `useEnterpriseTable` + `DataTable` (TanStack Table) — no custom tables. Card `gap-0` + CardHeader `pb-3` + CardContent `space-y-3`. Always show `CardDescription` with "Showing X of Y items". Pass `defaultPageSize` to `DataTablePagination`. See `.claude/rules/table-list-standard.md`, `.claude/rules/datatable-standard.md`.
-- **Form spacing**: `space-y-4` in dialog bodies. Never `space-y-5`.
-- **No gradient buttons**: Never use `bg-gradient-to-r` on standard action buttons. Use default Button variants.
-
-### Branding & Logo
-
-**Orbital logo mark**: 3 concentric SVG circles. Always use `.orbital-animated` CSS class for animation.
-- Light backgrounds: `stroke="currentColor"` + `className="... text-primary"` (auto-adapts to light/dark `--primary`)
-- Dark/gradient panels: `stroke="white"` with `strokeOpacity="0.9"`
-- Sidebar: `stroke="currentColor"` + `className="text-sidebar-primary"`
-- Always include `aria-hidden="true"` on decorative logo SVGs
-
-**PWA**: `public/manifest.json` + `index.html` meta tags already configured. Do not duplicate or override.
-
-### Patterns (Reference)
-
-For TanStack Query hooks, `useEnterpriseTable` (unified table hook), React 19 performance patterns (useDeferredValue, useTransition, optimistic mutations), and UI standardization patterns, see [docs/frontend/architecture.md](docs/frontend/architecture.md). Hook reference: [docs/frontend/hooks-reference.md](docs/frontend/hooks-reference.md). Check existing code per Rule 1.
+**References:** [docs/frontend/design-standards.md](docs/frontend/design-standards.md) · [architecture.md](docs/frontend/architecture.md) · [hooks-reference.md](docs/frontend/hooks-reference.md).
 
 ---
 
-## Storybook & UIKit
+## Domain map (all Complete unless marked)
 
-**100 components, 99 stories** in `src/uikit/{component}/`. Config: `.storybook/main.ts` (React + Vite + Tailwind CSS 4).
+### E-commerce — `Features/`
 
-```bash
-cd src/NOIR.Web/frontend && pnpm storybook       # Dev: http://localhost:6006
-cd src/NOIR.Web/frontend && pnpm build-storybook  # Build check
-```
+Products (variants, 13 attribute types, faceted search), ProductAttributes, Cart (guest + auth merge on login), Checkout (30min session), Orders (10-step lifecycle, cancel/return), Payments, Shipping, Inventory (receipts: StockIn RCV- / StockOut SHP-), Reviews (moderation), Wishlists, Customers, CustomerGroups, Promotions (code/fixed, usage limits, date range), Reports, Webhooks. Dashboard: 7 metrics via `Task.WhenAll`.
 
-- `@uikit` alias → `src/uikit/` (tsconfig.app.json)
-- Stories excluded from prod build
-- Components and stories co-located in `src/uikit/{component}/`
+### ERP — `Features/`
 
----
+HR (Employee EMP-, Department tree, 7 tag categories, org chart via xyflow), CRM (Contact, Company, Lead, Pipeline, Activity — Kanban), PM (Project PRJ-, Kanban, subtasks/labels/comments). **Calendar:** Design Ready only (see `docs/designs/module-calendar.md`).
 
-## E-commerce Domain Map
+### Platform
 
-| Domain | Location | Key Entities | Status |
-|--------|----------|-------------|--------|
-| **Products** | `Features/Products/` | Product → Variant (SKU, price, inventory) → Image. Status: Draft → Active → Archived | Complete |
-| **Attributes** | `Features/ProductAttributes/` | 13 types. ProductFilterIndex for faceted search. FilterAnalyticsEvent for tracking. | Complete |
-| **Cart** | `Features/Cart/` | Guest (SessionId) + Auth user. MergeCartCommand on login. Status: Active → Converted/Abandoned | Complete |
-| **Checkout** | `Features/Checkout/` | Accordion: Address → Shipping → Payment → Complete. 30min session expiry. | Complete |
-| **Orders** | `Features/Orders/` | Pending → Confirmed → Processing → Shipped → Delivered → Completed. Cancel/Return with inventory. 10 lifecycle commands. | Complete |
-| **Payments** | `Features/Payments/` | PaymentTransaction tracking, status timeline, order payments query. Embedded in Order Detail. | Complete |
-| **Shipping** | `Features/Shipping/` | Provider integrations, tracking timeline, carrier management. Embedded in Order Detail. | Complete |
-| **Inventory** | `Features/Inventory/` | Receipt system (phieu nhap/xuat). Draft → Confirmed/Cancelled. Types: StockIn (RCV-), StockOut (SHP-). | Complete |
-| **Reviews** | `Features/Reviews/` | Product reviews with moderation. Approve/Reject workflow. | Complete |
-| **Wishlists** | `Features/Wishlists/` | User wishlists with analytics tracking. | Complete |
-| **Dashboard** | `Features/Dashboard/` | 7 metrics via Task.WhenAll(). Revenue excludes Cancelled/Refunded. 4 widget groups (E-commerce, CRM, feature-gated). | Complete |
-| **Customers** | `Features/Customers/` | Customer profiles with addresses, order history. Detail page with timeline. | Complete |
-| **Customer Groups** | `Features/CustomerGroups/` | Segmentation groups with rule-based membership. | Complete |
-| **Promotions** | `Features/Promotions/` | Discount codes, percentage/fixed, usage limits, date ranges. | Complete |
-| **Reports** | `Features/Reports/` | Revenue, orders, inventory, product performance analytics. | Complete |
-| **Webhooks** | `Features/Webhooks/` | Outbound webhook subscriptions with event filtering and delivery tracking. | Complete |
-| **Feature Mgmt** | `Application/Modules/` | 35 modules (8 core + 27 toggleable). Platform availability + tenant enable. | Complete |
-| **SSE** | `Infrastructure/Sse/` | Server-Sent Events for real-time job progress and operation updates. | Complete |
-
----
-
-## ERP Module Map
-
-| Module | Location | Key Entities | Status |
-|--------|----------|-------------|--------|
-| **HR** | `Features/Hr/` | Employee (auto-code EMP-), Department (tree), EmployeeTag (7 categories). Org chart, bulk ops, import/export, reports. | Complete |
-| **CRM** | `Features/Crm/` | Contact, Company, Lead, Pipeline, Stage, Activity. Kanban board, dashboard widgets, domain events. | Complete |
-| **PM** | `Features/Pm/` | Project (auto-code PRJ-), ProjectColumn, ProjectTask, Label, Comment, Attachment. Kanban, task list, subtasks. | Complete |
-| **Calendar** | — | CalendarEvent, Attendee, RecurrenceRule. Shared calendars, resource booking. | Design Ready |
+35 feature modules (8 core + 27 toggleable) · SSE for job progress · SignalR for real-time entity signals (`IEntityUpdateHubContext` in 145 handlers).
 
 ---
 
 ## Documentation
 
 | Topic | Location |
-|-------|----------|
-| **Index** | `docs/DOCUMENTATION_INDEX.md` |
-| **Knowledge Base** | `docs/KNOWLEDGE_BASE.md` |
-| **Backend Patterns** | `docs/backend/patterns/` |
-| **MCP Server** | `docs/backend/patterns/mcp-server.md` (62 tools, 6 prompts, 7 resources) |
-| **Frontend Guide** | `docs/frontend/` |
-| **Hooks Reference** | `docs/frontend/hooks-reference.md` (40 hooks) |
-| **Architecture Decisions** | `docs/decisions/` |
-| **Module Designs** | `docs/designs/` (HR ✅, CRM ✅, PM ✅, Calendar 📋) |
-| **QA Lessons** | `docs/qa/` |
-| **Roadmap** | `docs/roadmap.md` |
-
-Research reports → `docs/backend/research/`.
-
-## File Boundaries
-
-- **Read/Modify:** `src/`, `tests/`, `docs/`, `.claude/`
-- **Avoid:** `*.Designer.cs`, `Migrations/` (auto-generated)
+|---|---|
+| Index | `docs/DOCUMENTATION_INDEX.md` |
+| Knowledge base | `docs/KNOWLEDGE_BASE.md` |
+| Backend patterns | `docs/backend/patterns/` (20+ files) |
+| MCP server (62 tools · 6 prompts · 7 resources) | `docs/backend/patterns/mcp-server.md` |
+| Frontend | `docs/frontend/` |
+| Hooks reference (44 hooks) | `docs/frontend/hooks-reference.md` |
+| ADRs | `docs/decisions/` |
+| Module designs | `docs/designs/` (HR ✅ · CRM ✅ · PM ✅ · Calendar 📋) |
+| Research / future work | `docs/backend/research/` |
+| QA lessons | `docs/qa/` |
+| Roadmap | `docs/roadmap.md` |
 
 ---
 
-> Changelog: [CHANGELOG.md](CHANGELOG.md). Current version: 4.0 (2026-04-03).
+> Changelog: [CHANGELOG.md](CHANGELOG.md). Rules philosophy: every rule prevents a documented bug (see `.claude/rules/cto-team.md`). Kill test for new rules: if you can't name the bug, don't add it.

@@ -146,7 +146,6 @@
 | Document | Purpose | Status |
 |----------|--------|--------|
 | [enterprise-datatable-build-spec.md](designs/enterprise-datatable-build-spec.md) | Enterprise DataTable build specification | Complete |
-| [workflow-datatable-phase3-5.md](designs/workflow-datatable-phase3-5.md) | DataTable phases 3-5 implementation details | Complete |
 
 ---
 

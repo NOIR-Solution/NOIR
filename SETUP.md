@@ -48,6 +48,14 @@ For experienced developers who want to get running quickly:
 git clone https://github.com/NOIR-Solution/NOIR.git
 cd NOIR
 
+# One-shot env verification + dependency restore (recommended)
+./setup-claude.sh                # macOS / Linux / Windows Git Bash
+.\setup-claude.ps1               # Windows PowerShell
+# Verifies .NET SDK, Node, pnpm, SQL client; runs dotnet restore + pnpm install;
+# reports on Claude Code AI tooling state. See .claude/ONBOARDING.md for details.
+
+# --- OR do it manually: ---
+
 # Start infrastructure (SQL Server + MailHog)
 docker-compose up -d
 

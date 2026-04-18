@@ -2,7 +2,7 @@
 
 > Outcome-based roadmap using **Now / Next / Later** framework. Each item states the problem it solves, not just features.
 
-**Last Updated:** 2026-03-01
+**Last Updated:** 2026-04-18
 
 ---
 
@@ -33,9 +33,10 @@ NOIR is a comprehensive, AI-built enterprise SaaS foundation — e-commerce core
 - JWT auth with refresh tokens and RBAC
 - Hierarchical audit logging (HTTP → command → entity)
 - Email system with database-driven templates
-- React 19 SPA + 100 UIKit components + Storybook (677/677 stories)
-- PWA + SignalR + SSE + multi-tab session sync
+- React 19 SPA + 101 UIKit components + Storybook (99 stories)
+- PWA + SignalR + SSE + multi-tab session sync (real-time entity signals live across 145 handlers)
 - MCP Server with 62 AI-callable tools, 6 prompts, 7 resources
+- Enterprise DataTable (column mgmt, drag-reorder, density, pinning, resizing, grouping, row highlighting, virtualization) — live on all list pages
 - 13,546 automated tests (12,715 backend + 831 frontend)
 
 ### E-commerce Platform
@@ -47,7 +48,7 @@ NOIR is a comprehensive, AI-built enterprise SaaS foundation — e-commerce core
 - Inventory receipts (StockIn/StockOut)
 - Customers, groups, reviews, wishlists, promotions
 - Reports (revenue, orders, inventory, product performance)
-- Webhooks + Blog CMS + Feature management (31 modules)
+- Webhooks + Blog CMS + Feature management (35 modules: 8 core + 27 toggleable)
 
 ---
 
@@ -68,7 +69,7 @@ NOIR is a comprehensive, AI-built enterprise SaaS foundation — e-commerce core
 - Employee profiles (CRUD, auto-code, hierarchy validation, User account sync)
 - Department hierarchy (tree, self-referencing, manager, reorder)
 - Employee tags with 7 categories (Team/Skill/Project/Location/Seniority/Employment/Custom)
-- Org chart with d3-org-chart (zoom, pan, search, PNG export)
+- Org chart with React Flow / @xyflow (zoom, pan, search, PNG export) — migrated from d3-org-chart
 - Bulk operations (assign tags, change department)
 - Import/Export (CSV import, Excel/CSV export)
 - HR reports (headcount, tag distribution, employment type, status breakdown)

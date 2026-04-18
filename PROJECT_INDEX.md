@@ -1,6 +1,8 @@
 # NOIR — Project Index
 
-> Generated: 2026-03-08 | .NET 10 + React 19 Enterprise SaaS | Multi-Tenant | Clean Architecture
+> Last updated: 2026-04-18 | .NET 10 + React 19 Enterprise SaaS | Multi-Tenant | Clean Architecture
+
+First-time setup: [.claude/ONBOARDING.md](.claude/ONBOARDING.md) · [SETUP.md](SETUP.md)
 
 ---
 
@@ -9,10 +11,10 @@
 | Layer | Tech |
 |-------|------|
 | Backend | .NET 10, ASP.NET Core, EF Core 10, Wolverine 5, SignalR |
-| Frontend | React 19, TypeScript 5.9, Vite 6, Tailwind CSS 4, TanStack Query 5 |
-| Database | SQL Server (dev: Azure SQL Edge) |
+| Frontend | React 19, TypeScript 5.9, Vite 7, Tailwind CSS 4, TanStack Query 5 |
+| Database | SQL Server 2022 (LocalDB on Windows, Docker image on macOS/Linux) |
 | Testing | xUnit + Vitest 4 + Playwright |
-| Package Manager | pnpm (frontend) |
+| Package Manager | pnpm 10.28.1 (frontend) |
 
 ---
 
@@ -23,12 +25,12 @@ src/
   NOIR.Domain/          # Entities, Value Objects, Domain Events, Enums
   NOIR.Application/     # Features (Commands/Queries/Handlers/Validators), DTOs
   NOIR.Infrastructure/  # EF Core, Repositories, Service Implementations
-  NOIR.Web/             # Endpoints, Middleware, SignalR Hubs, Program.cs
+  NOIR.Web/             # Endpoints, Middleware, SignalR Hubs, MCP server, Program.cs
     frontend/           # React 19 SPA
-      src/portal-app/   # 24 feature modules
-      src/uikit/        # 100 components + stories (@uikit alias)
-      src/hooks/        # 40 custom hooks
-      src/services/     # 40+ API services (auto-generated)
+      src/portal-app/   # 56 pages across feature modules
+      src/uikit/        # 101 components + 99 stories (@uikit alias)
+      src/hooks/        # 44 custom hooks
+      src/services/     # API services (auto-generated from OpenAPI)
       public/locales/   # i18n: EN + VI
 tests/
   NOIR.Domain.UnitTests/       # 2,971 tests
@@ -36,10 +38,15 @@ tests/
   NOIR.IntegrationTests/       # 1,141 tests
   NOIR.ArchitectureTests/      # 46 tests
 docs/
-  backend/patterns/    # 9+ backend patterns
-  frontend/            # Design standards, architecture guide
+  backend/patterns/    # 20+ backend patterns
+  frontend/            # Design standards, architecture, hooks reference
   designs/             # Module design specs (HR, CRM, PM, Calendar, Enterprise DataTable)
   decisions/           # ADRs
+.claude/
+  rules/               # 20 project rules auto-loaded into every conversation
+  skills/              # 9 NOIR-specific skills (noir-qa, noir-feature-add, etc.)
+  settings.json        # Declared plugins + marketplaces for team consistency
+  ONBOARDING.md        # AI tooling setup guide
 ```
 
 ---

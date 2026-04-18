@@ -834,4 +834,4 @@ This specification provides a **complete roadmap** to build an enterprise data t
 3. **Integrates seamlessly** with existing NOIR architecture
 4. **Scales** from simple to complex use cases
 
-**Current Status**: Phases 1-2 complete. Phase 3 (Row Animation + Grouping) and Phase 5 (Polish) planned. Phase 4 removed. See `docs/designs/workflow-datatable-phase3-5.md` for implementation plan.
+**Current Status**: Phases 1-3 + 5 complete (column management, drag-reorder, density, pinning, resizing, row highlighting, grouping, aggregation, virtualization, keyboard navigation). Phase 4 (range selection, clipboard, Excel export) was de-scoped as low ROI. Live across all list pages via `useEnterpriseTable` — see `.claude/rules/datatable-standard.md`.

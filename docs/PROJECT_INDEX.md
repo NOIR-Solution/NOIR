@@ -1,8 +1,9 @@
-# NOIR - Project Index
+# NOIR - Project Index (detailed)
 
 > **Quick Navigation:** Jump to any part of the codebase with this comprehensive index.
+> For the tight summary, see [/PROJECT_INDEX.md](../PROJECT_INDEX.md) at repo root.
 
-**Last Updated:** 2026-03-01 | **Index Version:** 4.1
+**Last Updated:** 2026-04-18
 
 ---
 
@@ -20,29 +21,28 @@
 
 ## Project Overview
 
-**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 12,715 backend tests.
+**NOIR** is an enterprise-ready .NET 10 + React 19 SaaS foundation implementing Clean Architecture with multi-tenancy, comprehensive audit logging, and 13,546 tests (12,715 backend + 831 frontend).
 
 ### Key Statistics
 
 | Metric | Count | Notes |
 |--------|-------|-------|
-| **Backend Source Files** | 2,191 | C# files in `src/` (excl. generated) |
-| **Frontend Source Files** | 750 | TypeScript/TSX in `frontend/src/` |
-| **Test Files** | 879 | C# test files in `tests/` |
-| **Total Source Files** | ~3,820 | Combined backend + frontend + tests |
-| **Feature Modules** | 39 | Domain-driven vertical slices |
-| **API Endpoint Groups** | 52 | Minimal API endpoint files |
-| **Repositories** | 44 | Infrastructure repositories |
-| **EF Core Configurations** | 85 | Entity type configurations |
-| **UIKit Component Dirs** | 99 | shadcn/ui + custom components in `uikit/` |
-| **Storybook Stories** | 97 | Interactive component catalog in `uikit/` |
-| **Custom Hooks** | 35 | React hooks in `hooks/` |
-| **API Services** | 40 | Frontend API clients |
+| **Backend Source Files** | ~2,449 | C# files in `src/` (excl. generated) |
+| **Frontend Source Files** | ~831 | TypeScript/TSX in `frontend/src/` |
+| **Test Files** | ~966 | C# test files in `tests/` |
+| **Feature Modules** | 35 | `Application/Modules/` — 8 core + 27 toggleable |
+| **API Endpoint Groups** | 53 | Minimal API endpoint files |
+| **MCP Tools** | 62 | AI-callable tools in `Web/Mcp/Tools/` |
+| **UIKit Components** | 101 | shadcn/ui + custom components in `uikit/` |
+| **Storybook Stories** | 99 | Interactive component catalog |
+| **Custom Hooks** | 44 | React hooks in `hooks/` |
 | **Frontend Pages** | 56 | React page components |
-| **Documentation Files** | 45 | Markdown docs in `docs/` |
-| **Backend Tests** | 12,715 | Domain (2,971) + Application (8,557) + Integration (1,141) + Architecture (46) |
+| **Documentation Files** | ~57 | Markdown docs in `docs/` |
+| **Rule files (auto-loaded)** | 20 | `.claude/rules/*.md` — project guardrails |
+| **Project skills** | 9 | `.claude/skills/` — NOIR-specific scaffolding |
+| **Tests** | 13,546 | Backend 12,715 (Domain 2,971 + Application 8,557 + Integration 1,141 + Architecture 46) + Frontend 831 |
 
-**Technologies:** .NET 10, React 19, SQL Server, EF Core 10, Wolverine, SignalR, Vite, TypeScript 5, Tailwind CSS 4, Zod, Storybook 10.2, pnpm
+**Technologies:** .NET 10, React 19, SQL Server 2022, EF Core 10, Wolverine 5, SignalR, Vite 7, TypeScript 5.9, Tailwind CSS 4, Zod, Storybook 10.3, pnpm 10.28.1
 
 ### Directory Structure
 

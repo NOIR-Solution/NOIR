@@ -1,5 +1,23 @@
 # CLAUDE.md Changelog
 
+## [4.1] - 2026-04-18
+
+### Added
+- **`.claude/settings.json`**: Declared 13 plugins across 5 marketplaces (`enabledPlugins` + `extraKnownMarketplaces`) so every contributor gets identical AI tooling on clone
+- **`.claude/ONBOARDING.md`**: Canonical AI setup guide — automated vs manual steps, plugin inventory, skill inventory, troubleshooting, drift maintenance
+- **`setup-claude.sh` / `setup-claude.ps1`**: Cross-platform verification + dependency restore scripts at repo root
+- **5 new custom skills** in `.claude/skills/`: `noir-feature-add` (5-registry sync), `noir-migration` (EF `--context`), `noir-form-scaffold` (4-rule validation), `noir-mcp-tool-add` (MCP naming + `[RequiresModule]`), `noir-datatable-page` (enterprise table + audit columns)
+
+### Changed
+- **CONTRIBUTING.md**: AI Assistant Setup section shortened to 3-command quick-start, full details deferred to ONBOARDING
+- **README.md**: Setup section now references `setup-claude.sh` for one-shot env verification
+- **CLAUDE.md**: UIKit count 100→101, hooks 40→44 (stat drift correction); added SuperClaude routing hints for the 5 new scaffolding skills
+
+### Removed
+- **5 stale skill symlinks** in `.claude/skills/` (ui-ux-pro-max, playwright-skill, qa-regression, qa-test-planner, agent-browser) — superseded by plugins
+- **3 completed plan docs**: `claudedocs/workflow_orgchart-reactflow.md` (React Flow org chart shipped), `claudedocs/workflow-realtime-entity-updates.md` (IEntityUpdateHubContext live across 145 handlers), `docs/designs/workflow-datatable-phase3-5.md` (Phase 3+5 complete)
+- **Empty `claudedocs/` directory**
+
 ## [4.0] - 2026-04-03
 
 ### Added
