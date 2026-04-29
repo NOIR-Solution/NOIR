@@ -225,19 +225,16 @@ builder.Host.UseWolverine(opts =>
     // Add handler audit middleware - captures handler execution with DTO diff
     opts.Policies.AddMiddleware<HandlerAuditMiddleware>();
 
-    // Code generation mode:
-    // - Production: Static (pre-generated handlers for faster cold start)
-    // - Development/Testing: Auto (dynamic code generation for rapid iteration)
+    // Code generation mode: Auto everywhere.
     //
-    // IMPORTANT: Static mode requires pre-generated handler wrapper classes.
-    // If Static mode fails with ExpectedTypeMissingException, it means the DI container
-    // changed (e.g., new services registered via IScopedService/ITransientService markers)
-    // and the handler hash no longer matches. Use Auto mode for development.
+    // Auto generates handler wrappers at runtime as needed. Adds a small first-request latency
+    // per handler but eliminates the maintenance burden of keeping a pre-gen folder in sync
+    // with source. Static mode previously caused ExpectedTypeMissingException 500s in Production
+    // whenever a handler was added or changed without re-running `codegen write`.
     //
-    // Note: BuildHost-net472 folders in bin/ are from JasperFx.RuntimeCompiler - safe to ignore
-    opts.CodeGeneration.TypeLoadMode = builder.Environment.IsProduction()
-        ? TypeLoadMode.Static
-        : TypeLoadMode.Auto;
+    // If you ever need Static mode for a Production cold-start optimization, regenerate
+    // pre-gen artifacts as a CI step on every build, not by hand.
+    opts.CodeGeneration.TypeLoadMode = TypeLoadMode.Auto;
 });
 
 // Configure Cookie Settings for dual auth (JWT-in-Cookie support)
