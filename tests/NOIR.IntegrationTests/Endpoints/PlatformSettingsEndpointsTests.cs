@@ -9,7 +9,7 @@ namespace NOIR.IntegrationTests.Endpoints;
 /// These endpoints require platform-admin permissions (TenantId = null).
 /// </summary>
 [Collection("Integration")]
-public class PlatformSettingsEndpointsTests : IClassFixture<CustomWebApplicationFactory>
+public class PlatformSettingsEndpointsTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;

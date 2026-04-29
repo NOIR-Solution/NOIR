@@ -5,7 +5,7 @@ namespace NOIR.IntegrationTests.Endpoints;
 /// Tests security restrictions, content type detection, and caching headers.
 /// </summary>
 [Collection("Integration")]
-public class FileEndpointsTests : IClassFixture<CustomWebApplicationFactory>
+public class FileEndpointsTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;

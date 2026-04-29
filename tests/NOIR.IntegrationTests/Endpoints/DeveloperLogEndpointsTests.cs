@@ -8,7 +8,7 @@ namespace NOIR.IntegrationTests.Endpoints;
 /// Note: These endpoints require SystemAdmin permission.
 /// </summary>
 [Collection("Integration")]
-public class DeveloperLogEndpointsTests : IClassFixture<CustomWebApplicationFactory>
+public class DeveloperLogEndpointsTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;

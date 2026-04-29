@@ -9,7 +9,7 @@ namespace NOIR.IntegrationTests.Endpoints;
 /// Handler logic is thoroughly tested in GetStockHistoryQueryHandlerTests.
 /// </summary>
 [Collection("Integration")]
-public class StockHistoryEndpointsTests : IClassFixture<CustomWebApplicationFactory>
+public class StockHistoryEndpointsTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;

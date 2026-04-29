@@ -8,7 +8,7 @@ namespace NOIR.IntegrationTests.Endpoints;
 /// Covers branding, contact, regional, and SMTP settings.
 /// </summary>
 [Collection("Integration")]
-public class TenantSettingsEndpointsTests : IClassFixture<CustomWebApplicationFactory>
+public class TenantSettingsEndpointsTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;

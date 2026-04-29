@@ -9,7 +9,7 @@ namespace NOIR.IntegrationTests.Auth;
 /// Verifies full flow including audit logging with before/after diff tracking.
 /// </summary>
 [Collection("Integration")]
-public class UpdateUserProfileTests : IClassFixture<CustomWebApplicationFactory>
+public class UpdateUserProfileTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;

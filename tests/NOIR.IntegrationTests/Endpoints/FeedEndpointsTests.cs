@@ -6,7 +6,7 @@ namespace NOIR.IntegrationTests.Endpoints;
 /// These endpoints are public (no authentication required).
 /// </summary>
 [Collection("Integration")]
-public class FeedEndpointsTests : IClassFixture<CustomWebApplicationFactory>
+public class FeedEndpointsTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;

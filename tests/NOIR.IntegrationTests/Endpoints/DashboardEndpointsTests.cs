@@ -7,7 +7,7 @@ namespace NOIR.IntegrationTests.Endpoints;
 /// Tests the full HTTP request/response cycle for dashboard metrics retrieval.
 /// </summary>
 [Collection("Integration")]
-public class DashboardEndpointsTests : IClassFixture<CustomWebApplicationFactory>
+public class DashboardEndpointsTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;

@@ -8,7 +8,7 @@ namespace NOIR.IntegrationTests.Endpoints;
 /// Tests the full HTTP request/response cycle with real middleware and handlers.
 /// </summary>
 [Collection("Integration")]
-public class CrmContactEndpointsTests : IClassFixture<CustomWebApplicationFactory>
+public class CrmContactEndpointsTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;

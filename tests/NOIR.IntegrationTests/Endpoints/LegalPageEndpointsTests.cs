@@ -7,7 +7,7 @@ namespace NOIR.IntegrationTests.Endpoints;
 /// Tests the full HTTP request/response cycle for /api/legal-pages.
 /// </summary>
 [Collection("Integration")]
-public class LegalPageEndpointsTests : IClassFixture<CustomWebApplicationFactory>
+public class LegalPageEndpointsTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;

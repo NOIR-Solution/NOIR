@@ -9,7 +9,7 @@ namespace NOIR.IntegrationTests.Endpoints;
 /// Tests the full HTTP request/response cycle for module catalog, tenant features, and toggling.
 /// </summary>
 [Collection("Integration")]
-public class FeatureManagementEndpointsTests : IClassFixture<CustomWebApplicationFactory>
+public class FeatureManagementEndpointsTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;

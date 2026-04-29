@@ -8,7 +8,7 @@ namespace NOIR.IntegrationTests.Endpoints;
 /// Note: Product filter endpoints are public (AllowAnonymous) for storefront use.
 /// </summary>
 [Collection("Integration")]
-public class ProductFilterEndpointsTests : IClassFixture<CustomWebApplicationFactory>
+public class ProductFilterEndpointsTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;

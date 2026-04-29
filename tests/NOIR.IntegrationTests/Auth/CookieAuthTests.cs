@@ -5,7 +5,7 @@ namespace NOIR.IntegrationTests.Auth;
 /// Tests the full HTTP request/response cycle with cookie handling.
 /// </summary>
 [Collection("Integration")]
-public class CookieAuthTests : IClassFixture<CustomWebApplicationFactory>
+public class CookieAuthTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;

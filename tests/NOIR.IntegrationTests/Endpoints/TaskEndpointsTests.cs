@@ -10,7 +10,7 @@ namespace NOIR.IntegrationTests.Endpoints;
 /// Tests the full HTTP request/response cycle with real middleware and handlers.
 /// </summary>
 [Collection("Integration")]
-public class TaskEndpointsTests : IClassFixture<CustomWebApplicationFactory>
+public class TaskEndpointsTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;

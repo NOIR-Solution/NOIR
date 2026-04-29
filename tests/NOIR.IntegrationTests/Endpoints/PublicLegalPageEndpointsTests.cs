@@ -8,7 +8,7 @@ namespace NOIR.IntegrationTests.Endpoints;
 /// These endpoints are anonymous (no authentication required).
 /// </summary>
 [Collection("Integration")]
-public class PublicLegalPageEndpointsTests : IClassFixture<CustomWebApplicationFactory>
+public class PublicLegalPageEndpointsTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;

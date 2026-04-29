@@ -5,7 +5,7 @@ namespace NOIR.IntegrationTests;
 /// Tests the full HTTP request/response cycle with real middleware and handlers.
 /// </summary>
 [Collection("Integration")]
-public class AuthEndpointsTests : IClassFixture<CustomWebApplicationFactory>
+public class AuthEndpointsTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;

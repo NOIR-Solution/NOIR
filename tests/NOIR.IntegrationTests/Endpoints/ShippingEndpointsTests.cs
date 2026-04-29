@@ -7,7 +7,7 @@ namespace NOIR.IntegrationTests.Endpoints;
 /// Tests authentication, authorization, and basic endpoint functionality.
 /// </summary>
 [Collection("Integration")]
-public class ShippingEndpointsTests : IClassFixture<CustomWebApplicationFactory>
+public class ShippingEndpointsTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;

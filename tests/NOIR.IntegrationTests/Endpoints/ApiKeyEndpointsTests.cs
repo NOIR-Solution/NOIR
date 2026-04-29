@@ -12,7 +12,7 @@ namespace NOIR.IntegrationTests.Endpoints;
 /// Also tests API Key authentication flow (X-API-Key + X-API-Secret headers).
 /// </summary>
 [Collection("Integration")]
-public class ApiKeyEndpointsTests : IClassFixture<CustomWebApplicationFactory>
+public class ApiKeyEndpointsTests
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;
