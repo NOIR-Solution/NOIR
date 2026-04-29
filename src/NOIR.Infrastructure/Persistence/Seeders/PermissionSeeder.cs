@@ -204,6 +204,88 @@ public class PermissionSeeder : ISeeder
         permissions.Add(Permission.Create("payment-refunds", "manage", "Manage Payment Refunds", null, "Process payment refunds", "Payments", true, sortOrder++));
         permissions.Add(Permission.Create("payment-webhooks", "read", "View Payment Webhooks", null, "View payment webhook logs", "Payments", true, sortOrder++));
 
+        // Dashboard category
+        permissions.Add(Permission.Create("dashboard", "read", "View Dashboard", null, "Access dashboard overview", "Dashboard", true, sortOrder++));
+
+        // Search category
+        permissions.Add(Permission.Create("search", "global", "Global Search", null, "Use the global search across the platform", "Search", true, sortOrder++));
+
+        // Media category
+        permissions.Add(Permission.Create("media", "read", "View Media", null, "View media library files", "Media", true, sortOrder++));
+        permissions.Add(Permission.Create("media", "create", "Create Media", null, "Upload new media files", "Media", true, sortOrder++));
+        permissions.Add(Permission.Create("media", "update", "Update Media", null, "Edit media file metadata", "Media", true, sortOrder++));
+        permissions.Add(Permission.Create("media", "delete", "Delete Media", null, "Delete media files", "Media", true, sortOrder++));
+        permissions.Add(Permission.Create("media", "manage", "Manage Media", null, "Full media library management access", "Media", true, sortOrder++));
+
+        // API Keys category
+        permissions.Add(Permission.Create("api-keys", "read", "View API Keys", null, "View API keys", "API Keys", true, sortOrder++));
+        permissions.Add(Permission.Create("api-keys", "create", "Create API Keys", null, "Generate new API keys", "API Keys", true, sortOrder++));
+        permissions.Add(Permission.Create("api-keys", "delete", "Delete API Keys", null, "Revoke API keys", "API Keys", true, sortOrder++));
+
+        // Webhooks category
+        permissions.Add(Permission.Create("webhooks", "read", "View Webhooks", null, "View webhook subscriptions", "Webhooks", true, sortOrder++));
+        permissions.Add(Permission.Create("webhooks", "manage", "Manage Webhooks", null, "Create, edit, and delete webhook subscriptions", "Webhooks", true, sortOrder++));
+        permissions.Add(Permission.Create("webhooks", "test", "Test Webhooks", null, "Send test deliveries to webhook endpoints", "Webhooks", true, sortOrder++));
+
+        // HR — Employees
+        permissions.Add(Permission.Create("hr-employees", "read", "View Employees", null, "View employee profiles", "Human Resources", true, sortOrder++));
+        permissions.Add(Permission.Create("hr-employees", "create", "Create Employees", null, "Create new employee records", "Human Resources", true, sortOrder++));
+        permissions.Add(Permission.Create("hr-employees", "update", "Update Employees", null, "Edit employee profiles", "Human Resources", true, sortOrder++));
+        permissions.Add(Permission.Create("hr-employees", "delete", "Delete Employees", null, "Delete employee records", "Human Resources", true, sortOrder++));
+
+        // HR — Departments
+        permissions.Add(Permission.Create("hr-departments", "read", "View Departments", null, "View departments", "Human Resources", true, sortOrder++));
+        permissions.Add(Permission.Create("hr-departments", "create", "Create Departments", null, "Create new departments", "Human Resources", true, sortOrder++));
+        permissions.Add(Permission.Create("hr-departments", "update", "Update Departments", null, "Edit departments", "Human Resources", true, sortOrder++));
+        permissions.Add(Permission.Create("hr-departments", "delete", "Delete Departments", null, "Delete departments", "Human Resources", true, sortOrder++));
+
+        // HR — Tags
+        permissions.Add(Permission.Create("hr-tags", "read", "View Employee Tags", null, "View employee tag library", "Human Resources", true, sortOrder++));
+        permissions.Add(Permission.Create("hr-tags", "manage", "Manage Employee Tags", null, "Create, edit, delete, and assign employee tags", "Human Resources", true, sortOrder++));
+
+        // CRM — Contacts
+        permissions.Add(Permission.Create("crm-contacts", "read", "View Contacts", null, "View CRM contacts", "CRM", true, sortOrder++));
+        permissions.Add(Permission.Create("crm-contacts", "create", "Create Contacts", null, "Create new CRM contacts", "CRM", true, sortOrder++));
+        permissions.Add(Permission.Create("crm-contacts", "update", "Update Contacts", null, "Edit CRM contacts", "CRM", true, sortOrder++));
+        permissions.Add(Permission.Create("crm-contacts", "delete", "Delete Contacts", null, "Delete CRM contacts", "CRM", true, sortOrder++));
+
+        // CRM — Companies
+        permissions.Add(Permission.Create("crm-companies", "read", "View Companies", null, "View CRM companies", "CRM", true, sortOrder++));
+        permissions.Add(Permission.Create("crm-companies", "create", "Create Companies", null, "Create new CRM companies", "CRM", true, sortOrder++));
+        permissions.Add(Permission.Create("crm-companies", "update", "Update Companies", null, "Edit CRM companies", "CRM", true, sortOrder++));
+        permissions.Add(Permission.Create("crm-companies", "delete", "Delete Companies", null, "Delete CRM companies", "CRM", true, sortOrder++));
+
+        // CRM — Leads
+        permissions.Add(Permission.Create("crm-leads", "read", "View Leads", null, "View sales leads", "CRM", true, sortOrder++));
+        permissions.Add(Permission.Create("crm-leads", "create", "Create Leads", null, "Create new sales leads", "CRM", true, sortOrder++));
+        permissions.Add(Permission.Create("crm-leads", "update", "Update Leads", null, "Edit sales leads", "CRM", true, sortOrder++));
+        permissions.Add(Permission.Create("crm-leads", "manage", "Manage Leads", null, "Full lead management including stage transitions and assignment", "CRM", true, sortOrder++));
+
+        // CRM — Pipeline
+        permissions.Add(Permission.Create("crm-pipeline", "manage", "Manage Sales Pipeline", null, "Configure pipeline stages and probabilities", "CRM", true, sortOrder++));
+
+        // CRM — Activities
+        permissions.Add(Permission.Create("crm-activities", "read", "View CRM Activities", null, "View CRM activity records", "CRM", true, sortOrder++));
+        permissions.Add(Permission.Create("crm-activities", "create", "Create CRM Activities", null, "Log new CRM activities", "CRM", true, sortOrder++));
+        permissions.Add(Permission.Create("crm-activities", "update", "Update CRM Activities", null, "Edit CRM activities", "CRM", true, sortOrder++));
+        permissions.Add(Permission.Create("crm-activities", "delete", "Delete CRM Activities", null, "Delete CRM activities", "CRM", true, sortOrder++));
+
+        // PM — Projects
+        permissions.Add(Permission.Create("pm-projects", "read", "View Projects", null, "View projects", "Project Management", true, sortOrder++));
+        permissions.Add(Permission.Create("pm-projects", "create", "Create Projects", null, "Create new projects", "Project Management", true, sortOrder++));
+        permissions.Add(Permission.Create("pm-projects", "update", "Update Projects", null, "Edit projects", "Project Management", true, sortOrder++));
+        permissions.Add(Permission.Create("pm-projects", "delete", "Delete Projects", null, "Delete projects", "Project Management", true, sortOrder++));
+
+        // PM — Tasks
+        permissions.Add(Permission.Create("pm-tasks", "read", "View Tasks", null, "View project tasks", "Project Management", true, sortOrder++));
+        permissions.Add(Permission.Create("pm-tasks", "create", "Create Tasks", null, "Create new tasks", "Project Management", true, sortOrder++));
+        permissions.Add(Permission.Create("pm-tasks", "update", "Update Tasks", null, "Edit tasks", "Project Management", true, sortOrder++));
+        permissions.Add(Permission.Create("pm-tasks", "delete", "Delete Tasks", null, "Delete tasks", "Project Management", true, sortOrder++));
+        permissions.Add(Permission.Create("pm-tasks", "manage", "Manage Tasks", null, "Full task management including bulk operations and reordering", "Project Management", true, sortOrder++));
+
+        // PM — Members
+        permissions.Add(Permission.Create("pm-members", "manage", "Manage Project Members", null, "Add and remove project members", "Project Management", true, sortOrder++));
+
         return permissions;
     }
 }

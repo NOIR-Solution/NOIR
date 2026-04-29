@@ -29,10 +29,11 @@ public class PermissionTemplateSeeder : ISeeder
 
         var templatesToSeed = GetPermissionTemplateDefinitions();
         var newTemplates = new List<PermissionTemplate>();
+        var addedItemsCount = 0;
 
         foreach (var (templateName, templateDef) in templatesToSeed)
         {
-            if (!existingByName.ContainsKey(templateName))
+            if (!existingByName.TryGetValue(templateName, out var existing))
             {
                 var template = PermissionTemplate.CreatePlatformDefault(
                     templateName,
@@ -58,13 +59,34 @@ public class PermissionTemplateSeeder : ISeeder
                 newTemplates.Add(template);
                 context.Logger.LogInformation("Seeding permission template: {Template} with {Count} permissions", templateName, templateDef.Permissions.Count);
             }
+            else if (existing.IsSystem)
+            {
+                // System templates evolve as new permissions are introduced. Backfill any missing
+                // permission items on each seed run so existing rows keep up with the schema.
+                // Insert via the child DbSet directly so we never mutate the parent template entity —
+                // mutating the loaded aggregate root triggered DbUpdateConcurrencyException because
+                // audit interceptors bump the parent's RowVersion mid-save.
+                foreach (var permissionName in templateDef.Permissions)
+                {
+                    if (!permissionsByName.TryGetValue(permissionName, out var permission)) continue;
+                    if (existing.Items.Any(i => i.PermissionId == permission.Id)) continue;
+
+                    var item = PermissionTemplateItem.Create(existing.Id, permission.Id);
+                    await context.DbContext.Set<PermissionTemplateItem>().AddAsync(item, ct);
+                    addedItemsCount++;
+                    context.Logger.LogInformation("Backfilled permission {Permission} on template {Template}", permissionName, templateName);
+                }
+            }
         }
 
         if (newTemplates.Count > 0)
         {
             await context.DbContext.Set<PermissionTemplate>().AddRangeAsync(newTemplates, ct);
+        }
+        if (newTemplates.Count > 0 || addedItemsCount > 0)
+        {
             await context.DbContext.SaveChangesAsync(ct);
-            context.Logger.LogInformation("Seeded {Count} permission templates", newTemplates.Count);
+            context.Logger.LogInformation("Permission template seed: {NewTemplates} new, {BackfilledItems} permissions backfilled", newTemplates.Count, addedItemsCount);
         }
     }
 
