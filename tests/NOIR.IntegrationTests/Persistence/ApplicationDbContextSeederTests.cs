@@ -145,9 +145,10 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
         {
             var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
 
-            // Assert - Should have exactly the default roles, no duplicates
+            // Assert - Each default role should exist exactly once. Counting by name
+            // because the shared test DB may contain extra roles created by other tests.
             var roles = roleManager.Roles.ToList();
-            roles.Count().ShouldBe(Roles.Defaults.Count());
+            roles.Count(r => Roles.Defaults.Contains(r.Name!)).ShouldBe(Roles.Defaults.Count);
 
             // Each default role should exist exactly once
             foreach (var roleName in Roles.Defaults)
@@ -272,9 +273,11 @@ public class ApplicationDbContextSeederTests : IAsyncLifetime
             var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
             var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
-            // Assert - Should have exactly the default roles (PlatformAdmin, Admin, User)
+            // Assert - Each default role should exist exactly once.
+            // We count by name (not total) because other tests in the shared collection may
+            // create their own roles in this DB; we only care that the seed didn't duplicate.
             var roles = roleManager.Roles.ToList();
-            roles.Count().ShouldBe(Roles.Defaults.Count);
+            roles.Count(r => Roles.Defaults.Contains(r.Name!)).ShouldBe(Roles.Defaults.Count);
 
             // Should have exactly 1 admin user
             var adminUsers = await userManager.Users

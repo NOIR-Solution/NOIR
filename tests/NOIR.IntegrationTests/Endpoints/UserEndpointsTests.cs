@@ -51,8 +51,9 @@ public class UserEndpointsTests
         // Arrange
         var adminClient = await GetAdminClientAsync();
 
-        // Act
-        var response = await adminClient.GetAsync("/api/users");
+        // Act — search by email to avoid pagination flakiness in the shared test DB
+        // (other tests create users; admin@noir.local may not be on the default first page).
+        var response = await adminClient.GetAsync("/api/users?search=admin@noir.local&pageSize=100");
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -278,8 +279,8 @@ public class UserEndpointsTests
         // Arrange
         var adminClient = await GetAdminClientAsync();
 
-        // Get admin user ID
-        var listResponse = await adminClient.GetAsync("/api/users");
+        // Get admin user ID — search to avoid pagination issues with the shared test DB
+        var listResponse = await adminClient.GetAsync("/api/users?search=admin@noir.local&pageSize=100");
         var users = await listResponse.Content.ReadFromJsonAsync<PaginatedList<UserListDto>>();
         var adminUser = users!.Items.First(u => u.Email == "admin@noir.local");
 
@@ -364,8 +365,8 @@ public class UserEndpointsTests
         // Arrange
         var adminClient = await GetAdminClientAsync();
 
-        // Get admin user ID
-        var listResponse = await adminClient.GetAsync("/api/users");
+        // Get admin user ID — search to avoid pagination issues with the shared test DB
+        var listResponse = await adminClient.GetAsync("/api/users?search=admin@noir.local&pageSize=100");
         var users = await listResponse.Content.ReadFromJsonAsync<PaginatedList<UserListDto>>();
         var adminUser = users!.Items.First(u => u.Email == "admin@noir.local");
 
