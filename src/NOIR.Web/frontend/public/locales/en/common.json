@@ -1469,6 +1469,8 @@
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Welcome back, {{name}}!",
+    "platformAdminTitle": "Platform Administration",
+    "platformAdminDescription": "Manage tenants, platform settings, and system diagnostics from the sidebar.",
     "totalRevenue": "Total Revenue",
     "ordersThisMonth": "Orders This Month",
     "averageOrderValue": "Average Order Value",

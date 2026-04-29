@@ -1469,6 +1469,8 @@
   "dashboard": {
     "title": "Tổng quan",
     "welcome": "Chào mừng trở lại, {{name}}!",
+    "platformAdminTitle": "Quản trị nền tảng",
+    "platformAdminDescription": "Quản lý tổ chức, cài đặt nền tảng và chẩn đoán hệ thống từ thanh bên.",
     "totalRevenue": "Tổng doanh thu",
     "ordersThisMonth": "Đơn hàng tháng này",
     "averageOrderValue": "Giá trị đơn hàng trung bình",

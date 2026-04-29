@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { login as loginApi } from '@/services/auth'
 import { useAuthContext } from '@/contexts/AuthContext'
 import type { LoginRequest, LoginResponse } from '@/types'
@@ -34,6 +35,7 @@ import type { LoginRequest, LoginResponse } from '@/types'
  */
 export const useLogin = () => {
   const { checkAuth } = useAuthContext()
+  const queryClient = useQueryClient()
 
   const login = useCallback(async (credentials: LoginRequest): Promise<LoginResponse> => {
     // Authenticate with the server (tokens stored in localStorage if successful)
@@ -41,11 +43,14 @@ export const useLogin = () => {
 
     // Only sync auth context when login is successful (not when tenant selection required)
     if (response.success) {
+      // Wipe any cached queries from a previous user before refetching with the new identity.
+      // Prevents stale per-user data (permissions, features, branding) from leaking across switches.
+      queryClient.clear()
       await checkAuth()
     }
 
     return response
-  }, [checkAuth])
+  }, [checkAuth, queryClient])
 
   return { login }
 }

@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { getCurrentUser, logout as logoutApi } from '@/services/auth'
 import { isTokenExpired } from '@/services/tokenStorage'
 import { useBroadcastChannel } from '@/hooks/useBroadcastChannel'
@@ -20,6 +21,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<CurrentUser | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const queryClient = useQueryClient()
 
   const checkAuth = useCallback(async () => {
     setIsLoading(true)
@@ -81,18 +83,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     'noir-auth',
     useCallback((data) => {
       if (data.type === 'logout') {
-        // Another tab logged out — clear local state and redirect
+        // Another tab logged out — clear local state, wipe RQ cache, and redirect.
+        // Cache wipe prevents stale per-user data leaking across user switches.
+        queryClient.clear()
         setUser(null)
         window.location.href = '/login'
       }
-    }, []),
+    }, [queryClient]),
   )
 
   const logout = useCallback(async () => {
     broadcastAuth({ type: 'logout' })
     await logoutApi()
+    // Wipe RQ cache before clearing user, so any in-flight queries are cancelled
+    // and no per-user data leaks to the next login. See useLogin for the login-side wipe.
+    queryClient.clear()
     setUser(null)
-  }, [broadcastAuth])
+  }, [broadcastAuth, queryClient])
 
   return (
     <AuthContext.Provider value={{ user, isLoading, isAuthenticated: !!user, checkAuth, refreshUser, logout }}>
