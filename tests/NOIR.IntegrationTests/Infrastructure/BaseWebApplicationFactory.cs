@@ -80,9 +80,12 @@ public abstract class BaseWebApplicationFactory : WebApplicationFactory<Program>
                 // Database connection
                 ["ConnectionStrings:DefaultConnection"] = _connectionString,
 
-                // Rate limiting
-                ["RateLimiting:PermitLimit"] = "1000",
-                ["RateLimiting:AuthPermitLimit"] = "100",
+                // Rate limiting — high quotas because all 62 test classes share ONE factory via
+                // [CollectionDefinition("Integration")], so every test's logins/requests count
+                // against the same bucket within the same window.
+                ["RateLimiting:PermitLimit"] = "100000",
+                ["RateLimiting:AuthPermitLimit"] = "100000",
+                ["RateLimiting:ExportPermitLimit"] = "100000",
 
                 // JWT Settings - must match appsettings.json for consistent token generation/validation
                 ["JwtSettings:Secret"] = "NOIRSecretKeyForJWTAuthenticationMustBeAtLeast32Characters!",
